@@ -27,7 +27,7 @@ gap: clamp(4.8px, 1.527vw, 6px);
   position: relative;
   display: flex;
   align-items: center;
-gap: clamp(6.08px, 1.934vw, 7.6px);
+gap: clamp(3px, 1.27vw, 5px);
   font-family: "Inter", sans-serif;
 font-weight: 600;
 font-size: clamp(6.94px, 2.206vw, 8.67px);
@@ -165,6 +165,7 @@ font-size: clamp(4.8px, 1.527vw, 6px);
 border-radius: clamp(34.78px, 11.064vw, 43.48px);
 padding: clamp(1.6px, 0.509vw, 2px) clamp(6.4px, 2.036vw, 8px);
 background-color: #97538C;
+color: #FFFFFF;
 gap: clamp(3.2px, 1.018vw, 4px);
 font-family: "Poppins", sans-serif;
 font-weight: 500;
@@ -222,7 +223,7 @@ height: clamp(19.96px, 6.347vw, 24.94px);
 gap: clamp(1.6px, 0.509vw, 2px);
   padding: clamp(2.1px, 0.667vw, 2.62px);
   border-radius: clamp(1.84px, 0.585vw, 2.3px);
-  border: 1px solid #97538C;
+ border: 0.37px solid #97538C;
  color: #97538C;
 font-family: "Inter", sans-serif;
 font-weight: 500;
@@ -234,4 +235,9 @@ font-size: clamp(5.25px, 1.669vw, 6.56px);
 .pill-cat-img{
     width: clamp(5.51px, 1.753vw, 6.89px);
 height: clamp(5.51px, 1.753vw, 6.89px);
+}
+.arrowICON{
+width: clamp(7px, 2.29vw, 9px);
+height: clamp(7px, 2.54vw, 10px);
+
 }

@@ -11,7 +11,7 @@
   background: #fff;
   border-radius: clamp(12px, 3.5vw, 16px);
   overflow: hidden;
-  box-shadow: 0 4px 18px rgba(60, 30, 0, 0.11);
+ box-shadow: 0px 3.91px 3.91px 0px #0000001A;
   border: 0.98px solid #ED950F;
   display: flex;
   flex-direction: column;
@@ -84,6 +84,7 @@ font-size: clamp(11.21px, 3.50vw, 17.41px);
 text-transform: capitalize;
 color:#221F1F;
   margin: 0;
+ line-height:  clamp(8px, 2.98vw, 11.72px);
 }
 
 /* ── SUBTITLE ── */
@@ -151,7 +152,10 @@ color:#6B6B6B;
 
 /* ── FOOTER / CTA ── */
 .vfc-footer {
-  padding: clamp(10px, 2.5vw, 14px);
+ padding-top: clamp(5px, 1.99vw, 7.81px);
+padding-right: clamp(14px, 5.09vw, 20px);
+padding-bottom: clamp(2px, 0.75vw, 2.96px);
+padding-left: clamp(14px, 5.09vw, 20px);
 }
 .vfc-cta {
   width: 100%;
@@ -164,7 +168,7 @@ color:#6B6B6B;
   font-family: Inter, sans-serif;
 font-weight: 600;
 font-size: clamp(9.39px, 2.91vw, 14.25px);
-  padding: clamp(9px, 2.6vw, 12px) 0;
+  padding: clamp(4px, 1.33vw, 5.21px) clamp(9px, 2.6vw, 12px) ;
   border: none;
  border-radius: clamp(3.05px, 0.954vw, 4.58px);
   cursor: pointer;
@@ -173,4 +177,12 @@ font-size: clamp(9.39px, 2.91vw, 14.25px);
 }
 .vfc-cta:active {
   transform: scale(0.97);
+}
+.divider{
+width: clamp(180px, 56.65vw, 222.66px);
+height: 0;
+
+border-top: clamp(0.4px, 0.125vw, 0.49px) dashed #A4A3A3;
+opacity: 1;
+margin:0px;
 }

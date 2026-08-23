@@ -63,6 +63,7 @@
 .invite-address-section {
   max-width: 480px;
   width: 100%;
+ margin-top: clamp(3px, 1.27vw, 5px);
 }
 .address-part-ctn {
   display: flex;

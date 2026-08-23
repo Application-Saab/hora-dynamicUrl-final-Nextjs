@@ -6,7 +6,7 @@ import hallIcon from "@/assets/venuelanding/halls.svg";
 import enquiryBg from "@/assets/venuelanding/enquiry-bg.webp";
 import enquiryIcon from "@/assets/venuelanding/enquiryIcon.png"
 import "./VenueHighlights.css"
-
+import arrowImage from "@/assets/venuelanding/venuearrow.svg"
 // Backend field naming abhi consistent nahi hai (listing API vs details API
 // alag keys bhej sakte hain) — isliye har field ke multiple possible names try karte hain.
 const pick = (obj, keys) => {
@@ -99,7 +99,8 @@ const VenueHighlights = ({ venue, onEnquire }) => {
               Our team is here to help you plan the perfect event.
             </p>
             <button className="enquiry-banner-btn" onClick={onEnquire}>
-              Enquire Now <span className="eb-arrow">→</span>
+              Enquire Now   <Image className="arrowICON"
+                           src={arrowImage}/>
             </button>
           </div>
         </div>

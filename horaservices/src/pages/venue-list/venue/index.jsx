@@ -305,7 +305,7 @@ const VenuePage = () => {
           {venuePackages.length > 0 && (
             <div
               className="whos-joining-container"
-              style={{ marginTop: "10px", marginBottom: "10px" }}
+              style={{ marginTop: "clamp(3px, 1.27vw, 5px)", marginBottom: "10px" }}
             >
               <div
                 style={{

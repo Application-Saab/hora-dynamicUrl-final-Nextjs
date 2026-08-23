@@ -1,10 +1,7 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import "./VenueFoodModal.css";
-import Image from "next/image";
-import vegIcon from "@/assets/veg.svg";
-import nonVegIcon from "@/assets/nonveg.svg";
 
-// ── 1. EMOJI MAP ──
+// ── 1. EMOJI MAP (DB ke actual category titles jaisa hi rakho — plural, jahan applicable) ──
 const TITLE_EMOJI_MAP = {
   "Welcome Drink":          "🥂",
   "Soup":                   "🍵",
@@ -39,19 +36,24 @@ const KEYWORD_TO_CATEGORY = [
   { keywords: ["pizza"],                                                   category: "Pizza"                  },
 ];
 
-// longest keyword pehle sort karo — "ice cream" before "cream"
 const SORTED_KEYWORD_TO_CATEGORY = [...KEYWORD_TO_CATEGORY].sort((a, b) => {
   const aMax = Math.max(...a.keywords.map((k) => k.length));
   const bMax = Math.max(...b.keywords.map((k) => k.length));
   return bMax - aMax;
 });
 
+// Normalize helper — case-insensitive aur singular/plural-agnostic.
+// DB me kabhi kabhi ek hi category ke "Starters" aur "Starter" jaise
+// do alag documents ban jaate hain — ye function unhe same treat
+// karne ke liye hai.
+const normalize = (str = "") => str.trim().toLowerCase().replace(/s$/, "");
+
 // ── 3. SUBTITLE PARSER ──
-const parseSubTitle = (subTitle = "") => {
+const parseSubTitle = (subTitle = "", categories = []) => {
   if (!subTitle) return {};
 
   const parts = subTitle
-    .replace(/ice cream\s+papad/gi, "ice cream, papad") // "Ice cream Papad" → 2 parts
+    .replace(/ice cream\s+papad/gi, "ice cream, papad")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
@@ -72,16 +74,19 @@ const parseSubTitle = (subTitle = "") => {
       return;
     }
 
-    const cat = matched.category;
+    const dbCategory = categories.find(
+      (cat) => normalize(cat.title) === normalize(matched.category)
+    );
+    const cat = dbCategory ? dbCategory.title : matched.category;
+
     if (!result[cat]) {
-      result[cat] = { emoji: TITLE_EMOJI_MAP[cat] ?? "🍽️", vegCount: 0, nonVegCount: 0 };
+      result[cat] = { emoji: TITLE_EMOJI_MAP[matched.category] ?? "🍽️", vegCount: 0, nonVegCount: 0 };
     }
 
     if (isNonVeg) result[cat].nonVegCount += count;
     else          result[cat].vegCount    += count;
   });
 
-  // note string banao
   Object.keys(result).forEach((cat) => {
     const { vegCount, nonVegCount } = result[cat];
     const noteParts = [];
@@ -94,37 +99,104 @@ const parseSubTitle = (subTitle = "") => {
 };
 
 // ── 4. GROUP packageItems BY category ──
+// Exact title ki jagah normalized title se group karte hain, taaki DB
+// me duplicate category documents ("Starters" / "Starter") ki wajah se
+// UI me do alag pill na banein — sab ek hi group me merge ho jaate hain.
 const getCategoryWiseItems = (packageItems = [], categories = []) => {
   const grouped = {};
+  const displayNames = {};
 
   packageItems.forEach((item) => {
     item.categoryIds?.forEach((categoryId) => {
       const category = categories.find((cat) => cat._id === categoryId);
       if (!category) return;
 
-      if (!grouped[category.title]) {
-        grouped[category.title] = [];
+      const key = normalize(category.title);
+
+      if (!grouped[key]) {
+        grouped[key] = [];
+        displayNames[key] = category.title;
       }
-      grouped[category.title].push(item);
+      grouped[key].push(item);
     });
   });
 
-  return grouped;
+  const result = {};
+  Object.keys(grouped).forEach((key) => {
+    result[displayNames[key]] = grouped[key];
+  });
+
+  return result;
+};
+
+// How many dishes show by default before "View All" is needed
+const ITEMS_LIMIT = 3;
+
+// ── Small reusable block: veg or non-veg dish list with View All ──
+const DishGroup = ({ groupKey, label, dotClass, items, expanded, onToggle }) => {
+  if (items.length === 0) return null;
+
+  const isOverLimit = items.length > ITEMS_LIMIT;
+  const visibleItems = expanded ? items : items.slice(0, ITEMS_LIMIT);
+
+  return (
+    <>
+      <div className="vfm-sub-label">
+        <span className={`vfm-dot ${dotClass}`} />
+        <span className="vfm-sub-label-text">{label}</span>
+      </div>
+
+      {visibleItems.map((item) => (
+        <div key={item._id} className="vfm-dish-item">
+          <span className="vfm-dish-text">{item.title}</span>
+        </div>
+      ))}
+
+      {isOverLimit && (
+        <button
+          type="button"
+          className="vfm-view-all-btn"
+          onClick={() => onToggle(groupKey)}
+        >
+          {expanded ? "View Less" : "View All"}
+          <svg
+            className={`vfm-view-all-chevron ${expanded ? "vfm-view-all-chevron--up" : ""}`}
+            viewBox="0 0 12 8"
+            fill="none"
+          >
+            <path
+              d="M1 1.5L6 6.5L11 1.5"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      )}
+    </>
+  );
 };
 
 // ── MAIN COMPONENT ──
 const VenueFoodModal = ({ data, onClose, categories = [] }) => {
-  if (!data) return null;
+  const [expandedGroups, setExpandedGroups] = useState({});
 
   const subTitleConfig = useMemo(
-    () => parseSubTitle(data?.subTitle),          // ✅ fix: categories argument hata diya, not needed
-    [data?.subTitle]
+    () => parseSubTitle(data?.subTitle, categories),
+    [data?.subTitle, categories]
   );
 
   const categoryWiseItems = useMemo(
     () => getCategoryWiseItems(data?.packageItems, categories),
     [data?.packageItems, categories]
   );
+
+  if (!data) return null;
+
+  const toggleGroup = (key) => {
+    setExpandedGroups((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
 
   return (
     <div className="vfm-overlay" onClick={onClose}>
@@ -136,7 +208,6 @@ const VenueFoodModal = ({ data, onClose, categories = [] }) => {
           <button className="vfm-close-btn" onClick={onClose}>✕</button>
 
           <div className="vfm-info-row">
-            {/* Price */}
             <div className="vfm-info-cell">
               <svg className="vfm-cell-icon" viewBox="0 0 24 24" fill="none">
                 <path
@@ -156,7 +227,6 @@ const VenueFoodModal = ({ data, onClose, categories = [] }) => {
 
             <div className="vfm-cell-divider" />
 
-            {/* Guests */}
             <div className="vfm-info-cell">
               <svg className="vfm-cell-icon" viewBox="0 0 24 24" fill="none">
                 <path
@@ -180,45 +250,36 @@ const VenueFoodModal = ({ data, onClose, categories = [] }) => {
 
             const config = subTitleConfig[categoryName];
             const note   = config?.note ?? null;
-            const emoji  = config?.emoji ?? TITLE_EMOJI_MAP[categoryName] ?? "🍽️"; // ✅ fix: getEmojiForCategory hataya
+            const emoji  = config?.emoji ?? TITLE_EMOJI_MAP[categoryName] ?? "🍽️";
+
+            const vegKey    = `${categoryName}-veg`;
+            const nonVegKey = `${categoryName}-nonveg`;
 
             return (
               <div className="vfm-section" key={categoryName}>
-                <div className="vfm-sec-head">
+                <div className="vfm-sec-pill">
                   <div className="vfm-sec-icon">{emoji}</div>
                   <span className="vfm-sec-title">{categoryName}</span>
                   {note && <span className="vfm-choose-badge">{note}</span>}
                 </div>
 
-                {/* Veg */}
-                {vegItems.length > 0 && (
-                  <>
-                    <div className="vfm-sub-label">
-                      <Image src={vegIcon} alt="veg" width={13} height={13} />
-                      <span className="vfm-sub-label-text">Vegetarian</span>
-                    </div>
-                    {vegItems.map((item) => (
-                      <div key={item._id} className="vfm-dish-item">
-                        <span className="vfm-dish-text">{item.title}</span>
-                      </div>
-                    ))}
-                  </>
-                )}
+                <DishGroup
+                  groupKey={vegKey}
+                  label="VEGETARIAN"
+                  dotClass="vfm-dot--veg"
+                  items={vegItems}
+                  expanded={!!expandedGroups[vegKey]}
+                  onToggle={toggleGroup}
+                />
 
-                {/* Non-Veg */}
-                {nonVegItems.length > 0 && (
-                  <>
-                    <div className="vfm-sub-label">
-                      <Image src={nonVegIcon} alt="nonveg" width={13} height={13} />
-                      <span className="vfm-sub-label-text">Non Vegetarian</span>
-                    </div>
-                    {nonVegItems.map((item) => (
-                      <div key={item._id} className="vfm-dish-item">
-                        <span className="vfm-dish-text">{item.title}</span>
-                      </div>
-                    ))}
-                  </>
-                )}
+                <DishGroup
+                  groupKey={nonVegKey}
+                  label="NON VEGETARIAN"
+                  dotClass="vfm-dot--nonveg"
+                  items={nonVegItems}
+                  expanded={!!expandedGroups[nonVegKey]}
+                  onToggle={toggleGroup}
+                />
               </div>
             );
           })}
@@ -226,7 +287,7 @@ const VenueFoodModal = ({ data, onClose, categories = [] }) => {
           {/* Add-ons */}
           {data?.packageAddons?.length > 0 && (
             <div className="vfm-section">
-              <div className="vfm-sec-head">
+              <div className="vfm-sec-pill">
                 <div className="vfm-sec-icon">➕</div>
                 <span className="vfm-sec-title">Add-ons</span>
               </div>

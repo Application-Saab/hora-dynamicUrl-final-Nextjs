@@ -3,7 +3,7 @@
 import React from "react";
 import "./VenueFoodCard.css";
 import Image from "next/image";
-
+import arrowImage from "@/assets/venuelanding/venuearrow.svg"
 const VenueFoodCard = ({ item, onView }) => {
   const hasNonVeg = item.packageItems?.some((pi) => pi.foodType === "non-veg");
   const hasVeg = item.packageItems?.some((pi) => pi.foodType === "veg");
@@ -32,7 +32,7 @@ const VenueFoodCard = ({ item, onView }) => {
             {item.subTitle && (
               <p className="vfc-subtitle">{item.subTitle}</p>
             )}
-
+<div className="divider"></div>
             {/* Veg / Non-veg legend */}
             <div className="vfc-legend">
               {hasVeg && (
@@ -52,7 +52,7 @@ const VenueFoodCard = ({ item, onView }) => {
             {/* Price row */}
             <div className="vfc-priceRow">
           
-              <span className="vfc-price">{item.actualPrice} </span>
+              <span className="vfc-price">₹{item.actualPrice} </span>
               <span className="vfc-plusTax">/- Plus Taxes</span>
             </div>
 
@@ -68,15 +68,8 @@ const VenueFoodCard = ({ item, onView }) => {
               }}
             >
               View Menu &amp; Full Details
-              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-                <path
-                  d="M3 8H13M13 8L9 4M13 8L9 12"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+             <Image className=""
+             src={arrowImage}/>
             </button>
           </div>
 
