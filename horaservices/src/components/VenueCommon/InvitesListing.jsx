@@ -20,6 +20,9 @@ const BATCH_SIZE = 10;
 const getCacheKey = (eventType, venueType, guestCapacity, city) =>
   `venue-list-${JSON.stringify({ eventType, venueType, guestCapacity, city })}`;
 
+// City hai to city-scoped route, nahi to purana default route
+// City hai to city-scoped route, nahi to purana default route
+const getVenueRoute = (city) => (city ? `/${city.toLowerCase()}/venue-list/venue` : "/venue-list/venue");
 const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
   const cacheKey = getCacheKey(eventType, venueType, guestCapacity, city);
   const cached = getPageCache(cacheKey);
@@ -162,7 +165,7 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                   className="see-photos-btn"
                   onClick={() =>
                     router.push({
-                      pathname: "/venue-list/venue",
+                      pathname: getVenueRoute(city),
                       query: {
                         venueid: v._id,
                         guests: v.guestCapacity || "",
@@ -274,7 +277,7 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                   className="venue-menu-btn"
                   onClick={() =>
                     router.push({
-                      pathname: "/venue-list/venue",
+                      pathname: getVenueRoute(city),
                       query: {
                         venueid: v._id,
                         guests: v.guestCapacity || "",
@@ -292,7 +295,6 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
           );
         })}
       </div>
-.
     </>
   );
 };

@@ -6,7 +6,7 @@
 .vsb-wrap {
   background: #fff;
   width: clamp(300px, calc(380 * 100vw / 393), 480px);
-  margin: -30px auto 10px auto;
+  margin: -20px auto 10px auto;
   padding: clamp(6px, calc(9 * 100vw / 393), 11px);
   border-radius: clamp(14px, calc(18 * 100vw / 393), 22px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);

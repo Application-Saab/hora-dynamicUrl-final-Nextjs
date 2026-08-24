@@ -76,10 +76,8 @@ const isRouteCityAllowed = (strippedPath) => {
   const p = strippedPath || "/";
 
   return CITY_ALLOWED_ROUTES.some((route) => {
-    if (p.startsWith(route)) return true;
-
-    const localityPrefixed = new RegExp(`^/[^/]+${route}(?:/|$)`);
-    return localityPrefixed.test(p);
+    const exactRegex = new RegExp(`^${route}/?$`, "i");
+    return exactRegex.test(p);
   });
 };
 

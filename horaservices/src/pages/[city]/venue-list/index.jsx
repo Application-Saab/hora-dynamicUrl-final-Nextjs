@@ -10,10 +10,11 @@ import VenueCircle from "@/components/Venue/VenueCircle";
 import VenueList from "@/components/venueCommon/InvitesListing";
 import VenueListHeader from "@/components/Venue/VenueListHeader";
 import VenueFeatures from "@/components/Venue/VenueFeatures";
-import ReviewSlider from "@/components/ReviewSection";
+// import ReviewSlider from "@/components/ReviewSection";
 import "@/pages/venue-list/venue/venue.css";
-import { venueReviews } from "@/utils/veneureviews";
+// import { venueReviews } from "@/utils/veneureviews";
 import { safeGetItem } from "@/utils/safeStorage";
+import VenueSearchBar from "@/components/Venue/Venuesearchbar";
 
 function getCitySlugFromPath(pathname) {
   if (!pathname) return "";
@@ -64,6 +65,7 @@ function VenuelandCityPage() {
   const [activeEvent, setActiveEvent] = useState("Birthday");
   const [activeVenueType, setActiveVenueType] = useState("all");
   const [guestCapacity, setGuestCapacity] = useState("");
+  const [searchText, setSearchText] = useState("");
 
   const hasRedirectedRef = useRef(false);
 
@@ -93,28 +95,40 @@ function VenuelandCityPage() {
       <div className="venue-container">
         <div style={{ position: "relative" }}>
           <TopBanner image={venueTopBanner} alt="Venue" />
-          <VenueCategories active={activeEvent} onSelect={setActiveEvent} />
+          {/* <VenueCategories active={activeEvent} onSelect={setActiveEvent} /> */}
+          <VenueSearchBar
+            searchValue={searchText}
+            onSearchChange={setSearchText}
+            eventType={activeEvent}
+            onEventTypeChange={setActiveEvent}
+            guestCapacity={guestCapacity}
+            onGuestCapacityChange={setGuestCapacity}
+            onMoreFilterClick={() => {
+              /* open your filter modal here */
+            }}
+          />
         </div>
 
-        <VenueBannertitle eventType={activeEvent} />
+        {/* <VenueBannertitle eventType={activeEvent} /> */}
         <VenueCircle active={activeVenueType} onSelect={setActiveVenueType} />
 
-        <VenueListHeader
+        {/* <VenueListHeader
           eventType={activeEvent}
           value={guestCapacity}
           onChange={setGuestCapacity}
-        />
+        /> */}
 
         <VenueList
           eventType={activeEvent}
           venueType={activeVenueType}
           guestCapacity={guestCapacity}
           city={city}
+          search={searchText}
         />
 
         <VenueFeatures />
 
-        <div
+        {/* <div
           style={{
             margin: "clamp(16px, calc((20 / 393) * 100vw), 24px) 0",
             maxWidth: "480px",
@@ -126,14 +140,14 @@ function VenuelandCityPage() {
             <p className="trusted-subtitle">Real experiences From Happy Customers</p>
           </div>
           <ReviewSlider reviews={venueReviews} />
-        </div>
+        </div> */}
       </div>
 
       <LoginModal
         isOpen={showHostLoginModal}
         onClose={() => {
           setShowHostLoginModal(false);
-          router.replace("/venue-list");
+          router.replace(`/${citySlug}/venue-list`);
         }}
       />
     </>

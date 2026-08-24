@@ -239,3 +239,9 @@ font-size: clamp(9.88px, 2.97vw, 11.69px);
 .vfm-view-all-chevron--up {
   transform: rotate(180deg);
 }
+.vfm-sec-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+}

@@ -3,7 +3,7 @@
 import React from "react";
 import "./VenueFoodCard.css";
 import Image from "next/image";
-import arrowImage from "@/assets/venuelanding/venuearrow.svg"
+import arrowImage from "@/assets/venuelanding/arrowpackage.svg"
 const VenueFoodCard = ({ item, onView }) => {
   const hasNonVeg = item.packageItems?.some((pi) => pi.foodType === "non-veg");
   const hasVeg = item.packageItems?.some((pi) => pi.foodType === "veg");
