@@ -1,5 +1,6 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import cityNameToSlug from "@/utils/cityNameToSlug";
 import { BASE_URL } from "./apiconstants";
 import { fetchWithError } from "./fetchWithError";
@@ -8,13 +9,33 @@ import { safeGetItem, safeSetItem } from "./safeStorage";
 const CityContext = createContext({
   selectedCitySlug: "",
   selectedCityName: "",
+  showCityModal: false,
+  isPillVisibleRoute: false,
+  setShowCityModal: () => {
+    console.warn("useCity() called outside <CityProvider> — wrap this component in CityProvider.");
+  },
+  selectCity: () => {
+    console.warn("useCity() called outside <CityProvider> — wrap this component in CityProvider.");
+  },
+  dismissCityModal: () => {
+    console.warn("useCity() called outside <CityProvider> — wrap this component in CityProvider.");
+  },
+  syncSelectedCity: () => {
+    console.warn("useCity() called outside <CityProvider> — wrap this component in CityProvider.");
+  },
 });
 
 const NOT_SELECTED = "NOT_SELECTED";
+const CITY_LIST = [...new Set(Object.values(cityNameToSlug))];
+const CITY_PATH_REGEX = new RegExp(`^/(${CITY_LIST.join("|")})(?=/|$)`, "i");
 
-// Flag jo batayega ki user-city API call life-time me ek baar ho chuki hai ya nahi.
-// Isse refresh par dubara call nahi hoga.
+// Flag jo batayega ki user-city (tracking) API call life-time me ek baar ho chuki hai ya nahi.
+// Isse refresh par dubara call nahi hoga. YE PURA FLOW ROUTE-INDEPENDENT HAI — jaisa tha waisa hi.
 const CITY_API_DONE_FLAG = "cityApiCallDone";
+
+// City URL/pill/modal logic SIRF venue-list ke liye active hai.
+// Tracking API is se koi lena dena nahi rakhti — wo har page par apna kaam karti hai.
+const CITY_ALLOWED_ROUTES = ["/venue-list"];
 
 const slugToCityName = {
   delhi: "Delhi",
@@ -35,6 +56,31 @@ const slugToCityName = {
   goa: "Goa",
   pune: "Pune",
   others: "Others",
+};
+
+const stripAllCitySegments = (path) => {
+  let result = path || "/";
+  let match;
+
+  while ((match = result.match(CITY_PATH_REGEX))) {
+    result = result.slice(match[0].length);
+    if (!result.startsWith("/")) {
+      result = "/" + result;
+    }
+  }
+
+  return result;
+};
+
+const isRouteCityAllowed = (strippedPath) => {
+  const p = strippedPath || "/";
+
+  return CITY_ALLOWED_ROUTES.some((route) => {
+    if (p.startsWith(route)) return true;
+
+    const localityPrefixed = new RegExp(`^/[^/]+${route}(?:/|$)`);
+    return localityPrefixed.test(p);
+  });
 };
 
 const getOrCreateVisitorId = () => {
@@ -121,8 +167,58 @@ const fetchCityFromServer = async () => {
 };
 
 export const CityProvider = ({ children }) => {
-  const [selectedCitySlug, setSelectedCitySlug] = useState("");
+  const router = useRouter();
+  const nextPathname = usePathname();
 
+  const [pathname, setPathname] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.location.pathname;
+    }
+    return nextPathname || "/";
+  });
+
+  useEffect(() => {
+    if (!nextPathname) return;
+    setPathname(nextPathname);
+  }, [nextPathname]);
+
+  useEffect(() => {
+    const onPopState = () => {
+      setPathname(window.location.pathname);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+    };
+  }, []);
+
+  const setUrlSilently = useCallback(
+    (newPath, { replace = false } = {}) => {
+      const target = newPath || "/";
+      const navigate = replace ? router.replace : router.push;
+      navigate(target, { scroll: false });
+    },
+    [router]
+  );
+
+  // Lazy-init: agar localStorage mein pehle se city save hai, to usse turant
+  // pick karo — isse refresh par modal ek pal ke liye bhi flash/khulta nahi.
+  const [selectedCitySlug, setSelectedCitySlug] = useState(() => {
+    if (typeof window === "undefined") return "";
+    return safeGetItem("selectedCity") || "";
+  });
+
+  const [showCityModal, setShowCityModal] = useState(false);
+
+  // Batata hai ki tracking flow (background city-resolve) apna kaam kar chuka
+  // hai ya nahi. Isse pehle URL-inject/modal-open decide nahi karenge — warna
+  // refresh par galat waqt par modal flash ho sakta hai.
+  const [citySourceReady, setCitySourceReady] = useState(false);
+
+  /* ============================================================
+   * TRACKING FLOW — BILKUL WAISA HI, ROUTE-CHECK KE BINA
+   * (isko hath mat lagao, ye jaisa tha waisa hi chal raha hai)
+   * ============================================================ */
   useEffect(() => {
     // Agar pehle hi (kisi bhi previous load/refresh me) API call ho chuki hai,
     // to sirf saved slug (agar hai) restore karo aur dubara API mat maaro.
@@ -132,6 +228,7 @@ export const CityProvider = ({ children }) => {
       if (savedSlug && savedSlug !== NOT_SELECTED) {
         setSelectedCitySlug(savedSlug);
       }
+      setCitySourceReady(true);
       return;
     }
 
@@ -155,6 +252,8 @@ export const CityProvider = ({ children }) => {
 
       // Ab flag set kar do — isse aage kabhi bhi (refresh pe bhi) dubara call nahi hogi.
       safeSetItem(CITY_API_DONE_FLAG, "true");
+
+      if (!cancelled) setCitySourceReady(true);
     };
 
     resolveCityOnce();
@@ -164,10 +263,109 @@ export const CityProvider = ({ children }) => {
     };
   }, []);
 
+  /* ============================================================
+   * UI + URL LAYER — SIRF venue-list PAR ACTIVE
+   * Tracking flow se independent hai, usko touch nahi karta.
+   * ============================================================ */
+  const pathWithoutCity = stripAllCitySegments(pathname || "/");
+  const isPillVisibleRoute = isRouteCityAllowed(pathWithoutCity);
+
+  useEffect(() => {
+    if (!pathname) return;
+
+    if (!isPillVisibleRoute) {
+      setShowCityModal(false);
+      return;
+    }
+
+    // Case 1: URL mein pehle se city hai (e.g. /delhi/venue-list) — usi ko source of truth maano.
+    const match = pathname.match(CITY_PATH_REGEX);
+    if (match && match[1]) {
+      const citySlugFromUrl = match[1].toLowerCase();
+      setSelectedCitySlug(citySlugFromUrl);
+      safeSetItem("selectedCity", citySlugFromUrl);
+      setShowCityModal(false);
+      return;
+    }
+
+    // Case 2: URL mein city nahi hai. Jab tak tracking flow apna resolve
+    // complete na kar le, kuch mat karo (na modal, na redirect) — warna
+    // refresh par galat waqt par modal flash ho sakta hai.
+    if (!citySourceReady) return;
+
+    // Case 3: City pata hai (localStorage/state se) — URL mein silently inject karo.
+    if (selectedCitySlug && selectedCitySlug !== NOT_SELECTED) {
+      const stripped = stripAllCitySegments(pathname);
+      const newPath = `/${selectedCitySlug}${stripped === "/" ? "" : stripped}`;
+
+      if (newPath !== pathname) {
+        setUrlSilently(newPath, { replace: true });
+      }
+      setShowCityModal(false);
+      return;
+    }
+
+    // Case 4: City pata hi nahi hai — user se poochna padega.
+    setShowCityModal(true);
+  }, [pathname, isPillVisibleRoute, citySourceReady, selectedCitySlug, setUrlSilently]);
+
+  const selectCity = useCallback(
+    (cityName) => {
+      setShowCityModal(false);
+
+      if (!cityName) {
+        safeSetItem("selectedCity", NOT_SELECTED);
+        setSelectedCitySlug(NOT_SELECTED);
+        saveCityToServer(NOT_SELECTED);
+
+        const restOfPath = stripAllCitySegments(pathname);
+        setUrlSilently(restOfPath || "/");
+        return;
+      }
+
+      const slug = cityNameToSlug[cityName] || cityName.toLowerCase();
+      safeSetItem("selectedCity", slug);
+      setSelectedCitySlug(slug);
+      saveCityToServer(cityName);
+
+      const strippedPath = stripAllCitySegments(pathname);
+      const newPath = `/${slug}${strippedPath === "/" ? "" : strippedPath}`;
+      setUrlSilently(newPath);
+    },
+    [pathname, setUrlSilently]
+  );
+
+  const dismissCityModal = useCallback(() => {
+    setShowCityModal(false);
+  }, []);
+
+  // For places (e.g. Footer city links) that navigate via a plain <Link>
+  // straight to a specific city+page URL. This only keeps the selected-city
+  // state/localStorage/API in sync — it does NOT touch the URL.
+  const syncSelectedCity = useCallback((cityName) => {
+    if (!cityName) return;
+
+    const slug = cityNameToSlug[cityName] || cityName.toLowerCase();
+    safeSetItem("selectedCity", slug);
+    setSelectedCitySlug(slug);
+    saveCityToServer(cityName);
+  }, []);
+
   const selectedCityName = slugToCityName[selectedCitySlug] || "";
 
   return (
-    <CityContext.Provider value={{ selectedCitySlug, selectedCityName }}>
+    <CityContext.Provider
+      value={{
+        selectedCitySlug,
+        selectedCityName,
+        showCityModal,
+        setShowCityModal,
+        selectCity,
+        dismissCityModal,
+        syncSelectedCity,
+        isPillVisibleRoute,
+      }}
+    >
       {children}
     </CityContext.Provider>
   );
