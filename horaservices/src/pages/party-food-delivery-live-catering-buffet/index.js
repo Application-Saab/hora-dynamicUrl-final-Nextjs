@@ -4,7 +4,7 @@ import "@/components/CateringCard/catering.css";
 import CateringBanner from "@/components/CateringBanner";
 import CateringBannerImage from "@/assets/CateringBanner.webp";
 import livebannerImage from "@/assets/livebanner.webp";
-import bulkBannerImage from "@/assets/BulkBanner.webp"
+import bulkBannerImage from "@/assets/BulkBanner.webp";
 import BrandBannerIMG from "@/assets/BrandBannerIMG.webp";
 import CateringTabs from "@/components/CateringTabs";
 import BrandBanner from "@/components/BrandBanner";
@@ -21,42 +21,65 @@ import { useRouter } from "next/router";
 import CardSkeleton from "@/components/CardSkeleton";
 import { getMealTypes, getPackages } from "@/services/cateringService";
 const brandItems = [
-  { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
-  { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
-  { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
+  {
+    img: HappyCustomerIMG,
+    alt: "Happy Customers",
+    bold: "1L+ HAPPY",
+    sub: "CUSTOMERS",
+  },
+  {
+    img: GoogleRatingIMG,
+    alt: "Google Rating",
+    bold: "4.8+ GOOGLE",
+    sub: "RATING",
+  },
+  {
+    img: SocialMediaIMG,
+    alt: "Social Media",
+    bold: "OUR",
+    sub: "SOCIAL MEDIA",
+  },
   { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
 ];
-const FoodDelivery = () => {
+const FoodDelivery = ({
+  initialPackages,
+  initialMealList,
+  initialMealTypes,
+  initialPackageType,
+  initialFoodType,
+}) => {
   const router = useRouter();
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [foodType, setFoodType] = useState("veg");
-  const [packageType, setPackageType] = useState(null);
+  const [data, setData] = useState(initialPackages || []);
+  const [loading, setLoading] = useState(false); // initial false kyunki server se aa gaya
+  const [foodType, setFoodType] = useState(initialFoodType || "veg");
+  const [packageType, setPackageType] = useState(initialPackageType);
   const [selectedPackage, setSelectedPackage] = useState(null);
-  const [mealTypes, setMealTypes] = useState([]);
-  const [mealList, setMealList] = useState([]);
-useEffect(() => {
-  const handleBack = () => {
-    if (selectedPackage) {
-      setSelectedPackage(null); // 👈 modal close
-    }
-  };
+  const [mealTypes, setMealTypes] = useState(initialMealTypes || []);
+  const [mealList, setMealList] = useState(initialMealList || []);
 
-  window.addEventListener("popstate", handleBack);
-
-  return () => {
-    window.removeEventListener("popstate", handleBack);
-  };
-}, [selectedPackage]);
   useEffect(() => {
-  if (!router.isReady) return;
+    const handleBack = () => {
+      if (selectedPackage) {
+        setSelectedPackage(null); // 👈 modal close
+      }
+    };
 
-  const type = router.query.type;
+    window.addEventListener("popstate", handleBack);
 
-  setPackageType(type === "liveCatering" ? "liveCatering" : "bulkFood");
-}, [router.isReady, router.query.type]);
+    return () => {
+      window.removeEventListener("popstate", handleBack);
+    };
+  }, [selectedPackage]);
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const type = router.query.type;
+
+    setPackageType(type === "liveCatering" ? "liveCatering" : "bulkFood");
+  }, [router.isReady, router.query.type]);
   const handlePackageChange = (type) => {
     setPackageType(type);
+    setLoading(true);
 
     router.push(
       {
@@ -64,47 +87,54 @@ useEffect(() => {
         query: { ...router.query, type },
       },
       undefined,
-      { shallow: true }
+      { shallow: true },
     );
+
+    // Client fetch
+    getPackages(type, foodType).then((packages) => {
+      setData(packages);
+      setLoading(false);
+    });
   };
-  useEffect(() => {
-  const fetchData = async () => {
-    const meals = await getMealTypes(foodType);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const meals = await getMealTypes(foodType);
 
-    setMealList(meals);
+  //     setMealList(meals);
 
-    const formattedMeals = meals
-      .filter(item => item?.mealObject?._id)
-      .map(item => ({
-        _id: item.mealObject._id,
-        name: item.mealObject.name
-      }));
+  //     const formattedMeals = meals
+  //       .filter((item) => item?.mealObject?._id)
+  //       .map((item) => ({
+  //         _id: item.mealObject._id,
+  //         name: item.mealObject.name,
+  //       }));
 
-    setMealTypes(formattedMeals);
+  //     setMealTypes(formattedMeals);
+  //   };
+
+  //   fetchData();
+  // }, [foodType]);
+  // useEffect(() => {
+  //   if (!packageType) return;
+
+  //   const fetchData = async () => {
+  //     setLoading(true);
+
+  //     const packages = await getPackages(packageType, foodType);
+  //     setData(packages);
+
+  //     setLoading(false);
+  //   };
+
+  //   fetchData();
+  // }, [packageType, foodType]);
+
+  
+  const handleCloseModal = () => {
+    setSelectedPackage(null);
   };
-
-  fetchData();
-}, [foodType]);
-useEffect(() => {
-  if (!packageType) return;
-
-  const fetchData = async () => {
-    setLoading(true);
-
-    const packages = await getPackages(packageType, foodType);
-    setData(packages);
-
-    setLoading(false);
-  };
-
-  fetchData();
-}, [packageType, foodType]);
-const handleCloseModal = () => {
-  setSelectedPackage(null);
-};
   return (
     <div className="catering-page">
-
       {/* Banner */}
       <CateringBanner image={CateringBannerImage} />
 
@@ -116,9 +146,7 @@ const handleCloseModal = () => {
       {/* 🔥 FIRST GRID */}
       <div className="catering-grid">
         {loading ? (
-          [...Array(4)].map((_, index) => (
-            <CardSkeleton key={index} />
-          ))
+          [...Array(4)].map((_, index) => <CardSkeleton key={index} />)
         ) : data.length > 0 ? (
           data.slice(0, 4).map((item, index) => (
             <CateringCard
@@ -133,8 +161,10 @@ const handleCloseModal = () => {
               price={item.price}
               oldPrice={item.oldPrice || item.actualPrice}
               dish={item.dish || item.dishCount}
-             onView={() => { setSelectedPackage(item);
-              window.history.pushState(null, "");}}
+              onView={() => {
+                setSelectedPackage(item);
+                window.history.pushState(null, "");
+              }}
             />
           ))
         ) : (
@@ -145,9 +175,7 @@ const handleCloseModal = () => {
       {/* 🔥 BANNER (ALWAYS SHOW) */}
       <CateringBanner
         image={
-          packageType === "liveCatering"
-            ? livebannerImage
-            : bulkBannerImage
+          packageType === "liveCatering" ? livebannerImage : bulkBannerImage
         }
       />
 
@@ -168,9 +196,9 @@ const handleCloseModal = () => {
               oldPrice={item.oldPrice || item.actualPrice}
               dish={item.dish || item.dishCount}
               onView={() => {
-  setSelectedPackage(item);
-  window.history.pushState(null, "");
-}}
+                setSelectedPackage(item);
+                window.history.pushState(null, "");
+              }}
             />
           ))}
         </div>
@@ -179,16 +207,63 @@ const handleCloseModal = () => {
         <CateringModal
           data={selectedPackage}
           mealTypes={mealTypes}
-         onClose={handleCloseModal}
+          onClose={handleCloseModal}
           allDishes={mealList}
         />
       )}
       <CateringBanner image={BrandBannerIMG} />
-      <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
+      <BrandBanner
+        title="Excellence Backed by Happy Customers"
+        items={brandItems}
+      />
       <ReviewSlider reviews={balloonreviews} title="Customer Reviews" />
-
     </div>
   );
 };
 
 export default FoodDelivery;
+
+// ===================== SSR =====================
+export async function getServerSideProps(context) {
+  const { query } = context;
+
+  const packageType =
+    query.type === "liveCatering" ? "liveCatering" : "bulkFood";
+  const foodType = "veg"; // default SSR pe veg rakho (ya query se le sakte ho)
+
+  try {
+    // Parallel fetch
+    const [packages, meals] = await Promise.all([
+      getPackages(packageType, foodType),
+      getMealTypes(foodType),
+    ]);
+
+    const formattedMeals = (meals || [])
+      .filter((item) => item?.mealObject?._id)
+      .map((item) => ({
+        _id: item.mealObject._id,
+        name: item.mealObject.name,
+      }));
+
+    return {
+      props: {
+        initialPackages: packages || [],
+        initialMealList: meals || [],
+        initialMealTypes: formattedMeals,
+        initialPackageType: packageType,
+        initialFoodType: foodType,
+      },
+    };
+  } catch (error) {
+    console.error("SSR Error:", error);
+    return {
+      props: {
+        initialPackages: [],
+        initialMealList: [],
+        initialMealTypes: [],
+        initialPackageType: packageType,
+        initialFoodType: "veg",
+      },
+    };
+  }
+}

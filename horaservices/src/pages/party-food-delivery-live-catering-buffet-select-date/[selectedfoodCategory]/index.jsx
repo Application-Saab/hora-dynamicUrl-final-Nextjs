@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import styled from "styled-components";
-import { Modal, Button, Container, Row, Col, Spinner } from "react-bootstrap";
-// import { useLocation } from 'react-router-dom';
-// import { useNavigate } from 'react-router-dom';
+import { Button, Row, Col } from "react-bootstrap";
 import checkImage from "../../../assets/tick.jpeg";
 import orderWarning from "../../../assets/OrderWarning.png";
 import Popup from "../../../utils/popup";
@@ -19,30 +17,13 @@ import Image from "next/image";
 import "../../../css/chefOrder.css";
 import { safeGetItem } from "@/utils/safeStorage";
 
-const orangeColor = "#FF6F61";
-const defaultColor = "#B0BEC5";
-
-const FoodDeliveryselectDate = ({ history, currentStep }) => {
+const FoodDeliveryselectDate = () => {
   const router = useRouter();
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedTime, setSelectedTime] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
   const [activeTab, setActiveTab] = useState("right");
-  const [showAll, setShowAll] = useState(false);
-  const [burnerCount, setBurnerCount] = useState(0);
-  const [isWarningVisible, setWarningVisible] = useState(false);
-  const [isTimeValid, setTimeValid] = useState(null);
-  const [isDateValid, setDateValid] = useState(null);
-  const [errorText, setErrorText] = useState(null);
-  const [isDatePressed, setIsDatePressed] = useState(false);
-  const [isTimePressed, setIsTimePressed] = useState(false);
-  const [showCookingTime, setShowCookingTime] = useState(true);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedTab, setSelectedTab] = useState("Appliances");
-  const [isWarningVisibleForTotalAmount, setWarningVisibleForTotalAmount] = useState(false);
+  const [isWarningVisibleForTotalAmount, setWarningVisibleForTotalAmount] =
+    useState(false);
   const [isEventPushed, setIsEventPushed] = useState(false);
-  const phoneNumber = safeGetItem('mobileNumber');
+  const phoneNumber = safeGetItem("mobileNumber");
   const [isMobile, setIsMobile] = useState(false);
   const [deliveryCharges, setDeliveryCharges] = useState(400);
 
@@ -56,19 +37,19 @@ const FoodDeliveryselectDate = ({ history, currentStep }) => {
     selectedDishQuantities,
   } = router.query;
 
-   const { packageId } = router.query;
+  const { packageId } = router.query;
 
   const [peopleCount, setPeopleCount] = useState(10);
- const specialPackageIds = [
+  const specialPackageIds = [
     "69c373caa294881c6863251f",
     "69c372f3a294881c686323b5",
     "69c369f2a294881c6863148b",
-    "69c3697ca294881c68631381"
+    "69c3697ca294881c68631381",
   ];
 
   const isSpecialPackage = specialPackageIds.includes(String(packageId));
-  
- useEffect(() => {
+
+  useEffect(() => {
     let count = 10;
     if (selectedOption === "party-live-buffet-catering") {
       count = 25;
@@ -84,7 +65,7 @@ const FoodDeliveryselectDate = ({ history, currentStep }) => {
       selectedDishDictionary = JSON.parse(selectedDishDictionary);
       selectedDishQuantities = JSON.parse(selectedDishQuantities);
     } catch (error) {
-      console.error('Error parsing selectedDishDictionary:', error);
+      console.error("Error parsing selectedDishDictionary:", error);
     }
   } // Accessing subCategory and itemName safely
   // selectedDishQuantities = Array.isArray(selectedDishQuantities) ? selectedDishQuantities : [];
@@ -92,207 +73,79 @@ const FoodDeliveryselectDate = ({ history, currentStep }) => {
   const [dishPrice, setDishPrice] = useState(selectedDishPrice);
 
   const selectedMealList = Object.values(data || {})
-  .filter(dish => dish) 
-    .map(dish => ({
-        name: dish.name,
-        image: dish.image,
-        price: Number(dish.cuisineArray[0]),
-        id: dish._id,
-        mealId: dish.mealId
+    .filter((dish) => dish)
+    .map((dish) => ({
+      name: dish.name,
+      image: dish.image,
+      price: Number(dish.cuisineArray[0]),
+      id: dish._id,
+      mealId: dish.mealId,
+    }));
+
+  const dishObject = selectedMealList.filter(
+    (x) => x.name !== "Tawa Rotis" && x.name !== "Rumali Rotis",
+  );
+
+  const dishCount = dishObject.filter(
+    (x) =>
+      x.mealId == "63f1b6b7ed240f7a09f7e2de" ||
+      x.mealId == "63f1b39a4082ee76673a0a9f" ||
+      x.mealId == "63edc4757e1b370928b149b3",
+  ).length;
+  function calculateDiscountPercentage(peopleCount) {
+    if (peopleCount <= 39) {
+      return 1;
+    } else if (peopleCount >= 40 && peopleCount <= 59) {
+      return 0.93;
+    } else if (peopleCount >= 60) {
+      return 0.9;
     }
-));
+  }
 
-const dishObject = selectedMealList.filter(x =>
-  x.name !== "Tawa Rotis" &&
-  x.name !== "Rumali Rotis"
-)
+  function calculateDiscountPercentageQuantity(dishCount) {
+    if (dishCount == 4) return 1.15;
+    else if (dishCount == 5) return 1;
+    else if (dishCount == 6 || dishCount == 7) return 0.85;
+    else if (dishCount == 8) return 0.75;
+    else if (dishCount == 9 || dishCount == 10) return 0.65;
+    else if (dishCount == 11) return 0.6;
+    else if (dishCount == 12 || dishCount == 13) return 0.5;
+    else if (dishCount == 14) return 0.47;
+    else if (dishCount == 15) return 0.45;
+    else return 1;
+  }
 
+  const validMealIds = [
+    "63f1b6b7ed240f7a09f7e2de",
+    "63f1b39a4082ee76673a0a9f",
+    "63edc4757e1b370928b149b3",
+  ];
 
-const dishCount = dishObject.filter(x => x.mealId == "63f1b6b7ed240f7a09f7e2de" || x.mealId == "63f1b39a4082ee76673a0a9f" || x.mealId == "63edc4757e1b370928b149b3").length;
-console.log(dishCount)
-    function calculateDiscountPercentage(peopleCount) {
-      console.log(peopleCount)
-      if (peopleCount <= 39){
-        return 1
-      }
-      else if (peopleCount >= 40 && peopleCount <= 59){
-        return 0.93
-      }
-      else if (peopleCount >= 60){
-        return 0.9
-      }
+  const discountPercentagePrice = calculateDiscountPercentage(peopleCount);
+  const discountPercentageQuantity =
+    calculateDiscountPercentageQuantity(dishCount);
+
+  var newTotalPrice = 0;
+  var totalPrice = 0;
+  selectedMealList.forEach((dish) => {
+    if (
+      dish.name !== "Tawa Rotis" &&
+      dish.name !== "Rumali Rotis" &&
+      dish.mealId.some((id) => validMealIds.includes(id))
+    ) {
+      newTotalPrice += dish.price * peopleCount * discountPercentageQuantity;
+    } else {
+      newTotalPrice += dish.price * peopleCount;
     }
+    totalPrice = totalPrice + dish.price * peopleCount;
+  });
 
-    function calculateDiscountPercentageQuantity(dishCount){
-      if (dishCount == 4)
-        return 1.15
-      else if (dishCount == 5)
-        return 1
-      else if (dishCount == 6 || dishCount == 7)
-        return 0.85
-      else if (dishCount == 8)
-        return 0.75
-      else if (dishCount == 9 || dishCount == 10)
-        return 0.65
-      else if (dishCount == 11)
-        return 0.6
-      else if (dishCount == 12 || dishCount == 13)
-        return 0.5
-      else if (dishCount == 14)
-        return 0.47
-      else if (dishCount == 15)
-        return 0.45
-      else 
-        return 1
-    }
-
-
-    const validMealIds = [
-      "63f1b6b7ed240f7a09f7e2de",
-      "63f1b39a4082ee76673a0a9f",
-      "63edc4757e1b370928b149b3"
-    ];
-
-
-
-
-    console.log(selectedMealList)
-    
-    
-    const discountPercentagePrice = calculateDiscountPercentage(peopleCount);
-    
-    const discountPercentageQuantity = calculateDiscountPercentageQuantity(dishCount)
-
-    var newTotalPrice = 0
-    var totalPrice = 0
-    selectedMealList.forEach((dish) => {
-      console.log(dish)
-      if (
-        dish.name !== "Tawa Rotis" &&
-        dish.name !== "Rumali Rotis" &&
-        dish.mealId.some((id) => validMealIds.includes(id))
-      ) {
-        
-         newTotalPrice += dish.price * peopleCount * discountPercentageQuantity
-      }
-      else {
-        newTotalPrice += dish.price * peopleCount
-      }
-      totalPrice = totalPrice + dish.price * peopleCount
-    });
- 
-    newTotalPrice = newTotalPrice * discountPercentagePrice
-    var discountedPrice = selectedOption === 'party-live-buffet-catering' ?  ((newTotalPrice) * 1.1 + 6500).toFixed(0) : newTotalPrice.toFixed(0);
-    discountedPrice = parseFloat(discountedPrice) + deliveryCharges
-    console.log("111", newTotalPrice, discountedPrice)
-    console.log(totalPrice)
-
-  // Container for the whole component
-  const MainContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    padding: 0 10px;
-
-    @media (max-width: 768px) {
-      padding: 0;
-    }
-  `;
-
-  // Layout for heading and control section
-  const HeaderSection = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 10px;
-
-    @media (max-width: 768px) {
-      flex-direction: column;
-      align-items: flex-start;
-      margin-bottom: 20px;
-    }
-  `;
-
-  // Heading
-  const Heading = styled.p`
-    margin: 0;
-    font-size: 18px;
-    color: #3c3c3e;
-    font-weight: 500;
-
-    @media (max-width: 768px) {
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
-  `;
-
-  // Buttons container
-  const ControlButtons = styled.div`
-    display: flex;
-    align-items: center;
-
-    @media (max-width: 768px) {
-      width: 100%;
-      justify-content: space-between;
-      margin: 0;
-    }
-  `;
-
-  // Container for Range Input and Count Display
-  const RangeContainer = styled.div`
-    display: flex;
-    align-items: center;
-    width: 94%;
-    max-width: 920px;
-    margin-top: 10px;
-
-    @media (max-width: 768px) {
-      flex-direction: column;
-      width: 100%;
-    }
-  `;
-
-  // Range Input container
-  const RangeWrapper = styled.div`
-    flex: 1;
-    padding: 5px;
-    box-sizing: border-box;
-
-    @media (max-width: 768px) {
-      width: 100%;
-      margin: 0;
-    }
-  `;
-
-  // Text
-  const CountText = styled.p`
-    margin: 0 10px;
-    line-height: 23px;
-    font-size: 18px;
-    text-align: center;
-    color: black;
-
-    @media (max-width: 768px) {
-      font-size: 16px;
-    }
-  `;
-
-  // Display Count
-  const CountDisplay = styled.p`
-    margin-left: 20px;
-    line-height: 23px;
-    font-size: 18px;
-    text-align: center;
-    color: black;
-
-    @media (max-width: 768px) {
-      font-size: 16px;
-      margin-left: 0; // Adjust margin for mobile
-    }
-  `;
-  //different
+  newTotalPrice = newTotalPrice * discountPercentagePrice;
+  var discountedPrice =
+    selectedOption === "party-live-buffet-catering"
+      ? (newTotalPrice * 1.1 + 6500).toFixed(0)
+      : newTotalPrice.toFixed(0);
+  discountedPrice = parseFloat(discountedPrice) + deliveryCharges;
 
   const Container = styled.div`
     display: none;
@@ -306,7 +159,7 @@ console.log(dishCount)
 
     @media (max-width: 800px) {
       padding: 5px; // Reduce padding on smaller screens
-       display: flex;
+      display: flex;
     }
   `;
 
@@ -361,13 +214,13 @@ console.log(dishCount)
     button: "",
   });
 
- const minPeopleCount = useMemo(() => {
-  if (selectedOption === 'party-live-buffet-catering') return 25;
-  if (selectedOption === 'party-food-delivery') {
-    return isSpecialPackage ? 20 : 10;
-  }
-  return 10;
-}, [selectedOption, isSpecialPackage]);
+  const minPeopleCount = useMemo(() => {
+    if (selectedOption === "party-live-buffet-catering") return 25;
+    if (selectedOption === "party-food-delivery") {
+      return isSpecialPackage ? 20 : 10;
+    }
+    return 10;
+  }, [selectedOption, isSpecialPackage]);
   const maxPeopleCount = 100;
   const step = 5;
 
@@ -376,15 +229,14 @@ console.log(dishCount)
   };
 
   const decreasePeopleCount = () => {
-  if (peopleCount > minPeopleCount) {
-    setPeopleCount(peopleCount - 1);
-  } else {
-    alert(`Minimum guest count should be ${minPeopleCount}`);
-  }
-};
+    if (peopleCount > minPeopleCount) {
+      setPeopleCount(peopleCount - 1);
+    } else {
+      alert(`Minimum guest count should be ${minPeopleCount}`);
+    }
+  };
 
   const handleRangeChange = (e) => {
-    console.log(e.target.value);
     const value = parseInt(e.target.value, 10);
     setPeopleCount(value);
     setDishPrice(value * 49); // Assuming 49 is the unit price
@@ -394,44 +246,41 @@ console.log(dishCount)
     setWarningVisibleForTotalAmount(false);
   };
 
-const contactUsRedirection = () => {
+  const contactUsRedirection = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "food_livecateringselectdatepage_need_more_info_whatsapp_click",
+      eventCategory: "whatsapp_click",
+      eventAction: "click",
+      eventLabel: "need_more_info_section",
+    });
 
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: 'food_livecateringselectdatepage_need_more_info_whatsapp_click',
-    eventCategory: 'whatsapp_click',
-    eventAction: 'click',
-    eventLabel: 'need_more_info_section',
-  });
-
-  
-  window.open(
-    "https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20food%20delivery%20and%20live%20catering%20service",
-    "_blank"
-  );
-};
-
+    window.open(
+      "https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20food%20delivery%20and%20live%20catering%20service",
+      "_blank",
+    );
+  };
 
   const pushToGTM = () => {
     if (selectedMealList.length > 0 && selectedOption && !isEventPushed) {
-      const itemsData = selectedMealList.map(meal => 
-        `${meal.name}`
-      ).join(', ');
+      const itemsData = selectedMealList
+        .map((meal) => `${meal.name}`)
+        .join(", ");
       window.dataLayer = window.dataLayer || [];
-      let eventName = '';
-      let pageUrl = ''; 
-      let page_location = '';
-      let _url = '';
- if (selectedOption === 'party-food-delivery') {
-        eventName = 'party_food_delivery_checkout_page';
-        pageUrl = "/fooddelivery"; 
+      let eventName = "";
+      let pageUrl = "";
+      let page_location = "";
+      let _url = "";
+      if (selectedOption === "party-food-delivery") {
+        eventName = "party_food_delivery_checkout_page";
+        pageUrl = "/fooddelivery";
         page_location = "pagelocation";
-        _url = "_url";            
-      } else if (selectedOption === 'party-live-buffet-catering') {
-        eventName = 'party_live_buffet_catering_checkout_page';
+        _url = "_url";
+      } else if (selectedOption === "party-live-buffet-catering") {
+        eventName = "party_live_buffet_catering_checkout_page";
         pageUrl = "/livecatering";
         page_location = "pagelocation";
-        _url = "_url"; 
+        _url = "_url";
       }
 
       if (eventName) {
@@ -441,17 +290,12 @@ const contactUsRedirection = () => {
           UserPhoneNumber: phoneNumber,
           items: itemsData,
           page_location: page_location,
-          _url: _url
+          _url: _url,
         });
         setIsEventPushed(true);
-        console.log(window.dataLayer, "products data sent to GTM for event:", eventName);
-
       }
-
     }
-
   };
-
 
   const onContinueClick = () => {
     pushToGTM();
@@ -496,18 +340,18 @@ const contactUsRedirection = () => {
     //     }
     //     });
     // } else {
-      router.push({
-        pathname: "/party-food-delivery-live-catering-buffet-checkout",
-        query: {
-          from: window.location.pathname,
-          peopleCount: peopleCount,
-          selectedDeliveryOption: selectedOption,
-          selectedDishesFoodDelivery: JSON.stringify(data),
-          totalOrderAmount: totalOrderAmount,
-          selectedDishQuantities: JSON.stringify(selectedDishQuantities),
-          selectedOption: selectedOption,
-        }
-      });
+    router.push({
+      pathname: "/party-food-delivery-live-catering-buffet-checkout",
+      query: {
+        from: window.location.pathname,
+        peopleCount: peopleCount,
+        selectedDeliveryOption: selectedOption,
+        selectedDishesFoodDelivery: JSON.stringify(data),
+        totalOrderAmount: totalOrderAmount,
+        selectedDishQuantities: JSON.stringify(selectedDishQuantities),
+        selectedOption: selectedOption,
+      },
+    });
     // }
   };
 
@@ -516,8 +360,8 @@ const contactUsRedirection = () => {
       setIsMobile(window.innerWidth < 800);
     };
     handleResize(); // Check initial size
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const LeftTabContent = ({ selectedOption }) => {
@@ -544,7 +388,11 @@ const contactUsRedirection = () => {
                   width: "100%",
                 }}
               >
-                <Image src={checkImage} alt="Info" style={{ height: 13, width: 13, marginRight: 10 }} />
+                <Image
+                  src={checkImage}
+                  alt="Info"
+                  style={{ height: 13, width: 13, marginRight: 10 }}
+                />
                 <p
                   style={{
                     color: "#9252AA",
@@ -565,7 +413,11 @@ const contactUsRedirection = () => {
                   width: "100%",
                 }}
               >
-                <Image src={checkImage} alt="Info" style={{ height: 13, width: 13, marginRight: 10 }} />
+                <Image
+                  src={checkImage}
+                  alt="Info"
+                  style={{ height: 13, width: 13, marginRight: 10 }}
+                />
                 <p
                   style={{
                     color: "#9252AA",
@@ -586,7 +438,11 @@ const contactUsRedirection = () => {
                   width: "100%",
                 }}
               >
-                <Image src={checkImage} alt="Info" style={{ height: 13, width: 13, marginRight: 10 }} />
+                <Image
+                  src={checkImage}
+                  alt="Info"
+                  style={{ height: 13, width: 13, marginRight: 10 }}
+                />
                 <p
                   style={{
                     color: "#9252AA",
@@ -614,7 +470,11 @@ const contactUsRedirection = () => {
                   width: "100%",
                 }}
               >
-                <Image src={TickIcon} alt="tick" style={{ height: 16, width: 16 }} />
+                <Image
+                  src={TickIcon}
+                  alt="tick"
+                  style={{ height: 16, width: 16 }}
+                />
                 <p
                   style={{
                     color: "#9252AA",
@@ -634,7 +494,11 @@ const contactUsRedirection = () => {
                   width: "100%",
                 }}
               >
-                <Image src={TickIcon} alt="tick" style={{ height: 16, width: 16 }} />
+                <Image
+                  src={TickIcon}
+                  alt="tick"
+                  style={{ height: 16, width: 16 }}
+                />
                 <p
                   style={{
                     color: "#9252AA",
@@ -657,7 +521,11 @@ const contactUsRedirection = () => {
                   width: "100%",
                 }}
               >
-                <Image src={TickIcon} alt="tick" style={{ height: 16, width: 16 }} />
+                <Image
+                  src={TickIcon}
+                  alt="tick"
+                  style={{ height: 16, width: 16 }}
+                />
                 <p
                   style={{
                     color: "#9252AA",
@@ -677,7 +545,11 @@ const contactUsRedirection = () => {
                   width: "100%",
                 }}
               >
-                <Image src={TickIcon} alt="tick" style={{ height: 16, width: 16 }} />
+                <Image
+                  src={TickIcon}
+                  alt="tick"
+                  style={{ height: 16, width: 16 }}
+                />
                 <p
                   style={{
                     color: "#9252AA",
@@ -697,7 +569,11 @@ const contactUsRedirection = () => {
                   width: "100%",
                 }}
               >
-                <Image src={TickIcon} alt="tick" style={{ height: 16, width: 16 }} />
+                <Image
+                  src={TickIcon}
+                  alt="tick"
+                  style={{ height: 16, width: 16 }}
+                />
                 <p
                   style={{
                     color: "#9252AA",
@@ -738,7 +614,11 @@ const contactUsRedirection = () => {
                   width: "100%",
                 }}
               >
-                <Image src={TickIcon} alt="tick" style={{ height: 16, width: 16 }} />
+                <Image
+                  src={TickIcon}
+                  alt="tick"
+                  style={{ height: 16, width: 16 }}
+                />
                 <p
                   style={{
                     color: "#9252AA",
@@ -758,7 +638,11 @@ const contactUsRedirection = () => {
                   width: "100%",
                 }}
               >
-                <Image src={TickIcon} alt="tick" style={{ height: 16, width: 16 }} />
+                <Image
+                  src={TickIcon}
+                  alt="tick"
+                  style={{ height: 16, width: 16 }}
+                />
                 <p
                   style={{
                     color: "#9252AA",
@@ -778,7 +662,11 @@ const contactUsRedirection = () => {
                   width: "100%",
                 }}
               >
-                <Image src={TickIcon} alt="tick" style={{ height: 16, width: 16 }} />
+                <Image
+                  src={TickIcon}
+                  alt="tick"
+                  style={{ height: 16, width: 16 }}
+                />
                 <p
                   style={{
                     color: "#9252AA",
@@ -872,30 +760,38 @@ const contactUsRedirection = () => {
   };
 
   const RenderDishQuantity = ({ item }) => {
+    const dishObject = Object.values(data).filter(
+      (x) =>
+        x._id !== "641540d58c62c01319fcccae" &&
+        x._id !== "641540da8c62c01319fccef8",
+    );
 
-    console.log(item)
-    const dishObject = Object.values(data).filter(x =>
-      x._id !== "641540d58c62c01319fcccae" &&
-      x._id !== "641540da8c62c01319fccef8"
-    )
-
-    const itemCount = dishObject.filter(x =>
-      x.mealId[0] === "63f1b6b7ed240f7a09f7e2de" ||
-      x.mealId[0] === "63f1b39a4082ee76673a0a9f" ||
-      x.mealId[0] === "63edc4757e1b370928b149b3"
+    const itemCount = dishObject.filter(
+      (x) =>
+        x.mealId[0] === "63f1b6b7ed240f7a09f7e2de" ||
+        x.mealId[0] === "63f1b39a4082ee76673a0a9f" ||
+        x.mealId[0] === "63edc4757e1b370928b149b3",
     ).length;
 
-    const mainCourseItemCount = dishObject.filter(x => x.mealId[0] === "63f1b6b7ed240f7a09f7e2de").length;
-    const appetizerItemCount = dishObject.filter(x => x.mealId[0] === "63f1b39a4082ee76673a0a9f").length;
-    const breadItemCount = dishObject.filter(x => x.mealId[0] === "63edc4757e1b370928b149b3").length;
+    const mainCourseItemCount = dishObject.filter(
+      (x) => x.mealId[0] === "63f1b6b7ed240f7a09f7e2de",
+    ).length;
+    const appetizerItemCount = dishObject.filter(
+      (x) => x.mealId[0] === "63f1b39a4082ee76673a0a9f",
+    ).length;
+    const breadItemCount = dishObject.filter(
+      (x) => x.mealId[0] === "63edc4757e1b370928b149b3",
+    ).length;
 
     let quantity = item.quantity * peopleCount;
 
-    
-    if (item.name !== "Tawa Rotis" && item.name !== "Rumali Rotis" && item.id && (
-      (item.id[0] === "63f1b6b7ed240f7a09f7e2de") ||
-      (item.id[0] === "63f1b39a4082ee76673a0a9f") ||
-      (item.id[0] === "63edc4757e1b370928b149b3"))
+    if (
+      item.name !== "Tawa Rotis" &&
+      item.name !== "Rumali Rotis" &&
+      item.id &&
+      (item.id[0] === "63f1b6b7ed240f7a09f7e2de" ||
+        item.id[0] === "63f1b39a4082ee76673a0a9f" ||
+        item.id[0] === "63edc4757e1b370928b149b3")
     ) {
       if (itemCount == 4) {
         quantity = quantity * (1 + 0.15);
@@ -906,52 +802,95 @@ const contactUsRedirection = () => {
       } else if (itemCount === 9 || itemCount === 10) {
         quantity = quantity * (1 - 0.35);
       } else if (itemCount === 11) {
-        quantity = quantity * (1 - 0.40);
+        quantity = quantity * (1 - 0.4);
       } else if (itemCount == 12 || itemCount == 13) {
-        quantity = quantity * (1 - 0.50)
-    } else if (itemCount == 14) {
-        quantity = quantity * (1 - 0.53)
-    } else if (itemCount == 15) {
-        quantity = quantity * (1 - 0.55)
-    }
+        quantity = quantity * (1 - 0.5);
+      } else if (itemCount == 14) {
+        quantity = quantity * (1 - 0.53);
+      } else if (itemCount == 15) {
+        quantity = quantity * (1 - 0.55);
+      }
     }
 
     quantity = Math.round(quantity);
     let unit = item.unit;
     if (quantity >= 1000) {
       quantity = quantity / 1000;
-      if (unit === 'Gram') {
-        unit = 'KG';
-      } else if (unit === 'ml') {
-        unit = 'L';
-      }
-      else if (unit === 'Peices') {
-        unit = 'PCS';
+      if (unit === "Gram") {
+        unit = "KG";
+      } else if (unit === "ml") {
+        unit = "L";
+      } else if (unit === "Peices") {
+        unit = "PCS";
       }
     }
 
     return (
-      <div style={{ width: "23%", alignItems: 'center', borderRadius: 5, border: "1px solid #DADADA", flexDirection: 'row', padding: "10px", display: "flex", marginBottom: "20px" }} className='ingredientsec'>
-        <div style={{ marginLeft: 5, width: "45%", height: "auto", backgroundColor: '#F0F0F0', borderRadius: "10px", alignItems: 'center', padding: "5%", justifyContent: 'center', marginRight: 15 }} className='ingredientleftsec'>
-          <Image src={`https://horaservices.com/api/uploads/${item.image}`} alt={item.name} style={styles.image} width={100} height={60} />
+      <div
+        style={{
+          width: "23%",
+          alignItems: "center",
+          borderRadius: 5,
+          border: "1px solid #DADADA",
+          flexDirection: "row",
+          padding: "10px",
+          display: "flex",
+          marginBottom: "20px",
+        }}
+        className="ingredientsec"
+      >
+        <div
+          style={{
+            marginLeft: 5,
+            width: "45%",
+            height: "auto",
+            backgroundColor: "#F0F0F0",
+            borderRadius: "10px",
+            alignItems: "center",
+            padding: "5%",
+            justifyContent: "center",
+            marginRight: 15,
+          }}
+          className="ingredientleftsec"
+        >
+          <Image
+            src={`https://horaservices.com/api/uploads/${item.image}`}
+            alt={item.name}
+            style={styles.image}
+            width={100}
+            height={60}
+          />
         </div>
-        <div style={{ flexDirection: 'column', marginLeft: 1, width: 80 }} className='ingredientrightsec'>
-          <div style={{ fontSize: "80%", fontWeight: '500', color: '#414141' }} className='ingredientrightsecheading'>{item.name}</div>
-          {
-            selectedOption === 'party-food-delivery' ? 
-            <div style={{ fontSize: "110%", fontWeight: '700', color: '#9252AA' , textTransform:"uppercase"}} className='ingredientrightsecsibheading'>{quantity + ' ' + unit}</div>
-            :
-            null
-          }
+        <div
+          style={{ flexDirection: "column", marginLeft: 1, width: 80 }}
+          className="ingredientrightsec"
+        >
+          <div
+            style={{ fontSize: "80%", fontWeight: "500", color: "#414141" }}
+            className="ingredientrightsecheading"
+          >
+            {item.name}
+          </div>
+          {selectedOption === "party-food-delivery" ? (
+            <div
+              style={{
+                fontSize: "110%",
+                fontWeight: "700",
+                color: "#9252AA",
+                textTransform: "uppercase",
+              }}
+              className="ingredientrightsecsibheading"
+            >
+              {quantity + " " + unit}
+            </div>
+          ) : null}
         </div>
       </div>
     );
   };
 
-
   const RightTabContent = ({ selected_dish_quantities }) => {
     if (!selected_dish_quantities) {
-      // console.log('selectedDishQuantities is not an object:', selected_dish_quantities);
       return null;
     }
     return (
@@ -984,16 +923,18 @@ const contactUsRedirection = () => {
             }}
             className="dishes-selected"
           >
-            {Object.keys(selected_dish_quantities).length > 0 ? (
-              Object.keys(selected_dish_quantities)
-              .filter(key => selected_dish_quantities[key]?.isActive !== false)
-              .map((key, index) => (
-                <RenderDishQuantity
-                  key={index}
-                  item={selected_dish_quantities[key]}
-                />
-              ))
-            ) : null}
+            {Object.keys(selected_dish_quantities).length > 0
+              ? Object.keys(selected_dish_quantities)
+                  .filter(
+                    (key) => selected_dish_quantities[key]?.isActive !== false,
+                  )
+                  .map((key, index) => (
+                    <RenderDishQuantity
+                      key={index}
+                      item={selected_dish_quantities[key]}
+                    />
+                  ))
+              : null}
           </div>
         </div>
 
@@ -1025,19 +966,19 @@ const contactUsRedirection = () => {
         </div>
 
         <div>
-                  <div
-                    style={{
-                      fontSize: 11,
-                      color: "#9252AA",
-                      fontWeight: "400",
-                      padding: "10px 5px 0",
-                    }}
-                  >
-                    Dish quantities vary based on guest count and selections.
-                    Over 5 dishes: 550-700g per person. Under 5 dishes: 100g per
-                    person per dish
-                  </div>
-                </div>
+          <div
+            style={{
+              fontSize: 11,
+              color: "#9252AA",
+              fontWeight: "400",
+              padding: "10px 5px 0",
+            }}
+          >
+            Dish quantities vary based on guest count and selections. Over 5
+            dishes: 550-700g per person. Under 5 dishes: 100g per person per
+            dish
+          </div>
+        </div>
       </div>
     );
   };
@@ -1068,7 +1009,11 @@ const contactUsRedirection = () => {
           padding: "10px 0",
         }}
       >
-        <Image style={{ width: "20px", height: "20px", marginRight: "10px" }} src={InfoIcon} alt="info" />
+        <Image
+          style={{ width: "20px", height: "20px", marginRight: "10px" }}
+          src={InfoIcon}
+          alt="info"
+        />
         <p
           style={{
             color: "#676767",
@@ -1084,17 +1029,29 @@ const contactUsRedirection = () => {
 
       <Container className="range-bar">
         <Step active={true.toString()}>
-          <Image src={SelectDishes} alt="Select Dishes" style={isMobile ? styles.mobileDish : styles.webDish} />
+          <Image
+            src={SelectDishes}
+            alt="Select Dishes"
+            style={isMobile ? styles.mobileDish : styles.webDish}
+          />
           <Label active={true.toString()}>Select Dishes</Label>
         </Step>
         <Line active={true.toString()} />
         <Step>
-          <Image src={SelectDateTime} alt="Select Date & Time" style={isMobile ? styles.mobileDish : styles.webDish} />
+          <Image
+            src={SelectDateTime}
+            alt="Select Date & Time"
+            style={isMobile ? styles.mobileDish : styles.webDish}
+          />
           <Label active={true.toString()}>Select Date & Time</Label>
         </Step>
         <Line />
         <Step>
-          <Image src={SelectConfirmOrder} alt="Confirm Order" style={isMobile ? styles.mobileDish : styles.webDish} />
+          <Image
+            src={SelectConfirmOrder}
+            alt="Confirm Order"
+            style={isMobile ? styles.mobileDish : styles.webDish}
+          />
           <Label>Select Confirm Order</Label>
         </Step>
       </Container>
@@ -1122,7 +1079,11 @@ const contactUsRedirection = () => {
             className="peoplecontsec"
           >
             <div
-              style={{ display: "flex", flexDirection: "column", marginTop: 13 }}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                marginTop: 13,
+              }}
             >
               <div>
                 <div
@@ -1150,44 +1111,50 @@ const contactUsRedirection = () => {
                   >
                     How many people you are hosting?
                   </p>
-                  <div style={{ display:"flex" , justifyContent:"center" , alignItems:"center"}}>
-                  <button
-                    onClick={decreasePeopleCount}
-                    style={{ backgroundColor: "transparent", border: "none" }}
-                  >
-                    <Image
-                      src={MinusIcon}
-                      style={{ height: 25, width: 25, marginLeft: 5 }}
-                      alt="minus icon"
-                       className="quantiy-icon"
-                    />
-                  </button>
-                  <p
+                  <div
                     style={{
-                      marginLeft: 5,
-                      lineHeight: "23px",
-                      fontSize: 18,
-                      marginTop: "0",
-                      marginBottom:"0",
-                      width: 22,
-                      textAlign: "center",
-                      color: "black",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
-                    className="totalcount"
                   >
-                    {peopleCount}
-                  </p>
-                  <button
-                    onClick={increasePeopleCount}
-                    style={{ backgroundColor: "transparent", border: "none" }}
-                  >
-                    <Image
-                      src={PlusIcon}
-                      style={{ height: 25, width: 25, marginLeft: 5 }}
-                      alt="plus icon"
-                      className="quantiy-icon"
-                    />
-                  </button>
+                    <button
+                      onClick={decreasePeopleCount}
+                      style={{ backgroundColor: "transparent", border: "none" }}
+                    >
+                      <Image
+                        src={MinusIcon}
+                        style={{ height: 25, width: 25, marginLeft: 5 }}
+                        alt="minus icon"
+                        className="quantiy-icon"
+                      />
+                    </button>
+                    <p
+                      style={{
+                        marginLeft: 5,
+                        lineHeight: "23px",
+                        fontSize: 18,
+                        marginTop: "0",
+                        marginBottom: "0",
+                        width: 22,
+                        textAlign: "center",
+                        color: "black",
+                      }}
+                      className="totalcount"
+                    >
+                      {peopleCount}
+                    </p>
+                    <button
+                      onClick={increasePeopleCount}
+                      style={{ backgroundColor: "transparent", border: "none" }}
+                    >
+                      <Image
+                        src={PlusIcon}
+                        style={{ height: 25, width: 25, marginLeft: 5 }}
+                        alt="plus icon"
+                        className="quantiy-icon"
+                      />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1216,36 +1183,56 @@ const contactUsRedirection = () => {
                 </div>
               </div>
 
-
               <div className="d-flex flex-column flex-lg-row align-items-between justify-content-center  align-items-lg-center justify-content-lg-between">
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: " baseline",
-                justifyContent: " space-between",
-                paddingTop: 12,
-                width:"100%",
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: " baseline",
+                    justifyContent: " space-between",
+                    paddingTop: 12,
+                    width: "100%",
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 600,
+                      color: "#222",
+                      marginBottom: 0,
+                    }}
+                  >
+                    Need more info?
+                  </p>
 
-              }}
-            >
-              <p style={{ fontSize: 16, fontWeight: 600, color: "#222"   , marginBottom:0}}>
-                Need more info?
-              </p>
-           
-                <button className="button-cta whatsapp-cta"  onClick={contactUsRedirection}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle icon-cta"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" className="whatsapp-iconimg"></path></svg>Whatsapp</button>
-           
+                  <button
+                    className="button-cta whatsapp-cta"
+                    onClick={contactUsRedirection}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-message-circle icon-cta"
+                    >
+                      <path
+                        d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"
+                        className="whatsapp-iconimg"
+                      ></path>
+                    </svg>
+                    Whatsapp
+                  </button>
+                </div>
+              </div>
             </div>
-
-          </div>
-            </div>
-
-      
           </div>
 
-
-       
           <div
             style={{
               flexDirection: "row",
@@ -1292,8 +1279,6 @@ const contactUsRedirection = () => {
             </button>
             {renderTabContent(selectedDishQuantities)}
           </div>
-
-       
         </div>
       </div>
       <Row>

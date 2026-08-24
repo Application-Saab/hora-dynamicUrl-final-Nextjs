@@ -28,7 +28,7 @@ export const getMealTypes = async (foodType) => {
   }
 };
 
-// 🔥 Fetch Packages
+// Fetch Packages
 export const getPackages = async (packageType, foodType) => {
   try {
     let url = `${BASE_URL}/api/food-Package/getAllFoodPackageList?packageType=${packageType}`;
