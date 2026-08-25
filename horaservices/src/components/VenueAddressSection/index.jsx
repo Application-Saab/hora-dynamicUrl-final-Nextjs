@@ -8,8 +8,23 @@ const PHONE = "7338584828";
 const VenueAddressSection = ({ eventData, hideDateAndTime }) => {
   const venueName = eventData?.venueName;
   const address = eventData?.location; // location = full address string in your API
-  const whatsappLink = `https://wa.me/91${PHONE}`;
   const mapLink = eventData?.googleMapLink;
+
+  // 👇 NEW — pre-filled WhatsApp message
+  const buildWhatsappLink = () => {
+    const name = venueName || "this venue";
+    const lines = [
+      `Hi, I'm interested in *${name}*.`,
+      address ? `Address: ${address}` : null,
+      "",
+      "Please share more details and availability.",
+    ].filter(Boolean);
+
+    const message = encodeURIComponent(lines.join("\n"));
+    return `https://wa.me/91${PHONE}?text=${message}`;
+  };
+
+  const whatsappLink = buildWhatsappLink();
 
   if (!venueName && !address) return null;
 

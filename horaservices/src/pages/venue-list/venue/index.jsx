@@ -1,7 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import "./venue.css";
 import InviteActions from "@/components/wonderland/common/InviteActions";
-import CreateInviteModal from "@/components/wonderland/create-invite/CreateInviteModal";
 import VenueWallSection from "@/components/wonderland/event-wall/VenueWallSection";
 import { useRouter } from "next/router";
 import useApi from "@/hooks/useApi";
@@ -17,10 +16,7 @@ import TemplateRenderer from "@/components/wonderland/common/TemplateRenderer";
 import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templatecardSkeleton";
 import VenueFoodModal from "@/components/VenueFoodModal";
 import VenueFoodCard from "@/components/VenueFoodCard";
-// import { getFoodPackagesByEventId } from "@/utils/venuedatalist/eventFoodPackages.js";
 import TermsModal from "@/components/TermsModal";
-
-// import { getTermsByEventId } from "@/utils/venuedatalist/EventTerms";
 import useRsvpStatus from "@/hooks/useRsvpStatus";
 import { safeGetItem } from "@/utils/safeStorage";
 import VenueAddressSection from "@/components/VenueAddressSection";
@@ -28,12 +24,12 @@ import VenueHighlights from "@/components/VenueHighlights";
 import VenueCategoryPills from "@/components/VenueCategoryPills";
 import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
 import VenueNameOverlay from "@/components/VenueNameOverlay";
+import Head from "next/head";
 
 const VenuePage = () => {
   const router = useRouter();
-  const { venueid: queryVenueId } = router.query;
+  const { venueid: queryVenueId, city } = router.query;
   const [showTermsModal, setShowTermsModal] = useState(false);
-  // const venueTerms = getTermsByEventId(queryVenueId);
   const [eventDetails, setEventDetails] = useState(null);
   const [userData, setUserData] = useState({});
   const [fullPageLoader, setFullPageLoader] = useState(true);
@@ -42,7 +38,6 @@ const VenuePage = () => {
   const [loggedinUserId, setLoggedinUserId] = useState(
     safeGetItem("userID") || "",
   );
-  const [openCreateInviteModal, setOpenCreateInviteModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [pushRsvpClick, setPushRsvpClick] = useState(false);
   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
@@ -63,7 +58,6 @@ const VenuePage = () => {
   const { makeRequest: fetchVenuePackages } = useApi();
   const { guests, parking, rooms, halls: hallsParam } = router.query;
 
-  // eventDetails ke sath merge karo before passing to VenueHighlights
   const venueForHighlights = eventDetails
     ? {
         ...eventDetails,
@@ -73,16 +67,29 @@ const VenuePage = () => {
         hallType: eventDetails.hallType || (hallsParam ? JSON.parse(hallsParam) : []),
       }
     : null;
-  // Event ID ke hisaab se food packages
-  // const foodPackages = getFoodPackagesByEventId(queryVenueId);
+
+  // SEO title/description/canonical (city-aware)
+  const cityDisplay = city
+    ? city.charAt(0).toUpperCase() + city.slice(1)
+    : "";
+
+  const venueLocationLabel = eventDetails?.location || cityDisplay;
+
+  const venueTitle = eventDetails?.venueName
+    ? `${eventDetails.venueName}${venueLocationLabel ? `, ${venueLocationLabel}` : ""} — Book Now`
+    : "Venue Details & Booking";
+
+  const venueDescription = eventDetails?.venueName
+    ? `Book ${eventDetails.venueName}${venueLocationLabel ? ` in ${venueLocationLabel}` : ""} for your next event. Check packages, guest capacity & real photos.`
+    : "View venue packages, capacity, and photos for your next event.";
+
+  const canonicalUrl =
+    typeof window !== "undefined" ? window.location.href.split("?")[0] : "";
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!router.isReady) return;
 
-      if (!queryVenueId && loggedinUserId) {
-        setOpenCreateInviteModal(true);
-      }
       if (queryVenueId && !loggedinUserId) {
         setShowGuestLoginModal(true);
       }
@@ -92,14 +99,11 @@ const VenuePage = () => {
     return () => clearTimeout(timer);
   }, [router.isReady, queryVenueId, loggedinUserId]);
 
-  // ── Venue Categories: cache-first ──
   useEffect(() => {
     const cached = getPageCache("venue-categories");
     if (cached) {
       setVenueCategories(cached.data);
     }
-    // agar cache stale hai (ya mila hi nahi), useApi hook (upar wala `data`)
-    // apne aap fetch kar dega — neeche wala effect usse pakad lega
   }, []);
 
   useEffect(() => {
@@ -109,7 +113,6 @@ const VenuePage = () => {
     }
   }, [data]);
 
-  // ── Event/Venue Details: cache-first ──
   useLayoutEffect(() => {
     const fetchEventDetails = async () => {
       if (!queryVenueId || !loggedinUserId) return;
@@ -120,7 +123,7 @@ const VenuePage = () => {
       if (cached) {
         setEventDetails(cached.data);
         setFullPageLoader(false);
-        if (!cached.isStale) return; // fresh hai, refetch skip
+        if (!cached.isStale) return;
       }
 
       try {
@@ -135,7 +138,6 @@ const VenuePage = () => {
     fetchEventDetails();
   }, [queryVenueId, loggedinUserId]);
 
-  // ── User Data: cache-first ──
   useLayoutEffect(() => {
     const fetchUserDetails = async () => {
       if (!queryVenueId || !loggedinUserId) return;
@@ -162,7 +164,6 @@ const VenuePage = () => {
     fetchUserDetails();
   }, [queryVenueId, loggedinUserId]);
 
-  // ── Venue Packages: cache-first ──
   useLayoutEffect(() => {
     const fetchVenuePackage = async () => {
       if (!queryVenueId || !loggedinUserId) return;
@@ -222,8 +223,7 @@ const VenuePage = () => {
 
   // Back button handler
   useEffect(() => {
-    const anyModalOpen =
-      selectedPackage || showGuestLoginModal || openCreateInviteModal;
+    const anyModalOpen = selectedPackage || showGuestLoginModal;
 
     if (anyModalOpen) {
       window.history.pushState({ modalOpen: true }, "");
@@ -240,20 +240,11 @@ const VenuePage = () => {
         setShowGuestLoginModal(false);
         return;
       }
-      if (openCreateInviteModal) {
-        window.history.pushState({ modalOpen: true }, "");
-        setOpenCreateInviteModal(false);
-        return;
-      }
-      // Koi modal open nahi hai — browser ne already back navigate kar
-      // diya hai (popstate fire hone se pehle URL change ho chuka hota
-      // hai). Yahan router.back() call karna double-back cause karta
-      // hai, isliye kuch mat karo.
     };
 
     window.addEventListener("popstate", handleBack);
     return () => window.removeEventListener("popstate", handleBack);
-  }, [selectedPackage, showGuestLoginModal, openCreateInviteModal]);
+  }, [selectedPackage, showGuestLoginModal]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -264,31 +255,76 @@ const VenuePage = () => {
       }
     }, 1000);
   }, [eventDetails, loggedinUserId]);
+const PHONE = "7338584828"; 
 
+const handleEnquire = () => {
+  const venueName = eventDetails?.venueName || "this venue";
+  const location = eventDetails?.city || eventDetails?.location || "";
+  const capacity = eventDetails?.guestCapacity;
+  const price = eventDetails?.startingPrice;
+
+  const message = `Hi, I'm interested in *${venueName}*${location ? ` (${location})` : ""}.
+${capacity ? `Guest Capacity: ${capacity}` : ""}
+${price ? `Starting Price: ₹${price}/plate` : ""}
+
+Please share more details and availability.`;
+
+  const encodedMessage = encodeURIComponent(message.trim());
+  window.open(`https://wa.me/91${PHONE}?text=${encodedMessage}`, "_blank");
+};
   if (fullPageLoader) return <InvitePageFlashLoader />;
 
   return (
     <>
+      <Head>
+        <title>{venueTitle}</title>
+        <meta name="description" content={venueDescription} />
+        <meta name="robots" content="index, follow" />
+        {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+
+        <meta property="og:title" content={venueTitle} />
+        <meta property="og:description" content={venueDescription} />
+        <meta property="og:type" content="place" />
+        {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+        {eventDetails?.venueImageUrl && (
+          <meta property="og:image" content={eventDetails.venueImageUrl} />
+        )}
+        <meta property="og:locale" content="en_IN" />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={venueTitle} />
+        <meta name="twitter:description" content={venueDescription} />
+        {eventDetails?.venueImageUrl && (
+          <meta name="twitter:image" content={eventDetails.venueImageUrl} />
+        )}
+      </Head>
+
       <div className="invite-page">
         <div className="invite-page-container">
           {/* Template */}
-      <div className="invite-template-shell" style={{ position: "relative",marginTop: "12px" }}>
-  {fetchEventLoading ? (
-    <TemplatecardSkeleton width="100%" height="200px" borderRadius="10px" />
-  ) : (
-    <>
-    
-      <TemplateRenderer
-        fetchEventLoading={fetchEventLoading}
-        eventDetails={eventDetails}
-        orderDetails={eventDetails}
-        isHost={true}
-        isVenue={true}
-      />
-      <VenueNameOverlay venueName={eventDetails?.venueName} />
-    </>
-  )}
-</div>
+          <div
+            className="invite-template-shell"
+            style={{ position: "relative", marginTop: "12px" }}
+          >
+            {fetchEventLoading ? (
+              <TemplatecardSkeleton
+                width="100%"
+                height="200px"
+                borderRadius="10px"
+              />
+            ) : (
+              <>
+                <TemplateRenderer
+                  fetchEventLoading={fetchEventLoading}
+                  eventDetails={eventDetails}
+                  orderDetails={eventDetails}
+                  isHost={true}
+                  isVenue={true}
+                />
+                <VenueNameOverlay venueName={eventDetails?.venueName} />
+              </>
+            )}
+          </div>
 
           {/* Address + Google Map — date/time hide */}
           {(eventDetails?.location || eventDetails?.googleMapLink) && (
@@ -300,12 +336,14 @@ const VenuePage = () => {
             </div>
           )}
 
-
           {/* Food Packages */}
           {venuePackages.length > 0 && (
             <div
               className="whos-joining-container"
-              style={{ marginTop: "clamp(3px, 1.27vw, 5px)", marginBottom: "10px" }}
+              style={{
+                marginTop: "clamp(3px, 1.27vw, 5px)",
+                marginBottom: "10px",
+              }}
             >
               <div
                 style={{
@@ -333,9 +371,10 @@ const VenuePage = () => {
             <span className="venue-tax-line" />
           </div>
           <div className="enquire-card">
-            <VenueHighlights venue={venueForHighlights} onEnquire={() => {}} />
+           <VenueHighlights venue={venueForHighlights} onEnquire={handleEnquire} />
             <VenueCategoryPills categories={eventDetails?.venueType} />
           </div>
+
           {/* Celebration Wall */}
           <div className="event-wall-container">
             <h2 className="wall-heading mt-2 p-0" style={{ textAlign: "left" }}>
@@ -361,14 +400,6 @@ const VenuePage = () => {
         />
       )}
 
-      <CreateInviteModal
-        isOpen={openCreateInviteModal}
-        onClose={() => setOpenCreateInviteModal(false)}
-        getRedirectRoute={(data) => ({
-          pathname: "/venue-list/venue",
-          query: { venueid: data._id },
-        })}
-      />
       <LoginModal
         isOpen={showGuestLoginModal}
         onClose={() => setShowGuestLoginModal(false)}

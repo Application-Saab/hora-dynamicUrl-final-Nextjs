@@ -153,9 +153,10 @@ color:#6B6B6B;
 /* ── FOOTER / CTA ── */
 .vfc-footer {
  padding-top: clamp(5px, 1.99vw, 7.81px);
-padding-right: clamp(14px, 5.09vw, 20px);
+padding-right: clamp(6px, 1.99vw, 7.81px);
 padding-bottom: clamp(2px, 0.75vw, 2.96px);
-padding-left: clamp(14px, 5.09vw, 20px);
+padding-left: clamp(6px, 1.99vw, 7.81px);
+
 }
 .vfc-cta {
   width: 100%;

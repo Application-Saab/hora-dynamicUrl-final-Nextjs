@@ -40,7 +40,7 @@ const CITY_ALLOWED_ROUTES = ["/venue-list"];
 const slugToCityName = {
   delhi: "Delhi",
   mumbai: "Mumbai",
-  bengaluru: "Bengaluru",
+  bangalore: "Bangalore",
   noida: "Noida",
   ghaziabad: "Ghaziabad",
   gurugram: "Gurgaon",
