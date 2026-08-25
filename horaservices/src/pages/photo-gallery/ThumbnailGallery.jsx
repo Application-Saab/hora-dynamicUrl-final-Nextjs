@@ -59,6 +59,7 @@ const buildJustifiedRows = (thumbs, cw, targetH, gap) => {
     i = j;
   }
   return rows;
+  
 };
 
 const ThumbnailGallery = ({
