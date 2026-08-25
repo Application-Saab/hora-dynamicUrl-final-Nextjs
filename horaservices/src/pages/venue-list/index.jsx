@@ -12,7 +12,7 @@ import { useCity } from "@/utils/cityContext";
 import { safeGetItem } from "@/utils/safeStorage";
 import VenueSearchBar from "@/components/Venue/Venuesearchbar";
 import Head from "next/head";
-
+import { venueData } from "@/utils/venueCircleData.js";
 // URL path se city nikaalne ka helper (e.g. "/mumbai/venue-list" -> "mumbai")
 function getCitySlugFromPath(pathname) {
   if (!pathname) return "";
@@ -55,15 +55,20 @@ const VenuelandMainPage = () => {
   const cityForSEO = rawCitySlug
     ? rawCitySlug.charAt(0).toUpperCase() + rawCitySlug.slice(1)
     : selectedCityName;
+const selectedVenueCategory = venueData.find((v) => v.id === activeVenueType);
+const categoryLabel =
+  selectedVenueCategory && selectedVenueCategory.id !== "all"
+    ? selectedVenueCategory.label
+    : "";
+ 
+const pageTitle = cityForSEO
+  ? `HORA - ${categoryLabel ? `${categoryLabel} ` : ""}Party Venues in ${cityForSEO} | Prices, Packages & Photos`
+  : `HORA - ${categoryLabel ? `${categoryLabel} ` : ""}Party Venues Near You | Prices, Packages & Photos`;
 
-  const pageTitle = cityForSEO
-    ? `Best Banquet Halls & Party Venues in ${cityForSEO} | Book Instantly`
-    : "Best Banquet Halls & Party Venues Near You | Book Instantly";
-
-  const pageDescription = cityForSEO
-    ? `Explore top-rated banquet halls, resorts & party venues in ${cityForSEO}. Compare prices, check capacity, view real photos & book your event instantly.`
-    : "Explore top-rated banquet halls, resorts & party venues near you. Compare prices, check capacity, view real photos & book your event instantly.";
-
+const pageDescription = cityForSEO
+  ? `Explore the best ${categoryLabel ? `${categoryLabel.toLowerCase()} ` : ""}venues in ${cityForSEO} for birthdays, anniversaries, baby showers, kitty parties & more. Compare packages, prices and photos, and book online.`
+  : `Explore the best ${categoryLabel ? `${categoryLabel.toLowerCase()} ` : ""}venues near you for birthdays, anniversaries, baby showers, kitty parties & more. Compare packages, prices and photos, and book online.`;
+  
   useLayoutEffect(() => {
     let timer;
     if (isUserLoggedIn && loggedinUserId && !hasRedirectedRef.current) {
