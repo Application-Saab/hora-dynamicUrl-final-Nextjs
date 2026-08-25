@@ -84,8 +84,8 @@ export default function PhotographyPackageGridSlider({
   };
 
   return (
-    <section className="premium-slide-decor">
-      <div className="premium-slide-decor-header">
+    <section className="premium-slider-decor">
+      <div className="premium-slider-decor-header">
         <h2>{title}</h2>
       </div>
 
@@ -97,41 +97,41 @@ export default function PhotographyPackageGridSlider({
         <div className="premium-scroll">
           {products.length > 0 ? (
             products.map((item, i) => (
-              <div
-                key={item._id || i}
-                className="premium-card"
-                onClick={() => handleCardClick(item)}
-              >
-                <div className="premium-img-wrapper">
-                  <Image
-                    src={`https://horaservices.com/api/uploads/compressed_webp/${item.featured_image
-                      ?.split(".")[0]}.webp`}
-                    alt={`photography ${item.name}`}
-                    width={200}
-                    height={150}
-                    className="premium-img"
-                  />
+          <div
+  key={item._id || i}
+  className="premium-card"
+>
+  <div className="premium-wrapper" onClick={() => handleCardClick(item)}>
+    <Image
+      src={`https://horaservices.com/api/uploads/compressed_webp/${item.featured_image
+        ?.split(".")[0]}.webp`}
+      alt={`photography ${item.name}`}
+      fill
+      sizes="150px"
+      className="premium-img"
+    />
+  </div>
 
-                  <div className="premium-discount">
-                    ₹{item.discountDifference} off
-                  </div>
-                </div>
+  <div className="premium-content">
+   <p className="premium-title">
+  {item.name}
+</p>
 
-                <div className="premium-content">
-                  <p className="premium-title">
-                    {item.name.length > 20
-                      ? `${item.name.slice(0, 20)}...`
-                      : item.name}
-                  </p>
-                </div>
+    <div className="premium-price-wrapper">
+      <span className="premium-price">₹{item.price}</span>
+      <span className="premium-original">
+        ₹{item.discountedPrice}
+      </span>
+    </div>
 
-                <div className="premium-price-wrapper">
-                  <span className="premium-price">₹{item.price}</span>
-                  <span className="premium-original">
-                    ₹{item.discountedPrice}
-                  </span>
-                </div>
-              </div>
+    <button
+      className="photograpy-book-now-slider"
+      onClick={() => handleCardClick(item)}
+    >
+      View more
+    </button>
+  </div>
+</div>
             ))
           ) : (
             <p className="no-products">No products found.</p>
