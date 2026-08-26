@@ -19,6 +19,8 @@ import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import arrowIcon from "@/assets/arrowicon.svg"
+import BannerImg from "@/assets/capsulebanner.webp"; // apni image import karo
+
 // Dynamic imports
 const BrandBanner = dynamic(() => import("@/components/BrandBanner"));
 const ReviewSlider = dynamic(() => import("@/components/ReviewSection"), {
@@ -38,6 +40,7 @@ import { photoCat } from "@/utils/photoCategories.js";
 import { SeoMain } from "@/utils/photoGraphyHead";
 import { keywordsList } from "@/utils/photoGraphyKeywordlist";
 import { poseGridData } from "@/utils/poseGridData";
+import EventCapsuleBannerImage from "@/components/Eventcapsulebannerimage";
 
 const brandItems = [
   {
@@ -134,12 +137,7 @@ const index = () => {
           ))}
         </div>
 
-        <PhotographyPackageGridSlider
-          title="Standard Packages"
-          tagId="66c96b4e22ed47b72117e09a"
-          cityProps={cityProps}
-        />
-
+     
         <div className="gridContainersec">
           {photoCat.slice(6, 10).map((item) => (
             <PhotoGraphyCardgrid
@@ -150,7 +148,12 @@ const index = () => {
               cityProps={cityProps}
             />
           ))}
-        </div>
+        </div>   <PhotographyPackageGridSlider
+          title="Standard Packages"
+          tagId="66c96b4e22ed47b72117e09a"
+          cityProps={cityProps}
+        />
+
 
         <div className="hora-wrap">
           <div className="hora-card">
@@ -228,7 +231,12 @@ const index = () => {
     ))}
   </div>
 </div>
-        <section className="BabyShowerBanner">
+
+<EventCapsuleBannerImage
+  image={BannerImg}
+  onExploreClick={() => router.push("https://horaservices.com/weblink-gallery?folderName=32468_6a7f09a01144665025c88d8e_9406754372&customerId=6a7f09a01144665025c88d8e&fromPanel=true")}
+/>
+        {/* <section className="BabyShowerBanner">
           <Image
             src={BrandBannerIMG}
             alt="Decoration-Banner"
@@ -237,7 +245,7 @@ const index = () => {
             className="decorationBanner-image"
             priority
           />
-        </section>
+        </section> */}
         <BrandBanner
           title="Excellence Backed by Happy Customers"
           items={brandItems}

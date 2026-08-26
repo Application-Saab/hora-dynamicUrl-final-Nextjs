@@ -433,7 +433,7 @@ export default function CatValuePage() {
 
           {/* Gallery Section */}
           {galleryData && galleryData.folderName && galleryData.customerId && (
-            <div className="photo-gallery-wrapper" style={{ padding: "10px" }}>
+            <div className="photo-gallery-wrapper" >
               <PhotoGallery
                 folderName={galleryData.folderName}
                 customerId={galleryData.customerId}
