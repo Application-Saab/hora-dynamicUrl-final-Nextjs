@@ -234,7 +234,7 @@ const index = () => {
 
 <EventCapsuleBannerImage
   image={BannerImg}
-  onExploreClick={() => router.push("/event-capsule")}
+  onExploreClick={() => router.push("https://horaservices.com/weblink-gallery?folderName=32468_6a7f09a01144665025c88d8e_9406754372&customerId=6a7f09a01144665025c88d8e&fromPanel=true")}
 />
         {/* <section className="BabyShowerBanner">
           <Image
