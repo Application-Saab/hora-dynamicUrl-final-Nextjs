@@ -19,16 +19,37 @@ import maternityProp from "@/assets/inclusionIcons/maternityProp.svg";
 import cinematic from "@/assets/inclusionIcons/CinematicVideo.svg";
 import twin from "@/assets/inclusionIcons/Twinmegacollageprints.svg";
 import Magazine from "@/assets/inclusionIcons/Magazine.svg";
-// saveTheDateReel same icon use kar raha tha traditionalVideo ka, wahi rakha hai
+
 const saveTheDateReel = traditionalVideo;
 
-// EXACTLY these 17 tags. "words" = ALL of these must appear (as substrings) in the
-// inclusion line for it to match. A single line can match MULTIPLE tags now.
 export const TAG_RULES = [
   { words: ["unlimited"], title: "Unlimited", subtitle: "Photos", icon: unlimitedPhotos },
+
   { words: ["traditional", "video"], title: "Traditional", subtitle: "Video", icon: traditionalVideo },
-  { words: ["teaser"], title: "Edited", subtitle: "Teaser", icon: editedTeaser },
-  { words: ["reel"], title: "Edited", subtitle: "Reel", icon: editedTeaser },
+
+  // specific combo rules pehle (order zaroori nahi kyunki exclude ka use ho raha hai,
+  // lekin readability ke liye upar rakha hai)
+  { words: ["traditional", "teaser"], title: "Traditional", subtitle: "Teaser", icon: editedTeaser },
+  { words: ["cinematic", "teaser"], title: "Cinematic", subtitle: "Teaser", icon: cinematic },
+
+  // generic "teaser" — agar traditional/cinematic teaser already match ho gaya hai to skip
+  {
+    words: ["teaser"],
+    exclude: ["traditional", "cinematic"],
+    title: "Edited",
+    subtitle: "Teaser",
+    icon: editedTeaser,
+  },
+
+  // generic "reel" — agar "save the date" wali reel hai to skip
+  {
+    words: ["reel"],
+    exclude: ["save the date"],
+    title: "Edited",
+    subtitle: "Reel",
+    icon: editedTeaser,
+  },
+
   { words: ["edited", "photo"], title: "Edited", subtitle: "Photos", icon: editedPhotos },
   { words: ["candid"], title: "Candid", subtitle: "Shots", icon: candidShots },
   { words: ["posed"], title: "Posed", subtitle: "Shots", icon: posedShots },
@@ -46,6 +67,15 @@ export const TAG_RULES = [
   { words: ["maternity", "prop"], title: "Maternity", subtitle: "Prop", icon: maternityProp },
   { words: ["save the date"], title: "Save the Date", subtitle: "Reel", icon: saveTheDateReel },
   { words: ["twin", "collage"], title: "Twin Mega Collage", subtitle: "Prints", icon: twin },
-  { words: ["cinematic"], title: "Cinematic", subtitle: "Video", icon: cinematic },
-  {words :["magazine"],title:"Magazine",icon:Magazine}
+
+  // generic "cinematic" — agar cinematic teaser already match ho gaya hai to skip
+  {
+    words: ["cinematic"],
+    exclude: ["teaser"],
+    title: "Cinematic",
+    subtitle: "Video",
+    icon: cinematic,
+  },
+
+  { words: ["magazine"], title: "Magazine", icon: Magazine },
 ];
