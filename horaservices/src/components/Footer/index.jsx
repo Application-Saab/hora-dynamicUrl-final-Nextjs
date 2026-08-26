@@ -125,6 +125,28 @@ const footerColumns = [
       { text: 'Goa', to: '/goa/photography-page', city: 'Goa' },
     ],
   },
+    {
+    title: 'Party Venues in your city',
+    links: [
+      { text: 'Delhi', to: '/delhi/venue-list', city: 'Delhi' },
+      { text: 'Gurugram', to: '/gurugram/venue-list', city: 'Gurugram' },
+      { text: 'Ghaziabad', to: '/ghaziabad/venue-list', city: 'Ghaziabad' },
+      { text: 'Faridabad', to: '/faridabad/venue-list', city: 'Faridabad' },
+      { text: 'Noida', to: '/noida/venue-list', city: 'Noida' },
+      { text: 'Bengaluru', to: '/bengaluru/venue-list', city: 'Bengaluru' },
+      { text: 'Bangalore', to: '/bangalore/venue-list', city: 'Bangalore' },
+      { text: 'Hyderabad', to: '/hyderabad/venue-list', city: 'Hyderabad' },
+      { text: 'Mumbai', to: '/mumbai/venue-list', city: 'Mumbai' },
+      { text: 'Indore', to: '/indore/venue-list', city: 'Indore' },
+      { text: 'Chennai', to: '/chennai/venue-list', city: 'Chennai' },
+      { text: 'Pune', to: '/pune/venue-list', city: 'Pune' },
+      { text: 'Surat', to: '/surat/venue-list', city: 'Surat' },
+      { text: 'Bhopal', to: '/bhopal/venue-list', city: 'Bhopal' },
+      { text: 'Kanpur', to: '/kanpur/venue-list', city: 'Kanpur' },
+      { text: 'Lucknow', to: '/lucknow/venue-list', city: 'Lucknow' },
+      { text: 'Goa', to: '/goa/venue-list', city: 'Goa' },
+    ],
+  },
   {
     title: 'Contact',
     links: [
@@ -150,9 +172,12 @@ function Footer() {
           {footerColumns.map((column, index) => (
             <div key={index} className="footerlist-sec">
               <h2 className="footerheading">{column.title}</h2>
-              <ul className={`list-unstyled-${index}`}>
+              <ul
+                className={`list-unstyled-${index}`}
+                style={{ listStyle: "none", padding: 0, margin: 0 }}
+              >
                 {column.links.map((link, idx) => (
-                  <li key={idx}>
+                  <li key={idx} style={{ listStyle: "none" }}>
                     {link.to ? (
                       <Link
                         href={link.to}
@@ -216,6 +241,7 @@ const style = {
     color: 'inherit',
     textDecoration: 'none',
   },
+  
 }
 
 export default Footer;

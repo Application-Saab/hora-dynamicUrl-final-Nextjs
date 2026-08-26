@@ -1,0 +1,86 @@
+.vas-card {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 2.5vw, 16px);
+  background: #fff;
+ border: 0.5px solid #00000021;
+  border-radius: clamp(12px, 3vw, 16px);
+  padding: clamp(6.34px, 1.97vw, 9.58px);
+  flex-wrap: wrap;
+}
+
+/* ── PIN AVATAR ── */
+.vas-pinAvatar {
+  width: clamp(31.57px, 9.81vw, 47.13px);
+height: clamp(31.57px, 9.81vw, 47.13px);
+  border-radius: 50%;
+  background: #97538C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── INFO ── */
+.vas-info {
+  flex: 1;
+ min-width: clamp(123.08px, 38.46vw, 184.62px);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.vas-venueName {
+  margin: 0;
+font-family: Roboto, sans-serif;
+font-weight: 600;
+font-size: clamp(11.08px, 3.45vw, 16.73px);
+  color: #000000;
+}
+.vas-address {
+  margin: 0;
+  font-family: Roboto, sans-serif;
+font-weight: 500;
+font-size: clamp(6.34px, 1.97vw, 9.58px);
+  color: #505050CC;
+
+}
+
+/* ── ACTIONS ── */
+.vas-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.vas-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4.76px, 1.49vw, 7.15px);
+ padding: clamp(4.65px, 1.45vw, 7.02px) clamp(6.31px, 1.97vw, 9.52px);
+ border-radius: clamp(3.96px, 1.239vw, 5.96px);
+ font-family: Roboto, sans-serif;
+font-weight: 600;
+font-size: clamp(6.34px, 1.97vw, 9.58px);
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.vas-btn:active {
+  transform: scale(0.97);
+}
+.vas-btn--whatsapp {
+  background: #0D8708;
+}
+.vas-btn--whatsapp:hover {
+  background: #0D8708;
+}
+.vas-btn--map {
+  background: #97538C;
+}
+.vas-btn--map:hover {
+  background: #97538C;
+}

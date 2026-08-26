@@ -17,7 +17,7 @@
   overflow-y: auto;
   background: #fff;
   border-radius: 16px;
-  padding: clamp(10px, 3.5vw, 14px);
+ padding: clamp(8.5px, 2.54vw, 10px);
   display: flex;
   flex-direction: column;
 }
@@ -30,10 +30,12 @@
 }
 
 .vfm-title {
-  font-family: 'Inter', sans-serif;
-  font-weight: 800;
-  font-size: clamp(15px, 4.5vw, 19px);
-  text-align: center;
+ font-family: Inter, sans-serif;
+font-weight: 700;
+font-size: clamp(13.55px, 4.07vw, 16px);
+text-align: center;
+vertical-align: middle;
+text-transform: uppercase;
   color: #97538C;
   margin: 0 0 10px;
 }
@@ -72,9 +74,9 @@
 }
 
 .vfm-cell-icon {
-  width: 22px;
-  height: 22px;
-  flex-shrink: 0;
+width: clamp(14.82px, 4.46vw, 17.54px);
+height: clamp(11.64px, 3.51vw, 13.78px);
+
 }
 
 .vfm-cell-text {
@@ -84,22 +86,19 @@
 }
 
 .vfm-cell-main {
-  font-family: 'Inter', sans-serif;
-  font-size: clamp(12px, 3.5vw, 14px);
-  font-weight: 700;
+font-family: Rubik, sans-serif;
+font-weight: 400;
+font-size: clamp(8.4px, 2.52vw, 9.93px);
   color: #97538C;
-  line-height: 1.2;
 }
 
 .vfm-cell-sub {
-  font-family: 'Inter', sans-serif;
-  font-size: clamp(8.5px, 2.4vw, 10px);
-  font-weight: 400;
+ font-family: Rubik, sans-serif;
+font-weight: 400;
+font-size: clamp(7px, 2.11vw, 8.28px);
   color: #777;
-  line-height: 1.2;
 }
 
-/* vertical divider between cells */
 .vfm-cell-divider {
   width: 1px;
   height: 32px;
@@ -122,21 +121,29 @@
   margin-bottom: clamp(14px, 4vw, 20px);
 }
 
-.vfm-sec-head {
+/* Pink pill-shaped section header — jaisa screenshot me hai */
+.vfm-sec-pill {
   display: flex;
   align-items: center;
-  gap: clamp(5px, 1.8vw, 8px);
-  margin-bottom: clamp(7px, 2.2vw, 10px);
-  padding-bottom: clamp(6px, 1.8vw, 8px);
-  border-bottom: 1.5px solid #f3f0f8;
+  gap: clamp(6px, 2vw, 9px);
   flex-wrap: wrap;
+  background: #EEE2ECE5;
+  border: 0.3px solid #97538C;
+  border-radius: 5px;
+  padding: clamp(7.35px, 2.21vw, 8.7px) clamp(3.64px, 1.09vw, 4.3px);
+  margin-bottom: clamp(10px, 3vw, 14px);
+}
+
+.vfm-sec-icon {
+  font-size: clamp(15px, 4vw, 17px);
+  line-height: 1;
 }
 
 .vfm-sec-title {
-  font-family: 'Inter', sans-serif;
-  font-size: clamp(12px, 3.5vw, 14px);
-  font-weight: 700;
-  color: #7b3f72;
+  font-family: Inter, sans-serif;
+font-weight: 600;
+font-size: clamp(9.88px, 2.97vw, 11.69px);
+  color: #97538C;
   flex: 1;
 }
 
@@ -145,23 +152,40 @@
   font-size: clamp(9px, 2.5vw, 10px);
   font-weight: 600;
   color: #6d4fc2;
-  background: #eeedfe;
+  background: #ffffff;
   padding: clamp(2px, 0.8vw, 3px) clamp(7px, 2.2vw, 9px);
   border-radius: 20px;
 }
 
-/* ───────── SUB LABEL ───────── */
+/* ───────── SUB LABEL (VEGETARIAN / NON VEGETARIAN) ───────── */
 .vfm-sub-label {
   display: flex;
   align-items: center;
-  gap: clamp(4px, 1.5vw, 6px);
-  margin: clamp(7px, 2.2vw, 10px) 0 clamp(4px, 1.5vw, 6px);
+  gap: clamp(5px, 1.5vw, 7px);
+  margin: clamp(7px, 2.2vw, 10px) 0 clamp(6px, 2vw, 8px);
+}
+
+.vfm-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.vfm-dot--veg {
+  background: #2e7d32;
+  border: 1.5px solid #2e7d32;
+}
+
+.vfm-dot--nonveg {
+  background: #b3261e;
+  border: 1.5px solid #b3261e;
 }
 
 .vfm-sub-label-text {
-  font-family: 'Inter', sans-serif;
-  font-size: clamp(10px, 2.8vw, 11px);
-  font-weight: 700;
+ font-family: Inter, sans-serif;
+font-weight: 600;
+font-size: clamp(9.88px, 2.97vw, 11.69px);
   color: #999;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -169,18 +193,55 @@
 
 /* ───────── DISH ITEMS ───────── */
 .vfm-dish-item {
-  padding: clamp(6px, 2vw, 8px) clamp(9px, 3vw, 12px);
-  border-radius: 9px;
-  background: #faf8fd;
-  margin-bottom: clamp(4px, 1.5vw, 6px);
+padding: clamp(5.07px, 1.54vw, 6px) clamp(4.12px, 1.24vw, 4.87px);
+  border-radius: 6.82px;
+  background: #F5F1FA;
+  margin-bottom: clamp(6px, 1.8vw, 8px);
 }
 .vfm-dish-item:last-child { margin-bottom: 0; }
-.vfm-dish-item:hover { background: #f3effa; }
 
 .vfm-dish-text {
-  font-family: 'Inter', sans-serif;
-  font-size: clamp(12px, 3.5vw, 14px);
-  font-weight: 400;
-  color: #1a1a1a;
+ font-family: Inter, sans-serif;
+font-weight: 400;
+font-size: clamp(9.88px, 2.97vw, 11.69px);
+  color: #000000;
   line-height: 1.4;
+}
+
+/* ───────── VIEW ALL ───────── */
+.vfm-view-all-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  margin-top: clamp(6px, 2vw, 9px);
+  padding: 4px 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(12px, 3.3vw, 13px);
+  font-weight: 700;
+  color: #97538C;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.vfm-view-all-chevron {
+  width: 10px;
+  height: 8px;
+  color: #97538C;
+  transition: transform 0.2s ease;
+}
+
+.vfm-view-all-chevron--up {
+  transform: rotate(180deg);
+}
+.vfm-sec-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
 }

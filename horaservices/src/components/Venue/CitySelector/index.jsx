@@ -15,7 +15,7 @@ import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 const cities = [
   { name: "Mumbai", image: mumbai },
   { name: "Delhi", image: delhi },
-  { name: "Bengaluru", image: bengaluru },
+  { name: "Bangalore", image: bengaluru },
   { name: "Gurgaon", image: gurgaon },
   { name: "Ghaziabad", image: ghaziabad },
   { name: "Hyderabad", image: hydrabad },

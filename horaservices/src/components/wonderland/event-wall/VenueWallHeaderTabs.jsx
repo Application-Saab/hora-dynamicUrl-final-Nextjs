@@ -253,30 +253,33 @@ const coverImage =
   return (
     <>
       <div className="gallery-headerCard">
-        <div
-          className={`card-item ${activeTab === "all" ? "active" : ""}`}
-          onClick={() => {
-            setActiveTab("all");
-            onSelectSubFolder(null);
-            setIsSearching(false);
-            onSearchResults([]);
-            setMatchedKeys([]);
-            setIsActualMyPhotos(false);
-          }}
-        >
-         <div className="circle-img-folder_wonderland circle-img-both">
-  <div className="circle-img-inner circle-img-innner-wonderland">
-   <img
-  src={coverImage}
-  alt="All"
-  onError={(e) => {
-    e.target.src = allPhotos.src;
-  }}
-/>
+        {/* "All" tab sirf tab dikhega jab kam se kam ek folder/album bana ho */}
+        {albums.length > 0 && (
+          <div
+            className={`card-item ${activeTab === "all" ? "active" : ""}`}
+            onClick={() => {
+              setActiveTab("all");
+              onSelectSubFolder(null);
+              setIsSearching(false);
+              onSearchResults([]);
+              setMatchedKeys([]);
+              setIsActualMyPhotos(false);
+            }}
+          >
+           <div className="circle-img-folder_wonderland circle-img-both">
+    <div className="circle-img-inner circle-img-innner-wonderland">
+     <img
+    src={coverImage}
+    alt="All"
+    onError={(e) => {
+      e.target.src = allPhotos.src;
+    }}
+  />
+    </div>
   </div>
-</div>
-          <span>All</span>
-        </div>
+            <span>All</span>
+          </div>
+        )}
 
         {/* {myPhotosFolder ? (
           <div
@@ -413,4 +416,3 @@ const coverImage =
     </>
   );
 }
-
