@@ -39,6 +39,7 @@ margin-bottom: clamp(7.5px, 2.54vw, 10px);
 /* ---------------- Cards Row (Slider) ---------------- */
 .theme-cards-row {
   display: flex;
+  align-items: stretch;   /* NEW */
   gap: 12px;
   overflow-x: auto;
   padding: 4px 4px 8px;
@@ -53,13 +54,15 @@ margin-bottom: clamp(7.5px, 2.54vw, 10px);
 /* ---------------- Theme Card ---------------- */
 .theme-card {
   flex: 0 0 auto;
- width: clamp(100px, 35.11vw, 138px);
+  width: clamp(100px, 35.11vw, 138px);
   scroll-snap-align: start;
   background: #ffffff;
-border-radius: clamp(8px, 2.54vw, 10px);
+  border-radius: clamp(8px, 2.54vw, 10px);
   overflow: hidden;
-box-shadow: 0px 4px 4px 0px #E8E1ED;
+  box-shadow: 0px 4px 4px 0px #E8E1ED;
 
+  display: flex;              /* NEW */
+  flex-direction: column;     /* NEW */
 }
 
 .theme-card-selected {
@@ -97,11 +100,12 @@ height: clamp(86px, 30.03vw, 118px);
 
 /* ---------------- Title ---------------- */
 .theme-card-title {
-font-family: "Inter", sans-serif;
-font-weight: 600;
-font-size: clamp(11px, 3.56vw, 14px);
-text-align: center;
-margin: clamp(7px, 2.29vw, 9px) 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: clamp(11px, 3.56vw, 14px);
+  text-align: center;
+  margin: clamp(7px, 2.29vw, 9px) 0;
+  flex-grow: 1;               /* NEW: takes remaining space, pushes button down */
 }
 
 /* ---------------- Select Button ---------------- */
