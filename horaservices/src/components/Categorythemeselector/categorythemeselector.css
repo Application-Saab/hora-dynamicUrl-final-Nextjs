@@ -1,7 +1,15 @@
 .theme-selector-wrapper {
   width: 100%;
-  padding: 0px 0px 0px 7px;
+ padding: clamp(11px, 3.82vw, 15px) 0 0 clamp(5px, 1.78vw, 7px);
   box-sizing: border-box;
+   position: relative;
+  background: linear-gradient(
+    135deg,
+    #E6E3FC 0%,
+    #FEF6EF 35%,
+    #FCECF3 70%,
+    #F9DEF8 100%
+  );
 }
 
 /* ---------------- Header ---------------- */

@@ -45,7 +45,9 @@ let category =
   const rawAddOns = router.query.selectedAddOnProduct
     ? JSON.parse(router.query.selectedAddOnProduct)
     : [];
-
+const selectedThemes = router.query.selectedThemes
+  ? JSON.parse(router.query.selectedThemes)
+  : [];
   const selectedAddOnProduct = rawAddOns.map(item => ({
     ...item,
     totalPrice: item.price * (item.quantity || 1),
@@ -344,7 +346,8 @@ const balanceAmount = totalAmount - advanceAmount;
         "order_pincode": pinCode,
         "items": [product._id],
         "decoration_comments": getFinalComment(),
-        "status": 0
+        "status": 0,
+         "themes": selectedThemes.map(t => t._id),
       }
       const token = await safeGetItem('token');
       const response = await axiosApi.post(url, requestData, {
@@ -705,7 +708,18 @@ const contactUsRedirection = (productName) => {
     </ul>
   </>
 )}
-
+{selectedThemes.length > 0 && (
+  <div className='addon-prices'>
+    <label>Selected Themes:</label>
+    <ul className="addon-list">
+      {selectedThemes.map((theme, index) => (
+        <li key={theme._id || index} className="addon-item">
+          <span className="addon-title">{index + 1}. {theme.title}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
                         </div>
                       </div>
                      
