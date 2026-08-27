@@ -33,6 +33,7 @@ import AddonModal from '@/components/AddonModal';
 import AddOnsList from '@/components/AddOnsList';
 import { fetchWithError } from '@/utils/fetchWithError';
 import axiosApi from '@/utils/axiosApi';
+import Categorythemeselector from '@/components/Categorythemeselector';
 const SkeletonLoader = () => {
   return (
     <div
@@ -194,8 +195,11 @@ const ProductDetails = () => {
   const similarRef = useRef(null);
   const [addonData, setAddonData] = useState([]);
   const [addonIds, setAddonIds] = useState([]);
-  
-
+  const [themeIds, setThemeIds] = useState([]);
+const [themeData, setThemeData] = useState([]);
+const [themeLoading, setThemeLoading] = useState(true);
+const [themeError, setThemeError] = useState(null);
+const [selectedThemeData, setSelectedThemeData] = useState([]);
   const brandItems = [
     { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
     { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
@@ -338,35 +342,39 @@ const ProductDetails = () => {
   };
 
 
-  const sendToCheckoutPage = (product) => {
-    const totalPrice = calculateTotalPrice(product.price);
-    const advanceAmount = getFinalAdvanceAmount();
-    const balanceAmount = totalPrice - advanceAmount;
+const sendToCheckoutPage = (product) => {
+  const totalPrice = calculateTotalPrice(product.price);
+  const advanceAmount = getFinalAdvanceAmount();
+  const balanceAmount = totalPrice - advanceAmount;
 
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "book_now_click",
-      product_name: product.name,
-    });
+  router.push({
+    pathname: "/photography-checkout",
+    query: {
+      from: window.location.pathname,
 
-    router.push({
-      pathname: '/photography-checkout',
-      query: {
-        from: window.location.pathname,
-        product: JSON.stringify(product),
-        ProductPrice: product.discountedPrice || product.price,
-        selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
-        itemQuantities: JSON.stringify(itemQuantities),
-        totalAmount: totalPrice,
+      product: JSON.stringify(product),
 
-        // ✅ NEW (IMPORTANT)
-        advanceAmount: advanceAmount,
-        balanceAmount: balanceAmount,
+      ProductPrice:
+        product.discountedPrice || product.price,
 
-        duration: work?.duration,
-      }
-    });
-  };
+      // ADDONS
+      selectedAddOnProduct:
+        JSON.stringify(selectedAddOnProduct),
+
+      itemQuantities:
+        JSON.stringify(itemQuantities),
+
+      // THEMES
+      selectedThemes:
+        JSON.stringify(selectedThemeData),
+
+      totalAmount: totalPrice,
+      advanceAmount,
+      balanceAmount,
+      duration: work?.duration,
+    },
+  });
+};
 
 
 
@@ -400,9 +408,10 @@ const ProductDetails = () => {
           `${BASE_URL}/api/photography/details/${productId}`
         );
 
-        const data = res.data?.data;
-        if (!data) throw new Error("No product found");
-        setAddonIds(data?.addons)
+       const data = res.data?.data;
+      if (!data) throw new Error("No product found");
+      setAddonIds(data?.addons || []); 
+      setThemeIds(data?.ThemesId || []);
 
         const { discount, discountedPrice, discountDifference } =
           getDiscountedPrice(Number(data.price));
@@ -493,7 +502,49 @@ const ProductDetails = () => {
 
     getAddons();
   }, [addonIds]);
-// productId available hote hi saved addons restore karo
+
+
+useEffect(() => {
+  if (!themeIds || themeIds.length === 0) {
+    setThemeData([]);
+    setThemeLoading(false);
+    return;
+  }
+
+  const getThemes = async () => {
+    try {
+      setThemeLoading(true);
+      setThemeError(null);
+
+      const query = new URLSearchParams();
+      themeIds.forEach((id) => {
+        if (id) query.append("ids", id);
+      });
+      if ([...query].length === 0) {
+        setThemeData([]);
+        return;
+      }
+
+      const url = `${BASE_URL}/api/photography-theme/get?${query.toString()}`;
+      const response = await fetchWithError(url);
+      const data = await response.json();
+
+      if (!response.ok || data.error) {
+        throw new Error(data.message || "Failed to fetch themes");
+      }
+      setThemeData(data.data || []);
+    } catch (error) {
+      console.error("Error fetching themes:", error);
+      setThemeError(error.message || "Something went wrong");
+      setThemeData([]);
+    } finally {
+      setThemeLoading(false);
+    }
+  };
+
+  getThemes();
+}, [themeIds]);
+
 useEffect(() => {
   if (!productId) return;
   try {
@@ -697,6 +748,13 @@ useEffect(() => {
               <b className="Duration">Duration:</b> {work?.event_duration || work?.duration || "Duration not available"}
             </p>
           </div>
+<Categorythemeselector
+  themes={themeData}
+  loading={themeLoading}
+  error={themeError}
+  maxSelect={3}
+  onSelectionChange={setSelectedThemeData}
+/>
             <div ref={addonRef}>
     <AddonModal 
     isopen={isModalOpen}
