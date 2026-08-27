@@ -8,8 +8,8 @@ import Image from "next/image";
 import executerDetails from "../../assets/executerDetails.png";
 import dangerImage from "../../assets/danger.png";
 import Popup from "../../utils/popup";
-import OtpLoginPopup from '../../components/OtpLoginPopup';
-import './orderlist.css';
+import OtpLoginPopup from "../../components/OtpLoginPopup";
+import "./orderlist.css";
 import Head from "next/head";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
@@ -26,37 +26,46 @@ import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 const Orderlist = () => {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
+  const [loading, setLoading] = useState(true);          // start true for SSR shell
+  const [authChecked, setAuthChecked] = useState(false); // prevents flash
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [executor, setExecutor] = useState("");
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const isLoggedIn = safeGetItem("isLoggedIn");
-  useEffect(() => {
-    const checkAuth = () => {
 
-      if (isLoggedIn !== "true") {
-        setIsModalOpen(true);
-      }
-      else {
-        setIsModalOpen(false);
-      }
-    };
-    checkAuth();
+  // ---- Auth check (client-only) ----
+  useEffect(() => {
+    const loggedIn = safeGetItem("isLoggedIn") === "true";
+    setIsLoggedIn(loggedIn);
+    setAuthChecked(true);
+
+    if (!loggedIn) {
+      setIsModalOpen(true);
+      setLoading(false);
+      return;
+    }
+
+    // ---- Fetch orders only when logged in ----
     const fetchOrderList = async () => {
       try {
         setLoading(true);
         const userId = await safeGetItem("userID");
         const response = await fetchWithError(BASE_URL + ORDERLIST_ENDPOINT, {
           method: "POST",
-          headers: { Accept: "application/json", "Content-Type": "application/json" },
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ page: "1", _id: userId }),
         });
         const data = await response.json();
         if (data?.data?.order) {
-          setOrders(data.data.order.sort((a, b) => new Date(b.order_date) - new Date(a.order_date)));
+          setOrders(
+            data.data.order.sort(
+              (a, b) => new Date(b.order_date) - new Date(a.order_date)
+            )
+          );
         }
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -64,9 +73,11 @@ const Orderlist = () => {
         setLoading(false);
       }
     };
+
     fetchOrderList();
   }, []);
 
+  // ---- helpers (unchanged) ----
   const getOrderStatus = (orderStatusValue) => {
     if (orderStatusValue === 0) {
       return { status: "Booked", className: "status-booked myOrder-status-badge" };
@@ -92,30 +103,14 @@ const Orderlist = () => {
   };
 
   const getOrderType = (orderTypeValue) => {
-    if (orderTypeValue == 1) {
-      return "Decoration";
-    }
-    if (orderTypeValue === 2) {
-      return "Chef";
-    }
-    if (orderTypeValue === 3) {
-      return "Waiter";
-    }
-    if (orderTypeValue === 4) {
-      return "Bar Tender";
-    }
-    if (orderTypeValue === 5) {
-      return "Cleaner";
-    }
-    if (orderTypeValue === 6) {
-      return "Food Delivery";
-    }
-    if (orderTypeValue === 7) {
-      return "Live Catering";
-    }
-    if (orderTypeValue === 8) {
-      return "Photography";
-    }
+    if (orderTypeValue == 1) return "Decoration";
+    if (orderTypeValue === 2) return "Chef";
+    if (orderTypeValue === 3) return "Waiter";
+    if (orderTypeValue === 4) return "Bar Tender";
+    if (orderTypeValue === 5) return "Cleaner";
+    if (orderTypeValue === 6) return "Food Delivery";
+    if (orderTypeValue === 7) return "Live Catering";
+    if (orderTypeValue === 8) return "Photography";
   };
 
   const formatDate = (dateString) => {
@@ -124,7 +119,6 @@ const Orderlist = () => {
   };
 
   const handleRateUs = (order) => {
-    const { } = order;
     window.open(
       "https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20decoration%20services",
       "_blank"
@@ -133,17 +127,13 @@ const Orderlist = () => {
 
   const handleSendInvite = (order) => {
     let message = `You are Invited!!!\n* * * * * *\nEnjoy the gathering with specially cooked by professional chef from Hora `;
-
     message += `${order.order_date.slice(0, 10)} ${order.order_time}\n`;
-
     order.selecteditems.forEach((dish, index) => {
       message += `${index + 1}. ${dish.name}\n`;
     });
-
     if (order.addressId) {
       message += `\nAt ${order.addressId.address1} ${order.addressId.address2}\nhttps://play.google.com/store/apps/details?id=com.hora`;
     }
-
     return message;
   };
 
@@ -156,111 +146,60 @@ const Orderlist = () => {
 
   const handleViewDetail = (order) => {
     const { _id, order_id, type } = order;
-    const apiOrderId = _id
-    const orderType = type
-    const orderId = order_id
     router.push({
       pathname: `/order-details`,
-      query: { apiOrderId, orderType, orderId },
+      query: { apiOrderId: _id, orderType: type, orderId: order_id },
     });
   };
 
-  if (loading) {
-    return (
-      <center>
-        <div className="custom-spinner">
-          <div>
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            <div style={{ color: "#9252AA", textAlign: "center" }}>
-              <h4>Data is loading...</h4>
-            </div>
-          </div>
-        </div>
-      </center>
-    );
-  }
-
-  // if (orders.length === 0) {
-  //   return (
-  //     <center>
-  //       <div className="no-orders">
-  //         <h4>No Orders.. Please continue shopping with Hora</h4>
-  //         <button className="button-style" onClick={() => router.push("/")}>
-  //           Continue Shopping
-  //         </button>
-  //       </div>
-  //     </center>
-  //   );
-  // }
-
   const openSupplierPopup = async (order) => {
-    console.log(order, "order111");
     const { _id, order_id, type, toId } = order;
 
-    // Validate if `toId` exists
     if (!toId) {
       setPopupMessage({
         img: dangerImage,
-        title:
-          "Order is not accepted Yet",
+        title: "Order is not accepted Yet",
         body: "",
         button: "OK",
       });
+      setIsPopupVisible(true);
       return;
     }
-    else {
-      const apiOrderId = _id;
-      const orderType = type;
-      const orderId = toId;
 
-      try {
-        // Fetch executor details from the API
-        const response = await fetchWithError(
-          `${BASE_URL}/api/admin/getUserDetails/${orderId}`
-        );
+    try {
+      const response = await fetchWithError(
+        `${BASE_URL}/api/admin/getUserDetails/${toId}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch user details");
 
-        console.log(response, "response");
+      const data = await response.json();
+      const executorName = data.data.name;
+      const executorPhone = data.data.phone;
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch user details");
-        }
-
-        const data = await response.json();
-        console.log(data, "dataasss");
-
-        const executorName = data.data.name;
-        const executorPhone = data.data.phone;
-
-        setPopupMessage({
-          img: executerDetails,
-          title: (
-            <>
-              <div className="popup-title-main">{executorName}</div>
-              <div className="popup-title-sub">{executorPhone}</div>
-            </>
-          ),
-          body: 'You can contact the executor 30 minutes before the scheduled time to avoid early interruptions.',
-          button: "Call Vendor",
-          executorPhone: executorPhone,
-          onButtonClick: (phone) => {
-            console.log(phone, "phone");
-            if (phone) {
-              window.location.href = `tel:${phone}`;
-            } else {
-              alert("Phone number not available.");
-            }
-          },
-        });
-
-        setIsPopupVisible(true);
-      } catch (error) {
-        console.error(error.message);
-        setIsPopupVisible(true);
-      }
+      setPopupMessage({
+        img: executerDetails,
+        title: (
+          <>
+            <div className="popup-title-main">{executorName}</div>
+            <div className="popup-title-sub">{executorPhone}</div>
+          </>
+        ),
+        body: "You can contact the executor 30 minutes before the scheduled time to avoid early interruptions.",
+        button: "Call Vendor",
+        executorPhone,
+        onButtonClick: (phone) => {
+          if (phone) {
+            window.location.href = `tel:${phone}`;
+          } else {
+            alert("Phone number not available.");
+          }
+        },
+      });
+      setIsPopupVisible(true);
+    } catch (error) {
+      console.error(error.message);
+      setIsPopupVisible(true);
     }
-
   };
 
   const closePopup = () => {
@@ -280,14 +219,10 @@ const Orderlist = () => {
     }
 
     const parsedDate = date ? new Date(date) : new Date();
-    const year = parsedDate.getFullYear();
-    const month = parsedDate.getMonth();
-    const day = parsedDate.getDate();
-
     return new Date(
-      year,
-      month,
-      day,
+      parsedDate.getFullYear(),
+      parsedDate.getMonth(),
+      parsedDate.getDate(),
       parseInt(hours, 10),
       parseInt(minutes, 10),
       0
@@ -299,7 +234,6 @@ const Orderlist = () => {
     const startTime = parseTime(startTimeString, orderDate);
     const twoHoursBeforeStartTime = startTime.getTime() - 3 * 60 * 60 * 1000;
     const twoHoursAfterStartTime = startTime.getTime() + 3 * 60 * 60 * 1000;
-
     const currentTime = new Date();
     return (
       currentTime.getTime() >= twoHoursBeforeStartTime &&
@@ -307,136 +241,151 @@ const Orderlist = () => {
     );
   };
 
-  const handleCallClick = (phoneNumber) => {
-    window.location.href = `tel:${phoneNumber}`;
-  };
+  // ---- Loading / auth-check shell (safe for SSR) ----
+  if (!authChecked || loading) {
+    return (
+      <>
+        <Head>
+          <title>My Orders | Track Your Service Bookings | HORA</title>
+          <meta
+            name="description"
+            content="View and manage all your HORA bookings in one place. Track order status, check booking details, view executor information, and manage your decoration, photography, chef, catering, and event service orders."
+          />
+          <meta name="robots" content="noindex, follow" />
+          <link rel="canonical" href="https://horaservices.com/orderlist" />
+        </Head>
+        <center>
+          <div className="custom-spinner">
+            <div>
+              <div className="spinner-border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <div style={{ color: "#9252AA", textAlign: "center" }}>
+                <h4>Data is loading...</h4>
+              </div>
+            </div>
+          </div>
+        </center>
+      </>
+    );
+  }
 
   return (
     <>
-    <Head>
-  {/* Title */}
-  <title>My Orders | Track Your Service Bookings | HORA</title>
+      <Head>
+        {/* Title */}
+        <title>My Orders | Track Your Service Bookings | HORA</title>
 
-  {/* Meta Description */}
-  <meta
-    name="description"
-    content="View and manage all your HORA bookings in one place. Track order status, check booking details, view executor information, and manage your decoration, photography, chef, catering, and event service orders."
-  />
+        {/* Meta Description */}
+        <meta
+          name="description"
+          content="View and manage all your HORA bookings in one place. Track order status, check booking details, view executor information, and manage your decoration, photography, chef, catering, and event service orders."
+        />
 
-  <meta name="robots" content="noindex, follow" />
-  <meta name="author" content="Hora Services" />
+        <meta name="robots" content="noindex, follow" />
+        <meta name="author" content="Hora Services" />
 
-  {/* Canonical */}
-  <link
-    rel="canonical"
-    href="https://horaservices.com/orderlist"
-  />
+        {/* Canonical */}
+        <link rel="canonical" href="https://horaservices.com/orderlist" />
 
-  {/* Favicon */}
-  <link
-    rel="icon"
-    href="https://horaservices.com/api/uploads/logo-icon.png"
-  />
+        {/* Favicon */}
+        <link
+          rel="icon"
+          href="https://horaservices.com/api/uploads/logo-icon.png"
+        />
 
-  {/* Open Graph */}
-  <meta
-    property="og:title"
-    content="My Orders | HORA"
-  />
-  <meta
-    property="og:description"
-    content="Track and manage all your HORA service bookings, order details, and booking status from one dashboard."
-  />
-  <meta
-    property="og:url"
-    content="https://horaservices.com/orderlist"
-  />
-  <meta property="og:type" content="website" />
-  <meta
-    property="og:image"
-    content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
-  />
+        {/* Open Graph */}
+        <meta property="og:title" content="My Orders | HORA" />
+        <meta
+          property="og:description"
+          content="Track and manage all your HORA service bookings, order details, and booking status from one dashboard."
+        />
+        <meta property="og:url" content="https://horaservices.com/orderlist" />
+        <meta property="og:type" content="website" />
+        <meta
+          property="og:image"
+          content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
+        />
 
-  {/* Twitter */}
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta
-    name="twitter:title"
-    content="My Orders | HORA"
-  />
-  <meta
-    name="twitter:description"
-    content="View your booking history, track order status, and manage HORA service orders."
-  />
-  <meta
-    name="twitter:image"
-    content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
-  />
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="My Orders | HORA" />
+        <meta
+          name="twitter:description"
+          content="View your booking history, track order status, and manage HORA service orders."
+        />
+        <meta
+          name="twitter:image"
+          content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
+        />
 
-  {/* Schema - WebPage */}
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{
-      __html: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "My Orders",
-        url: "https://horaservices.com/orderlist",
-        description:
-          "Manage and track your HORA service bookings including decoration, photography, chef, catering, and other event services.",
-      }),
-    }}
-  />
+        {/* Schema - WebPage */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebPage",
+              name: "My Orders",
+              url: "https://horaservices.com/orderlist",
+              description:
+                "Manage and track your HORA service bookings including decoration, photography, chef, catering, and other event services.",
+            }),
+          }}
+        />
 
-  {/* Schema - Profile Page */}
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{
-      __html: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "ProfilePage",
-        name: "User Orders Dashboard",
-        description:
-          "User dashboard for viewing and tracking service bookings and orders.",
-        publisher: {
-          "@type": "Organization",
-          name: "HORA",
-          url: "https://horaservices.com",
-          logo: "https://horaservices.com/api/uploads/logo-icon.png",
-        },
-      }),
-    }}
-  />
-</Head>
-   
-    <main className="order-list">
-      <div className="myorder-container">
-        {!isLoggedIn ? (
-          // Case 2: User is NOT logged in
-          <div className="no-orders">
-            <h2 className="no-record-heading">Please log in to check all your orders.</h2>
-            <button
-              style={{
-                backgroundColor: "#97538C",
-                fontSize: "14px",
-                border: "none",
-                borderRadius: "8px",
-                padding: "8px 16px",
-                color: "#fff",
-                cursor: "pointer"
-              }}
-              onClick={() => setIsModalOpen(true)}
-            >
-              Login
-            </button>
+        {/* Schema - Profile Page */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "ProfilePage",
+              name: "User Orders Dashboard",
+              description:
+                "User dashboard for viewing and tracking service bookings and orders.",
+              publisher: {
+                "@type": "Organization",
+                name: "HORA",
+                url: "https://horaservices.com",
+                logo: "https://horaservices.com/api/uploads/logo-icon.png",
+              },
+            }),
+          }}
+        />
+      </Head>
 
-            {isModalOpen &&
-              <OtpLoginPopup setIsModalOpen={setIsModalOpen}fromCheckout />
-            }
-          </div>
-        ) :
+      <main className="order-list">
+        <div className="myorder-container">
+          {!isLoggedIn ? (
+            <div className="no-orders">
+              <h2 className="no-record-heading">
+                Please log in to check all your orders.
+              </h2>
+              <button
+                style={{
+                  backgroundColor: "#97538C",
+                  fontSize: "14px",
+                  border: "none",
+                  borderRadius: "8px",
+                  padding: "8px 16px",
+                  color: "#fff",
+                  cursor: "pointer",
+                }}
+                onClick={() => setIsModalOpen(true)}
+              >
+                Login
+              </button>
 
-          orders.length > 0 ? (
-            orders?.map((order) => {
+              {isModalOpen && (
+                <OtpLoginPopup
+                  setIsModalOpen={setIsModalOpen}
+                  fromCheckout
+                />
+              )}
+            </div>
+          ) : orders.length > 0 ? (
+            orders.map((order) => {
               const orderStatus = getOrderStatus(order?.order_status);
               return (
                 <div key={order.order_id} className="order-card">
@@ -453,77 +402,63 @@ const Orderlist = () => {
                       <span className={orderStatus.className}>
                         {orderStatus.status}
                       </span>
-
                     </div>
                   </div>
+
                   <div className="order-details">
                     <div className="left-details">
                       <div className="date-time">
-                        {/* <IoCalendarClear color="#9252AA" size={20}/>{" "} */}
                         <Image
                           className="time-img"
                           src={date_time_icon}
                           width={14}
                           height={14}
+                          alt=""
                         />{" "}
-                        <span className="date-time-text">{formatDate(order.order_date)}</span>
+                        <span className="date-time-text">
+                          {formatDate(order.order_date)}
+                        </span>
                       </div>
                       <div className="date-time">
-                        {/* <FiClock color="#9252AA" size={20}/>{" "} */}
                         <Image
                           className="time-img"
                           src={clock}
                           width={14}
                           height={14}
+                          alt=""
                         />{" "}
-                        <span className="date-time-text">{order.order_time}</span>
+                        <span className="date-time-text">
+                          {order.order_time}
+                        </span>
                       </div>
                     </div>
                     <div className="right-details">
                       <div className="totalAmount">
                         <div className="label">
                           Total Amount
-                          <p className="amount" style={{ textAlign: "start", margin: 0 }}>
-                            {" "}
+                          <p
+                            className="amount"
+                            style={{ textAlign: "start", margin: 0 }}
+                          >
                             ₹ {order?.total_amount}
                           </p>
                         </div>
                       </div>
                       <div className="BalanceAmount">
-                        {/* <strong style={{ color: "#9252AA" }}>
-                        Balance Amount
-                        {order?.type === 2 || order?.type === 3 || order?.type === 4 || order?.type === 5 ? (
-                        <p className="mb-0 price-para">
-                        {'₹' + Math.round((order?.payable_amount * 4) / 5)}
-                        </p>
-                        ) : order?.type === 6 || order?.type === 7 ? (
-                        <p className="mb-0 price-para">
-                        {'₹' + Math.round(order?.payable_amount * 0.35)}
-                        </p>
-                        ) : (
-                        <p className="mb-0 price-para">
-                        {'₹' + Math.round(order?.payable_amount * 0.65)}
-                        </p>
-                        )}
-
-                      </strong> */}
                         <div className="label">
                           Balance Amount
-                          <p className="amount" style={{ textAlign: "start", margin: 0 }}>
-                            {" "}
+                          <p
+                            className="amount"
+                            style={{ textAlign: "start", margin: 0 }}
+                          >
                             ₹ {order?.balance_amount || 0}
                           </p>
                         </div>
                       </div>
                     </div>
-                    <div className="order-otp">
-                      OTP : {order?.otp}
-                    </div>
+                    <div className="order-otp">OTP : {order?.otp}</div>
                   </div>
 
-
-
-                  {/* <hr className="m-0" /> */}
                   <div className="d-flex button-div">
                     <div>
                       <button
@@ -533,17 +468,17 @@ const Orderlist = () => {
                         View Details
                       </button>
                     </div>
+
                     {order?.type == 2 &&
                       (orderStatus?.status == "Booked" ||
                         orderStatus?.status == "Accepted" ||
-                        orderStatus?.status == "In-progress" ? (
+                        orderStatus?.status == "In-progress") && (
                         <div>
                           <WhatsappShareButton
                             url="https://play.google.com/store/apps/details?id=com.hora"
                             title={handleSendInvite(order)}
                             separator="\n\n"
                           >
-                            {/* <WhatsappIcon size={32} round /> */}
                             <button
                               className="send-invite"
                               onClick={() => handleSendInvite(order)}
@@ -552,71 +487,62 @@ const Orderlist = () => {
                             </button>
                           </WhatsappShareButton>
                         </div>
-                      ) : null)}
+                      )}
 
-                    {(
-                      (order.type === 1 || order.type === 8) &&
-                      (
-                        orderStatus?.status === "Booked" ||
+                    {(order.type === 1 || order.type === 8) &&
+                      (orderStatus?.status === "Booked" ||
                         orderStatus?.status === "Accepted" ||
-                        orderStatus?.status === "In-progress"
-                      )
-                    ) && (
+                        orderStatus?.status === "In-progress") && (
                         <div className="Executor-rate-btn">
-                          <>
-                            <button
-                              className="view-details-btn"
-                              onClick={() => {
-                                if (isWithinFourHourWindow(order.order_time, order.order_date)) {
-                                  openSupplierPopup(order);
-                                  setIsPopupVisible(true);
-                                }
-                                else {
-                                  setPopupMessage({
-                                    img: dangerImage,
-                                    title:
-                                      "Executor details will be shown 2 hours before your scheduled time to avoid distractions.",
-                                    body: "",
-                                    button: "OK",
-                                  });
-                                  console.log(order, "order");
-                                  setIsPopupVisible(true);
-                                }
-                              }}
-
-                            >
-                              Executor Details
-                            </button>
-                            {isPopupVisible && (
-                              <Popup
-                                style={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
-                                onClose={closePopup}
-                                popupMessage={popupMessage}
-                                titleClass="popup-title-main"
-                                buttonClass="popup-button"
-                                imageClass="popup-image"
-                              />
-                            )}
-                          </>
-
-                        </div>
-                      )}
-
-
-                    {(
-                      orderStatus?.status === "Completed" ||
-                      orderStatus?.status === "Cancelled" ||
-                      orderStatus?.status === "Expired"
-                    ) && (
-                        <div>
                           <button
-                            className="send-invite"
-                            onClick={() => handleViewDetail(order)}
+                            className="view-details-btn"
+                            onClick={() => {
+                              if (
+                                isWithinFourHourWindow(
+                                  order.order_time,
+                                  order.order_date
+                                )
+                              ) {
+                                openSupplierPopup(order);
+                              } else {
+                                setPopupMessage({
+                                  img: dangerImage,
+                                  title:
+                                    "Executor details will be shown 2 hours before your scheduled time to avoid distractions.",
+                                  body: "",
+                                  button: "OK",
+                                });
+                                setIsPopupVisible(true);
+                              }
+                            }}
                           >
-                            Rate Us
+                            Executor Details
                           </button>
+                          {isPopupVisible && (
+                            <Popup
+                              style={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+                              onClose={closePopup}
+                              popupMessage={popupMessage}
+                              titleClass="popup-title-main"
+                              buttonClass="popup-button"
+                              imageClass="popup-image"
+                            />
+                          )}
                         </div>
                       )}
+
+                    {(orderStatus?.status === "Completed" ||
+                      orderStatus?.status === "Cancelled" ||
+                      orderStatus?.status === "Expired") && (
+                      <div>
+                        <button
+                          className="send-invite"
+                          onClick={() => handleViewDetail(order)}
+                        >
+                          Rate Us
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -626,15 +552,25 @@ const Orderlist = () => {
               <h2 className="no-record-heading">
                 No Orders.. Please continue shopping with Hora
               </h2>
-              <button className="button-style" onClick={() => router.push("/")}>
+              <button
+                className="button-style"
+                onClick={() => router.push("/")}
+              >
                 Continue Shopping
               </button>
             </div>
           )}
-      </div>
-    </main>
-     </>
+        </div>
+      </main>
+    </>
   );
+};
+
+// Force SSR on every request (fresh HTML shell)
+export async function getServerSideProps() {
+  return {
+    props: {}, // no user-specific data possible with localStorage auth
+  };
 }
 
 export default Orderlist;

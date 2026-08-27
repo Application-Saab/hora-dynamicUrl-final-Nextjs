@@ -18,73 +18,25 @@ import { safeGetItem } from "@/utils/safeStorage";
 
 const WonderlandMainPage = () => {
   const router = useRouter();
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(
-    safeGetItem("isLoggedIn") === "true"
-  );
-  const [loggedinUserId, setLoggedinUserId] = useState(
-    safeGetItem("userID") || ""
-  );
+
+  // SSR-safe defaults – never read localStorage during render
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [loggedinUserId, setLoggedinUserId] = useState("");
+  const [authChecked, setAuthChecked] = useState(false);
   const [showHostLoginModal, setShowHostLoginModal] = useState(false);
 
-  useLayoutEffect(() => {
-    let timer;
-
-    if (isUserLoggedIn && loggedinUserId 
-    ) {
-      timer = setTimeout(() => {
-        router.push(`/wonderland`);
-      }, 2500);
-    }
-
-    return () => clearTimeout(timer);
-  }, [loggedinUserId, isUserLoggedIn]);
-
-const createInviteClick = () => {
-  const userId = safeGetItem("userID") || "";
-  const mobileNumber = safeGetItem("mobileNumber") || "";
-  const isLoggedIn = safeGetItem("isLoggedIn") || "false";
-
-  let userName = "";
-
-  try {
-    const token = safeGetItem("token");
-
-    if (token) {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      userName = payload?.name || "";
-    }
-  } catch (error) {
-    console.log(error);
-  }
-
-  window.dataLayer = window.dataLayer || [];
-
-  window.dataLayer.push({
-    event: "create_invite_click",
-
-    page: "wonderland_main_page",
-    button_name: "CREATE INVITE",
-
-    user_id: userId,
-    mobile_number: mobileNumber,
-    user_name: userName,
-    is_logged_in: isLoggedIn,
-
-    timestamp: new Date().toISOString()
-  });
-
-  if (!isUserLoggedIn) {
-    setShowHostLoginModal(true);
-    return;
-  }
-
-  router.replace("/wonderland/invite");
-};
+  // ---- Client-only: read login state + sync across tabs ----
   useEffect(() => {
     const syncLoginState = () => {
-      setIsUserLoggedIn(safeGetItem("isLoggedIn") === "true");
-      setLoggedinUserId(safeGetItem("userID") || "");
+      const loggedIn = safeGetItem("isLoggedIn") === "true";
+      const userId = safeGetItem("userID") || "";
+      setIsUserLoggedIn(loggedIn);
+      setLoggedinUserId(userId);
+      setAuthChecked(true);
     };
+
+    // Initial read
+    syncLoginState();
 
     window.addEventListener("storage", syncLoginState);
     window.addEventListener("loginStateChange", syncLoginState);
@@ -95,15 +47,66 @@ const createInviteClick = () => {
     };
   }, []);
 
+  // ---- Client-only: auto-redirect logged-in users ----
+  useLayoutEffect(() => {
+    if (!authChecked) return;
+
+    let timer;
+    if (isUserLoggedIn && loggedinUserId) {
+      timer = setTimeout(() => {
+        router.push(`/wonderland`);
+      }, 2500);
+    }
+
+    return () => clearTimeout(timer);
+  }, [authChecked, isUserLoggedIn, loggedinUserId, router]);
+
+  const createInviteClick = () => {
+    // All of this is client-only
+    const userId = safeGetItem("userID") || "";
+    const mobileNumber = safeGetItem("mobileNumber") || "";
+    const isLoggedIn = safeGetItem("isLoggedIn") || "false";
+
+    let userName = "";
+    try {
+      const token = safeGetItem("token");
+      if (token) {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        userName = payload?.name || "";
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "create_invite_click",
+      page: "wonderland_main_page",
+      button_name: "CREATE INVITE",
+      user_id: userId,
+      mobile_number: mobileNumber,
+      user_name: userName,
+      is_logged_in: isLoggedIn,
+      timestamp: new Date().toISOString(),
+    });
+
+    if (!isUserLoggedIn) {
+      setShowHostLoginModal(true);
+      return;
+    }
+
+    router.replace("/wonderland/invite");
+  };
+
   return (
     <>
       <div className="logedin-container">
-       
         <div className="invite-banner">
           <Image
             src={wonderlandBanner}
             alt="Invite Banner"
             className="banner-image-top"
+            priority
           />
 
           <button
@@ -114,16 +117,21 @@ const createInviteClick = () => {
             <span>CREATE INVITE</span>
           </button>
         </div>
-        {isUserLoggedIn && loggedinUserId && (
+
+        {/* Only render after we know the user is logged in (client-side) */}
+        {authChecked && isUserLoggedIn && loggedinUserId && (
           <InvitesListing userId={loggedinUserId} />
         )}
-      <div style={{maxWidth:"480px"}}>
-<InviteSlider onCreateInvite={createInviteClick} />
-</div>
-<GuestListBanner onCreateInvite={createInviteClick} />
-<HowItWorks />
-<CelebrationSection onCreateInvite={createInviteClick} />
-<CheerChatBanner onCreateInvite={createInviteClick} />
+
+        <div style={{ maxWidth: "480px" }}>
+          <InviteSlider onCreateInvite={createInviteClick} />
+        </div>
+
+        <GuestListBanner onCreateInvite={createInviteClick} />
+        <HowItWorks />
+        <CelebrationSection onCreateInvite={createInviteClick} />
+        <CheerChatBanner onCreateInvite={createInviteClick} />
+
         <div
           style={{
             fontFamily: "Inter, sans-serif",
@@ -134,7 +142,7 @@ const createInviteClick = () => {
             letterSpacing: "0%",
             textAlign: "center",
             verticalAlign: "middle",
-           margin: "10px 10px 0px",
+            margin: "10px 10px 0px",
           }}
         >
           Host & Guest Features
@@ -147,6 +155,7 @@ const createInviteClick = () => {
             className="banner-image"
           />
         </div>
+
         <div className="invite">
           <Image
             src={yourcelebration}
@@ -154,18 +163,24 @@ const createInviteClick = () => {
             className="banner-image"
           />
         </div>
-        </div>
-  
+      </div>
 
-      <LoginModal 
+      <LoginModal
         isOpen={showHostLoginModal}
         onClose={() => {
           setShowHostLoginModal(false);
-          router.replace('/wonderland/invite')
+          router.replace("/wonderland/invite");
         }}
       />
     </>
   );
 };
+
+// Force SSR on every request
+export async function getServerSideProps() {
+  return {
+    props: {},
+  };
+}
 
 export default WonderlandMainPage;
