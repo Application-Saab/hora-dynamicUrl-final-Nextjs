@@ -23,10 +23,8 @@ import VisitorTracker from "@/utils/VisitorTracker";
 import { safeGetItem } from "@/utils/safeStorage";
 import ErrorBoundary from "@/components/ErrorBoundary/Errorboundary";
 import { fetchWithError } from "@/utils/fetchWithError";
-import {
-  setupGlobalErrorHandlers,
-  startMemoryMonitoring,
-} from "@/utils/errorReporter";
+import { setupGlobalErrorHandlers, startMemoryMonitoring } from "@/utils/errorReporter";
+import { useScrollRestoration } from "@/hooks/useScrollRestoration";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -35,6 +33,9 @@ function MyApp({ Component, pageProps }) {
   const [loggedinUserId, setLoggedinUserId] = useState(
     (typeof window !== "undefined" && safeGetItem("userID")) || "",
   );
+
+  // ================= SCROLL RESTORATION (moved to hooks/useScrollRestoration.js) =================
+  useScrollRestoration(router);
 
   // ================= GLOBAL ERROR HANDLERS =================
   useEffect(() => {
@@ -187,18 +188,9 @@ function MyApp({ Component, pageProps }) {
       j.async = true;
       j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
       f.parentNode.insertBefore(j, f);
-      console.log("GTM Script Loaded"); // Debugging log
+      console.log("GTM Script Loaded");
     })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
   }, []);
-
-  useLayoutEffect(() => {
-    if (typeof window === "undefined") return; // ← yeh line add karo
-
-    document.body.style.position = "";
-    document.body.style.top = "";
-    document.body.style.overflow = "";
-    window.scrollTo(0, 0);
-  }, [pathname]);
 
   const appContent = (
     <ChatProvider>
@@ -252,9 +244,9 @@ function MyApp({ Component, pageProps }) {
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/new_logo_light.png" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Just+Another+Hand&display=swap"
-          rel="stylesheet"
-        />
+           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Rubik:wght@400;500;600;700&family=Just+Another+Hand&display=swap"
+    rel="stylesheet"
+  />
       </Head>
 
      <Provider store={store}>

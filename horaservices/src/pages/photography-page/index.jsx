@@ -18,6 +18,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
+import arrowIcon from "@/assets/arrowicon.svg"
+import BannerImg from "@/assets/capsulebanner.webp"; // apni image import karo
 
 // Dynamic imports
 const BrandBanner = dynamic(() => import("@/components/BrandBanner"));
@@ -38,6 +40,7 @@ import { photoCat } from "@/utils/photoCategories.js";
 import { SeoMain } from "@/utils/photoGraphyHead";
 import { keywordsList } from "@/utils/photoGraphyKeywordlist";
 import { poseGridData } from "@/utils/poseGridData";
+import EventCapsuleBannerImage from "@/components/Eventcapsulebannerimage";
 
 const brandItems = [
   {
@@ -93,7 +96,7 @@ const index = () => {
 
   return (
     <>
-      <div style={{ maxWidth: "800px", margin: "auto" }}>
+      <div style={{ maxWidth: "480px", margin: "auto" }}>
         <SeoMain city={city} locality={locality} scriptTag={scriptTag} />
         <div className="party-services homeslider">
           <div className="image-banner-slider">
@@ -134,12 +137,7 @@ const index = () => {
           ))}
         </div>
 
-        <PhotographyPackageGridSlider
-          title="Standard Packages"
-          tagId="66c96b4e22ed47b72117e09a"
-          cityProps={cityProps}
-        />
-
+     
         <div className="gridContainersec">
           {photoCat.slice(6, 10).map((item) => (
             <PhotoGraphyCardgrid
@@ -150,7 +148,12 @@ const index = () => {
               cityProps={cityProps}
             />
           ))}
-        </div>
+        </div>   <PhotographyPackageGridSlider
+          title="Standard Packages"
+          tagId="66c96b4e22ed47b72117e09a"
+          cityProps={cityProps}
+        />
+
 
         <div className="hora-wrap">
           <div className="hora-card">
@@ -203,29 +206,37 @@ const index = () => {
           </div>
         </div>
 
-        <div class="poses">
-          <div className="pose-grid">
-            {poseGridData.map((pose, index) => (
-              <a
-                key={index}
-                href={`https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(
-                  pose.folder,
-                )}&customerId=${pose.customerId}`}
-                className="pose-card"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => firePoseClickEvent(pose.title)}
-              >
-                <Image src={pose.image} alt={pose.title} />
-                <div className="TextBackground">
-                  <p>{pose.title}</p>
-                </div>
-              </a>
-            ))}
-          </div>
+   <div className="poses">
+  <div className="pose-grid">
+    {poseGridData.map((pose, index) => (
+      <a
+        key={index}
+        href={`https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(
+          pose.folder,
+        )}&customerId=${pose.customerId}`}
+        className="pose-card"
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => firePoseClickEvent(pose.title)}
+      >
+        <Image src={pose.image} alt={pose.title} fill />
+        <div className="TextBackground">
+          <p>{pose.title}</p>
+          <span className="pose-arrow">
+           <Image src={arrowIcon}
+           />
+          </span>
         </div>
+      </a>
+    ))}
+  </div>
+</div>
 
-        <section className="BabyShowerBanner">
+<EventCapsuleBannerImage
+  image={BannerImg}
+  onExploreClick={() => router.push("https://horaservices.com/weblink-gallery?folderName=32468_6a7f09a01144665025c88d8e_9406754372&customerId=6a7f09a01144665025c88d8e&fromPanel=true")}
+/>
+        {/* <section className="BabyShowerBanner">
           <Image
             src={BrandBannerIMG}
             alt="Decoration-Banner"
@@ -234,7 +245,7 @@ const index = () => {
             className="decorationBanner-image"
             priority
           />
-        </section>
+        </section> */}
         <BrandBanner
           title="Excellence Backed by Happy Customers"
           items={brandItems}

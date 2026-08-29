@@ -424,7 +424,40 @@ const onContinueClick = async () => {
       setLoading(false);
     }
 };
+const getDecorationImageUrl = (item) => {
+  let fileName = "";
 
+  if (item?.featured_image && typeof item.featured_image === "string") {
+    fileName = item.featured_image;
+  } else if (
+    Array.isArray(item?.featured_image) &&
+    item.featured_image.length > 0
+  ) {
+    fileName =
+      item.featured_image[0]?.fileName ||
+      item.featured_image[0] ||
+      "";
+  } else if (item?.featured_images?.[0]?.fileName) {
+    fileName = item.featured_images[0].fileName;
+  }
+
+  if (!fileName) {
+    return "/default-image.webp";
+  }
+
+  // Already a complete URL
+  if (
+    fileName.startsWith("http://") ||
+    fileName.startsWith("https://")
+  ) {
+    return fileName;
+  }
+
+  // Remove existing extension
+  const cleanFileName = fileName.replace(/\.[^/.]+$/, "");
+
+  return `https://horaservices.com/api/uploads/compressed_webp/${cleanFileName}.webp`;
+};
 
   const contactUsRedirection = (category, cityName) => {
     window.dataLayer = window.dataLayer || [];
@@ -643,17 +676,13 @@ const onContinueClick = async () => {
         <div className='rightsecdecinner photography'>
           <h3 style={{ fontSize: "18px", fontWeight: "600", color: "rgb(157, 74, 147)", margin: "33px 0px 15px 15px", lineHeight: "35px", width: "100%", textAlign: "center" }}>Product Details</h3>
           <div className=''>
-            <Image
-              className="checkoutRightImg"
-              src={
-                product?.featured_image
-                  ? `https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]}.webp`
-                  : "/default-image.webp"
-              }
-              alt="image"
-              width={300}
-              height={300}
-            />
+         <Image
+  className="checkoutRightImg"
+  src={getDecorationImageUrl(product)}
+  alt={product?.name || "Decoration product"}
+  width={300}
+  height={300}
+/>
 
 
             <div >

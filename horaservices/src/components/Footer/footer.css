@@ -3,7 +3,8 @@ ul.list-unstyled-1,
 ul.list-unstyled-2,
 ul.list-unstyled-3,
 ul.list-unstyled-4,
-ul.list-unstyled-5
+ul.list-unstyled-5,
+ul.list-unstyled-6
 {
     list-style: none;
     margin: 0;
@@ -60,7 +61,8 @@ ul.list-unstyled-5
     ul.list-unstyled-3 ,
     ul.list-unstyled-2 , 
     ul.list-unstyled-4,
-    ul.list-unstyled-5
+    ul.list-unstyled-5,
+    ul.list-unstyled-6
     {
         display: flex;
         flex-direction: row;
@@ -71,5 +73,6 @@ ul.list-unstyled-5
         }
     }
 }
+
 
 

@@ -1,80 +1,156 @@
 /* pagination.css */
-.pagination-container.inline { /* Targets the inline version used in the header */
+.pagination-container.inline {
   display: flex;
   align-items: center;
-  gap: 10px; /* Space between info and controls block if info is outside controls-main */
-  padding: 0;
+  gap: clamp(8.94px, 2.8vw, 13.42px);
+  padding: clamp(6px, 2.5vw, 10px) 4px;
   margin: 0;
 }
-
 .pagination-info {
-  font-size: 0.75rem; /* Smaller info text */
-  color: #6c757d;
-  white-space: nowrap;
-  margin-right: 8px; /* Space if info is to the left of buttons */
+  display: none;
 }
 
 .pagination-controls-main {
   display: flex;
   align-items: center;
-  gap: 4px; /* Gap between prev, numbers-scrollable, next */
+  gap: clamp(8px, 3.75vw, 14px);
+  width: 100%;
+  justify-content: center;
 }
 
+/* ============ Number pills ============ */
 .pagination-numbers-scrollable {
   display: flex;
   align-items: center;
-  overflow-x: auto;
-  overflow-y: hidden;
   white-space: nowrap;
-  gap: 4px;
-  padding: 0 3px; /* Minimal padding */
-  max-width: 180px; /* Adjust based on number of buttons you want visible before scroll */
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; /* Firefox */
-}
-.pagination-numbers-scrollable::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  gap: clamp(8px, 2.5vw, 12px);
 }
 
-.pagination-arrow,
 .pagination-number {
-  background-color: #fff;
-  border: 1px solid #ced4da; /* Lighter border */
-  color: #495057; /* Dark grey text */
-  padding: 4px 8px; /* More compact padding */
-  font-size: 0.75rem; /* Smaller font */
-  min-width: 30px; /* Smaller min-width */
-  border-radius: 3px; /* Sharper radius */
-  font-weight: 400; /* Normal weight for non-active */
-  /* ... (keep transitions, user-select) ... */
+  background-color: #ffffff;
+  border: none;
+  color: #7a2f7a;
+  width: clamp(30.2px, 9.46vw, 45.4px);
+height: clamp(30.2px, 9.46vw, 45.4px);
+  flex-shrink: 0;
+  border-radius: 50%;
+
+
+  font-family: "Inter", sans-serif;
+font-weight: 700;
+font-size: clamp(11.63px, 3.64vw, 17.44px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
-.pagination-arrow:hover:not(:disabled),
 .pagination-number:hover:not(.active) {
-  background-color: #e9ecef; /* Light hover */
-  border-color: #adb5bd;
-  color: #007bff;
+  background-color: #f5e6f7;
+  transform: translateY(-1px);
 }
 
+/* Active number gets a white "ring" gap between the fill and its shadow */
 .pagination-number.active {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
-  font-weight: 600;
-}
-
-.pagination-arrow:disabled {
-  color: #adb5bd;
-  background-color: #f8f9fa;
-  border-color: #dee2e6;
+  background: #97538C;
+  color: #ffffff;
+  box-shadow:
+    0 0 0 clamp(3px, 1vw, 4px) #ffffff,
+    0 4px 10px rgba(122, 47, 122, 0.45);
 }
 
 .pagination-ellipsis {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 4px 0;
-  color: #6c757d;
-  min-width: 20px;
-  font-size: 0.75rem;
+  padding: 0 2px;
+  color: #9b6a9b;
+  min-width: 16px;
+  font-size: clamp(0.8rem, 0.7rem + 0.3vw, 0.9rem);
+  font-weight: 700;
+}
+
+/* ============ Prev / Next flower buttons ============ */
+.pagination-nav-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pagination-arrow {
+  position: relative;
+  width: clamp(31.22px, 9.77vw, 46.73px);
+height: clamp(30.5px, 9.54vw, 45.81px);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+/* Disabled = not clickable, but keep full colour (no washed-out look) */
+.pagination-arrow:disabled {
+  cursor: not-allowed;
+}
+
+/* Actual flower PNG asset */
+.pagination-flower-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(122, 47, 122, 0.25));
+  transition: transform 0.15s ease;
+  user-select: none;
+}
+
+.pagination-arrow:hover:not(:disabled) .pagination-flower-img {
+  transform: scale(1.06);
+}
+
+.arrow-glyph {
+  position: relative;
+  z-index: 1;
+  color: #241129;
+ font-size: clamp(24px, 7.63vw, 36.64px);
+  font-weight: 400;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+.pagination-arrow.prev .arrow-glyph {
+  margin-right: 1px;
+}
+.pagination-arrow.next .arrow-glyph {
+  margin-left: 1px;
+}
+
+/* ============ Sparkle asset (Group_1707479633.svg — small + large star pair) ============ */
+.sparkle-img {
+  position: absolute;
+  width: clamp(13px, 5px + 2.5vw, 17px);
+  height: clamp(28px, 10px + 5.625vw, 37px);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Left side (prev): breathing room from the flower, scales with viewport */
+.sparkle-left {
+  top: -2px;
+  left: clamp(-22px, 2px - 5vw, -14px);
+}
+
+/* Right side (next): mirror horizontally so it leans the opposite way */
+.sparkle-right {
+  top: -2px;
+  right: clamp(-22px, 2px - 5vw, -14px);
+  transform: scaleX(-1);
 }

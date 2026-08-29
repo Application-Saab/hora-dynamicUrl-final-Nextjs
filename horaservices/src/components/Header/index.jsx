@@ -29,8 +29,8 @@ const Header = () => {
 
   const drawerRef = useRef(null);
 
-  // ✅ ab city state yahan se nahi, shared context se aayegi
-  const { selectedCityName, setShowCityModal, isPillHiddenRoute } = useCity();
+  // City pill — sirf venue-list route par dikhega
+  const { selectedCityName, setShowCityModal, isPillVisibleRoute } = useCity();
 
   /** -----------------------
    * PAGE TYPE LOGIC
@@ -133,8 +133,8 @@ const Header = () => {
           {/* MOBILE HEADER */}
           {!isWonderlandInternational && (
             <div className="mobile-only mobile-header">
-              {/* CITY SELECTOR PILL — sirf /photo-gallery par hide hogi, baaki sab routes par dikhegi */}
-              {!isPillHiddenRoute && (
+              {/* CITY SELECTOR PILL — SIRF venue-list route par dikhega */}
+              {isPillVisibleRoute && (
                 <div className="citySelectorPill" onClick={() => setShowCityModal(true)}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ marginBottom: "2px" }}>
                     <path
@@ -182,7 +182,7 @@ const Header = () => {
           )}
         </div>
 
-        {/* ❌ CitySelector yahan se hata diya — ab sirf PageLayout mein ek hi baar render hoga */}
+        {/* CitySelector modal PageLayout mein render hota hai — yaha sirf pill dikhti hai */}
 
         {/* MOBILE DRAWER */}
         {showDrawer && (

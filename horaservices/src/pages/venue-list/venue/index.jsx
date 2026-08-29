@@ -1,15 +1,6 @@
-// import React from "react";
-
-// const VenuePage = () => {
-//   return <div>Venue Page</div>;
-// };
-
-// export default VenuePage;
-
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import "./venue.css";
 import InviteActions from "@/components/wonderland/common/InviteActions";
-import CreateInviteModal from "@/components/wonderland/create-invite/CreateInviteModal";
 import VenueWallSection from "@/components/wonderland/event-wall/VenueWallSection";
 import { useRouter } from "next/router";
 import useApi from "@/hooks/useApi";
@@ -25,18 +16,20 @@ import TemplateRenderer from "@/components/wonderland/common/TemplateRenderer";
 import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templatecardSkeleton";
 import VenueFoodModal from "@/components/VenueFoodModal";
 import VenueFoodCard from "@/components/VenueFoodCard";
-// import { getFoodPackagesByEventId } from "@/utils/venuedatalist/eventFoodPackages.js";
 import TermsModal from "@/components/TermsModal";
-import VenueAddressSection from "@/components/VenueCommon/VenueAddressSection";
-// import { getTermsByEventId } from "@/utils/venuedatalist/EventTerms";
 import useRsvpStatus from "@/hooks/useRsvpStatus";
 import { safeGetItem } from "@/utils/safeStorage";
+import VenueAddressSection from "@/components/VenueAddressSection";
+import VenueHighlights from "@/components/VenueHighlights";
+import VenueCategoryPills from "@/components/VenueCategoryPills";
+import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
+import VenueNameOverlay from "@/components/VenueNameOverlay";
+import Head from "next/head";
 
 const VenuePage = () => {
   const router = useRouter();
-  const { venueid: queryVenueId } = router.query;
+  const { venueid: queryVenueId, city } = router.query;
   const [showTermsModal, setShowTermsModal] = useState(false);
-  // const venueTerms = getTermsByEventId(queryVenueId);
   const [eventDetails, setEventDetails] = useState(null);
   const [userData, setUserData] = useState({});
   const [fullPageLoader, setFullPageLoader] = useState(true);
@@ -45,7 +38,6 @@ const VenuePage = () => {
   const [loggedinUserId, setLoggedinUserId] = useState(
     safeGetItem("userID") || "",
   );
-  const [openCreateInviteModal, setOpenCreateInviteModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [pushRsvpClick, setPushRsvpClick] = useState(false);
   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
@@ -64,17 +56,40 @@ const VenuePage = () => {
   } = useApi();
   const { makeRequest: fetchUserData } = useApi();
   const { makeRequest: fetchVenuePackages } = useApi();
+  const { guests, parking, rooms, halls: hallsParam } = router.query;
 
-  // Event ID ke hisaab se food packages
-  // const foodPackages = getFoodPackagesByEventId(queryVenueId);
+  const venueForHighlights = eventDetails
+    ? {
+        ...eventDetails,
+        guestCapacity: eventDetails.guestCapacity || guests,
+        isParkingAvailable: eventDetails.isParkingAvailable ?? (parking === "1"),
+        totalRoomsAvailable: eventDetails.totalRoomsAvailable || Number(rooms) || 0,
+        hallType: eventDetails.hallType || (hallsParam ? JSON.parse(hallsParam) : []),
+      }
+    : null;
+
+  // SEO title/description/canonical (city-aware)
+  const cityDisplay = city
+    ? city.charAt(0).toUpperCase() + city.slice(1)
+    : "";
+
+  const venueLocationLabel = eventDetails?.location || cityDisplay;
+
+  const venueTitle = eventDetails?.venueName
+    ? `${eventDetails.venueName}${venueLocationLabel ? `, ${venueLocationLabel}` : ""} — Book Now`
+    : "Venue Details & Booking";
+
+  const venueDescription = eventDetails?.venueName
+    ? `Book ${eventDetails.venueName}${venueLocationLabel ? ` in ${venueLocationLabel}` : ""} for your next event. Check packages, guest capacity & real photos.`
+    : "View venue packages, capacity, and photos for your next event.";
+
+  const canonicalUrl =
+    typeof window !== "undefined" ? window.location.href.split("?")[0] : "";
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!router.isReady) return;
 
-      if (!queryVenueId && loggedinUserId) {
-        setOpenCreateInviteModal(true);
-      }
       if (queryVenueId && !loggedinUserId) {
         setShowGuestLoginModal(true);
       }
@@ -85,22 +100,39 @@ const VenuePage = () => {
   }, [router.isReady, queryVenueId, loggedinUserId]);
 
   useEffect(() => {
+    const cached = getPageCache("venue-categories");
+    if (cached) {
+      setVenueCategories(cached.data);
+    }
+  }, []);
+
+  useEffect(() => {
     if (data?.data) {
       setVenueCategories(data.data);
+      setPageCache("venue-categories", data.data);
     }
   }, [data]);
 
   useLayoutEffect(() => {
     const fetchEventDetails = async () => {
-      if (queryVenueId && loggedinUserId) {
-        try {
-          await fetchEventInvite(
-            `${GET_VENUE_DETAILS_BY_ID}/${queryVenueId}`,
-            "GET",
-          );
-        } catch (err) {
-          console.error("Error fetching event details:", err);
-        }
+      if (!queryVenueId || !loggedinUserId) return;
+
+      const cacheKey = `venue-details-${queryVenueId}`;
+      const cached = getPageCache(cacheKey);
+
+      if (cached) {
+        setEventDetails(cached.data);
+        setFullPageLoader(false);
+        if (!cached.isStale) return;
+      }
+
+      try {
+        await fetchEventInvite(
+          `${GET_VENUE_DETAILS_BY_ID}/${queryVenueId}`,
+          "GET",
+        );
+      } catch (err) {
+        console.error("Error fetching event details:", err);
       }
     };
     fetchEventDetails();
@@ -108,16 +140,25 @@ const VenuePage = () => {
 
   useLayoutEffect(() => {
     const fetchUserDetails = async () => {
-      if (queryVenueId && loggedinUserId) {
-        try {
-          let resp = await fetchUserData(
-            `${GET_USER_BY_ID}/${loggedinUserId}`,
-            "GET",
-          );
-          setUserData(resp?.data);
-        } catch (err) {
-          console.error("Error fetching user details:", err);
-        }
+      if (!queryVenueId || !loggedinUserId) return;
+
+      const cacheKey = `venue-user-${loggedinUserId}`;
+      const cached = getPageCache(cacheKey);
+
+      if (cached) {
+        setUserData(cached.data);
+        if (!cached.isStale) return;
+      }
+
+      try {
+        let resp = await fetchUserData(
+          `${GET_USER_BY_ID}/${loggedinUserId}`,
+          "GET",
+        );
+        setUserData(resp?.data);
+        setPageCache(cacheKey, resp?.data);
+      } catch (err) {
+        console.error("Error fetching user details:", err);
       }
     };
     fetchUserDetails();
@@ -125,16 +166,25 @@ const VenuePage = () => {
 
   useLayoutEffect(() => {
     const fetchVenuePackage = async () => {
-      if (queryVenueId && loggedinUserId) {
-        try {
-          let resp = await fetchVenuePackages(
-            `${GET_VENUE_PACKAGES_BY_VENUE_ID}/${queryVenueId}`,
-            "GET",
-          );
-          setVenuePackages(resp?.data);
-        } catch (err) {
-          console.error("Error fetching venue packages:", err);
-        }
+      if (!queryVenueId || !loggedinUserId) return;
+
+      const cacheKey = `venue-packages-${queryVenueId}`;
+      const cached = getPageCache(cacheKey);
+
+      if (cached) {
+        setVenuePackages(cached.data);
+        if (!cached.isStale) return;
+      }
+
+      try {
+        let resp = await fetchVenuePackages(
+          `${GET_VENUE_PACKAGES_BY_VENUE_ID}/${queryVenueId}`,
+          "GET",
+        );
+        setVenuePackages(resp?.data);
+        setPageCache(cacheKey, resp?.data);
+      } catch (err) {
+        console.error("Error fetching venue packages:", err);
       }
     };
     fetchVenuePackage();
@@ -144,8 +194,12 @@ const VenuePage = () => {
     if (eventData?.data) {
       setEventDetails(eventData.data);
       setFullPageLoader(false);
+      if (queryVenueId) {
+        setPageCache(`venue-details-${queryVenueId}`, eventData.data);
+      }
     }
   }, [eventData]);
+
   useLayoutEffect(() => {
     if (eventDetails && loggedinUserId) {
       if (eventDetails?.userId === loggedinUserId) {
@@ -155,7 +209,6 @@ const VenuePage = () => {
       }
     }
   }, [eventDetails, loggedinUserId]);
-  console.log("loggedinUserId", loggedinUserId);
 
   useEffect(() => {
     const syncLoginState = () =>
@@ -170,8 +223,7 @@ const VenuePage = () => {
 
   // Back button handler
   useEffect(() => {
-    const anyModalOpen =
-      selectedPackage || showGuestLoginModal || openCreateInviteModal;
+    const anyModalOpen = selectedPackage || showGuestLoginModal;
 
     if (anyModalOpen) {
       window.history.pushState({ modalOpen: true }, "");
@@ -188,17 +240,12 @@ const VenuePage = () => {
         setShowGuestLoginModal(false);
         return;
       }
-      if (openCreateInviteModal) {
-        window.history.pushState({ modalOpen: true }, "");
-        setOpenCreateInviteModal(false);
-        return;
-      }
-      router.back();
     };
 
     window.addEventListener("popstate", handleBack);
     return () => window.removeEventListener("popstate", handleBack);
-  }, [selectedPackage, showGuestLoginModal, openCreateInviteModal]);
+  }, [selectedPackage, showGuestLoginModal]);
+
   useEffect(() => {
     setTimeout(() => {
       if (eventDetails && eventDetails?.userId === loggedinUserId) {
@@ -208,14 +255,57 @@ const VenuePage = () => {
       }
     }, 1000);
   }, [eventDetails, loggedinUserId]);
+const PHONE = "7338584828"; 
+
+const handleEnquire = () => {
+  const venueName = eventDetails?.venueName || "this venue";
+  const location = eventDetails?.city || eventDetails?.location || "";
+  const capacity = eventDetails?.guestCapacity;
+  const price = eventDetails?.startingPrice;
+
+  const message = `Hi, I'm interested in *${venueName}*${location ? ` (${location})` : ""}.
+${capacity ? `Guest Capacity: ${capacity}` : ""}
+${price ? `Starting Price: ₹${price}/plate` : ""}
+
+Please share more details and availability.`;
+
+  const encodedMessage = encodeURIComponent(message.trim());
+  window.open(`https://wa.me/91${PHONE}?text=${encodedMessage}`, "_blank");
+};
   if (fullPageLoader) return <InvitePageFlashLoader />;
 
   return (
     <>
+      <Head>
+        <title>{venueTitle}</title>
+        <meta name="description" content={venueDescription} />
+        <meta name="robots" content="index, follow" />
+        {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+
+        <meta property="og:title" content={venueTitle} />
+        <meta property="og:description" content={venueDescription} />
+        <meta property="og:type" content="place" />
+        {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+        {eventDetails?.venueImageUrl && (
+          <meta property="og:image" content={eventDetails.venueImageUrl} />
+        )}
+        <meta property="og:locale" content="en_IN" />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={venueTitle} />
+        <meta name="twitter:description" content={venueDescription} />
+        {eventDetails?.venueImageUrl && (
+          <meta name="twitter:image" content={eventDetails.venueImageUrl} />
+        )}
+      </Head>
+
       <div className="invite-page">
         <div className="invite-page-container">
           {/* Template */}
-          <div className="invite-template-shell">
+          <div
+            className="invite-template-shell"
+            style={{ position: "relative", marginTop: "12px" }}
+          >
             {fetchEventLoading ? (
               <TemplatecardSkeleton
                 width="100%"
@@ -223,13 +313,16 @@ const VenuePage = () => {
                 borderRadius="10px"
               />
             ) : (
-              <TemplateRenderer
-                fetchEventLoading={fetchEventLoading}
-                eventDetails={eventDetails}
-                orderDetails={eventDetails}
-                isHost={true}
-                isVenue={true}
-              />
+              <>
+                <TemplateRenderer
+                  fetchEventLoading={fetchEventLoading}
+                  eventDetails={eventDetails}
+                  orderDetails={eventDetails}
+                  isHost={true}
+                  isVenue={true}
+                />
+                <VenueNameOverlay venueName={eventDetails?.venueName} />
+              </>
             )}
           </div>
 
@@ -243,23 +336,15 @@ const VenuePage = () => {
             </div>
           )}
 
-          {/* InviteActions — sirf actual host ko */}
-          {/* {showHostActionSection && (
-            <div className="invite-action-container">
-              <InviteActions
-                refetchInvite={() => refetchEventInvite()}
-                eventData={eventDetails}
-              />
-            </div>
-          )} */}
-
           {/* Food Packages */}
           {venuePackages.length > 0 && (
             <div
               className="whos-joining-container"
-              style={{ marginTop: "10px", marginBottom: "10px" }}
+              style={{
+                marginTop: "clamp(3px, 1.27vw, 5px)",
+                marginBottom: "10px",
+              }}
             >
-              <h2 className="wall-heading text-center m-0 p-0">Packages</h2>
               <div
                 style={{
                   marginTop: "10px",
@@ -280,55 +365,28 @@ const VenuePage = () => {
             </div>
           )}
 
-          {eventDetails?.termsAndConditionsHtml && (
-            <>
-              <div
-                className="terms-strip"
-                onClick={() => setShowTermsModal(true)}
-              >
-                <div className="terms-blob" />
-                <div className="terms-blob2" />
-                <div className="terms-seal">
-                  <svg viewBox="0 0 24 24" fill="none" width={20} height={20}>
-                    <path
-                      d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
-                      stroke="#fff"
-                      strokeWidth="1.6"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M9 12l2 2 4-4"
-                      stroke="#fff"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                <div className="terms-body">
-                  <p className="terms-title">Terms &amp; Conditions</p>
-                  <p className="terms-sub">Tap to read before booking</p>
-                </div>
-                <div className="terms-view-btn">View</div>
-              </div>
+          <div className="venue-tax-note">
+            <span className="venue-tax-line" />
+            <span className="venue-tax-text">* Included All Plus Taxes *</span>
+            <span className="venue-tax-line" />
+          </div>
+          <div className="enquire-card">
+           <VenueHighlights venue={venueForHighlights} onEnquire={handleEnquire} />
+            <VenueCategoryPills categories={eventDetails?.venueType} />
+          </div>
 
-              <TermsModal
-                isOpen={showTermsModal}
-                onClose={() => setShowTermsModal(false)}
-                data={eventDetails?.termsAndConditionsHtml}
-              />
-            </>
-          )}
           {/* Celebration Wall */}
           <div className="event-wall-container">
-            <h2 className="wall-heading text-center mt-2 p-0">Explore Spaces</h2>
+            <h2 className="wall-heading mt-2 p-0" style={{ textAlign: "left" }}>
+              Explore Spaces
+            </h2>
             <VenueWallSection
               userData={userData}
               setPushRsvpClick={setPushRsvpClick}
               rsvpSubmitted={false}
               isHost={eventDetails?.userId === loggedinUserId}
               isVenueHost={true}
-               venueImageUrl={eventDetails?.venueImageUrl}  
+              venueImageUrl={eventDetails?.venueImageUrl}
             />
           </div>
         </div>
@@ -342,14 +400,6 @@ const VenuePage = () => {
         />
       )}
 
-      <CreateInviteModal
-        isOpen={openCreateInviteModal}
-        onClose={() => setOpenCreateInviteModal(false)}
-        getRedirectRoute={(data) => ({
-          pathname: "/venue-list/venue",
-          query: { venueid: data._id },
-        })}
-      />
       <LoginModal
         isOpen={showGuestLoginModal}
         onClose={() => setShowGuestLoginModal(false)}

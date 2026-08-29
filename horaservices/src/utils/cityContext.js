@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import cityNameToSlug from "@/utils/Citynametoslug.json";
 import { BASE_URL } from "./apiconstants";
@@ -10,9 +10,7 @@ const CityContext = createContext({
   selectedCitySlug: "",
   selectedCityName: "",
   showCityModal: false,
-  isCityDisabledRoute: false,
-  isPillHiddenRoute: false,
-
+  isPillVisibleRoute: false,
   setShowCityModal: () => {
     console.warn("useCity() called outside <CityProvider> — wrap this component in CityProvider.");
   },
@@ -29,13 +27,20 @@ const CityContext = createContext({
 
 const NOT_SELECTED = "NOT_SELECTED";
 const CITY_LIST = [...new Set(Object.values(cityNameToSlug))];
-
 const CITY_PATH_REGEX = new RegExp(`^/(${CITY_LIST.join("|")})(?=/|$)`, "i");
+
+// Flag jo batayega ki user-city (tracking) API call life-time me ek baar ho chuki hai ya nahi.
+// Isse refresh par dubara call nahi hoga. YE PURA FLOW ROUTE-INDEPENDENT HAI — jaisa tha waisa hi.
+const CITY_API_DONE_FLAG = "cityApiCallDone";
+
+// City URL/pill/modal logic SIRF venue-list ke liye active hai.
+// Tracking API is se koi lena dena nahi rakhti — wo har page par apna kaam karti hai.
+const CITY_ALLOWED_ROUTES = ["/venue-list"];
 
 const slugToCityName = {
   delhi: "Delhi",
   mumbai: "Mumbai",
-  bengaluru: "Bengaluru",
+  bangalore: "Bangalore",
   noida: "Noida",
   ghaziabad: "Ghaziabad",
   gurugram: "Gurgaon",
@@ -52,17 +57,6 @@ const slugToCityName = {
   pune: "Pune",
   others: "Others",
 };
-
-const CITY_ALLOWED_ROUTES = [
-  "/balloon-decoration",
-  "/photography-page",
-  // "/book-chef-cook-for-party",
-  // "/party-food-delivery-live-catering-buffet/party-food-delivery",
-  // "/party-food-delivery-live-catering-buffet/party-live-buffet-catering",
-  "/venue-list",
-  "/chef-near-me",
-  // "/photo-gallery",
-];
 
 const stripAllCitySegments = (path) => {
   let result = path || "/";
@@ -81,15 +75,10 @@ const stripAllCitySegments = (path) => {
 const isRouteCityAllowed = (strippedPath) => {
   const p = strippedPath || "/";
 
-  return (
-    p === "/" ||
-    CITY_ALLOWED_ROUTES.some((route) => {
-      if (p.startsWith(route)) return true;
-
-      const localityPrefixed = new RegExp(`^/[^/]+${route}(?:/|$)`);
-      return localityPrefixed.test(p);
-    })
-  );
+  return CITY_ALLOWED_ROUTES.some((route) => {
+    const exactRegex = new RegExp(`^${route}/?$`, "i");
+    return exactRegex.test(p);
+  });
 };
 
 const getOrCreateVisitorId = () => {
@@ -99,7 +88,6 @@ const getOrCreateVisitorId = () => {
     visitorId = crypto.randomUUID();
     safeSetItem("VISITOR_ID", visitorId);
   }
-
   return visitorId;
 };
 
@@ -177,8 +165,8 @@ const fetchCityFromServer = async () => {
 };
 
 export const CityProvider = ({ children }) => {
-  const nextPathname = usePathname();
   const router = useRouter();
+  const nextPathname = usePathname();
 
   const [pathname, setPathname] = useState(() => {
     if (typeof window !== "undefined") {
@@ -196,7 +184,6 @@ export const CityProvider = ({ children }) => {
     const onPopState = () => {
       setPathname(window.location.pathname);
     };
-
     window.addEventListener("popstate", onPopState);
     return () => {
       window.removeEventListener("popstate", onPopState);
@@ -207,212 +194,158 @@ export const CityProvider = ({ children }) => {
     (newPath, { replace = false } = {}) => {
       const target = newPath || "/";
       const navigate = replace ? router.replace : router.push;
-
       navigate(target, { scroll: false });
-
-      window.dispatchEvent(
-        new CustomEvent("city:changed", {
-          detail: { path: target },
-        })
-      );
     },
     [router]
   );
 
-  const [selectedCitySlug, setSelectedCitySlug] = useState("");
+  // Lazy-init: agar localStorage mein pehle se city save hai, to usse turant
+  // pick karo — isse refresh par modal ek pal ke liye bhi flash/khulta nahi.
+  const [selectedCitySlug, setSelectedCitySlug] = useState(() => {
+    if (typeof window === "undefined") return "";
+    return safeGetItem("selectedCity") || "";
+  });
+
   const [showCityModal, setShowCityModal] = useState(false);
 
-  const dbCityPromiseRef = useRef(null);
-  const dbCityResolvedRef = useRef(undefined);
+  // Batata hai ki tracking flow (background city-resolve) apna kaam kar chuka
+  // hai ya nahi. Isse pehle URL-inject/modal-open decide nahi karenge — warna
+  // refresh par galat waqt par modal flash ho sakta hai.
+  const [citySourceReady, setCitySourceReady] = useState(false);
 
+  /* ============================================================
+   * TRACKING FLOW — BILKUL WAISA HI, ROUTE-CHECK KE BINA
+   * (isko hath mat lagao, ye jaisa tha waisa hi chal raha hai)
+   * ============================================================ */
   useEffect(() => {
-    dbCityPromiseRef.current = fetchCityFromServer().then((cityName) => {
-      dbCityResolvedRef.current = cityName || null;
-      return cityName;
-    });
-  }, []);
-
-  const pathWithoutCity = stripAllCitySegments(pathname || "/");
-  const isCityAllowedRoute = isRouteCityAllowed(pathWithoutCity);
-  const isCityDisabledRoute = !isCityAllowedRoute;
-  const isPillHiddenRoute = !isCityAllowedRoute;
-
-  const injectCityIntoUrlIfAllowed = useCallback(
-    (slug) => {
-      if (!slug || slug === NOT_SELECTED) return;
-
-      const currentPath = pathname || "/";
-
-      if (currentPath.match(CITY_PATH_REGEX)) {
-        return;
+    // Agar pehle hi (kisi bhi previous load/refresh me) API call ho chuki hai,
+    // to sirf saved slug (agar hai) restore karo aur dubara API mat maaro.
+    const alreadyDone = safeGetItem(CITY_API_DONE_FLAG);
+    if (alreadyDone) {
+      const savedSlug = safeGetItem("selectedCity");
+      if (savedSlug && savedSlug !== NOT_SELECTED) {
+        setSelectedCitySlug(savedSlug);
       }
-
-      const stripped = stripAllCitySegments(currentPath);
-
-      if (!isRouteCityAllowed(stripped)) return;
-
-      const newPath = `/${slug}${stripped === "/" ? "" : stripped}`;
-
-      if (newPath !== currentPath) {
-        setUrlSilently(newPath, { replace: true });
-      }
-    },
-    [pathname, setUrlSilently]
-  );
-
-  useEffect(() => {
-    if (!pathname) {
-      return;
-    }
-
-    const match = pathname.match(CITY_PATH_REGEX);
-
-    if (match && match[1]) {
-      const citySlugFromUrl = match[1].toLowerCase();
-      const restAfterFirstCity = pathname.slice(match[0].length);
-
-      const cleanedRest = stripAllCitySegments(
-        restAfterFirstCity.startsWith("/") ? restAfterFirstCity : "/" + restAfterFirstCity
-      );
-
-      const isStacked = restAfterFirstCity !== cleanedRest;
-      const routeAllowsCity = isRouteCityAllowed(cleanedRest);
-
-      if (!routeAllowsCity) {
-        setUrlSilently(cleanedRest || "/", { replace: true });
-      } else if (isStacked) {
-        const canonicalPath = `/${citySlugFromUrl}${cleanedRest === "/" ? "" : cleanedRest}`;
-        setUrlSilently(canonicalPath || "/", { replace: true });
-      }
-
-      setSelectedCitySlug(citySlugFromUrl);
-      safeSetItem("selectedCity", citySlugFromUrl);
-      setShowCityModal(false);
-
-      return;
-    }
-
-    const savedSlug = localStorage.getItem("selectedCity");
-
-    if (savedSlug && savedSlug !== NOT_SELECTED) {
-      setSelectedCitySlug(savedSlug);
-      setShowCityModal(false);
-      injectCityIntoUrlIfAllowed(savedSlug);
+      setCitySourceReady(true);
       return;
     }
 
     let cancelled = false;
 
-    const resolveCity = async () => {
-      const cityName = await (dbCityPromiseRef.current || fetchCityFromServer());
+    const resolveCityOnce = async () => {
+      const cityName = await fetchCityFromServer();
 
-      if (cancelled) {
-        return;
-      }
+      if (cancelled) return;
 
       if (cityName && cityName !== NOT_SELECTED) {
         const slug = cityNameToSlug[cityName] || cityName.toLowerCase();
         safeSetItem("selectedCity", slug);
         setSelectedCitySlug(slug);
-        setShowCityModal(false);
-        dbCityResolvedRef.current = cityName;
-        injectCityIntoUrlIfAllowed(slug);
-
-        return;
+      } else {
+        // Response NOT_SELECTED bhi ho, tab bhi ek baar POST call karni hai.
+        safeSetItem("selectedCity", NOT_SELECTED);
+        setSelectedCitySlug(NOT_SELECTED);
+        await saveCityToServer(NOT_SELECTED);
       }
 
-      localStorage.setItem("selectedCity", NOT_SELECTED);
-      setSelectedCitySlug(NOT_SELECTED);
-      dbCityResolvedRef.current = NOT_SELECTED;
+      // Ab flag set kar do — isse aage kabhi bhi (refresh pe bhi) dubara call nahi hogi.
+      safeSetItem(CITY_API_DONE_FLAG, "true");
 
-      await saveCityToServer(NOT_SELECTED);
-
-      if (cancelled) {
-        return;
-      }
-
-      setShowCityModal(!isCityDisabledRoute);
+      if (!cancelled) setCitySourceReady(true);
     };
 
-    resolveCity();
+    resolveCityOnce();
 
     return () => {
       cancelled = true;
     };
-  }, [pathname, isCityDisabledRoute, setUrlSilently, injectCityIntoUrlIfAllowed]);
+  }, []);
 
-  const selectCity = (cityName) => {
-    setShowCityModal(false);
+  /* ============================================================
+   * UI + URL LAYER — SIRF venue-list PAR ACTIVE
+   * Tracking flow se independent hai, usko touch nahi karta.
+   * ============================================================ */
+  const pathWithoutCity = stripAllCitySegments(pathname || "/");
+  const isPillVisibleRoute = isRouteCityAllowed(pathWithoutCity);
 
-    if (!cityName) {
-      localStorage.setItem("selectedCity", NOT_SELECTED);
-      setSelectedCitySlug(NOT_SELECTED);
-      dbCityResolvedRef.current = NOT_SELECTED;
+  useEffect(() => {
+    if (!pathname) return;
 
-      saveCityToServer(NOT_SELECTED);
-
-      const restOfPath = stripAllCitySegments(pathname);
-      setUrlSilently(restOfPath || "/");
-
-      return;
-    }
-
-    const slug = cityNameToSlug[cityName] || cityName.toLowerCase();
-
-    safeSetItem("selectedCity", slug);
-    setSelectedCitySlug(slug);
-
-    saveCityToServer(cityName);
-    dbCityResolvedRef.current = cityName;
-
-    const strippedPath = stripAllCitySegments(pathname);
-    const restOfPath = strippedPath.replace(new RegExp(`^/${slug}(?=/|$)`, "i"), "") || "/";
-
-    const routeAllowsCity = isRouteCityAllowed(strippedPath);
-
-    setUrlSilently(
-      routeAllowsCity ? `/${slug}${restOfPath === "/" ? "" : restOfPath}` : restOfPath
-    );
-  };
-
-  const dismissCityModal = useCallback(async () => {
-    const cityName =
-      dbCityResolvedRef.current !== undefined
-        ? dbCityResolvedRef.current
-        : await (dbCityPromiseRef.current || fetchCityFromServer());
-
-    if (cityName && cityName !== NOT_SELECTED) {
-      const slug = cityNameToSlug[cityName] || cityName.toLowerCase();
-
-      localStorage.setItem("selectedCity", slug);
-      setSelectedCitySlug(slug);
+    if (!isPillVisibleRoute) {
       setShowCityModal(false);
-      injectCityIntoUrlIfAllowed(slug);
-
       return;
     }
 
-    localStorage.setItem("selectedCity", NOT_SELECTED);
-    setSelectedCitySlug(NOT_SELECTED);
-    dbCityResolvedRef.current = NOT_SELECTED;
+    // Case 1: URL mein pehle se city hai (e.g. /delhi/venue-list) — usi ko source of truth maano.
+    const match = pathname.match(CITY_PATH_REGEX);
+    if (match && match[1]) {
+      const citySlugFromUrl = match[1].toLowerCase();
+      setSelectedCitySlug(citySlugFromUrl);
+      safeSetItem("selectedCity", citySlugFromUrl);
+      setShowCityModal(false);
+      return;
+    }
 
-    saveCityToServer(NOT_SELECTED);
+    // Case 2: URL mein city nahi hai. Jab tak tracking flow apna resolve
+    // complete na kar le, kuch mat karo (na modal, na redirect) — warna
+    // refresh par galat waqt par modal flash ho sakta hai.
+    if (!citySourceReady) return;
+
+    // Case 3: City pata hai (localStorage/state se) — URL mein silently inject karo.
+    if (selectedCitySlug && selectedCitySlug !== NOT_SELECTED) {
+      const stripped = stripAllCitySegments(pathname);
+      const newPath = `/${selectedCitySlug}${stripped === "/" ? "" : stripped}`;
+
+      if (newPath !== pathname) {
+        setUrlSilently(newPath, { replace: true });
+      }
+      setShowCityModal(false);
+      return;
+    }
+
+    // Case 4: City pata hi nahi hai — user se poochna padega.
+    setShowCityModal(true);
+  }, [pathname, isPillVisibleRoute, citySourceReady, selectedCitySlug, setUrlSilently]);
+
+  const selectCity = useCallback(
+    (cityName) => {
+      setShowCityModal(false);
+
+      if (!cityName) {
+        safeSetItem("selectedCity", NOT_SELECTED);
+        setSelectedCitySlug(NOT_SELECTED);
+        saveCityToServer(NOT_SELECTED);
+
+        const restOfPath = stripAllCitySegments(pathname);
+        setUrlSilently(restOfPath || "/");
+        return;
+      }
+
+      const slug = cityNameToSlug[cityName] || cityName.toLowerCase();
+      safeSetItem("selectedCity", slug);
+      setSelectedCitySlug(slug);
+      saveCityToServer(cityName);
+
+      const strippedPath = stripAllCitySegments(pathname);
+      const newPath = `/${slug}${strippedPath === "/" ? "" : strippedPath}`;
+      setUrlSilently(newPath);
+    },
+    [pathname, setUrlSilently]
+  );
+
+  const dismissCityModal = useCallback(() => {
     setShowCityModal(false);
-  }, [injectCityIntoUrlIfAllowed]);
+  }, []);
 
   // For places (e.g. Footer city links) that navigate via a plain <Link>
   // straight to a specific city+page URL. This only keeps the selected-city
-  // state/localStorage/API in sync — it does NOT touch the URL, since the
-  // <Link> itself is already taking the user to the right place.
+  // state/localStorage/API in sync — it does NOT touch the URL.
   const syncSelectedCity = useCallback((cityName) => {
     if (!cityName) return;
 
     const slug = cityNameToSlug[cityName] || cityName.toLowerCase();
-
-    localStorage.setItem("selectedCity", slug);
+    safeSetItem("selectedCity", slug);
     setSelectedCitySlug(slug);
-    dbCityResolvedRef.current = cityName;
-
     saveCityToServer(cityName);
   }, []);
 
@@ -428,8 +361,7 @@ export const CityProvider = ({ children }) => {
         selectCity,
         dismissCityModal,
         syncSelectedCity,
-        isCityDisabledRoute,
-        isPillHiddenRoute,
+        isPillVisibleRoute,
       }}
     >
       {children}

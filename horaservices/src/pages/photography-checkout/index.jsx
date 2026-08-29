@@ -411,7 +411,37 @@ const balanceAmount = totalAmount - advanceAmount;
     }
   }
 
+const getPhotographyImageUrl = (item) => {
+  let fileName = "";
 
+  if (item?.featured_image && typeof item.featured_image === "string") {
+    fileName = item.featured_image;
+  } else if (
+    Array.isArray(item?.featured_image) &&
+    item.featured_image.length > 0
+  ) {
+    fileName =
+      item.featured_image[0]?.fileName ||
+      item.featured_image[0] ||
+      "";
+  } else if (item?.featured_images?.[0]?.fileName) {
+    fileName = item.featured_images[0].fileName;
+  }
+
+  if (!fileName) {
+    return "/default-image.webp";
+  }
+
+  // Agar already full URL hai
+  if (fileName.startsWith("http://") || fileName.startsWith("https://")) {
+    return fileName;
+  }
+
+  // Extension remove karke compressed webp URL
+  const cleanFileName = fileName.split(".")[0];
+
+  return `https://horaservices.com/api/uploads/compressed_webp/${cleanFileName}.webp`;
+};
 const contactUsRedirection = (productName) => {
   // productName example: "Candid Anniversary Photography Package"
 
@@ -643,17 +673,13 @@ const contactUsRedirection = (productName) => {
               <p className='productTitle'>{productData?.name || "N/A"}</p>
             </div>
            <div className='prod-detailsp'>
-              <Image
-                          className="checkoutRightImg"
-                          src={
-                            product?.featured_image
-                              ? `https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]}.webp`
-                              : "/default-image.webp"
-                          }
-                          alt="image"
-                          width={300}
-                          height={300}
-                        />
+             <Image
+  className="checkoutRightImg"
+  src={getPhotographyImageUrl(product)}
+  alt={product?.name || "Photography product"}
+  width={300}
+  height={300}
+/>
             </div> 
 
             <div className='prod-details'>

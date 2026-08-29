@@ -123,7 +123,7 @@ const LayoutInner = ({ children }) => {
   const [visitorId, setVisitorId] = useState("");
   const [pincode, setPincode] = useState("");
   const [idsReady, setIdsReady] = useState(false);
- const { showCityModal, selectCity, isCityDisabledRoute, dismissCityModal } = useCity();
+  const { showCityModal, selectCity, dismissCityModal } = useCity();
   const { setDateResolved } = useDateGate();
 
   const [showDateSheet, setShowDateSheet] = useState(false);
@@ -133,22 +133,9 @@ const LayoutInner = ({ children }) => {
   const checkStarted = useRef(false);
   const dateSheetTimerRef = useRef(null);
 
-  const [cityResolved, setCityResolved] = useState(false);
-  const prevShowCityModal = useRef(showCityModal);
-
-  useEffect(() => {
-    if (isCityDisabledRoute) {
-      setCityResolved(true);
-      return;
-    }
-    if (prevShowCityModal.current === true && showCityModal === false) {
-      setCityResolved(true);
-    }
-    if (!showCityModal && !prevShowCityModal.current) {
-      setCityResolved(true);
-    }
-    prevShowCityModal.current = showCityModal;
-  }, [showCityModal, isCityDisabledRoute]);
+  // Date-sheet flow city ke wait mein nahi rukta — tracking city-resolve
+  // ab background me chalta hai aur date-sheet flow se independent hai.
+  const [cityResolved] = useState(true);
 
   const isDateSheetAllowedPath = /(^|\/)(balloon-decoration|photography-page)(\/|$)/.test(pathname || "");
 
@@ -299,8 +286,10 @@ const LayoutInner = ({ children }) => {
           <meta name="fast2sms" content="p8oFAZAbcm2E8mwWaW6YA5iS1ZYtRGJe" />
         </Head>
 
-       {showCityModal && !isCityDisabledRoute && (
-      <CitySelector onSelect={selectCity} onDismiss={dismissCityModal} />
+        {/* City modal ab sirf venue-list route par khulti hai — CityProvider ke
+            andar isPillVisibleRoute check karke showCityModal set hota hai. */}
+        {showCityModal && (
+          <CitySelector onSelect={selectCity} onDismiss={dismissCityModal} />
         )}
 
         {isDateSheetAllowedPath && showDateSheet && (

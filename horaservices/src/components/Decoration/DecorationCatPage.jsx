@@ -96,6 +96,19 @@ const DecorationCatPage = ({
   // ---- Price-range theme selector state (Budget / Value / Photogenic / Stage) ----
   const [selectedPriceTheme, setSelectedPriceTheme] = useState(null); // { id, label, priceRange, ... } | null
 
+  // ================= CACHE-FIRST BACK-NAVIGATION SUPPORT =================
+  // Jab user product-detail (alag route) se BACK karke is page par aata
+  // hai, yeh component pura REMOUNT hota hai — saara state khali ho jaata
+  // hai. Isse bachne ke liye ek module-level in-memory cache use karte
+  // hain (utils/pageDataCache.js): mount hote hi pehle cache check karo,
+  // agar mile to turant wahi data dikhao — koi naya API call nahi.
+  //
+  // `hasHydratedFromCache` ek REF hai (state nahi), taaki isko set/read
+  // karna re-render trigger na kare. Iska use "abhi jo catId/currentPage
+  // set hua hai woh CACHE se aaya hai, isliye usse trigger hone wale
+  // fetch effects ko is baar SKIP karna hai" — yeh batane ke liye hota hai.
+  const hasHydratedFromCache = useRef(false);
+
   const handleSelectPriceTheme = (theme) => {
     setSelectedPriceTheme(theme); // theme = null clears the filter, otherwise the full theme object
 
@@ -135,6 +148,10 @@ const DecorationCatPage = ({
   const [sortOption, setSortOption] = useState("popularity");
 
   const handleSortChange = (id) => {
+    // User ne khud filter badla — ab yeh ek GENUINE fresh query hai,
+    // cache-hydration skip-guard ko force-clear kar dete hain taaki
+    // niche wala effect zaroor fresh-fetch kare.
+    hasHydratedFromCache.current = false;
     setSortOption(id);
   };
 
@@ -147,6 +164,7 @@ const DecorationCatPage = ({
   // kisi pehle se lage filtered subset ke upar nahi.
   const handleSearchChange = (query) => {
     const trimmed = query?.trim() || "";
+    hasHydratedFromCache.current = false; // genuine user action
     setSearchQuery(trimmed);
 
     if (trimmed) {
@@ -204,6 +222,7 @@ const DecorationCatPage = ({
     }
   }, [theme, selectedPriceTheme]);
 
+  // ================= CACHE-FIRST: subCategory resolve hote hi check karo =================
   useEffect(() => {
     addSpaces(subCategory);
     if (!initialCatId) {
@@ -249,9 +268,34 @@ const DecorationCatPage = ({
 }, [catId, themeFilter, sortOption, selectedPriceTheme, searchQuery]);
 
   useEffect(() => {
+    if (loading || isPaginating || !hasMore) return;
+
+    const timer = setTimeout(() => {
+      setCurrentPage((prev) => prev + 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [loading, isPaginating, hasMore]);
+
+
+  // ================= currentPage change => fetch that page =================
+  // Guard: agar yeh currentPage abhi-abhi CACHE se hydrate hua tha (page 1
+  // nahi tha), to iska fetch mat karo — data already cache mein tha.
+  // Yeh flag "consume-once" hai: pehli baar check karke turant clear kar
+  // dete hain, taaki agla genuine auto-pagination increment normally chale.
+  useEffect(() => {
+    if (hasHydratedFromCache.current) {
+      // Is pass mein skip — lekin flag ko yahin se clear NAHI karte,
+      // kyunki neeche wala catId-effect bhi isी pass mein isi flag ko
+      // check karta hai. Flag ek alag "reset" effect (sabse niche
+      // declare kiya gaya, dono ke BAAD) clear karega — taaki dono
+      // effects isi ek hydration-pass mein sahi se skip ho jayein.
+      return;
+    }
     if (catValue && currentPage !== 1) {
       getSubCatItems(currentPage);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   useEffect(() => {
@@ -261,9 +305,23 @@ const DecorationCatPage = ({
     }
   }, [catValue]);
 
-  // Reset the price-range theme filter whenever the category changes
+  // Reset the price-range theme filter whenever the category GENUINELY
+  // changes (user browsed from one category to another). Yeh effect
+  // catValue ke pehli baar populate hone par (mount, "" -> actual value)
+  // fire NAHI hona chahiye — warna cache se hydrate kiya hua
+  // selectedPriceTheme turant wipe ho jaata hai aur user ko lagta hai
+  // "filter hat gaya".
+  const prevCatValueRef = useRef("");
   useEffect(() => {
-    setSelectedPriceTheme(null);
+    const prevCatValue = prevCatValueRef.current;
+    prevCatValueRef.current = catValue;
+
+    const isGenuineCategorySwitch =
+      prevCatValue && catValue && prevCatValue !== catValue;
+
+    if (isGenuineCategorySwitch) {
+      setSelectedPriceTheme(null);
+    }
   }, [catValue]);
 
   function addSpaces(subCategory) {
@@ -365,9 +423,21 @@ const DecorationCatPage = ({
         setHasMore(page < response.data.pagination.totalPages);
       }
     } catch (error) {
+      // 👇 NAYA: error ho jaaye tab bhi page-1 ke case mein event fire karo,
+      // warna page hamesha ke liye hidden reh jaayega (sirf safety-net
+      // timer se hi reveal hoga, jo 1500ms baad hai)
+      if (page === 1 && typeof window !== "undefined") {
+        window.dispatchEvent(new Event("page-content-ready"));
+      }
     } finally {
       if (page === 1) {
         setLoading(false);
+
+        // 👇 NAYA: page-1 ka data successfully aa gaya, ab _app.tsx ko
+        // batao reveal karne ke liye
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("page-content-ready"));
+        }
       } else {
         setIsPaginating(false);
       }
@@ -426,6 +496,7 @@ const DecorationCatPage = ({
     // CategoryTabs se koi theme (jaise Cocomelon) select ho raha hai —
     // isliye price-range segmentation (Budget/Value/Photogenic/Stage)
     // clear kar dete hain, dono ek saath active nahi rehne chahiye.
+    hasHydratedFromCache.current = false; // genuine navigation/user action
     setSelectedPriceTheme(null);
 
     const categorySlug = getCategorySlugFromPath(pathname, city, locality);
