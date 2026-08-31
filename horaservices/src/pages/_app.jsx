@@ -1,8 +1,7 @@
-// pages/_app.tsx
 import "../app/globals.css";
 import "../app/home.css";
 import "../app/homepage.css";
-import React, { useEffect, useState, useLayoutEffect } from "react";
+import React, { useEffect } from "react";
 import PageLayout from "@/components/pagelayout";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -10,29 +9,20 @@ import { store, persistor } from "../store/store";
 import { useRouter } from "next/router";
 import WhatsAppIcon from "../app/WhatsAppIconGtm.jsx";
 import Head from "next/head";
-// import { getToken } from "firebase/messaging";
-// import { messaging } from "../firebase";
 import { ChatProvider } from "@/hooks/ChatContext";
 import { UserDetailsProvider } from "@/hooks/UserDetailsContext";
 import ChatProviderMain from "@/hooks/ChatProvider";
-// import { FIREBASE_VAPID_KEY } from "@/utils/constants";
-import { BASE_URL, SUBSCRIBE_NOTIFICATION } from "@/utils/apiconstants";
-// import { usePathname } from "next/navigation";
-import { getVisitorId, getDeviceInfo, getBrowserInfo } from "@/utils/analytics";
 import VisitorTracker from "@/utils/VisitorTracker";
-import { safeGetItem } from "@/utils/safeStorage";
 import ErrorBoundary from "@/components/ErrorBoundary/Errorboundary";
-import { fetchWithError } from "@/utils/fetchWithError";
-import { setupGlobalErrorHandlers, startMemoryMonitoring } from "@/utils/errorReporter";
+import {
+  setupGlobalErrorHandlers,
+  startMemoryMonitoring,
+} from "@/utils/errorReporter";
 import { useScrollRestoration } from "@/hooks/useScrollRestoration";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const pathname = router.asPath;
-  const [currentUrl, setCurrentUrl] = useState("");
-  const [loggedinUserId, setLoggedinUserId] = useState(
-    (typeof window !== "undefined" && safeGetItem("userID")) || "",
-  );
 
   // ================= SCROLL RESTORATION (moved to hooks/useScrollRestoration.js) =================
   useScrollRestoration(router);
@@ -88,91 +78,6 @@ function MyApp({ Component, pageProps }) {
       document.removeEventListener("dragstart", blockDrag);
     };
   }, []);
-
-  // useEffect(() => {
-  //   const visitorId = getVisitorId();
-  //   console.log('visitor id' , visitorId);
-  //   const { device, os } = getDeviceInfo();
-  //   const browser = getBrowserInfo();
-  //   console.log(JSON.stringify({
-  //       visitorId,
-  //       device,
-  //       os,
-  //       browser,
-  //       page: window.location.pathname, // 👈 include page path
-  //     }))
-
-  //   // Track daily visit with page info
-  //   fetch("https://horaservices.com/api/analytics/track-daily-visit", {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify({
-  //       visitorId,
-  //       device,
-  //       os,
-  //       browser,
-  //       page: window.location.pathname, // 👈 include page path
-  //     }),
-  //   });
-  // }, []);
-
-  // const requestPermission = async () => {
-  //   try {
-  //     if ("Notification" in window && "serviceWorker" in navigator) {
-  //       const swRegistration = await navigator.serviceWorker.register(
-  //         "/firebase-messaging-sw.js",
-  //       );
-
-  //       const permission = await Notification.requestPermission();
-
-  //       if (permission === "granted") {
-  //         const currentToken = await getToken(messaging, {
-  //           vapidKey: FIREBASE_VAPID_KEY,
-  //           serviceWorkerRegistration: swRegistration,
-  //         });
-
-  //         if (currentToken) {
-  //           await fetchWithError(`${BASE_URL}${SUBSCRIBE_NOTIFICATION}`, {
-  //             method: "POST",
-  //             headers: { "Content-Type": "application/json" },
-  //             body: JSON.stringify({
-  //               userId: loggedinUserId,
-  //               fcmToken: currentToken,
-  //             }),
-  //           });
-  //         }
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("FCM error:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (loggedinUserId) requestPermission();
-  // }, [loggedinUserId]);
-
-  // Listen local storage changes for login state
-  useEffect(() => {
-    const syncLoginState = () => {
-      setLoggedinUserId(safeGetItem("userID") || "");
-    };
-
-    window.addEventListener("storage", syncLoginState);
-
-    // Sync on same tab login without change page
-    window.addEventListener("loginStateChange", syncLoginState);
-
-    return () => {
-      window.removeEventListener("storage", syncLoginState);
-      window.removeEventListener("loginStateChange", syncLoginState);
-    };
-  }, []);
-
-  // ================= TRACK CURRENT URL ON ROUTE CHANGE =================
-  useEffect(() => {
-    setCurrentUrl(router.asPath);
-  }, [router.asPath]);
 
   // ================= GOOGLE TAG MANAGER (LOADS ONLY ONCE) =================
   useEffect(() => {
@@ -244,12 +149,12 @@ function MyApp({ Component, pageProps }) {
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/new_logo_light.png" />
         <link
-           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Rubik:wght@400;500;600;700&family=Just+Another+Hand&display=swap"
-    rel="stylesheet"
-  />
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Rubik:wght@400;500;600;700&family=Just+Another+Hand&display=swap"
+          rel="stylesheet"
+        />
       </Head>
 
-     <Provider store={store}>
+      <Provider store={store}>
         <UserDetailsProvider>
           <PersistGate loading={appContent} persistor={persistor}>
             {appContent}
