@@ -39,6 +39,7 @@ const OrderDetailTab = ({
   decorationItems,
   decorationComments,
   addOn,
+    themes,
 }) => {
 
   const decorationArray = Array.isArray(decorationItems) ? decorationItems : [decorationItems];
@@ -1081,7 +1082,35 @@ orderId={orderDetail?.order_id}
                   ) : (
                     <div style={{ fontSize: 13 }}>NA</div>
                   )}
+{/* ================= THEMES ================= */}
+{orderDetail?.themes?.length > 0 && (
+  <>
+    <div className="fw-semiBold myOrderDetails-heading">
+      Themes
+    </div>
+    {orderDetail.themes.map((item, index) => {
+      const fileName = item?.image || item?.featured_image || item?.icon || "";
+      const imgUrl = !fileName
+        ? "/default-image.webp"
+        : fileName.startsWith("http")
+        ? fileName
+        : `https://horaservices.com/api/uploads/compressed_webp/${fileName.split(".")[0]}.webp`;
 
+      return (
+        <div key={index} className="info-row" style={{ alignItems: "center" }}>
+          <Image
+            src={imgUrl}
+            alt={item?.title || "Theme"}
+            width={28}
+            height={28}
+            style={{ borderRadius: "4px", objectFit: "cover", marginRight: 8 }}
+          />
+          <div>{item?.title || item?.name || "NA"}</div>
+        </div>
+      );
+    })}
+  </>
+)}
                   {/* ================= ADDITIONAL COMMENTS ================= */}
                   <div className="fw-semiBold myOrderDetails-heading">
                     Additional Comments

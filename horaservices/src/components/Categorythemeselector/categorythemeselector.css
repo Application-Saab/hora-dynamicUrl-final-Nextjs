@@ -1,0 +1,204 @@
+.theme-selector-wrapper {
+  width: 100%;
+ padding: clamp(11px, 3.82vw, 15px) 0 0 clamp(5px, 1.78vw, 7px);
+  box-sizing: border-box;
+   position: relative;
+  background: linear-gradient(
+    135deg,
+    #E6E3FC 0%,
+    #FEF6EF 35%,
+    #FCECF3 70%,
+    #F9DEF8 100%
+  );
+}
+
+/* ---------------- Header ---------------- */
+.theme-header {
+  text-align: center;
+margin-bottom: clamp(7.5px, 2.54vw, 10px);
+}
+
+.theme-title {
+  color: #97538C;
+  font-family: "Josefin Sans", sans-serif;
+  font-weight: 700;
+  font-size: clamp(14px, 4.58vw, 18px);
+  text-align: center;
+ margin: 0 0 clamp(4.5px, 1.53vw, 6px);
+}
+
+.theme-subtitle {
+  color: #2D2825;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: clamp(11px, 3.56vw, 14px);
+  text-align: center;
+  margin: 0;
+}
+
+/* ---------------- Cards Row (Slider) ---------------- */
+.theme-cards-row {
+  display: flex;
+  align-items: stretch;   /* NEW */
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 4px 8px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.theme-cards-row::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------------- Theme Card ---------------- */
+.theme-card {
+  flex: 0 0 auto;
+  width: clamp(100px, 35.11vw, 138px);
+  scroll-snap-align: start;
+  background: #ffffff;
+  border-radius: clamp(8px, 2.54vw, 10px);
+  overflow: hidden;
+  box-shadow: 0px 4px 4px 0px #E8E1ED;
+
+  display: flex;              /* NEW */
+  flex-direction: column;     /* NEW */
+}
+
+.theme-card-selected {
+  box-shadow: 0 2px 10px rgba(157, 74, 147, 0.2);
+}
+
+.theme-card-disabled {
+  opacity: 0.5;
+}
+
+/* ---------------- Image ---------------- */
+.theme-image-box {
+  width: 100%;
+height: clamp(86px, 30.03vw, 118px);
+  background: #f3e9f4;
+}
+
+.theme-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.theme-no-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b48ab8;
+  font-size: 13px;
+  background: #f3e9f4;
+}
+
+/* ---------------- Title ---------------- */
+.theme-card-title {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: clamp(11px, 3.56vw, 14px);
+  text-align: center;
+  margin: clamp(7px, 2.29vw, 9px) 0;
+  flex-grow: 1;               /* NEW: takes remaining space, pushes button down */
+}
+
+/* ---------------- Select Button ---------------- */
+.theme-select-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4px, 1.53vw, 6px);
+
+  margin: 0 clamp(6px, 2.04vw, 8px) clamp(6px, 2.04vw, 8px);
+  padding: clamp(5px, 1.53vw, 6px) clamp(8px, 2.54vw, 10px);
+
+  border-radius: clamp(6px, 2.04vw, 8px);
+  border: 1.5px solid #97538C;
+  background: #97538C1A;
+  color: #97538C;
+
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: clamp(9px, 3.05vw, 12px);
+  line-height: 100%;
+  letter-spacing: 0;
+
+  cursor: pointer;
+}
+
+.theme-select-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ---------------- Checkbox ---------------- */
+.theme-checkbox {
+width: clamp(9px, 3.19vw, 12.55px);
+height: clamp(9px, 3.19vw, 12.55px);
+  border-radius: clamp(0.75px, 0.25vw, 1px);
+  border: 1.5px solid #9d4a93;
+  background: #97538C1A;
+;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.theme-checkbox-active {
+  background: #9d4a93;
+  border-color: #9d4a93;
+}
+
+.theme-check-icon {
+  width: 11px;
+  height: 11px;
+  color: #ffffff;
+}
+
+/* ---------------- Loading Skeleton ---------------- */
+.theme-loading-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px;
+}
+
+.theme-skeleton-card {
+  flex: 0 0 auto;
+  width: 200px;
+  height: 290px;
+  border-radius: 14px;
+  background: linear-gradient(
+    90deg,
+    #f0e2f1 25%,
+    #f7edf7 37%,
+    #f0e2f1 63%
+  );
+  background-size: 400% 100%;
+  animation: theme-shimmer 1.4s ease infinite;
+}
+
+@keyframes theme-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+/* ---------------- Error / Empty States ---------------- */
+.theme-error-box,
+.theme-empty-box {
+  text-align: center;
+  padding: 24px;
+  color: #7a4a6a;
+  font-size: 14px;
+}

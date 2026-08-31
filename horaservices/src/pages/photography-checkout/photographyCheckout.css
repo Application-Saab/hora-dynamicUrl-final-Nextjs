@@ -492,6 +492,7 @@ select.formcontrol {
     padding: 24px 20px;
     width: 90%;
     margin: 30px auto;
+    max-width: 450px;
 }
 
 .detailimage{
@@ -503,7 +504,7 @@ border:1px solid #7e7c7c ;
 }
 .prod-details {
   margin: 0;
-  padding: 0;
+  padding: 0 !important;
 }
 
 .detailitem {
@@ -629,7 +630,7 @@ font-family: 'Inter', sans-serif;
 .floating-center-image {
     position: absolute;
     top: 0%;
-    bottom: 82%;
+    bottom: 89%;
     transform: translate(-50%, -50%);
     z-index: 10;
     pointer-events: none;

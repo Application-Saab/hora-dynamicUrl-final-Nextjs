@@ -27,6 +27,7 @@ const OrderDetail = () => {
   const [decorationItems, setDecorationItems] = useState([]);
   const [decorationComments, setDecorationComments] = useState("");
   const [addOn , setAddOn] = useState('');
+  const [themes, setThemes] = useState([]);
   const [hospitalityServiceCount, setHospitalityServiceCount] = useState();
   const [hospitalityServiceTotalAmount, setHospitalityServiceTotalAmount] =
     useState();
@@ -67,11 +68,13 @@ const fetchPhotographyOrderDetails = async () => {
     setLoading(true);
 
     const response = await fetchWithError(
-      BASE_URL + GET_PHOTOGRAPHY_ORDER_DETAILS+ "/" + orderId
+      BASE_URL + GET_PHOTOGRAPHY_ORDER_DETAILS + "/" + orderId
     );
 
     const responseData = await response.json();
     setOrderDetail(responseData.data);
+    setThemes(responseData?.data?.themes || []); // 👈 naya
+    setAddOn(responseData?.data?.add_on);        // 👈 agar addons bhi chahiye
 
   } catch (error) {
     console.log("error", error);
@@ -165,6 +168,7 @@ const fetchPhotographyOrderDetails = async () => {
             decorationItems={decorationItems}
             decorationComments={decorationComments}
             addOn={addOn}
+              themes={themes} 
           />
         </div>
       </div>
