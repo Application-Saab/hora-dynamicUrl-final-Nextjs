@@ -675,7 +675,7 @@ const contactUsRedirection = (productName) => {
              
               <p className='productTitle'>{productData?.name || "N/A"}</p>
             </div>
-           <div className='prod-detailsp'>
+           <div >
              <Image
   className="checkoutRightImg"
   src={getPhotographyImageUrl(product)}
@@ -712,11 +712,27 @@ const contactUsRedirection = (productName) => {
   <div className='addon-prices'>
     <label>Selected Themes:</label>
     <ul className="addon-list">
-      {selectedThemes.map((theme, index) => (
-        <li key={theme._id || index} className="addon-item">
-          <span className="addon-title">{index + 1}. {theme.title}</span>
-        </li>
-      ))}
+      {selectedThemes.map((theme, index) => {
+        const fileName = theme?.image || theme?.featured_image || theme?.icon || "";
+        const imgUrl = !fileName
+          ? "/default-image.webp"
+          : fileName.startsWith("http")
+          ? fileName
+          : `https://horaservices.com/api/uploads/compressed_webp/${fileName.split(".")[0]}.webp`;
+
+        return (
+          <li key={theme._id || index} className="addon-item" style={{ display: "flex", alignItems: "center" }}>
+            <Image
+              src={imgUrl}
+              alt={theme.title || "Theme"}
+              width={28}
+              height={28}
+              style={{ borderRadius: "4px", objectFit: "cover", marginRight: "6px" }}
+            />
+            <span className="addon-title">{index + 1}. {theme.title}</span>
+          </li>
+        );
+      })}
     </ul>
   </div>
 )}
