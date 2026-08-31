@@ -236,7 +236,21 @@ export default function DateSelectionBottomSheet({
   });
   const [weekdayPart, ...rest] = formattedSelectedDate.split(", ");
   const displayDate = `${weekdayPart} , ${rest.join(", ")}`;
+useEffect(() => {
+  if (isOpen) {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
 
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollY); // ✅ exact scroll position restore
+    };
+  }
+}, [isOpen]);
   return (
     <div className="dsb-device">
       <div className="dsb-overlay" onClick={onClose} />

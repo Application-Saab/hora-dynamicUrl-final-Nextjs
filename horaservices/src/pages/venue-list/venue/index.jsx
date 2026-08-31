@@ -222,30 +222,27 @@ const VenuePage = () => {
   }, []);
 
   // Back button handler
-  useEffect(() => {
-    const anyModalOpen = selectedPackage || showGuestLoginModal;
+ useEffect(() => {
+  const anyModalOpen = selectedPackage || showGuestLoginModal;
 
-    if (anyModalOpen) {
-      window.history.pushState({ modalOpen: true }, "");
+  if (anyModalOpen) {
+    window.history.pushState({ modalOpen: true }, "");
+  }
+
+  const handleBack = () => {
+    if (selectedPackage) {
+      setSelectedPackage(null);   // ✅ sirf close karo, pushState mat karo
+      return;
     }
+    if (showGuestLoginModal) {
+      setShowGuestLoginModal(false);  // ✅ yahan bhi
+      return;
+    }
+  };
 
-    const handleBack = () => {
-      if (selectedPackage) {
-        window.history.pushState({ modalOpen: true }, "");
-        setSelectedPackage(null);
-        return;
-      }
-      if (showGuestLoginModal) {
-        window.history.pushState({ modalOpen: true }, "");
-        setShowGuestLoginModal(false);
-        return;
-      }
-    };
-
-    window.addEventListener("popstate", handleBack);
-    return () => window.removeEventListener("popstate", handleBack);
-  }, [selectedPackage, showGuestLoginModal]);
-
+  window.addEventListener("popstate", handleBack);
+  return () => window.removeEventListener("popstate", handleBack);
+}, [selectedPackage, showGuestLoginModal]);
   useEffect(() => {
     setTimeout(() => {
       if (eventDetails && eventDetails?.userId === loggedinUserId) {

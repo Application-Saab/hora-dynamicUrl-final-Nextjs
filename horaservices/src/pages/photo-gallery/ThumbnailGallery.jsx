@@ -217,75 +217,60 @@ useEffect(() => {
 }), [allThumbnails.length]);
 
   // ── Grid render ──
-  const renderGallery = () => {
-    // ✅ galleryRef ki actual width lo — ye sabse accurate hai
-    const actualW = galleryRef.current
-      ? Math.floor(galleryRef.current.getBoundingClientRect().width)
-      : cw;
-    const effectiveCw = actualW > 0 ? Math.min(actualW, 480) : cw;
-    if (!effectiveCw || effectiveCw < 10) return null;
+ const renderGallery = () => {
+  const actualW = galleryRef.current
+    ? Math.floor(galleryRef.current.getBoundingClientRect().width)
+    : cw;
+  const effectiveCw = actualW > 0 ? Math.min(actualW, 480) : cw;
+  if (!effectiveCw || effectiveCw < 10) return null;
 
-    const gap = 6;
+  const gap = 6;
+  let targetH;
+  if      (effectiveCw <= 360) targetH = 120;
+  else if (effectiveCw <= 480) targetH = 140;
+  else if (effectiveCw <= 768) targetH = 170;
+  else                         targetH = 210;
 
-    // ✅ targetRowHeight — 320-480px ke liye tuned
-    // Chhota value = zyada images per row (cramped)
-    // Bada value = kam images per row (spacious)
-    let targetH;
-    if      (effectiveCw <= 360) targetH = 120;
-    else if (effectiveCw <= 480) targetH = 140;
-    else if (effectiveCw <= 768) targetH = 170;
-    else                         targetH = 210;
+  const allRows = buildJustifiedRows(currentThumbnailsOnPage, effectiveCw, targetH, gap);
 
-    const allRows = buildJustifiedRows(currentThumbnailsOnPage, effectiveCw, targetH, gap);
+  const result = [];
 
-    const result = [];
-    let bannerIdx  = 0;
-    let imgCount   = 0;
+  const globalOffset = isIOSMobile ? (currentPage - 1) * ITEMS_PER_PAGE : 0;
+  let bannerIdx = Math.floor(globalOffset / bannerInterval);
+  let imgCount  = globalOffset;
 
-   allRows.forEach((rowItems, rIdx) => {
-
-  // Row render
-  result.push(
-    <div key={`r-${rIdx}`} style={{ display: 'flex', gap: `${gap}px`, marginBottom: `${gap}px`, width: `${effectiveCw}px`, overflow: 'hidden' }}>
-      {rowItems.map((thumb) => {
-        const gi = allThumbnails.findIndex(t => t.stableKey === thumb.stableKey);
-        return (
-          <div key={thumb.stableKey} onClick={() => handleImageClick(gi)}
-            style={{ width: `${thumb.displayW}px`, height: `${thumb.displayH}px`, flexShrink: 0, overflow: 'hidden', borderRadius: '4px', cursor: 'pointer', backgroundColor: '#e9ecef', position: 'relative' }}>
-            <LazyImage src={thumb.thumbnailImageUrl} alt={`Photo ${gi + 1}`} wrapperClassName="smart-image-wrapper" />
-          </div>
-        );
-      })}
-    </div>
-  );
-
-  // Count update
-  imgCount += rowItems.length;
-
-  // Banner check
-  if (imgCount >= bannerInterval * (bannerIdx + 1) && banners[bannerIdx]) {
+  allRows.forEach((rowItems, rIdx) => {
     result.push(
-      <div key={`b-${bannerIdx}`} style={{ width: `${effectiveCw}px`, marginBottom: `${gap}px` }}>
-        {banners[bannerIdx]}
+      <div key={`r-${rIdx}`} style={{ display: 'flex', gap: `${gap}px`, marginBottom: `${gap}px`, width: `${effectiveCw}px`, overflow: 'hidden' }}>
+        {rowItems.map((thumb) => {
+          const gi = allThumbnails.findIndex(t => t.stableKey === thumb.stableKey);
+          return (
+            <div key={thumb.stableKey} onClick={() => handleImageClick(gi)}
+              style={{ width: `${thumb.displayW}px`, height: `${thumb.displayH}px`, flexShrink: 0, overflow: 'hidden', borderRadius: '4px', cursor: 'pointer', backgroundColor: '#e9ecef', position: 'relative' }}>
+              <LazyImage src={thumb.thumbnailImageUrl} alt={`Photo ${gi + 1}`} wrapperClassName="smart-image-wrapper" />
+            </div>
+          );
+        })}
       </div>
     );
-    bannerIdx++;
-  }
 
-}); // ✅ forEach yahan khatam
+    imgCount += rowItems.length;
 
-// ✅ while loop BAHAR — forEach ke baad
-while (bannerIdx < banners.length) {
-  result.push(
-    <div key={`b-end-${bannerIdx}`} style={{ width: `${effectiveCw}px`, marginBottom: `${gap}px` }}>
-      {banners[bannerIdx]}
-    </div>
-  );
-  bannerIdx++;
-}
+    if (imgCount >= bannerInterval * (bannerIdx + 1) && banners[bannerIdx]) {
+      result.push(
+        <div key={`b-${bannerIdx}`} style={{ width: `${effectiveCw}px`, marginBottom: `${gap}px` }}>
+          {banners[bannerIdx]}
+        </div>
+      );
+      bannerIdx++;
+    }
+  });
 
-return result;
-  };
+  // ✅ koi "leftover banners dump" wala while loop nahi
+  // images khatam → jitne banners interval ke hisaab se fit hue utne hi dikhenge, baaki simply skip
+
+  return result;
+};
 
  if (loading)
   return (

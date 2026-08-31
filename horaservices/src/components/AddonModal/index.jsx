@@ -10,6 +10,7 @@ const AddonModal = ({
   itemQuantities = {},
   onAdd,
   onRemove,
+  title = "Party Add-ons",
 }) => {
   const addonRef = useRef();
 
@@ -27,7 +28,7 @@ const AddonModal = ({
     className="party-addon-icon"
   />
 
-  <h2 className="party-addon-title">Party Add-ons</h2>
+  <h2 className="party-addon-title">{title}</h2>
 
   <Image
     src={StarIcon}
