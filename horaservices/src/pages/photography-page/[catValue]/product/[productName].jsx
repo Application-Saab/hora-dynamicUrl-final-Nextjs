@@ -748,13 +748,15 @@ useEffect(() => {
               <b className="Duration">Duration:</b> {work?.event_duration || work?.duration || "Duration not available"}
             </p>
           </div>
-<Categorythemeselector
-  themes={themeData}
-  loading={themeLoading}
-  error={themeError}
-  maxSelect={3}
-  onSelectionChange={setSelectedThemeData}
-/>
+{!themeLoading && themeData.length > 0 && (
+  <Categorythemeselector
+    themes={themeData}
+    loading={themeLoading}
+    error={themeError}
+    maxSelect={3}
+    onSelectionChange={setSelectedThemeData}
+  />
+)}
             <div ref={addonRef}>
     <AddonModal 
     isopen={isModalOpen}

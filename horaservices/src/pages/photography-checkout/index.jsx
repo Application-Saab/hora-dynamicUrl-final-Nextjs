@@ -347,7 +347,7 @@ const balanceAmount = totalAmount - advanceAmount;
         "items": [product._id],
         "decoration_comments": getFinalComment(),
         "status": 0,
-         "themes": selectedThemes.map(t => t._id),
+        "themes": selectedThemes,
       }
       const token = await safeGetItem('token');
       const response = await axiosApi.post(url, requestData, {
