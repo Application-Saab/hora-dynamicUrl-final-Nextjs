@@ -1,10 +1,22 @@
-import { useRouter } from 'next/router';
-import { useEffect, useState, useRef } from 'react';
-import Image from 'next/image';
+import { useRouter } from "next/router";
+import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
+
 import photographyAddOns from "@/utils/photographyAddOns.json";
-import { faqData } from '@/utils/photographyFAQData.js'
+import { faqData } from "@/utils/photographyFAQData.js";
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
-import { useParams } from "next/navigation";
+import { SeoWork } from "@/utils/photoGraphyHead";
+import { BASE_URL, GET_ADDON_BY_ID } from "@/utils/apiconstants";
+import axiosApi from "@/utils/axiosApi";
+import { fetchWithError } from "@/utils/fetchWithError";
+
+import FAQSection from "@/components/FAQSection";
+import BrandBanner from "@/components/BrandBanner";
+import AdditionalServices from "@/components/AdditionalServices";
+import PhotographySimilarSlider from "@/components/PhotographySimilarSlider";
+import AddonModal from "@/components/AddonModal";
+import AddOnsList from "@/components/AddOnsList";
+
 import ShareIcon from "@/assets/shareIcon.svg";
 import PROFESSIONALPHOTOGRAPHERS from "@/assets/professionalPhoto.png";
 import SECURESTORAGE from "@/assets/secureStorage.png";
@@ -17,326 +29,394 @@ import SocialMediaIMG from "@/assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "@/assets/TpBrandsIMG.png";
 import checkImage from "@/assets/tick.svg";
 import logo from "@/assets/new_logo_light.png";
-import "./productDetails.css";
-import {
-  BASE_URL,
-  GET_ADDON_BY_ID,
-} from "@/utils/apiconstants";
-import FAQSection from '@/components/FAQSection';
-import BrandBanner from '@/components/BrandBanner';
-import AdditionalServices from '@/components/AdditionalServices';
-import PhotographySimilarSlider from '@/components/PhotographySimilarSlider';
-import { SeoWork } from '@/utils/photoGraphyHead';
 import fallbackImg from "@/assets/fallback-image.png";
 import pencil from "@/assets/pencil.svg";
-import AddonModal from '@/components/AddonModal';
-import AddOnsList from '@/components/AddOnsList';
-import { fetchWithError } from '@/utils/fetchWithError';
-import axiosApi from '@/utils/axiosApi';
-const SkeletonLoader = () => {
-  return (
-    <div
-      className="skeleton-loader"
-      style={{ maxWidth: "1200px", margin: "0 auto", backgroundColor: "white" }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "flex-start",
-          paddingTop: "20px",
-          paddingBottom: "20px",
-          position: "relative",
-        }}
-        className="decDetails"
-      >
-        <div
-          style={{ width: "50%", textAlign: "center" }}
-          className="decDetailsLeft"
-        >
-          <div
-            style={{
-              width: "80%",
-              height: "300px",
-              backgroundColor: "#f0f0f0",
-              margin: "0 auto",
-              position: "relative",
-            }}
-          />
-        </div>
-        <div
-          style={{ width: "50%", paddingLeft: "20px", paddingRight: "50px" }}
-          className="decDetailsRight"
-        >
-          <div
-            style={{
-              height: "20px",
-              backgroundColor: "#f0f0f0",
-              marginBottom: "12px",
-              width: "60%",
-              borderRadius: "4px",
-            }}
-            className="decDetailsRightInner"
-          />
-          <div
-            style={{
-              height: "30px",
-              backgroundColor: "#f0f0f0",
-              marginBottom: "12px",
-              width: "40%",
-              borderRadius: "4px",
-            }}
-            className="decDetailsRightInner"
-          />
-          <div
-            style={{
-              height: "20px",
-              backgroundColor: "#f0f0f0",
-              marginBottom: "12px",
-              width: "80%",
-              borderRadius: "4px",
-            }}
-            className="decDetailsRightInner"
-          />
-          <div
-            style={{
-              height: "30px",
-              backgroundColor: "#f0f0f0",
-              marginBottom: "12px",
-              width: "60%",
-              borderRadius: "4px",
-            }}
-            className="decDetailsRightInner"
-          />
-          <div
-            style={{
-              height: "20px",
-              backgroundColor: "#f0f0f0",
-              marginBottom: "12px",
-              width: "60%",
-              borderRadius: "4px",
-            }}
-            className="decDetailsRightInner"
-          />
-          <div
-            style={{
-              height: "50px",
-              backgroundColor: "#f0f0f0",
-              marginBottom: "12px",
-              width: "60%",
-              borderRadius: "4px",
-            }}
-            className="decDetailsRightInner"
-          />
-          <div
-            style={{
-              height: "20px",
-              backgroundColor: "#f0f0f0",
-              marginBottom: "12px",
-              width: "60%",
-              borderRadius: "4px",
-            }}
-            className="decDetailsRightInner"
-          />
-          <div
-            style={{
-              height: "50px",
-              backgroundColor: "#f0f0f0",
-              marginBottom: "12px",
-              width: "60%",
-              borderRadius: "4px",
-            }}
-            className="decDetailsRightInner"
-          />
-          <div
-            style={{
-              height: "50px",
-              backgroundColor: "#f0f0f0",
-              marginBottom: "12px",
-              width: "100%",
-              borderRadius: "4px",
-            }}
-            className="decDetailsRightInner"
-          />
-          <div
-            style={{
-              height: "50px",
-              backgroundColor: "#f0f0f0",
-              marginBottom: "12px",
-              width: "100%",
-              borderRadius: "4px",
-            }}
-            className="decDetailsRightInner"
-          />
-        </div>
-      </div>
-    </div>
-  );
+
+import "./productDetails.css";
+
+// ---------- helpers ----------
+const getDiscountedPrice = (price = 0) => {
+  const discountedPrice = price / 0.78;
+  const discountDifference = discountedPrice - price;
+  const discount = ((discountDifference / discountedPrice) * 100).toFixed(0);
+  return {
+    discount: Number(discount),
+    discountedPrice: Math.round(discountedPrice),
+    discountDifference: Math.round(discountDifference),
+  };
 };
-const ProductDetails = () => {
-  const schemaOrg = getPhotographyOrganizationSchema();
-  const scriptTag = JSON.stringify(schemaOrg);
+
+const getMappedCatValue = (slug) => {
+  if (!slug) return slug;
+  const map = {
+    "Engagement-Photography": "Engagement-Photography",
+    "Wedding-Photography": "Wedding-Photography",
+    "Anniversary-Photography": "Anniversary-Photography",
+    "Birthday-Photography": "Birthday-Photography",
+    "House-warming-Photography": "House-warming-Photography",
+    "Naming-ceremony-Photography": "Naming-ceremony-Photography",
+    "Baby-Shower-Photography": "Baby-Shower-Photography",
+    "Bachelorette-Photography": "Bachelorette-Photography",
+    "Maternity-Photography": "Maternity-Photography",
+    "New-Born-Baby-Photography": "New-Born-Baby-Photography",
+  };
+  return map[slug] || slug;
+};
+
+// ---------- SSR ----------
+export async function getServerSideProps(context) {
+  const { catValue, city, locality, productName } = context.params || {};
+  const query = context.query || {};
+
+  const productId = query.id || null;
+  const finalCity = city || query.city || null;
+  const finalLocality = locality || query.locality || null;
+  const finalCatValue = catValue || query.catValue || null;
+
+  let work = null;
+  let similarProducts = [];
+  let addonData = [];
+  let error = null;
+
+  if (productId) {
+    try {
+      // 1) Product details
+      const res = await axiosApi.get(
+        `${BASE_URL}/api/photography/details/${productId}`,
+      );
+      const data = res.data?.data;
+
+      if (data) {
+        const { discount, discountedPrice, discountDifference } =
+          getDiscountedPrice(Number(data.price));
+
+        work = {
+          ...data,
+          discount,
+          discountedPrice,
+          discountDifference,
+          advance_amount: Number(data.advance_amount || 0),
+        };
+
+        // 2) Similar products
+        const tagId = data?.tag?.[0]?._id;
+        if (tagId) {
+          try {
+            const similarRes = await axiosApi.get(
+              `${BASE_URL}/api/photography/searchByTag/${tagId}`,
+            );
+            similarProducts = (similarRes.data?.data || []).filter(
+              (p) => p._id !== productId,
+            );
+          } catch (e) {
+            console.error("SSR similar fetch error:", e.message);
+          }
+        }
+
+        // 3) Addons
+        const addonIds = data?.addons || [];
+        if (addonIds.length > 0) {
+          try {
+            const q = new URLSearchParams();
+            addonIds.forEach((id) => id && q.append("ids", id));
+            if ([...q].length > 0) {
+              const addonRes = await axiosApi.get(
+                `${BASE_URL}${GET_ADDON_BY_ID}?${q.toString()}`,
+              );
+              addonData = addonRes.data?.data || [];
+            }
+          } catch (e) {
+            console.error("SSR addons fetch error:", e.message);
+          }
+        }
+      } else {
+        error = "No product found";
+      }
+    } catch (err) {
+      console.error("SSR product details error:", err.message);
+      error = err.message;
+    }
+  }
+
+  return {
+    props: {
+      initialWork: work,
+      initialSimilar: similarProducts,
+      initialAddons: addonData,
+      productId: productId || null,
+      city: finalCity,
+      locality: finalLocality,
+      catValue: finalCatValue,
+      ssrError: error,
+    },
+  };
+}
+
+// ---------- Page ----------
+const ProductDetails = ({
+  initialWork,
+  initialSimilar,
+  initialAddons,
+  productId: ssrProductId,
+  city: ssrCity,
+  locality: ssrLocality,
+  catValue: ssrCatValue,
+  ssrError,
+}) => {
   const router = useRouter();
-  const { query } = useRouter();
-  const productId = query.id;
-  const { city, locality, catValue } = router.query;
-  const { product } = router.query;
-  const [work, setWork] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const productId = router.query.id || ssrProductId;
+  const city = ssrCity || router.query.city || null;
+  const locality = ssrLocality || router.query.locality || null;
+  const catValue = ssrCatValue || router.query.catValue || "";
+
+  const [work, setWork] = useState(initialWork);
+  const [loading, setLoading] = useState(!initialWork);
+  const [similarProducts, setSimilarProducts] = useState(initialSimilar || []);
+  const [addonData, setAddonData] = useState(initialAddons || []);
+  const [addonIds, setAddonIds] = useState(initialWork?.addons || []);
+
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [isArrowDown, setIsArrowDown] = useState(false);
   const [itemQuantities, setItemQuantities] = useState({});
   const [selectedAddOnProduct, setSelectedAddOnProduct] = useState([]);
-  const hasCityPageParam = city ? true : false;
+
+  const hasCityPageParam = Boolean(city);
   const addonRef = useRef(null);
   const customizationRef = useRef(null);
-  const [similarProducts, setSimilarProducts] = useState([]);
   const similarRef = useRef(null);
-  const [addonData, setAddonData] = useState([]);
-  const [addonIds, setAddonIds] = useState([]);
-  
+
+  const schemaOrg = getPhotographyOrganizationSchema();
+  const scriptTag = JSON.stringify(schemaOrg);
 
   const brandItems = [
-    { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
-    { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
-    { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
-    { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
+    {
+      img: HappyCustomerIMG,
+      alt: "Happy Customers",
+      bold: "1L+ HAPPY",
+      sub: "CUSTOMERS",
+    },
+    {
+      img: GoogleRatingIMG,
+      alt: "Google Rating",
+      bold: "4.8+ GOOGLE",
+      sub: "RATING",
+    },
+    {
+      img: SocialMediaIMG,
+      alt: "Social Media",
+      bold: "OUR",
+      sub: "SOCIAL MEDIA",
+    },
+    {
+      img: TopBrandIMg,
+      alt: "Top Brands",
+      bold: "TOP BRANDS",
+      sub: "PARTNERED",
+    },
   ];
 
-  const calculateTotalPrice = (productPrice) => {
-    let totalPrice = Number(work?.price || productPrice);
+  // Client navigation: different product id
+  useEffect(() => {
+    if (!productId) return;
+    if (productId === ssrProductId && initialWork) {
+      setLoading(false);
+      return;
+    }
 
-    selectedAddOnProduct.forEach(item => {
-      totalPrice += item.price * itemQuantities[item.title];
+    const fetchProductAndSimilar = async () => {
+      try {
+        setLoading(true);
+        const res = await axiosApi.get(
+          `${BASE_URL}/api/photography/details/${productId}`,
+        );
+        const data = res.data?.data;
+        if (!data) throw new Error("No product found");
+
+        setAddonIds(data?.addons || []);
+
+        const { discount, discountedPrice, discountDifference } =
+          getDiscountedPrice(Number(data.price));
+
+        setWork({
+          ...data,
+          discount,
+          discountedPrice,
+          discountDifference,
+          advance_amount: Number(data.advance_amount || 0),
+        });
+
+        const tagId = data?.tag?.[0]?._id;
+        if (tagId) {
+          const similarRes = await axiosApi.get(
+            `${BASE_URL}/api/photography/searchByTag/${tagId}`,
+          );
+          setSimilarProducts(
+            (similarRes.data?.data || []).filter((p) => p._id !== productId),
+          );
+        } else {
+          setSimilarProducts([]);
+        }
+      } catch (error) {
+        console.error(error);
+        setWork(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProductAndSimilar();
+  }, [productId, ssrProductId, initialWork]);
+
+  // Addons (only if client navigated / SSR miss)
+  useEffect(() => {
+    if (!addonIds?.length) return;
+    // SSR already filled
+    if (productId === ssrProductId && initialAddons?.length) return;
+
+    const getAddons = async () => {
+      try {
+        const q = new URLSearchParams();
+        addonIds.forEach((id) => id && q.append("ids", id));
+        if (![...q].length) return;
+
+        const response = await fetchWithError(
+          `${BASE_URL}${GET_ADDON_BY_ID}?${q.toString()}`,
+        );
+        const data = await response.json();
+        if (!response.ok || data.error) {
+          throw new Error(data.message || "Failed to fetch addons");
+        }
+        setAddonData(data.data || []);
+      } catch (error) {
+        console.error("Error fetching addons:", error);
+      }
+    };
+    getAddons();
+  }, [addonIds, productId, ssrProductId, initialAddons]);
+
+  // Restore / persist addons in sessionStorage
+  useEffect(() => {
+    if (!productId) return;
+    try {
+      const saved = sessionStorage.getItem(`photo_addons_${productId}`);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setSelectedAddOnProduct(parsed.selectedAddOnProduct || []);
+        setItemQuantities(parsed.itemQuantities || {});
+      }
+    } catch (e) {
+      console.error("Error restoring addons:", e);
+    }
+  }, [productId]);
+
+  useEffect(() => {
+    if (!productId) return;
+    try {
+      sessionStorage.setItem(
+        `photo_addons_${productId}`,
+        JSON.stringify({ selectedAddOnProduct, itemQuantities }),
+      );
+    } catch (e) {
+      console.error("Error saving addons:", e);
+    }
+  }, [selectedAddOnProduct, itemQuantities, productId]);
+
+  // ---------- handlers ----------
+  const calculateTotalPrice = (productPrice) => {
+    let totalPrice = Number(work?.price || productPrice || 0);
+    selectedAddOnProduct.forEach((item) => {
+      totalPrice += item.price * (itemQuantities[item.title] || 0);
     });
     return totalPrice;
   };
 
-
   const showAddOnmodal = () => {
     setIsModalOpen((prev) => !prev);
     setIsArrowDown((prev) => !prev);
-
     setTimeout(() => {
       addonRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
   };
-  const handleAddToCartAndScrollBack = (item) => {
-    handleAddToCart(item);
 
-    setIsModalOpen(false);
-
-    setTimeout(() => {
-      customizationRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 300);
-  };
   const handleAddToCart = (item) => {
-    const updatedSelectedAddOnProduct = [...selectedAddOnProduct];
-    const existingItemIndex = updatedSelectedAddOnProduct.findIndex(addonproductItem => addonproductItem.title === item.title);
+    const updated = [...selectedAddOnProduct];
+    const idx = updated.findIndex((a) => a.title === item.title);
+    if (idx !== -1) updated[idx].quantity += 1;
+    else updated.push({ ...item, quantity: 1 });
 
-    if (existingItemIndex !== -1) {
-      updatedSelectedAddOnProduct[existingItemIndex].quantity += 1;
-    } else {
-      updatedSelectedAddOnProduct.push({ ...item, quantity: 1 });
-    }
-
-    setSelectedAddOnProduct(updatedSelectedAddOnProduct);
+    setSelectedAddOnProduct(updated);
     setItemQuantities({
       ...itemQuantities,
       [item.title]: (itemQuantities[item.title] || 0) + 1,
     });
-
   };
-
-
 
   const handleRemoveFromCart = (item) => {
-    const updatedSelectedAddOnProduct = [...selectedAddOnProduct];
-    const existingItemIndex = updatedSelectedAddOnProduct.findIndex(addonproductItem => addonproductItem.title === item.title);
-
-    if (existingItemIndex !== -1) {
-      if (updatedSelectedAddOnProduct[existingItemIndex].quantity > 1) {
-        updatedSelectedAddOnProduct[existingItemIndex].quantity -= 1;
-      } else {
-        updatedSelectedAddOnProduct.splice(existingItemIndex, 1);
-      }
+    const updated = [...selectedAddOnProduct];
+    const idx = updated.findIndex((a) => a.title === item.title);
+    if (idx !== -1) {
+      if (updated[idx].quantity > 1) updated[idx].quantity -= 1;
+      else updated.splice(idx, 1);
     }
+    const qty = { ...itemQuantities };
+    if (qty[item.title] > 1) qty[item.title] -= 1;
+    else delete qty[item.title];
 
-    const updatedQuantities = { ...itemQuantities };
-
-    if (updatedQuantities[item.title] > 1) {
-      updatedQuantities[item.title] -= 1;
-    } else {
-      delete updatedQuantities[item.title];
-    }
-
-    setSelectedAddOnProduct(updatedSelectedAddOnProduct);
-    setItemQuantities(updatedQuantities);
-
+    setSelectedAddOnProduct(updated);
+    setItemQuantities(qty);
   };
 
+  const handleAddToCartAndScrollBack = (item) => {
+    handleAddToCart(item);
+    setIsModalOpen(false);
+    setTimeout(() => {
+      customizationRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 300);
+  };
 
-
- const getItemInclusion = (inclusion) => {
-    if (!Array.isArray(inclusion) || inclusion.length === 0) {
-      return null;
-    }
+  const getItemInclusion = (inclusion) => {
+    if (!Array.isArray(inclusion) || inclusion.length === 0) return null;
     const htmlString = inclusion[0];
-    const withoutTags = htmlString.replace(/<[^>]*>/g, ""); // Remove HTML tags
-    const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, " "); // Replace &# sequences with space
+    const withoutTags = htmlString.replace(/<[^>]*>/g, "");
+    const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, " ");
     const statements = withoutSpecialChars.split("<div>");
     const inclusionItems = statements.flatMap((statement) =>
-      statement.split("-").filter((item) => item.trim() !== "")
+      statement.split("-").filter((item) => item.trim() !== ""),
     );
-  const inclusionList = inclusionItems.map((item, index) => (
-      <li key={index} className="inclusionstyle">
-        <Image src={checkImage} alt="Info" />
-        {item.trim()}
-      </li>
-    ));
+
     return (
       <div className="inclusion-section">
-        <div className="inclusion-heading">
-          Inclusions
-        </div>
-
+        <div className="inclusion-heading">Inclusions</div>
         <ul className="inclusion-list">
-          {inclusionList}
+          {inclusionItems.map((item, index) => (
+            <li key={index} className="inclusionstyle">
+              <Image src={checkImage} alt="Info" />
+              {item.trim()}
+            </li>
+          ))}
         </ul>
       </div>
     );
   };
 
-
-  const getDiscountedPrice = (price = 0) => {
-    const discountedPrice = price / 0.78;
-    const discountDifference = discountedPrice - price;
-    const discount = ((discountDifference / discountedPrice) * 100).toFixed(0);
-    return {
-      discount: Number(discount),
-      discountedPrice: Math.round(discountedPrice),
-      discountDifference: Math.round(discountDifference),
-    };
-  };
   const getAddonTotalPrice = () => {
     let addonTotal = 0;
-
     selectedAddOnProduct.forEach((item) => {
       const qty = itemQuantities[item.title] || 0;
       addonTotal += Number(item.price) * qty;
     });
-
     return addonTotal;
   };
 
   const getFinalAdvanceAmount = () => {
-    const productAdvance = Number(work?.advance_amount || 0); // Y
-    const addonTotal = getAddonTotalPrice(); // Z
+    const productAdvance = Number(work?.advance_amount || 0);
+    const addonTotal = getAddonTotalPrice();
     const addonAdvance = addonTotal * 0.35;
-
     return Math.round(productAdvance + addonAdvance);
   };
-
 
   const sendToCheckoutPage = (product) => {
     const totalPrice = calculateTotalPrice(product.price);
@@ -350,103 +430,23 @@ const ProductDetails = () => {
     });
 
     router.push({
-      pathname: '/photography-checkout',
+      pathname: "/photography-checkout",
       query: {
-        from: window.location.pathname,
+        from: typeof window !== "undefined" ? window.location.pathname : "",
         product: JSON.stringify(product),
         ProductPrice: product.discountedPrice || product.price,
         selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
         itemQuantities: JSON.stringify(itemQuantities),
         totalAmount: totalPrice,
-
-        // ✅ NEW (IMPORTANT)
-        advanceAmount: advanceAmount,
-        balanceAmount: balanceAmount,
-
+        advanceAmount,
+        balanceAmount,
         duration: work?.duration,
-      }
+      },
     });
   };
 
-
-
-
-
-
-  const getMappedCatValue = (slug) => {
-    const map = {
-      "Engagement-Photography": "Engagement-Photography",
-      "  Wedding-Photography": "  Wedding-Photography",
-      " Anniversary-Photography": " Anniversary-Photography",
-      " Birthday-Photography": "Birthday-Photography",
-      "   House-warming-Photography": "   House-warming-Photography",
-      " Naming-ceremony-Photography": "Naming-ceremony-Photography",
-      " Baby-Shower-Photography": " Baby-Shower-Photography",
-      " Bachelorette-Photography": " Bachelorette-Photography",
-      "  Maternity-Photography": "  Maternity-Photography",
-      " New-Born-Baby-Photography": " New-Born-Baby-Photography"
-    };
-    return map[slug] || slug;
-  };
-  useEffect(() => {
-    if (!productId) return;
-
-    const fetchProductAndSimilar = async () => {
-      try {
-        setLoading(true);
-
-        // ✅ SINGLE API CALL
-        const res = await axiosApi.get(
-          `${BASE_URL}/api/photography/details/${productId}`
-        );
-
-        const data = res.data?.data;
-        if (!data) throw new Error("No product found");
-        setAddonIds(data?.addons)
-
-        const { discount, discountedPrice, discountDifference } =
-          getDiscountedPrice(Number(data.price));
-
-        const formattedProduct = {
-          ...data,
-          discount,
-          discountedPrice,
-          discountDifference,
-          advance_amount: Number(data.advance_amount || 0),
-        };
-
-        setWork(formattedProduct);
-
-        // ✅ Fetch similar products
-        const tagId = data?.tag?.[0]?._id;
-        if (tagId) {
-          const similarRes = await axiosApi.get(
-            `${BASE_URL}/api/photography/searchByTag/${tagId}`
-          );
-
-          const filteredProducts =
-            (similarRes.data?.data || []).filter(
-              (p) => p._id !== productId
-            );
-
-          setSimilarProducts(filteredProducts);
-        }
-      } catch (error) {
-        console.error(error);
-        setWork(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProductAndSimilar();
-  }, [productId]);
-
-
-
   const handleShare = async () => {
     if (!work?._id || typeof window === "undefined") return;
-
     const cleanPath = router.asPath.split("?")[0];
     const shareUrl = `${window.location.origin}${cleanPath}?id=${work._id}`;
 
@@ -465,81 +465,86 @@ const ProductDetails = () => {
     }
   };
 
-  useEffect(() => {
-    if (!addonIds || addonIds.length === 0) return; // wait until addonIds is available
-
-    const getAddons = async () => {
-      try {
-        const query = new URLSearchParams();
-        addonIds.forEach(id => {
-          if (id) query.append("ids", id);
-        });
-
-        if ([...query].length === 0) return; // no valid IDs
-
-        const url = `${BASE_URL}${GET_ADDON_BY_ID}?${query.toString()}`;
-        const response = await fetchWithError(url);
-        const data = await response.json();
-
-        if (!response.ok || data.error) {
-          throw new Error(data.message || "Failed to fetch addons");
-        }
-
-        setAddonData(data.data || []);
-      } catch (error) {
-        console.error("Error fetching addons:", error);
-      }
-    };
-
-    getAddons();
-  }, [addonIds]);
-// productId available hote hi saved addons restore karo
-useEffect(() => {
-  if (!productId) return;
-  try {
-    const saved = sessionStorage.getItem(`photo_addons_${productId}`);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setSelectedAddOnProduct(parsed.selectedAddOnProduct || []);
-      setItemQuantities(parsed.itemQuantities || {});
-    }
-  } catch (e) {
-    console.error("Error restoring addons:", e);
-  }
-}, [productId]);
-
-// jab bhi addons change ho, sessionStorage mein save karo
-useEffect(() => {
-  if (!productId) return;
-  try {
-    sessionStorage.setItem(
-      `photo_addons_${productId}`,
-      JSON.stringify({ selectedAddOnProduct, itemQuantities })
+  // ---------- render ----------
+  if (loading && !work) {
+    return (
+      <div
+        className="skeleton-loader"
+        style={{
+          maxWidth: "1200px",
+          margin: "0 auto",
+          backgroundColor: "white",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "flex-start",
+            paddingTop: 20,
+            paddingBottom: 20,
+          }}
+          className="decDetails"
+        >
+          <div
+            style={{ width: "50%", textAlign: "center" }}
+            className="decDetailsLeft"
+          >
+            <div
+              style={{
+                width: "80%",
+                height: 300,
+                backgroundColor: "#f0f0f0",
+                margin: "0 auto",
+              }}
+            />
+          </div>
+          <div
+            style={{ width: "50%", paddingLeft: 20, paddingRight: 50 }}
+            className="decDetailsRight"
+          >
+            {[60, 40, 80, 60, 60, 60, 60, 100, 100].map((w, i) => (
+              <div
+                key={i}
+                style={{
+                  height: i % 2 ? 30 : 20,
+                  backgroundColor: "#f0f0f0",
+                  marginBottom: 12,
+                  width: `${w}%`,
+                  borderRadius: 4,
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
     );
-  } catch (e) {
-    console.error("Error saving addons:", e);
-  }
-}, [selectedAddOnProduct, itemQuantities, productId]);
-  if (loading) {
-    return <SkeletonLoader />
   }
 
-  if (!work) return <div className="photodetails-loading">Work not found</div>;
+  if (!work) {
+    return <div className="photodetails-loading">Work not found</div>;
+  }
 
   return (
     <div>
-      <SeoWork city={city}  locality={locality} work={work} scriptTag={scriptTag} />
+      <SeoWork
+        city={city}
+        locality={locality}
+        work={work}
+        scriptTag={scriptTag}
+      />
 
       <div style={{ maxWidth: "600px", margin: "0 auto" }}>
         <div className="decDetails">
-          <div
-            className="decDetailsLeft"
-          >
-            <div >
+          {/* Image */}
+          <div className="decDetailsLeft">
+            <div style={{ position: "relative" }}>
               <Image
                 src={
                   work.featured_image
-                    ? `https://horaservices.com/api/uploads/compressed_webp/${work.featured_image.split(".")[0]}.webp`
+                    ? `https://horaservices.com/api/uploads/compressed_webp/${
+                        work.featured_image.split(".")[0]
+                      }.webp`
                     : fallbackImg
                 }
                 alt={`${work?.name || "Product"} image`}
@@ -547,8 +552,8 @@ useEffect(() => {
                 className="photoImage"
                 width={400}
                 height={300}
+                priority
               />
-
               <div
                 style={{
                   position: "absolute",
@@ -558,156 +563,122 @@ useEffect(() => {
                   padding: 10,
                 }}
               >
-                <span
-                  style={{
-                    color: "rgba(157, 74, 147, 0.6)",
-                    fontWeight: "600",
-                  }}
-                >
-                  <Image
-                    src={logo}
-                    alt="Hora Services"
-                    className="hora-watermark-image"
-                  />
-                </span>
+                <Image
+                  src={logo}
+                  alt="Hora Services"
+                  className="hora-watermark-image"
+                />
               </div>
             </div>
           </div>
-          <div
-            className="decDetailsRight"
-          >
+
+          {/* Details */}
+          <div className="decDetailsRight">
             <div
               style={{
-                padding: "clamp(8px, 2.5vw, 10px) clamp(8px, 2.5vw, 10px) 0"
+                padding: "clamp(8px, 2.5vw, 10px) clamp(8px, 2.5vw, 10px) 0",
               }}
             >
               <div className="breadcrumb-row">
                 <h2 className="breadcrumb-text">
                   <a
-                    style={{ color: "rgb(157, 74, 147)", textDecoration: "none", fontSize: "13px" }}
+                    style={{
+                      color: "rgb(157, 74, 147)",
+                      textDecoration: "none",
+                      fontSize: "13px",
+                    }}
                     href="/photography-page"
                   >
                     Home
                   </a>
                   {" > "}
-
                   <a
                     className="breadcrumb-link"
                     href={`/photography-page/${catValue}`}
                   >
-                    {catValue.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+                    {(catValue || "")
+                      .replace(/-/g, " ")
+                      .replace(/\b\w/g, (l) => l.toUpperCase())}
                   </a>
-
                   {" > "}
                 </h2>
 
-                     <button
-  onClick={() => {
-    // GTM Event
-    window.dataLayer = window.dataLayer || [];
-   window.dataLayer.push({
-  event: "view_similar_click",
-  eventCategory: "Product Details Page",
-  eventAction: "View Similar Button Click",
-  eventLabel: product?.name,
-  product_name: product?.name,
-  category: catValue,
-  price: product?.price,
-});
-
-    // Scroll
-    similarRef?.current?.scrollIntoView({
-      behavior: "smooth",
-    });
-  }}
-  className="view-similar-btn"
->
-  View Similar
-</button>
+                <button
+                  onClick={() => {
+                    window.dataLayer = window.dataLayer || [];
+                    window.dataLayer.push({
+                      event: "view_similar_click",
+                      eventCategory: "Product Details Page",
+                      eventAction: "View Similar Button Click",
+                      eventLabel: work?.name,
+                      product_name: work?.name,
+                      category: catValue,
+                      price: work?.price,
+                    });
+                    similarRef?.current?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="view-similar-btn"
+                >
+                  View Similar
+                </button>
               </div>
 
-
-              <h1 className="product-title">
-                {work.name}
-              </h1>
+              <h1 className="product-title">{work.name}</h1>
 
               <div className="price-share-row">
                 <div className="pro-details-price">
-                  <p className="product-price">
-                    ₹{work.price}
+                  <p className="product-price">₹{work.price}</p>
+                  <p className="product-old-price">
+                    ₹{" "}
+                    {work.discountedPrice
+                      ? Math.floor(Number(work.discountedPrice))
+                      : Math.floor(Number(work.price))}
                   </p>
-                  <p className="product-old-price">₹ {work.discountedPrice ? Math.floor(Number(work.discountedPrice).toFixed(2)) : Math.floor(Number(work.price).toFixed(2))}</p>
-                  <div className="product-discount">₹ {Math.floor(work.discountDifference)} off</div>
+                  <div className="product-discount">
+                    ₹ {Math.floor(work.discountDifference || 0)} off
+                  </div>
                 </div>
-                  <div className="share-btn" onClick={handleShare}>
+                <div className="share-btn" onClick={handleShare}>
                   <Image
                     src={ShareIcon}
                     alt="share"
                     className="share-icon-img"
                   />
                 </div>
-                </div>
-              
-            
-              <div className='addon-container' ref={customizationRef}>
+              </div>
 
-
-                {/* <div className="photodetails-inclusions">
-                  {selectedAddOnProduct.length > 0 && (
-                    <>
-
-                      <h1 className="photodetalis-heading">
-                        Add-ons
-                      </h1>
-                      <span
-                        onClick={showAddOnmodal}
-                        style={{ marginLeft: "6px", cursor: "pointer", display: "inline-flex", alignItems: "center" }}
-                      >
-                        <Image
-                          src={pencil} // replace with your image path
-                          alt="Addons"
-                          className="addon-icon"
-                        />
-                      </span>
-                      {selectedAddOnProduct.map((item, index) => (
-                        <li key={index}>
-                          <div className="itemline">
-                            {index + 1}. {item.title} = ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
-
-                          </div>
-
-                        </li>
-                      ))}
-
-                    </>
-                  )}
-                </div> */}
+              <div className="addon-container" ref={customizationRef}>
                 <AddOnsList
-  selectedAddOnProduct={selectedAddOnProduct}
-  itemQuantities={itemQuantities}
-  showAddOnmodal={showAddOnmodal}
-  pencil={pencil}
-/>
+                  selectedAddOnProduct={selectedAddOnProduct}
+                  itemQuantities={itemQuantities}
+                  showAddOnmodal={showAddOnmodal}
+                  pencil={pencil}
+                />
               </div>
             </div>
-            </div>
+          </div>
+
           <div className="photodetails-inclusions">
             {getItemInclusion(work.inclusion)}
             <p className="work-duration">
-              <b className="Duration">Duration:</b> {work?.event_duration || work?.duration || "Duration not available"}
+              <b className="Duration">Duration:</b>{" "}
+              {work?.event_duration ||
+                work?.duration ||
+                "Duration not available"}
             </p>
           </div>
-            <div ref={addonRef}>
-    <AddonModal 
-    isopen={isModalOpen}
-    setIsOpen={setIsModalOpen}
-    addOnProducts={addonData}
-    itemQuantities={itemQuantities}
-    onAdd={handleAddToCartAndScrollBack}
-    onRemove={handleRemoveFromCart}
-        />
-</div>
-     
+
+          <div ref={addonRef}>
+            <AddonModal
+              isOpen={isModalOpen}
+              setIsOpen={setIsModalOpen}
+              addOnProducts={addonData}
+              itemQuantities={itemQuantities}
+              onAdd={handleAddToCartAndScrollBack}
+              onRemove={handleRemoveFromCart}
+            />
+          </div>
+
           <div className="whyHoraSec">
             <h2 className="whyHoraHeading">Why Hora Photography</h2>
             <div className="whyHoraSecInner">
@@ -735,10 +706,9 @@ useEffect(() => {
               city={city}
               hasCityPageParam={hasCityPageParam}
               locality={locality}
-              catValue={getMappedCatValue(router.query.catValue)}
+              catValue={getMappedCatValue(catValue)}
             />
           </div>
-
 
           <div className="decorke-celebrate-banner">
             <Image
@@ -751,29 +721,46 @@ useEffect(() => {
           <div className="media-section">
             <h2 className="media-heading">Hora in Media</h2>
             <div className="media-logos">
-              <Image src={Brand} alt="Hora Featured Media" className="media-logos-img" />
+              <Image
+                src={Brand}
+                alt="Hora Featured Media"
+                className="media-logos-img"
+              />
             </div>
           </div>
 
-          <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
+          <BrandBanner
+            title="Excellence Backed by Happy Customers"
+            items={brandItems}
+          />
 
           <AdditionalServices />
 
           <div className="tab-section-details-productpage">
             <FAQSection faqData={faqData} />
           </div>
-          </div>
-          <div className="confirm-button-wrapper">
+        </div>
 
-
-            <p style={{ fontWeight: "bold", marginBottom: "0px", color: "black" }}>Total: ₹ {calculateTotalPrice(Number(work?.price))}</p>
-
-            <button className="confirm-button" onClick={() => sendToCheckoutPage(work)}>Continue</button>
-
-          </div>
+        <div className="confirm-button-wrapper">
+          <p
+            style={{
+              fontWeight: "bold",
+              marginBottom: "0px",
+              color: "black",
+            }}
+          >
+            Total: ₹ {calculateTotalPrice(Number(work?.price))}
+          </p>
+          <button
+            className="confirm-button"
+            onClick={() => sendToCheckoutPage(work)}
+          >
+            Continue
+          </button>
         </div>
       </div>
-      );
+    </div>
+  );
 };
 
-      export default ProductDetails;
+export default ProductDetails;

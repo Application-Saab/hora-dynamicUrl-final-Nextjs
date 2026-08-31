@@ -201,10 +201,17 @@ export const CityProvider = ({ children }) => {
 
   // Lazy-init: agar localStorage mein pehle se city save hai, to usse turant
   // pick karo — isse refresh par modal ek pal ke liye bhi flash/khulta nahi.
-  const [selectedCitySlug, setSelectedCitySlug] = useState(() => {
-    if (typeof window === "undefined") return "";
-    return safeGetItem("selectedCity") || "";
-  });
+  // const [selectedCitySlug, setSelectedCitySlug] = useState(() => {
+  //   if (typeof window === "undefined") return "";
+  //   return safeGetItem("selectedCity") || "";
+  // });
+
+  const [selectedCitySlug, setSelectedCitySlug] = useState("");
+
+  useEffect(() => {
+    const saved = safeGetItem("selectedCity") || "";
+    if (saved) setSelectedCitySlug(saved);
+  }, []);
 
   const [showCityModal, setShowCityModal] = useState(false);
 

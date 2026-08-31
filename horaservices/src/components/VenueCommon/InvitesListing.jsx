@@ -22,13 +22,30 @@ const getCacheKey = (eventType, venueType, guestCapacity, city) =>
 
 // City hai to city-scoped route, nahi to purana default route
 // City hai to city-scoped route, nahi to purana default route
-const getVenueRoute = (city) => (city ? `/${city.toLowerCase()}/venue-list/venue` : "/venue-list/venue");
-const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
+const getVenueRoute = (city) =>
+  city ? `/${city.toLowerCase()}/venue-list/venue` : "/venue-list/venue";
+const VenueList = ({
+  eventType,
+  venueType,
+  guestCapacity,
+  city,
+  search,
+  initialVenues = null,
+}) => {
   const cacheKey = getCacheKey(eventType, venueType, guestCapacity, city);
-  const cached = getPageCache(cacheKey);
+  const cached = typeof window !== "undefined" ? getPageCache(cacheKey) : null;
 
-  const [venues, setVenues] = useState(cached?.data || []);
-  const [loading, setLoading] = useState(!cached);
+  const [venues, setVenues] = useState(() => {
+    if (Array.isArray(initialVenues)) return initialVenues;
+    if (cached?.data) return cached.data;
+    return [];
+  });
+
+  const [loading, setLoading] = useState(() => {
+    if (Array.isArray(initialVenues)) return false;
+    if (cached) return false;
+    return true;
+  });
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
   const [loadingMore, setLoadingMore] = useState(false);
   const router = useRouter();
@@ -36,37 +53,56 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
 
   useEffect(() => {
     const key = getCacheKey(eventType, venueType, guestCapacity, city);
-    const existing = getPageCache(key);
 
-    if (existing) {
+    // 1) SSR data first paint ke liye already state me hai
+    // 2) Cache hit
+    const existing = typeof window !== "undefined" ? getPageCache(key) : null;
+
+    if (existing && !existing.isStale) {
       setVenues(existing.data);
       setLoading(false);
       setVisibleCount(BATCH_SIZE);
-      if (!existing.isStale) return; // fresh hai, refetch skip
-      // stale hai to neeche background me chupke se refetch ho jayega
-    } else {
-      setLoading(true);
-      setVisibleCount(BATCH_SIZE);
+      return;
     }
 
-    const params = new URLSearchParams();
+    // 3) Agar initialVenues diya hai aur yeh pehli matching key hai — skip first fetch once
+    // Simple approach: hamesha filters change pe fetch; SSR sirf initial state
 
+    if (!existing) {
+      // Don't flash loading if we already have SSR venues in state
+      if (!(Array.isArray(initialVenues) && venues.length > 0 && !existing)) {
+        // only show loading when empty
+        if (venues.length === 0) setLoading(true);
+      }
+    }
+
+    setVisibleCount(BATCH_SIZE);
+
+    const params = new URLSearchParams();
     if (eventType) params.append("eventType", eventType);
     if (venueType && venueType !== "all") params.append("venueType", venueType);
     if (guestCapacity) params.append("guestCapacity", guestCapacity);
     if (city) params.append("city", city);
 
+    let cancelled = false;
+
     fetchWithError(`${BASE_URL}${VENUE_PUBLIC_LISTING}?${params}`)
       .then((r) => r.json())
       .then((res) => {
+        if (cancelled) return;
         const dataList = res.data || [];
-        setPageCache(key, dataList);
+        if (typeof window !== "undefined") setPageCache(key, dataList);
         setVenues(dataList);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
-  }, [eventType, venueType, guestCapacity, city]);
+      .catch(() => {
+        if (!cancelled) setLoading(false);
+      });
 
+    return () => {
+      cancelled = true;
+    };
+  }, [eventType, venueType, guestCapacity, city]);
   // Client-side search filter — matches venue name, locality, city, or
   // venue type against whatever the user has typed in the search box.
   const filteredVenues = useMemo(() => {
@@ -77,7 +113,11 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
       const nameMatch = v.venueName?.toLowerCase().includes(q);
       const localityMatch = v.locality?.toLowerCase().includes(q);
       const cityMatch = v.city?.toLowerCase().includes(q);
-      const typeArr = Array.isArray(v.venueType) ? v.venueType : v.venueType ? [v.venueType] : [];
+      const typeArr = Array.isArray(v.venueType)
+        ? v.venueType
+        : v.venueType
+          ? [v.venueType]
+          : [];
       const typeMatch = typeArr.some((t) => t?.toLowerCase().includes(q));
 
       return nameMatch || localityMatch || cityMatch || typeMatch;
@@ -97,7 +137,9 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
 
     setLoadingMore(true);
     loadTimerRef.current = setTimeout(() => {
-      setVisibleCount((prev) => Math.min(prev + BATCH_SIZE, filteredVenues.length));
+      setVisibleCount((prev) =>
+        Math.min(prev + BATCH_SIZE, filteredVenues.length),
+      );
       setLoadingMore(false);
       loadTimerRef.current = null;
     }, 1000);
@@ -115,7 +157,11 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
   if (!venues.length) {
     return (
       <div className="venue-status coming-soon-box">
-        <h3>{city ? `${city} venues are coming soon! 🎉` : "Venues are coming soon! 🎉"}</h3>
+        <h3>
+          {city
+            ? `${city} venues are coming soon! 🎉`
+            : "Venues are coming soon! 🎉"}
+        </h3>
         <p>
           {city
             ? `We're expanding our venue network in ${city}. Stay tuned for amazing venues and packages.`
@@ -130,7 +176,8 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
       <div className="venue-status coming-soon-box">
         <h3>No venues found 🔍</h3>
         <p>
-          We couldn't find any venues matching "{search}". Try a different search term.
+          We couldn't find any venues matching "{search}". Try a different
+          search term.
         </p>
       </div>
     );
@@ -142,15 +189,28 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
     <>
       <div className="venue-list">
         {displayedVenues.map((v) => {
-          const tags = Array.isArray(v.venueType) ? v.venueType : v.venueType ? [v.venueType] : [];
-          const halls = Array.isArray(v.hallType) ? v.hallType : v.hallType ? [v.hallType] : [];
+          const tags = Array.isArray(v.venueType)
+            ? v.venueType
+            : v.venueType
+              ? [v.venueType]
+              : [];
+          const halls = Array.isArray(v.hallType)
+            ? v.hallType
+            : v.hallType
+              ? [v.hallType]
+              : [];
           const hallLabel = halls
             .map((h) =>
-              h?.toLowerCase().startsWith("in") ? "Indoor" : h?.toLowerCase().startsWith("out") ? "Outdoor" : h
+              h?.toLowerCase().startsWith("in")
+                ? "Indoor"
+                : h?.toLowerCase().startsWith("out")
+                  ? "Outdoor"
+                  : h,
             )
             .join(" & ");
 
-          const shortLocation = [v.locality, v.city].filter(Boolean).join(", ") || v.city || "N/A";
+          const shortLocation =
+            [v.locality, v.city].filter(Boolean).join(", ") || v.city || "N/A";
 
           return (
             <div className="venue-card" key={v._id}>
@@ -176,7 +236,13 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                     })
                   }
                 >
-                  <Image src={galleryIcon} alt="Gallery" className="stat-icon" width={14} height={14} />
+                  <Image
+                    src={galleryIcon}
+                    alt="Gallery"
+                    className="stat-icon"
+                    width={14}
+                    height={14}
+                  />
                   See Photos (20+)
                 </button>
               </div>
@@ -185,7 +251,11 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                 <h3 className="venue-name">{v.venueName}</h3>
 
                 <p className="venue-location">
-                  <Image src={locationIcon} alt="Location" className="location-icon" />
+                  <Image
+                    src={locationIcon}
+                    alt="Location"
+                    className="location-icon"
+                  />
                   <span className="location-text">{shortLocation}</span>
                 </p>
 
@@ -193,7 +263,13 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                   <div className="venue-tags-row">
                     {tags.map((t, i) => (
                       <span className="venue-tag-pill" key={i}>
-                        <Image src={tagIcon} alt="Tag" className="pill-icon-venue" width={12} height={12} />
+                        <Image
+                          src={tagIcon}
+                          alt="Tag"
+                          className="pill-icon-venue"
+                          width={12}
+                          height={12}
+                        />
                         {t}
                       </span>
                     ))}
@@ -206,43 +282,64 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                   if (v.guestCapacity) {
                     statCells.push(
                       <span className="stat-item" key="guests">
-                        <Image src={guestIcon} alt="Guests" className="stat-icon" width={18} height={18} />
+                        <Image
+                          src={guestIcon}
+                          alt="Guests"
+                          className="stat-icon"
+                          width={18}
+                          height={18}
+                        />
                         {v.guestCapacity} - Guests
-                      </span>
+                      </span>,
                     );
                   }
 
                   if (v.isParkingAvailable) {
                     statCells.push(
                       <span className="stat-item" key="parking">
-                        <Image src={parkingIcon} alt="Parking" className="stat-icon" width={20} height={16} />
-                        <span>
-                          Parking
-                          Available
-                        </span>
-                      </span>
+                        <Image
+                          src={parkingIcon}
+                          alt="Parking"
+                          className="stat-icon"
+                          width={20}
+                          height={16}
+                        />
+                        <span>Parking Available</span>
+                      </span>,
                     );
                   }
 
                   if (halls.length > 0) {
                     statCells.push(
                       <span className="stat-item" key="halls">
-                        <Image src={hallIcon} alt="Hall" className="stat-icon" width={18} height={18} />
+                        <Image
+                          src={hallIcon}
+                          alt="Hall"
+                          className="stat-icon"
+                          width={18}
+                          height={18}
+                        />
                         <span>
                           {halls.length} Hall{halls.length > 1 ? "s" : ""}
                           <br />
                           {hallLabel}
                         </span>
-                      </span>
+                      </span>,
                     );
                   }
 
                   if (v.totalRoomsAvailable > 0) {
                     statCells.push(
                       <span className="stat-item" key="rooms">
-                        <Image src={roomIcon} alt="Rooms" className="stat-icon" width={20} height={16} />
+                        <Image
+                          src={roomIcon}
+                          alt="Rooms"
+                          className="stat-icon"
+                          width={20}
+                          height={16}
+                        />
                         {v.totalRoomsAvailable} Room Available
-                      </span>
+                      </span>,
                     );
                   }
 
@@ -251,22 +348,27 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                   return <div className="venue-stats-grid">{statCells}</div>;
                 })()}
 
-            {(v.foodTypes?.includes("veg") || v.foodTypes?.includes("non-veg")) && (
-  <div className="venue-food">
-    {v.foodTypes?.includes("veg") && (
-      <span className="veg">
-        <Image src={vegIcon} alt="Veg" className="food-icon" />
-        Veg Available
-      </span>
-    )}
-    {v.foodTypes?.includes("non-veg") && (
-      <span className="nonveg">
-        <Image src={nonVegIcon} alt="Non Veg" className="food-icon" />
-        Non-Veg Available
-      </span>
-    )}
-  </div>
-)}
+                {(v.foodTypes?.includes("veg") ||
+                  v.foodTypes?.includes("non-veg")) && (
+                  <div className="venue-food">
+                    {v.foodTypes?.includes("veg") && (
+                      <span className="veg">
+                        <Image src={vegIcon} alt="Veg" className="food-icon" />
+                        Veg Available
+                      </span>
+                    )}
+                    {v.foodTypes?.includes("non-veg") && (
+                      <span className="nonveg">
+                        <Image
+                          src={nonVegIcon}
+                          alt="Non Veg"
+                          className="food-icon"
+                        />
+                        Non-Veg Available
+                      </span>
+                    )}
+                  </div>
+                )}
 
                 <p className="venue-price">
                   ₹{v.startingPrice?.toLocaleString("en-IN") || "N/A"}/-{" "}
