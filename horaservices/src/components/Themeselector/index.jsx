@@ -7,10 +7,10 @@ import budgetfriendly from "@/assets/themeselector/budget-friendly.webp";
 import valueformoney from "@/assets/themeselector/value-for-money.webp";
 import photogenicdecoration from "@/assets/themeselector/photogenic-decoration.webp";
 import stagedecoration from "@/assets/themeselector/stage-decoration.webp";
-import budgetfriendlyBg from "@/assets/themeselector/budgetfriendlyBg.webp";
-import valueformoneyBg from "@/assets/themeselector/valueformoneyBg.webp";
-import photogenicdecorationBg from "@/assets/themeselector/photogenicdecorationBg.webp";
-import stagedecorationBg from "@/assets/themeselector/stagedecorationBg.webp";
+import budgetfriendlyBg from "@/assets/themeselector/BudgetFriendlyBg.webp";
+import valueformoneyBg from "@/assets/themeselector/ValueForMoneyBg.webp";
+import photogenicdecorationBg from "@/assets/themeselector/PhotogenicDecorationBg.webp";
+import stagedecorationBg from "@/assets/themeselector/StageDecorationBg.webp";
 
 const themes = [
   {

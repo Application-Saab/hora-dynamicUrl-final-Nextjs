@@ -1,6 +1,5 @@
-// import { useLocation } from 'react-router-dom';
+"use client";
 import React, { useEffect, useRef, useState } from "react";
-// import { useNavigate } from 'react-router-dom';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import TimePicker from "react-time-picker";
@@ -30,7 +29,7 @@ import OtpLoginPopup from "../../components/OtpLoginPopup";
 import BackgroundBase from "../../assets/BackgroundBase.jpg";
 import BackgroundDetails from "../../assets/BackgroundDetails2.jpg";
 import productsData from '../../utils/photoGraphyImages.js';
-import CommentIcon from "../../assets/commenticon.png";
+import CommentIcon from "../../assets/commentIcon.png";
 import locationIcon from "../../assets/locationIcon.png";
 import CityIcon from "../../assets/CityIcon.png";
 import PinIcon from "../../assets/Pincode.jpeg";
@@ -55,22 +54,38 @@ const Checkout = () => {
     peopleCount,
     totalAmount,
   } = router.query;
-  let { subCategory, product } = router.query;
+  let { subCategory } = router.query;
   const productSlugFromUrl = router.query.slug;
-  const urlParams = new URLSearchParams(window.location.search);
-  const category = urlParams.get("catValue");
-  const rawAddOns = router.query.selectedAddOnProduct
-    ? JSON.parse(router.query.selectedAddOnProduct)
-    : [];
-  const selectedAddOnProduct = rawAddOns.map(item => ({
-    ...item,
-    totalPrice: item.price * (item.quantity || 1),
-  }));
+  // const urlParams = new URLSearchParams(window.location.search);
+  // const category = urlParams.get("catValue");
+
+  // Safe parse helpers
+const safeJsonParse = (value, fallback) => {
+  if (value == null || value === "") return fallback;
+  if (typeof value === "object") return value; // already parsed
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+};
+
+  const category = router.isReady
+  ? (router.query.catValue || null)
+  : null;
+
+  const product = safeJsonParse(router.query.product, null);
+
+  const rawAddOns = safeJsonParse(router.query.selectedAddOnProduct, []);
+  const selectedAddOnProduct = (Array.isArray(rawAddOns) ? rawAddOns : []).map(
+    (item) => ({
+      ...item,
+      totalPrice: item.price * (item.quantity || 1),
+    })
+  );
 
 
-  const itemQuantities = router.query.itemQuantities
-    ? JSON.parse(router.query.itemQuantities)
-    : {};
+  const itemQuantities = safeJsonParse(router.query.itemQuantities, {});
   const [comment, setComment] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDateError, setSelectedDateError] = useState(false);
@@ -94,7 +109,8 @@ const Checkout = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const fromPath = router.query.from || "";
-  const cityName = fromPath.split("/")[1] || "";
+  const cityName =
+    typeof fromPath === "string" ? fromPath.split("/")[1] || "" : "";
 
   useEffect(() => {
     setIsClosed(false); // 🔥 har baar reset
@@ -115,10 +131,6 @@ const Checkout = () => {
       setIsModalOpen(false);
     }
   }, [isLoggedIn]); // This will run when `isLoggedIn` state changes
-
-  if (product) {
-    product = JSON.parse(product);
-  }
 
   useEffect(() => {
     setIsClient(true);

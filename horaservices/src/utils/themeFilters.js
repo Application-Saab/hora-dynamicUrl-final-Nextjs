@@ -30,15 +30,15 @@ import mashaImg from "@/assets/Masha-Bear.webp";
 import SonicImg from "@/assets/Sonic-Theme.webp";
 import MinionImg from "@/assets/Minion-Theme.webp";
 import KrishnaImg from "@/assets/Krishna-Theme.webp";
-import PawImg from "@/assets/paw-patrol.webp";
+import PawImg from "@/assets/Paw-Patrol.webp";
 import ButterflyImg from "@/assets/Butterfly-Theme.webp"
 import NamingCeremony from "@/assets/NamingCeremony.webp";
 import NameRevealing from "@/assets/NameRevealing.webp";
 import Annaprashan from "@/assets/Annaprashan.webp";
 import Baptism from "@/assets/Baptism.webp";
-import Candyland from "@/assets/Candyland.webp";
-import peppaPigImg from "@/assets/Pig.webp";
-import Kpop from "@/assets/Kpop.webp";
+import Candyland from "@/assets/candyland.webp";
+import peppaPigImg from "@/assets/pig.webp";
+import Kpop from "@/assets/kpop.webp";
 export const themeFilters = [
   { label: "Astronaut space ", value: "Astronaut-space", image: astronautImg },
   { label: "Super Hero ", value: "Hero", image: heroImg },

@@ -6,14 +6,16 @@ import { useRouter } from "next/router";
 const InvitesListing = ({ userId }) => {
   const router = useRouter();
   const pathname = usePathname();
+
+  // Skip the request until we have a real userId
   const { data, loading } = useApi(
-    `${GET_ALL_EVENTS_BY_USERID}/${userId}`,
+    userId ? `${GET_ALL_EVENTS_BY_USERID}/${userId}` : null,
     "get"
   );
-  const isWonderlandInternational = pathname?.startsWith(
-    "/wonderlandinternational",
-  );
 
+  const isWonderlandInternational = pathname?.startsWith(
+    "/wonderlandinternational"
+  );
 
   const formatDate = (dateString) => {
     if (!dateString) return "Event Date";
@@ -30,11 +32,15 @@ const InvitesListing = ({ userId }) => {
 
   const handleClickViewEvent = (eventData) => {
     if (isWonderlandInternational) {
-      router.push(`/wonderlandinternational/invite?eventid=${eventData._id}`);
+      router.push(
+        `/wonderlandinternational/invite?eventid=${eventData._id}`
+      );
     } else {
       router.push(`/wonderland/invite?eventid=${eventData._id}`);
     }
   };
+
+  if (!userId) return null;
 
   return loading ? (
     <p>Loading your events...</p>
@@ -43,32 +49,32 @@ const InvitesListing = ({ userId }) => {
       <h3 className="section-heading">Cheer Story</h3>
       <ul className="event-list">
         {data?.data?.map((event) => (
-            <li key={event._id} className="event-item">
-              <div className="event-info-list">
-                <div className="event-details-list">
-                  <div className="event-meta">
-                    <span className="event-role">
-                      {event.eventRole?.charAt(0).toUpperCase() +
-                        event.eventRole?.slice(1)}
-                    </span>
-                  </div>
-                  <span className="list-event-title">
-                    {event.hostName ? `${event.hostName}` : "Host Name"}{" "}
+          <li key={event._id} className="event-item">
+            <div className="event-info-list">
+              <div className="event-details-list">
+                <div className="event-meta">
+                  <span className="event-role">
+                    {event.eventRole?.charAt(0).toUpperCase() +
+                      event.eventRole?.slice(1)}
                   </span>
-                  <div className="list-event-date">
-                    <span>{formatDate(event.eventDate)}</span>
-                  </div>
+                </div>
+                <span className="list-event-title">
+                  {event.hostName ? `${event.hostName}` : "Host Name"}{" "}
+                </span>
+                <div className="list-event-date">
+                  <span>{formatDate(event.eventDate)}</span>
                 </div>
               </div>
-              <div className="btn-ctn-event">
-                <button
-                  className="view-btn"
-                  onClick={() => handleClickViewEvent(event)}
-                >
-                  View Event
-                </button>
-              </div>
-            </li>
+            </div>
+            <div className="btn-ctn-event">
+              <button
+                className="view-btn"
+                onClick={() => handleClickViewEvent(event)}
+              >
+                View Event
+              </button>
+            </div>
+          </li>
         ))}
       </ul>
     </div>

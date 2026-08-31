@@ -10,7 +10,7 @@ import fallbackImg from "@/assets/fallback-image.png";
 import logo from "@/assets/new_logo_light.png";
 import checkImage from "@/assets/tick.svg";
 import ShareIcon from "@/assets/shareIcon.svg";
-import StarIcon from "@/assets/Staricon.svg";
+import StarIcon from "@/assets/StarIcon.svg";
 import hearticon from "@/assets/hearticon.svg";
 import fireIcon from "@/assets/fireIcon.svg";
 import SimiliarThemes from "@/assets/SimilarThemes.svg";
@@ -25,7 +25,7 @@ import VideoClint from "@/assets/ourclientvideo.mp4";
 import { BASE_URL, GET_ADDON_BY_ID } from "@/utils/apiconstants";
 
 import FAQSection from "@/components/FAQSection";
-import faqData from "@/utils/FaqData.json";
+import faqData from "@/utils/faqData.json";
 import BrandBanner from "@/components/BrandBanner";
 import SimilarBoosterSlider from "@/components/Similarboosterslider";
 import VideoTestimonial from "@/components/VideoTestimonial";
@@ -37,7 +37,7 @@ import { reviewsData } from "@/utils/poselinkreviews";
 import ActionButtons from "@/components/Actionbuttons";
 import { filterLevelUpProducts } from "@/utils/similarProductUtils";
 
-import "./celebrationBoosterDetails.css";
+import "./Celebrationboosterdetails.css";
 
 // Ideally move these to utils/apiconstants.js alongside your other endpoints
 const CELEBRATION_BOOSTER_API =

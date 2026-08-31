@@ -1,3 +1,1338 @@
+// import React, { useState, useEffect, useRef } from "react";
+// import { Step, Label } from "semantic-ui-react";
+// import { ListGroup, ListGroupItem, Modal, Button, Row, Col } from "react-bootstrap";
+// import {
+//   BASE_URL,
+//   GET_CUISINE_ENDPOINT,
+//   API_SUCCESS_CODE,
+//   GET_MEAL_DISH_ENDPOINT,
+// } from "../../../utils/apiconstants";
+// import RectanglePurple from "../../../assets/Rectanglepurple.png";
+// import RectangleWhite from "../../../assets/rectanglewhite.png";
+// import MinusIcon from "../../../assets/minus.png";
+// import PlusIcon from "../../../assets/plus.png";
+// import warningImage from "../../../assets/Group.png";
+// import Popup from "../../../utils/popup";
+// import SkeletonLoader from "../../../utils/chefSkeleton";
+// import SelectDishes from "../../../assets/selectDish.png";
+// import SelectDateTime from "../../../assets/event.png";
+// import SelectConfirmOrder from "../../../assets/confirm_order.png";
+// import separator from "../../../assets/separator.png";
+// import InfoIcon from "../../../assets/info.png";
+// import { useRouter } from "next/router";
+// import Image from "next/image";
+// import "../../../css/chefOrder.css";
+// import Head from "next/head";
+// import axiosApi from "@/utils/axiosApi";
+
+// const FoodDeliveryCreateOrder = ({
+//   initialCuisines = [],
+//   initialMealList = [],
+//   selectedfoodCategory = null,
+// }) => {
+//   const bottomSheetRef = useRef(null);
+//   const router = useRouter();
+
+//   const [orderType, setOrderType] = useState(2);
+//   const [isDishSelected, setIsDishSelected] = useState(false);
+//   const [selected, setSelected] = useState("veg");
+  
+//   // SSR Fix: Server par pehla cuisine selected rahega taaki HTML render ho
+//   const [selectedCuisines, setSelectedCuisines] = useState(
+//     initialCuisines.length > 0 ? [initialCuisines[0][0]] : []
+//   );
+  
+//   const [expandedCategories, setExpandedCategories] = useState([]);
+//   const [selectedOption, setSelectedOption] = useState(selectedfoodCategory || "");
+//   const [cuisines, setCuisines] = useState(initialCuisines);
+//   const [mealList, setMealList] = useState(initialMealList);
+//   const [loading, setLoading] = useState(false);
+
+//   const [dishDetail, setDishDetail] = useState(null);
+//   const [selectedCount, setSelectedCount] = useState(0);
+//   const [selectedDishes, setSelectedDishes] = useState([]);
+//   const [isViewAllSheetOpen, setIsViewAllSheetOpen] = useState(false);
+//   const [selectedDishPrice, setSelectedDishPrice] = useState(0);
+//   const [selectedDishDictionary, setSelectedDishDictionary] = useState({});
+//   const [isNonVegSelected, setIsNonVegSelected] = useState(false);
+//   const [isVegSelected, setIsVegSelected] = useState(true);
+//   const [isWarningVisibleForDishCount, setWarningVisibleForDishCount] = useState(false);
+//   const [isWarningVisibleForCuisineCount, setWarningVisibleForCuisineCount] = useState(false);
+//   const [isViewAllExpanded, setIsViewAllExpanded] = useState(false);
+//   const [popupMessage, setPopupMessage] = useState({
+//     image: "",
+//     title: "",
+//     body: "",
+//     button: "",
+//   });
+
+//   const isInitialMount = useRef(true);
+
+//   useEffect(() => {
+//     if (selectedfoodCategory) {
+//       setSelectedOption(selectedfoodCategory);
+//     }
+//   }, [selectedfoodCategory]);
+
+//   const handleWarningClose = () => {
+//     setWarningVisibleForDishCount(false);
+//     setWarningVisibleForCuisineCount(false);
+//   };
+
+//   const handleIncreaseQuantity = (dish, isSelected) => {
+//     if (selectedDishes.length >= 15 && !isSelected) {
+//       setWarningVisibleForDishCount(true);
+//       setPopupMessage({
+//         img: warningImage,
+//         title: "Total Dishes Selected can not be more than 15 Dish.",
+//         body: "",
+//         button: "Contact Us",
+//       });
+//     } else {
+//       const updatedSelectedDishes = [...selectedDishes];
+//       const updatedSelectedDishDictionary = { ...selectedDishDictionary };
+//       const dishPriceValue = parseInt(dish.cuisineArray[0], 10);
+
+//       if (!isNaN(dishPriceValue)) {
+//         if (updatedSelectedDishes.includes(dish._id)) {
+//           const index = updatedSelectedDishes.indexOf(dish._id);
+//           updatedSelectedDishes.splice(index, 1);
+//           setSelectedDishPrice(selectedDishPrice - dishPriceValue);
+//         } else {
+//           updatedSelectedDishes.push(dish._id);
+//           setSelectedDishPrice(selectedDishPrice + dishPriceValue);
+//         }
+//       }
+//       setSelectedDishes(updatedSelectedDishes);
+//       setSelectedCount(updatedSelectedDishes.length);
+
+//       if (updatedSelectedDishDictionary[dish._id]) {
+//         delete updatedSelectedDishDictionary[dish._id];
+//       } else {
+//         updatedSelectedDishDictionary[dish._id] = dish;
+//       }
+//       setSelectedDishDictionary(updatedSelectedDishDictionary);
+//       setIsDishSelected(updatedSelectedDishes.length > 0);
+//     }
+//   };
+
+//   const handleCuisinePress = (cuisineId) => {
+//     if (selectedCuisines.length < 3 || selectedCuisines.includes(cuisineId)) {
+//       setSelectedCuisines((prevSelected) => {
+//         if (prevSelected.includes(cuisineId)) {
+//           return prevSelected.filter((item) => item !== cuisineId);
+//         } else {
+//           return [...prevSelected, cuisineId];
+//         }
+//       });
+//     } else {
+//       setWarningVisibleForCuisineCount(true);
+//       setPopupMessage({
+//         img: warningImage,
+//         title: "One chef is only expert in 3 cuisine only.",
+//         body: "Our chef is expert in cuisines only please select appropriate number of cuisines to continue",
+//         button: "Continue",
+//       });
+//     }
+//   };
+
+//   const fetchMealBasedOnCuisine = async (cuisineIds = selectedCuisines, isNonVeg = isNonVegSelected) => {
+//     try {
+//       setLoading(true);
+//       const url = BASE_URL + GET_MEAL_DISH_ENDPOINT;
+//       const is_dish = isNonVeg ? 0 : 1;
+
+//       const requestData = {
+//         cuisineId: cuisineIds,
+//         is_dish: is_dish,
+//       };
+
+//       const response = await axiosApi.post(url, requestData, {
+//         headers: { "Content-Type": "application/json" },
+//       });
+
+//       if (response.status == API_SUCCESS_CODE) {
+//         const filteredMealList = response.data.data.map((item) => ({
+//           ...item,
+//           dish: item.dish,
+//         }));
+//         setMealList(filteredMealList);
+//       }
+//     } catch (error) {
+//       console.log("Error Fetching Data:", error.message);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (isInitialMount.current) {
+//       isInitialMount.current = false;
+//       return;
+//     }
+
+//     if (selectedCuisines.length > 0 && selectedCuisines.length <= 3) {
+//       fetchMealBasedOnCuisine(selectedCuisines, isNonVegSelected);
+//     } else {
+//       setMealList([]);
+//       setSelectedDishDictionary({});
+//       setIsDishSelected(false);
+//       setSelectedDishes([]);
+//       setSelectedCount(0);
+//       setSelectedDishPrice(0);
+//     }
+//   }, [selectedCuisines, isNonVegSelected]);
+
+//   const handleSwitchChange = (value) => {
+//     setSelected(value);
+//     if (value === "veg") {
+//       setIsVegSelected(true);
+//       setIsNonVegSelected(false);
+//     } else {
+//       setIsVegSelected(false);
+//       setIsNonVegSelected(true);
+//     }
+//   };
+
+//   const handleViewAll = (categoryId) => {
+//     setIsViewAllExpanded(!isViewAllExpanded);
+//     setExpandedCategories((prevExpanded) =>
+//       categoryId === prevExpanded[0]
+//         ? prevExpanded.length === 1
+//           ? []
+//           : prevExpanded.slice(1)
+//         : prevExpanded.includes(categoryId)
+//         ? prevExpanded.filter((id) => id !== categoryId)
+//         : [...prevExpanded, categoryId]
+//     );
+//   };
+
+//   const addDish = (price) => {
+//     if (!selectedDishDictionary || Object.keys(selectedDishDictionary).length === 0) return;
+
+//     const selectedDishQuantities = Object.values(selectedDishDictionary).map((item) => ({
+//       name: item.name,
+//       image: item.image,
+//       price: item.cuisineArray[0],
+//       quantity: item.cuisineArray[1],
+//       unit: item.cuisineArray[2],
+//       id: item.mealId,
+//     }));
+
+//     router.push({
+//       pathname: `/party-food-delivery-live-catering-buffet-select-date/${selectedOption}`,
+//       query: {
+//         selectedDishDictionary: JSON.stringify(selectedDishDictionary),
+//         selectedDishPrice: price,
+//         selectedDishes,
+//         orderType,
+//         isDishSelected,
+//         selectedCount,
+//         selectedDishQuantities: JSON.stringify(selectedDishQuantities),
+//         selectedOption,
+//       },
+//     });
+//   };
+
+//   const renderDishItem = ({ item }) => (
+//     <div className="w-100">
+//       {item.dish && item.dish.length > 0 ? (
+//         <>
+//           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "top", margin: "5px 4px 0px 0px" }}>
+//             <h1 style={{ color: "#222", fontSize: "110%", marginBottom: "13px", fontWeight: "700" }} className="cat-Name">
+//               {item.mealObject?.name} ({item.dish.length})
+//             </h1>
+//             <Button
+//               onClick={() => handleViewAll(item.mealObject?._id)}
+//               style={{
+//                 color: expandedCategories.includes(item.mealObject?._id) ? "#000" : "#fff",
+//                 fontWeight: "400",
+//                 textDecorationLine: "none",
+//                 fontSize: 12,
+//               }}
+//               className={`viewbtn ${expandedCategories.includes(item.mealObject?._id) ? "clickedviewAll" : ""}`}
+//             >
+//               View All
+//             </Button>
+//           </div>
+
+//           <div className="dish-item">
+//             {(expandedCategories.includes(item.mealObject?._id) ? item.dish : item.dish.slice(0, 7)).map((dish, index) => {
+//               const dishImage = dish.image ? `https://horaservices.com/api/uploads/${dish.image}` : "";
+//               const isSelected = selectedDishes.includes(dish._id);
+
+//               return (
+//                 <div
+//                   key={dish._id || index}
+//                   className={`dish-item-inner ${dish.is_dish === 1 ? "veg-border" : "non-veg-border"}`}
+//                   style={{ backgroundImage: `url(${isSelected ? RectanglePurple.src : RectangleWhite.src})` }}
+//                 >
+//                   {dishImage ? (
+//                     <div
+//                       className={`dish-image ${isSelected ? "selected" : ""}`}
+//                       style={{
+//                         backgroundImage: `url(${dishImage})`,
+//                         backgroundSize: "cover",
+//                         backgroundPosition: "center",
+//                       }}
+//                     />
+//                   ) : (
+//                     <div className={`dish-placeholder ${isSelected ? "selected" : ""}`}>Image not available</div>
+//                   )}
+
+//                   <p className={`dish-name ${isSelected ? "selected" : ""}`}>
+//                     {isDishSelected && dish.special_appliance_id?.length > 0 && isSelected
+//                       ? dish.special_appliance_id[0].name
+//                       : dish.name}
+//                   </p>
+
+//                   <div className="d-flex justify-content-between w-100 px-3">
+//                     <span className={`dish-price ${isSelected ? "selected" : ""}`}>
+//                       ₹ {dish.cuisineArray?.[0] || dish.price || 0}
+//                     </span>
+//                     <Button className="pluBtn" onClick={() => handleIncreaseQuantity(dish, isSelected)}>
+//                       <Image
+//                         src={isSelected ? MinusIcon : PlusIcon}
+//                         width={21}
+//                         height={21}
+//                         alt="toggle"
+//                       />
+//                     </Button>
+//                   </div>
+//                   <div className={`dish-indicator ${dish.is_dish === 1 ? "veg" : "non-veg"}`}></div>
+//                 </div>
+//               );
+//             })}
+//           </div>
+//           <div className="chef-divider" style={{ marginTop: "20px" }}></div>
+//         </>
+//       ) : null}
+//     </div>
+//   );
+
+//   return (
+//     <>
+//       <Head>
+//         <title>
+//           {selectedfoodCategory === "party-food-delivery"
+//             ? "Party Food Delivery Services for Birthdays, House Parties & Events | HORA"
+//             : "Live Buffet Catering Services for Weddings, Parties & Events | HORA"}
+//         </title>
+//         <meta
+//           name="description"
+//           content={
+//             selectedfoodCategory === "party-food-delivery"
+//               ? "Order fresh and delicious food for birthdays, anniversaries, kitty parties, house parties, baby showers, and corporate events."
+//               : "Book live buffet catering services with professional chefs for weddings, birthdays, anniversaries, house parties, baby showers, and corporate events."
+//           }
+//         />
+//         <link
+//           rel="canonical"
+//           href={`https://horaservices.com/party-food-delivery-live-catering-buffet/${selectedfoodCategory}`}
+//         />
+//       </Head>
+
+//       <div className="chef-create-order">
+//         <div className="order-container chef">
+//           <div style={{ flexDirection: "row", backgroundColor: "#EFF0F3", boxShadow: "0px 0px 6px 0px rgba(0, 0, 0, 0.08)", display: "flex", justifyContent: "center", alignItems: "center", padding: "10px 0" }}>
+//             <Image style={{ width: "20px", height: "20px", marginRight: "5px" }} src={InfoIcon} alt="info" />
+//             <p style={{ color: "#676767", fontSize: "94%", fontWeight: "400", margin: "0" }} className="billheading">
+//               Bill value depends upon Dish selected + Number of people
+//             </p>
+//           </div>
+
+//           <div className="range-bar">
+//             <Step active={true.toString()} className="step1">
+//               <Image src={SelectDishes} alt="Select Dishes" style={styles.dish} />
+//               <Label active={true.toString()}>Select Dishes</Label>
+//             </Step>
+//             <div className="sep-image"><Image src={separator} alt="separator" /></div>
+//             <Step className="step2">
+//               <Image src={SelectDateTime} alt="Select Date & Time" style={styles.dish} />
+//               <Label>Select Date & Time</Label>
+//             </Step>
+//             <div className="sep-image"><Image src={separator} alt="separator" /></div>
+//             <Step className="step3">
+//               <Image src={SelectConfirmOrder} alt="Confirm Order" style={styles.dish} />
+//               <Label>Select Confirm Order</Label>
+//             </Step>
+//           </div>
+//         </div>
+
+//         <div className="order-container chef-bottum">
+//           {/* Veg / Non-Veg Toggle */}
+//           <Row className="d-flex justify-content-start">
+//             <div style={{ display: "flex", margin: "10px 0 0" }}>
+//               <div style={{ marginRight: "10px" }}>
+//                 <Button
+//                   variant={selected === "veg" ? "success" : "outline-success"}
+//                   onClick={() => handleSwitchChange("veg")}
+//                   className="cuisinebtn"
+//                 >
+//                   Only Veg
+//                 </Button>
+//               </div>
+//               <div>
+//                 <Button
+//                   variant={selected === "non-veg" ? "danger" : "outline-danger"}
+//                   onClick={() => handleSwitchChange("non-veg")}
+//                   className="cuisinebtn"
+//                 >
+//                   Non-Veg
+//                 </Button>
+//               </div>
+//             </div>
+//             <div className="chef-divider" style={{ marginTop: "13px" }}></div>
+//           </Row>
+
+//           {/* Cuisines Category Buttons (YAHAN LAGAYA HAI) */}
+//           <Row className="mt-2 mb-2">
+//             <Col className="d-flex flex-wrap gap-2">
+//               {cuisines.map((item) => {
+//                 const isSelected = selectedCuisines.includes(item[0]);
+//                 return (
+//                   <Button
+//                     key={item[0]}
+//                     variant={isSelected ? "primary" : "outline-primary"}
+//                     onClick={() => handleCuisinePress(item[0])}
+//                     className="cusinebtn m-1"
+//                   >
+//                     {item[1]}
+//                   </Button>
+//                 );
+//               })}
+//             </Col>
+//           </Row>
+
+//           {/* Dish List Render */}
+//           <Row className="mt-1">
+//             <Col>
+//               {loading && mealList.length === 0 ? (
+//                 <SkeletonLoader loading={true} />
+//               ) : (
+//                 selectedCuisines.length > 0 && (
+//                   <ListGroup className="dish-list">
+//                     {mealList.map((meal) => (
+//                       <div className="w-100" key={meal.mealObject?._id || meal._id}>
+//                         <ListGroupItem className="dish-item">
+//                           {renderDishItem({ item: meal })}
+//                         </ListGroupItem>
+//                       </div>
+//                     ))}
+//                   </ListGroup>
+//                 )
+//               )}
+//             </Col>
+//           </Row>
+
+//           {/* Bottom Fixed Checkout Bar */}
+//           <Row>
+//             <Col>
+//               <div style={{ position: "fixed", bottom: 0, width: "100%", backgroundColor: "#EDEDED", borderTop: "1px solid #efefef", padding: "15px 0", left: "0", zIndex: 999 }}>
+//                 <Button
+//                   onClick={() => addDish(selectedDishPrice)}
+//                   style={{
+//                     width: "50%",
+//                     backgroundColor: isDishSelected ? "#9252AA" : "#F9E9FF",
+//                     borderColor: isDishSelected ? "#9252AA" : "#F9E9FF",
+//                     margin: "0 auto",
+//                     display: "flex",
+//                     justifyContent: "space-between",
+//                   }}
+//                   disabled={!isDishSelected}
+//                   className="continuebtnchef"
+//                 >
+//                   <span style={{ color: isDishSelected ? "white" : "#fff" }}>Continue</span>
+//                   <span style={{ color: isDishSelected ? "white" : "#fff" }}>{selectedCount} Items</span>
+//                 </Button>
+//               </div>
+//             </Col>
+//           </Row>
+//         </div>
+
+//         {(isWarningVisibleForCuisineCount || isWarningVisibleForDishCount) && (
+//           <Popup popupMessage={popupMessage} onClose={handleWarningClose} />
+//         )}
+//       </div>
+//     </>
+//   );
+// };
+
+// const styles = {
+//   dish: {
+//     width: "32px",
+//     height: "32px",
+//   },
+// };
+
+// export default FoodDeliveryCreateOrder;
+
+// export async function getServerSideProps(context) {
+//   const { selectedfoodCategory } = context.query;
+
+//   if (!selectedfoodCategory) {
+//     return {
+//       redirect: {
+//         destination: "/party-food-delivery-live-catering-buffet",
+//         permanent: false,
+//       },
+//     };
+//   }
+
+//   try {
+//     const cuisineRes = await axiosApi.post(
+//       BASE_URL + GET_CUISINE_ENDPOINT,
+//       { type: "cuisine" },
+//       { headers: { "Content-Type": "application/json" } }
+//     );
+
+//     let initialCuisines = [];
+//     if (cuisineRes.status == API_SUCCESS_CODE) {
+//       initialCuisines = cuisineRes.data.data.configuration.map(({ _id, name }) => [_id, name]);
+//     }
+
+//     let initialMealList = [];
+//     if (initialCuisines.length > 0) {
+//       const firstCuisineId = initialCuisines[0][0];
+
+//       const mealRes = await axiosApi.post(
+//         BASE_URL + GET_MEAL_DISH_ENDPOINT,
+//         {
+//           cuisineId: [firstCuisineId],
+//           is_dish: 1,
+//         },
+//         { headers: { "Content-Type": "application/json" } }
+//       );
+
+//       if (mealRes.status == API_SUCCESS_CODE) {
+//         initialMealList = mealRes.data.data.map((item) => ({
+//           ...item,
+//           dish: item.dish,
+//         }));
+//       }
+//     }
+
+//     return {
+//       props: {
+//         initialCuisines,
+//         initialMealList,
+//         selectedfoodCategory: selectedfoodCategory || null,
+//       },
+//     };
+//   } catch (error) {
+//     console.error("SSR Error:", error.message);
+//     return {
+//       props: {
+//         initialCuisines: [],
+//         initialMealList: [],
+//         selectedfoodCategory: selectedfoodCategory || null,
+//       },
+//     };
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect, useRef } from 'react';
+// import { Step, Label, Divider } from 'semantic-ui-react'; // Replace with actual library
+// import { ListGroup, ListGroupItem } from 'react-bootstrap';
+// import { Modal, Button, Container, Row, Col, Spinner } from 'react-bootstrap';
+// import { BASE_URL, GET_CUISINE_ENDPOINT, API_SUCCESS_CODE, GET_MEAL_DISH_ENDPOINT } from '../../../utils/apiconstants';
+// // import { useNavigate } from 'react-router-dom';
+// import RectanglePurple from '../../../assets/Rectanglepurple.png';
+// import RectangleWhite from '../../../assets/rectanglewhite.png';
+// import MinusIcon from '../../../assets/minus.png';
+// import PlusIcon from '../../../assets/plus.png';
+// // import { useParams } from "react-router-dom";
+// import warningImage from "../../../assets/Group.png";
+// import Popup from '../../../utils/popup';
+// import SkeletonLoader from "../../../utils/chefSkeleton";
+// import SelectDishes from "../../../assets/selectDish.png";
+// import SelectDateTime from "../../../assets/event.png";
+// import SelectConfirmOrder from "../../../assets/confirm_order.png";
+// import separator from "../../../assets/separator.png";
+// import InfoIcon from '../../../assets/info.png';
+// import { useRouter } from 'next/router';
+// import Image from 'next/image';
+// import '../../../css/chefOrder.css';
+// import Head from 'next/head';
+// import axiosApi from '@/utils/axiosApi';
+
+// const FoodDeliveryCreateOrder = (currentStep) => {
+//   const viewBottomSheetRef = useRef(null);
+//   const bottomSheetRef = useRef(null);
+//   const router = useRouter();
+//   console.log(router)
+//   const { selectedfoodCategory } = router.query;
+//   const [selectedOption, setSelectedOption] = useState('');
+//   // const selectedOption = router.asPath.split('/').pop();
+//   const [orderType, setOrderType] = useState(2);
+//   const [isDishSelected, setIsDishSelected] = useState(false);
+//   const [selected, setSelected] = useState('veg');
+//   const [cuisines, setCuisines] = useState([]);
+//   const [selectedCuisines, setSelectedCuisines] = useState([]);
+//   const [expandedCategories, setExpandedCategories] = useState([]);
+//   const [mealList, setMealList] = useState([]);
+//   const [isSelectedDish, setIsSelectedDish] = useState(false);
+//   const [dishDetail, setDishDetail] = useState(null);
+//   const [selectedCount, setSelectedCount] = useState(0);
+//   const [selectedDishes, setSelectedDishes] = useState([]);
+//   const [selectedCategory, setSelectedCategory] = useState(null);
+//   const [isViewAllSheetOpen, setIsViewAllSheetOpen] = useState(false);
+//   const [selectedDishPrice, setSelectedDishPrice] = useState(0);
+//   const [selectedDishDictionary, setSelectedDishDictionary] = useState({});
+//   const [isNonVegSelected, setIsNonVegSelected] = useState(false);
+//   const [isVegSelected, setIsVegSelected] = useState(true);
+//   const [isPopupVisible, setPopupVisible] = useState(false);
+//   const [loading, setLoading] = useState(true);
+//   const [isWarningVisibleForTotalAmount, setWarningVisibleForTotalAmount] = useState(false);
+//   const [isWarningVisibleForDishCount, setWarningVisibleForDishCount] = useState(false);
+//   const [isWarningVisibleForCuisineCount, setWarningVisibleForCuisineCount] = useState(false);
+//   const [isViewAllExpanded, setIsViewAllExpanded] = useState(false);
+//   const [popupMessage, setPopupMessage] = useState({
+//     image: "",
+//     title: "",
+//     body: "",
+//     button: "",
+//   });
+
+//   useEffect(() => {
+//     if (selectedfoodCategory) {
+//       setSelectedOption(selectedfoodCategory);
+//     }
+//   }, [selectedfoodCategory]);
+
+//   // const navigate = useNavigate();
+
+//   const handleWarningClose = () => {
+//     setWarningVisibleForDishCount(false);
+//     setWarningVisibleForCuisineCount(false);
+//     setWarningVisibleForTotalAmount(false);
+//   };
+
+//   // get category of cuisines
+
+//   useEffect(() => {
+
+//     const fetchCuisineData = async () => {
+//       try {
+//         const url = BASE_URL + GET_CUISINE_ENDPOINT;
+//         const requestData = {
+//           type: 'cuisine',
+//         };
+//         const response = await axiosApi.post(url, requestData, {
+//           headers: {
+//             'Content-Type': 'application/json',
+//           },
+//         });
+//         if (response.status == API_SUCCESS_CODE) {
+//           const names = response.data.data.configuration.map(({ _id, name }) => [
+//             _id,
+//             name,
+//           ]);
+//           setCuisines(names);
+//         }
+//       } catch (error) {
+//         console.log('Error Fetching Data:', error.message);
+//       }
+//     };
+//     fetchCuisineData();
+//   }, []);
+
+//   useEffect(() => {
+//     if (cuisines.length > 0 && selectedCuisines.length === 0) {
+//       handleCuisinePress(cuisines[0][0]);
+//     }
+//   }, [cuisines, selectedCuisines]);
+
+//   const renderItem = ({ item }) => {
+//     const isSelected = selectedCuisines.includes(item[0]);
+
+//     return (
+//       <div className="d-flex align-items-center justify-content-between mb-2">
+//         <Button
+//           variant={isSelected ? 'primary' : 'outline-primary'}
+//           onClick={() => handleCuisinePress(item[0])}
+//           className='cusinebtn'
+//         >
+//           {item[1]}
+//         </Button>
+//         {expandedCategories.includes(item[0]) && (
+//           <ListGroup className="d-flex flex-wrap">
+//             {cuisines.map((cuisine, index) => (
+//               <ListGroupItem
+//                 key={index}
+//                 className="flex-grow-1"
+//                 style={{ flexBasis: 'calc(25% - 10px)', margin: '5px' }} // Adjust margin and flexBasis as needed
+//               >
+//                 {renderItem({ item: cuisine })}
+//               </ListGroupItem>
+//             ))}
+//           </ListGroup>
+//         )}
+//       </div>
+//     );
+//   };
+
+//   const handleIncreaseQuantity = (dish, isSelected) => {
+//     if (selectedDishes.length >= 15 && !isSelected) {
+//       setWarningVisibleForDishCount(true);
+//       setPopupMessage({
+//         img: warningImage,
+//         title: "Total Dishes Selected can not be more than 15 Dish.",
+//         body: "",
+//         button: "Contact Us",
+//       });
+//     } else {
+//       const updatedSelectedDishes = [...selectedDishes];
+//       const updatedSelectedDishDictionary = { ...selectedDishDictionary };
+//       const dishPriceValue = parseInt(dish.cuisineArray[0], 10);
+//       console.log("dishPriceValue" + dishPriceValue)
+//       if (!isNaN(dishPriceValue)) { // Check if the parsed value is not NaN
+//         if (updatedSelectedDishes.includes(dish._id)) {
+//           const index = updatedSelectedDishes.indexOf(dish._id);
+//           updatedSelectedDishes.splice(index, 1);
+//           const updatedPrice = selectedDishPrice - dishPriceValue;
+//           setSelectedDishPrice(updatedPrice);
+//         } else {
+//           updatedSelectedDishes.push(dish._id);
+//           const updatedPrice = selectedDishPrice + dishPriceValue;
+//           setSelectedDishPrice(updatedPrice);
+//         }
+//       }
+//       setSelectedDishes(updatedSelectedDishes);
+//       setSelectedCount(updatedSelectedDishes.length);
+
+//       if (updatedSelectedDishDictionary[dish._id]) {
+//         delete updatedSelectedDishDictionary[dish._id];
+//       } else {
+//         updatedSelectedDishDictionary[dish._id] = dish;
+//       }
+//       setSelectedDishDictionary(updatedSelectedDishDictionary);
+//       setIsDishSelected(updatedSelectedDishes.length > 0);
+//     }
+//   };
+
+//   //handleCuisinePress is used to handle cuisine clicks and called from above function
+//   const handleCuisinePress = cuisineId => {
+//     if (selectedCuisines.length < 3 || selectedCuisines.includes(cuisineId)) {
+//       setSelectedCuisines(prevSelected => {
+//         if (prevSelected.includes(cuisineId)) {
+//           return prevSelected.filter(item => item !== cuisineId);
+//         } else {
+//           return [...prevSelected, cuisineId];
+//         }
+//       });
+//     } else {
+//       // Display a popup or handle the case where the user tries to select more than 3 cuisines
+//       setWarningVisibleForCuisineCount(true);
+//       setPopupMessage({
+//         img: warningImage,
+//         title: "One chef is only expert in 3 cuisine only.",
+//         body: "Our chef is expert in cuisines only please select appropriate number of cuisines to continue",
+//         button: "Continue",
+//       });
+//     }
+//   };
+
+//   const fetchMealBasedOnCuisine = async () => {
+//     try {
+//       setLoading(true);
+//       const url = BASE_URL + GET_MEAL_DISH_ENDPOINT;
+//       const is_dish = isNonVegSelected ? 0 : 1;
+//       console.log(selectedCuisines);
+//       const requestData = {
+//         cuisineId: ["65f1b256aaba27208a89865f"],
+//         is_dish: is_dish,
+//       };
+//       const response = await axiosApi.post(url, requestData, {
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//       });
+//       if (response.status == API_SUCCESS_CODE) {
+//         // Assuming response is your API response
+//         const filteredMealList = response.data.data.map(item => ({
+//           ...item,
+//           dish: item.dish
+//         }));
+
+//         setMealList(filteredMealList);
+
+//       }
+//     } catch (error) {
+//       console.log('Error Fetching Data:', error.message);
+//     } finally {
+//       setLoading(false); // Set loading to false when the API request is completed
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (selectedCuisines.length > 0 && selectedCuisines.length <= 3) {
+//       fetchMealBasedOnCuisine();
+//     } else {
+//       setMealList([]);
+//       setSelectedDishDictionary({});
+//       setIsDishSelected(false);
+//       setSelectedDishes([]);
+//       setSelectedCount(0);
+//       setSelectedDishPrice(0);
+//     }
+//   }, [selectedCuisines, isNonVegSelected]);
+
+//   const renderDishItem = ({ item }) => (
+//     <div className='w-100'>
+//       {item.dish.length > 0 ?
+//         <>
+//           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "top", margin: "5px 4px 0px 0px" }}>
+//             <h1 style={{ color: "#222", fontSize: "110%", marginBottom: "13px" , fontWeight:"700" }} className='cat-Name'>{item.mealObject.name}{"  "}{"(" + item.dish.length + ")"}</h1>
+//             <Button onClick={() => handleViewAll(item.mealObject._id)} style={{ color: expandedCategories.includes(item.mealObject._id) ? '#000' : '#fff', fontWeight: '400', textDecorationLine: 'none', fontSize: 12 }}
+//               className={`viewbtn ${expandedCategories.includes(item.mealObject._id)
+//                 ? "clickedviewAll"
+//                 : ""
+//                 }`}>View All</Button>
+//           </div>
+//           <div className="dish-item">
+//             {expandedCategories.includes(item.mealObject._id) ? (
+//               item.dish.map((dish, index) => {
+//                 const dishImage = dish.image ? `https://horaservices.com/api/uploads/${dish.image}` : '';
+//                 const specialApplianceImage = dish.special_appliance_id.length > 0 && dish.special_appliance_id[0].image
+//                   ? `https://horaservices.com/api/uploads/${dish.special_appliance_id[0].image}`
+//                   : '';
+//                 const selectedImage = selectedDishes.includes(dish._id) ? dishImage : dishImage;
+
+//                 return (
+//                   <div key={index} className={`dish-item-inner ${dish.is_dish === 1 ? 'veg-border' : 'non-veg-border'}`}
+//                     style={{
+//                       backgroundImage: `url(${selectedDishes.includes(dish._id)
+//                         ? RectanglePurple.src
+//                         : RectangleWhite.src
+//                         })`
+//                     }}
+//                   >
+//                     {selectedImage ? (
+//                       <div 
+//                       className={`dish-image ${selectedDishes.includes(dish._id) ? "selected" : ""}`}
+//                       style={{
+//                           backgroundImage: `url(${selectedImage})`,
+//                           backgroundSize: 'cover, cover', // Ensures both images cover the element
+//                           backgroundPosition: 'center, center' // Centers both images
+//                       }}
+//                       >
+//                          </div>
+//                     ) : (
+//                       <div className={`dish-placeholder ${selectedDishes.includes(dish._id) ? 'selected' : ''}`}>Image not available</div>
+//                     )}
+//                     <p className={`dish-name ${selectedDishes.includes(dish._id) ? 'selected' : ''}`}>
+//                       {isDishSelected && dish.special_appliance_id.length > 0 && selectedDishes.includes(dish._id)
+//                         ? dish.special_appliance_id[0].name
+//                         : dish.name}
+//                     </p>
+//                     <div className="d-flex justify-content-between w-100 px-3">
+//                       <span className={`dish-price ${selectedDishes.includes(dish._id) ? 'selected' : ''}`}>
+//                         ₹ {dish.cuisineArray[0]}
+//                       </span>
+//                       <Button className="pluBtn" onClick={() => handleIncreaseQuantity(dish, selectedDishes.includes(dish._id))}>
+//                         <Image
+//                           src={
+//                             selectedDishes.includes(dish._id) ? MinusIcon : PlusIcon
+//                           }
+//                           width={21}
+//                           height={21}
+//                         />
+//                       </Button>
+//                     </div>
+//                     <div className={`dish-indicator ${dish.is_dish === 1 ? 'veg' : 'non-veg'}`}></div>
+//                   </div>
+//                 );
+//               })) :
+//               (item.dish.slice(0, 7).map((dish, index) => {
+//                 const dishImage = dish.image ? `https://horaservices.com/api/uploads/${dish.image}` : '';
+//                 const specialApplianceImage = dish.special_appliance_id.length > 0 && dish.special_appliance_id[0].image
+//                   ? `https://horaservices.com/api/uploads/${dish.special_appliance_id[0].image}`
+//                   : '';
+//                 const selectedImage = selectedDishes.includes(dish._id) ? dishImage : dishImage;
+
+//                 return (
+//                   <div key={index} className={`dish-item-inner ${dish.is_dish === 1 ? 'veg-border' : 'non-veg-border'}`}
+
+//                     style={{
+//                       backgroundImage: `url(${selectedDishes.includes(dish._id)
+//                         ? RectanglePurple.src
+//                         : RectangleWhite.src
+//                         })`
+//                     }}
+//                   >
+//                     {selectedImage ? (
+//                       <div 
+//                       className={`dish-image ${selectedDishes.includes(dish._id) ? "selected" : ""}`}
+//                       style={{
+//                           backgroundImage: `url(${selectedImage})`,
+//                           backgroundSize: 'cover, cover', // Ensures both images cover the element
+//                           backgroundPosition: 'center, center' // Centers both images
+//                       }}
+//                       >
+//                          </div>
+//                     ) : (
+//                       <div className={`dish-placeholder ${selectedDishes.includes(dish._id) ? 'selected' : ''}`}>Image not available</div>
+//                     )}
+//                     <p className={`dish-name ${selectedDishes.includes(dish._id) ? 'selected' : ''}`}>
+//                       {isDishSelected && dish.special_appliance_id.length > 0 && selectedDishes.includes(dish._id)
+//                         ? dish.special_appliance_id[0].name
+//                         : dish.name}
+//                     </p>
+//                     <div className="d-flex justify-content-between w-100 px-3">
+//                       <span className={`dish-price ${selectedDishes.includes(dish._id) ? 'selected' : ''}`}>
+//                         ₹ {dish.cuisineArray[0]}
+//                       </span>
+//                       <Button className="pluBtn" onClick={() => handleIncreaseQuantity(dish, selectedDishes.includes(dish._id))}>
+//                         <Image
+//                           src={
+//                             selectedDishes.includes(dish._id) ? MinusIcon : PlusIcon
+//                           }
+//                           width={21}
+//                           height={21}
+//                         />
+//                       </Button>
+//                     </div>
+//                     <div className={`dish-indicator ${dish.is_dish === 1 ? 'veg' : 'non-veg'}`}></div>
+//                   </div>
+//                 );
+//               }))
+//             }
+//           </div>
+//           <div className='chef-divider' style={{ marginTop: "20px" }}></div>
+//         </>
+//         : null
+//       }
+//     </div>
+//   );
+// console.log('selectedOption',selectedOption)
+//   const addDish = selectedDishPrice => {
+//     if (!selectedDishDictionary || Object.keys(selectedDishDictionary).length === 0) {
+//       console.error("selectedDishDictionary is undefined or empty");
+//       return; // Exit the function early if the dictionary is undefined or empty
+//   }
+//     const selectedDishQuantities = Object.values(selectedDishDictionary).map(item => {
+//       return {
+//         name: item.name,
+//         image: item.image,
+//         price: item.cuisineArray[0],
+//         quantity: item.cuisineArray[1],
+//         unit: item.cuisineArray[2],
+//         id: item.mealId
+//       };
+//     });
+//     // router.push(`/party-food-delivery-live-catering-buffet-select-date/${selectedOption}`, { state: { selectedDishDictionary, selectedDishPrice, selectedDishes, orderType , isDishSelected , selectedCount , selectedDishQuantities  , selectedOption} });
+//     router.push({
+//       pathname: `/party-food-delivery-live-catering-buffet-select-date/${selectedOption}`,
+//       query: {
+//         selectedDishDictionary: JSON.stringify(selectedDishDictionary),
+//         selectedDishPrice,
+//         selectedDishes,
+//         orderType,
+//         isDishSelected,
+//         selectedCount,
+//         selectedDishQuantities: JSON.stringify(selectedDishQuantities),
+//         selectedOption
+//       },
+//     });
+//   };
+
+//   const closeBottomSheet = () => {
+//     setDishDetail(null);
+//     bottomSheetRef.current.close();
+//   };
+
+//   const addDishAndCloseBottomSheet = () => {
+//     closeBottomSheet();
+//   };
+
+//   const RenderBottomSheetContent = () => (
+//     <div className="bottom-sheet-content">
+//       <Image
+//         src={`https://horaservices.com/api/uploads/${dishDetail.image}`}
+//         alt={dishDetail.name}
+//         className="bottom-sheet-image"
+//         width={300}
+//         height={300}
+//       />
+//       <h5 className="bottom-sheet-title">{dishDetail.name}</h5>
+//       <hr />
+//       <p className="bottom-sheet-description">{dishDetail.description}</p>
+//       <div className="bottom-sheet-info">
+//         <div className="info-item">
+//           <strong>Per Plate Qty:</strong> {dishDetail.per_plate_qty.qty ? `${dishDetail.per_plate_qty.qty} ${dishDetail.per_plate_qty.unit}` : 'NA'}
+//         </div>
+//         <div className="info-item">
+//           <strong>Price Per Plate:</strong> {dishDetail.dish_rate ? `₹ ${dishDetail.dish_rate}` : 'NA'}
+//         </div>
+//         <div className="info-item">
+//           <strong>Price:</strong> {dishDetail.price ? `₹ ${dishDetail.price}` : 'NA'}
+//         </div>
+//       </div>
+//       <Button variant="primary" onClick={addDishAndCloseBottomSheet}>
+//         Add Dish
+//       </Button>
+//     </div>
+//   );
+
+//   const openBottomSheet = (dish, ref) => {
+//     setDishDetail(dish);
+//     ref.current.open();
+//   };
+
+//   const closeViewAllSheet = () => {
+//     setIsViewAllSheetOpen(false);
+//   };
+
+//   const openViewAllSheet = (dish, ref) => {
+//     setDishDetail(dish);
+//     setIsViewAllSheetOpen(true);
+//   };
+
+//   const handleSwitchChange = value => {
+//     setSelected(value);
+//     if (value === 'veg') {
+//       setIsVegSelected(true);
+//       setIsNonVegSelected(false);
+//     } else {
+//       setIsVegSelected(false);
+//       setIsNonVegSelected(true);
+//     }
+//   };
+
+//   const handleViewAll = categoryId => {
+
+//     setIsViewAllExpanded(!isViewAllExpanded);
+
+//     setExpandedCategories(prevExpanded =>
+//       categoryId === prevExpanded[0]
+//         ? prevExpanded.length === 1 ? [] : prevExpanded.slice(1) // If the first category is clicked, toggle its expansion state only if it's not the only expanded category
+//         : prevExpanded.includes(categoryId)
+//           ? prevExpanded.filter(id => id !== categoryId)
+//           : [...prevExpanded, categoryId],
+//     );
+//   };
+
+//   if (loading) {
+//     return <SkeletonLoader loading={true} />;
+//   }
+
+//   return (
+//     <>
+//   <Head>
+//   <title>
+//     {selectedfoodCategory === "party-food-delivery"
+//       ? "Party Food Delivery Services for Birthdays, House Parties & Events | HORA"
+//       : "Live Buffet Catering Services for Weddings, Parties & Events | HORA"}
+//   </title>
+
+//   <meta
+//     name="description"
+//     content={
+//       selectedfoodCategory === "party-food-delivery"
+//         ? "Order fresh and delicious food for birthdays, anniversaries, kitty parties, house parties, baby showers, and corporate events. Professional party food delivery services by HORA."
+//         : "Book live buffet catering services with professional chefs for weddings, birthdays, anniversaries, house parties, baby showers, and corporate events. Customized menus by HORA."
+//     }
+//   />
+
+//   <meta name="robots" content="index,follow" />
+//   <meta name="author" content="Hora Services" />
+
+//   <link
+//     rel="canonical"
+//     href={`https://horaservices.com/party-food-delivery-live-catering-buffet/${selectedfoodCategory}`}
+//   />
+
+//   <link
+//     rel="icon"
+//     href="https://horaservices.com/api/uploads/logo-icon.png"
+//   />
+
+//   {/* Open Graph */}
+//   <meta
+//     property="og:title"
+//     content={
+//       selectedfoodCategory === "party-food-delivery"
+//         ? "Party Food Delivery Services for Birthdays, House Parties & Events | HORA"
+//         : "Live Buffet Catering Services for Weddings, Parties & Events | HORA"
+//     }
+//   />
+
+//   <meta
+//     property="og:description"
+//     content={
+//       selectedfoodCategory === "party-food-delivery"
+//         ? "Order fresh and delicious food for birthdays, anniversaries, kitty parties, house parties, baby showers, and corporate events."
+//         : "Book live buffet catering services with professional chefs for weddings, birthdays, anniversaries, house parties, baby showers, and corporate events."
+//     }
+//   />
+
+//   <meta
+//     property="og:url"
+//     content={`https://horaservices.com/party-food-delivery-live-catering-buffet/${selectedfoodCategory}`}
+//   />
+
+//   <meta property="og:type" content="website" />
+
+//   <meta
+//     property="og:image"
+//     content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
+//   />
+
+//   {/* Twitter */}
+//   <meta name="twitter:card" content="summary_large_image" />
+
+//   <meta
+//     name="twitter:title"
+//     content={
+//       selectedfoodCategory === "party-food-delivery"
+//         ? "Party Food Delivery Services | HORA"
+//         : "Live Buffet Catering Services | HORA"
+//     }
+//   />
+
+//   <meta
+//     name="twitter:description"
+//     content={
+//       selectedfoodCategory === "party-food-delivery"
+//         ? "Fresh food delivery for birthdays, house parties, and events."
+//         : "Professional live buffet catering for weddings, parties, and events."
+//     }
+//   />
+
+//   <meta
+//     name="twitter:image"
+//     content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
+//   />
+
+//   {/* Service Schema */}
+//   <script
+//     type="application/ld+json"
+//     dangerouslySetInnerHTML={{
+//       __html: JSON.stringify({
+//         "@context": "https://schema.org",
+//         "@type": "Service",
+//         name:
+//           selectedfoodCategory === "party-food-delivery"
+//             ? "Party Food Delivery Services"
+//             : "Live Buffet Catering Services",
+//         provider: {
+//           "@type": "Organization",
+//           name: "HORA",
+//           url: "https://horaservices.com",
+//           logo: "https://horaservices.com/api/uploads/logo-icon.png",
+//         },
+//         areaServed: {
+//           "@type": "Country",
+//           name: "India",
+//         },
+//         description:
+//           selectedfoodCategory === "party-food-delivery"
+//             ? "Food delivery services for birthdays, anniversaries, house parties, baby showers, and corporate events."
+//             : "Live buffet catering services with professional chefs for weddings, birthdays, anniversaries, and corporate events.",
+//         aggregateRating: {
+//           "@type": "AggregateRating",
+//           ratingValue: "4.8",
+//           reviewCount: "100",
+//         },
+//       }),
+//     }}
+//   />
+
+//   {/* WebPage Schema */}
+//   <script
+//     type="application/ld+json"
+//     dangerouslySetInnerHTML={{
+//       __html: JSON.stringify({
+//         "@context": "https://schema.org",
+//         "@type": "WebPage",
+//         name:
+//           selectedfoodCategory === "party-food-delivery"
+//             ? "Party Food Delivery Services"
+//             : "Live Buffet Catering Services",
+//         url: `https://horaservices.com/party-food-delivery-live-catering-buffet/${selectedfoodCategory}`,
+//         description:
+//           selectedfoodCategory === "party-food-delivery"
+//             ? "Order fresh food for birthdays, anniversaries, and events."
+//             : "Book live buffet catering services for weddings, parties, and events.",
+//       }),
+//     }}
+//   />
+// </Head>
+//     <div className="chef-create-order">
+//       <div className="order-container chef">
+//         <div style={{ flexDirection: 'row', backgroundColor: '#EFF0F3', boxShadow: "0px 0px 6px 0px rgba(0, 0, 0, 0.08)", display: "flex", justifyContent: "center", alignItems: "center", padding: "10px 0" }}>
+//           <Image style={{ width: "20px", height: '20px', marginRight: "5px" }} src={InfoIcon} />
+//           <p style={{ color: '#676767', fontSize: "94%", fontWeight: '400', margin: "0" }} className='billheading'>Bill value depends upon Dish selected + Number of people</p>
+//         </div>
+//         <div className="range-bar">
+//           <Step active={true.toString()} className="step1">
+//             <Image src={SelectDishes} alt="Select Dishes" style={styles.dish} />
+//             <Label active={true.toString()}>Select Dishes</Label>
+//           </Step>
+//           <div className="sep-image">
+//             <Image src={separator} />
+//           </div>
+//           <Step className="step2">
+//             <Image src={SelectDateTime} alt="Select Date & Time" style={styles.dish} />
+//             <Label>Select Date & Time</Label>
+//           </Step>
+//           <div className="sep-image">
+//             <Image src={separator} />
+//           </div>
+//           <Step className="step3">
+//             <Image src={SelectConfirmOrder} alt="Confirm Order" style={styles.dish} />
+//             <Label>Select Confirm Order</Label>
+//           </Step>
+//         </div>
+//       </div>
+//       <div className="order-container chef-bottum">
+//         <Row className="d-flex justify-content-start">
+//           <div style={{ display: "flex", margin: "10px 0 0" }}>
+//             <div style={{ marginRight: "10px" }}>
+//               <Button
+//                 variant={
+//                   selected === "veg" ? "success" : "outline-success"
+//                 }
+//                 onClick={() => handleSwitchChange("veg")}
+//                 className="cuisinebtn"
+//               >
+//                 Only Veg
+//               </Button>
+//             </div>
+//             <div>
+//               <Button
+//                 variant={
+//                   selected === "non-veg" ? "danger" : "outline-danger"
+//                 }
+//                 onClick={() => handleSwitchChange("non-veg")}
+//                 className="cuisinebtn"
+//               >
+//                 Non-Veg
+//               </Button>
+//             </div>
+//           </div>
+//           <div
+//             className="chef-divider"
+//             style={{ marginTop: "13px" }}
+//           ></div>
+//         </Row>
+
+//         <Row className="mt-1">
+//           <Col>
+//             {selectedCuisines.length > 0 && (
+//               <ListGroup className="dish-list">
+//                 {mealList.map((meal) => (
+//                   <div className='w-100'>
+//                     <ListGroupItem key={meal._id} className="dish-item">
+//                       {renderDishItem({ item: meal })}
+//                     </ListGroupItem>
+//                   </div>
+//                 ))}
+//               </ListGroup>
+//             )}
+//           </Col>
+//         </Row>
+
+//         <Row>
+//           <Col>
+//             <div
+//               style={{
+//                 position: "fixed",
+//                 bottom: 0,
+//                 width: "100%",
+//                 backgroundColor: "#EDEDED",
+//                 borderTop: "1px solid #efefef",
+//                 padding: "15px 0",
+//                 left: "0",
+//               }}
+//             >
+//               <Button
+//                 onClick={() => addDish(selectedDishPrice)}
+//                 style={{
+//                   width: "50%",
+//                   backgroundColor: isDishSelected
+//                     ? "#9252AA"
+//                     : "#F9E9FF",
+//                   borderColor: isDishSelected ? "#9252AA" : "#F9E9FF",
+//                 }}
+//                 disabled={!isDishSelected}
+//                 className="continuebtnchef"
+//               >
+//                 <div
+//                   style={{
+//                     className: "continueButtonLeftText",
+//                     color: isDishSelected ? "white" : "#fff",
+//                   }}
+//                 >
+//                   Continue
+//                 </div>
+//                 <div
+//                   style={{
+//                     className: "continueButtonRightText",
+//                     color: isDishSelected ? "white" : "#fff",
+//                   }}
+//                 >
+//                   {selectedCount} Items
+//                 </div>
+//               </Button>
+//             </div>
+
+//           </Col>
+//         </Row>
+//       </div>
+//       <Modal show={isViewAllSheetOpen} onHide={closeViewAllSheet}>
+//         <Modal.Header closeButton>
+//           <Modal.Title>View All</Modal.Title>
+//         </Modal.Header>
+//         <Modal.Body>{dishDetail && <RenderBottomSheetContent />}</Modal.Body>
+//       </Modal>
+//       {(isWarningVisibleForCuisineCount || isWarningVisibleForDishCount) && (
+//         <Popup popupMessage={popupMessage} onClose={handleWarningClose} />
+//       )}
+//     </div>
+//     </>
+//   );
+// };
+
+// const styles = {
+//   imageContainer: {
+//     position: "relative",
+//     width: "270px",
+//     backgroundColor: "#fff",
+//     marginBottom: 40,
+//     boxShadow: "0 6px 16px 0 rgba(0,0,0,.14)",
+//     borderRadius: "5px",
+//     overflow: "hidden",
+//     transition: "transform 0.3s ease-in-out",
+//     margin: "10px 12px 20px",
+//     padding: "6px 5px 10px",
+//   },
+//   dish: {
+//     width: "32px",
+//     height: "32px",
+//   },
+// };
+
+// export default FoodDeliveryCreateOrder;
+
+
+
+
+
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Step, Label, Divider } from 'semantic-ui-react'; // Replace with actual library
 import { ListGroup, ListGroupItem } from 'react-bootstrap';
@@ -23,7 +1358,11 @@ import '../../../css/chefOrder.css';
 import Head from 'next/head';
 import axiosApi from '@/utils/axiosApi';
 
-const FoodDeliveryCreateOrder = (currentStep) => {
+const FoodDeliveryCreateOrder = ({ 
+  initialCuisines = [], 
+  initialMealList = [],
+  selectedfoodCategory: ssrSelectedfoodCategory 
+}) => {
   const viewBottomSheetRef = useRef(null);
   const bottomSheetRef = useRef(null);
   const router = useRouter();
@@ -34,10 +1373,12 @@ const FoodDeliveryCreateOrder = (currentStep) => {
   const [orderType, setOrderType] = useState(2);
   const [isDishSelected, setIsDishSelected] = useState(false);
   const [selected, setSelected] = useState('veg');
-  const [cuisines, setCuisines] = useState([]);
-  const [selectedCuisines, setSelectedCuisines] = useState([]);
+  const [cuisines, setCuisines] = useState(initialCuisines);
+  const [selectedCuisines, setSelectedCuisines] = useState(
+    initialCuisines.length > 0 ? [initialCuisines[0][0]] : []
+  );
   const [expandedCategories, setExpandedCategories] = useState([]);
-  const [mealList, setMealList] = useState([]);
+  const [mealList, setMealList] = useState(initialMealList);
   const [isSelectedDish, setIsSelectedDish] = useState(false);
   const [dishDetail, setDishDetail] = useState(null);
   const [selectedCount, setSelectedCount] = useState(0);
@@ -49,7 +1390,7 @@ const FoodDeliveryCreateOrder = (currentStep) => {
   const [isNonVegSelected, setIsNonVegSelected] = useState(false);
   const [isVegSelected, setIsVegSelected] = useState(true);
   const [isPopupVisible, setPopupVisible] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(initialMealList.length === 0); // SSR data ho to loading false
   const [isWarningVisibleForTotalAmount, setWarningVisibleForTotalAmount] = useState(false);
   const [isWarningVisibleForDishCount, setWarningVisibleForDishCount] = useState(false);
   const [isWarningVisibleForCuisineCount, setWarningVisibleForCuisineCount] = useState(false);
@@ -64,8 +1405,10 @@ const FoodDeliveryCreateOrder = (currentStep) => {
   useEffect(() => {
     if (selectedfoodCategory) {
       setSelectedOption(selectedfoodCategory);
+    } else if (ssrSelectedfoodCategory) {
+      setSelectedOption(ssrSelectedfoodCategory);
     }
-  }, [selectedfoodCategory]);
+  }, [selectedfoodCategory, ssrSelectedfoodCategory]);
 
   // const navigate = useNavigate();
 
@@ -76,8 +1419,9 @@ const FoodDeliveryCreateOrder = (currentStep) => {
   };
 
   // get category of cuisines
-
   useEffect(() => {
+    // Agar SSR se already data aa gaya hai to dubara fetch mat karo
+    if (initialCuisines.length > 0) return;
 
     const fetchCuisineData = async () => {
       try {
@@ -102,7 +1446,7 @@ const FoodDeliveryCreateOrder = (currentStep) => {
       }
     };
     fetchCuisineData();
-  }, []);
+  }, [initialCuisines]);
 
   useEffect(() => {
     if (cuisines.length > 0 && selectedCuisines.length === 0) {
@@ -488,7 +1832,7 @@ console.log('selectedOption',selectedOption)
     <>
   <Head>
   <title>
-    {selectedfoodCategory === "party-food-delivery"
+    {selectedfoodCategory === "party-food-delivery" || ssrSelectedfoodCategory === "party-food-delivery"
       ? "Party Food Delivery Services for Birthdays, House Parties & Events | HORA"
       : "Live Buffet Catering Services for Weddings, Parties & Events | HORA"}
   </title>
@@ -496,7 +1840,7 @@ console.log('selectedOption',selectedOption)
   <meta
     name="description"
     content={
-      selectedfoodCategory === "party-food-delivery"
+      selectedfoodCategory === "party-food-delivery" || ssrSelectedfoodCategory === "party-food-delivery"
         ? "Order fresh and delicious food for birthdays, anniversaries, kitty parties, house parties, baby showers, and corporate events. Professional party food delivery services by HORA."
         : "Book live buffet catering services with professional chefs for weddings, birthdays, anniversaries, house parties, baby showers, and corporate events. Customized menus by HORA."
     }
@@ -507,7 +1851,7 @@ console.log('selectedOption',selectedOption)
 
   <link
     rel="canonical"
-    href={`https://horaservices.com/party-food-delivery-live-catering-buffet/${selectedfoodCategory}`}
+    href={`https://horaservices.com/party-food-delivery-live-catering-buffet/${selectedfoodCategory || ssrSelectedfoodCategory}`}
   />
 
   <link
@@ -519,7 +1863,7 @@ console.log('selectedOption',selectedOption)
   <meta
     property="og:title"
     content={
-      selectedfoodCategory === "party-food-delivery"
+      selectedfoodCategory === "party-food-delivery" || ssrSelectedfoodCategory === "party-food-delivery"
         ? "Party Food Delivery Services for Birthdays, House Parties & Events | HORA"
         : "Live Buffet Catering Services for Weddings, Parties & Events | HORA"
     }
@@ -528,7 +1872,7 @@ console.log('selectedOption',selectedOption)
   <meta
     property="og:description"
     content={
-      selectedfoodCategory === "party-food-delivery"
+      selectedfoodCategory === "party-food-delivery" || ssrSelectedfoodCategory === "party-food-delivery"
         ? "Order fresh and delicious food for birthdays, anniversaries, kitty parties, house parties, baby showers, and corporate events."
         : "Book live buffet catering services with professional chefs for weddings, birthdays, anniversaries, house parties, baby showers, and corporate events."
     }
@@ -536,7 +1880,7 @@ console.log('selectedOption',selectedOption)
 
   <meta
     property="og:url"
-    content={`https://horaservices.com/party-food-delivery-live-catering-buffet/${selectedfoodCategory}`}
+    content={`https://horaservices.com/party-food-delivery-live-catering-buffet/${selectedfoodCategory || ssrSelectedfoodCategory}`}
   />
 
   <meta property="og:type" content="website" />
@@ -552,7 +1896,7 @@ console.log('selectedOption',selectedOption)
   <meta
     name="twitter:title"
     content={
-      selectedfoodCategory === "party-food-delivery"
+      selectedfoodCategory === "party-food-delivery" || ssrSelectedfoodCategory === "party-food-delivery"
         ? "Party Food Delivery Services | HORA"
         : "Live Buffet Catering Services | HORA"
     }
@@ -561,7 +1905,7 @@ console.log('selectedOption',selectedOption)
   <meta
     name="twitter:description"
     content={
-      selectedfoodCategory === "party-food-delivery"
+      selectedfoodCategory === "party-food-delivery" || ssrSelectedfoodCategory === "party-food-delivery"
         ? "Fresh food delivery for birthdays, house parties, and events."
         : "Professional live buffet catering for weddings, parties, and events."
     }
@@ -580,7 +1924,7 @@ console.log('selectedOption',selectedOption)
         "@context": "https://schema.org",
         "@type": "Service",
         name:
-          selectedfoodCategory === "party-food-delivery"
+          selectedfoodCategory === "party-food-delivery" || ssrSelectedfoodCategory === "party-food-delivery"
             ? "Party Food Delivery Services"
             : "Live Buffet Catering Services",
         provider: {
@@ -594,7 +1938,7 @@ console.log('selectedOption',selectedOption)
           name: "India",
         },
         description:
-          selectedfoodCategory === "party-food-delivery"
+          selectedfoodCategory === "party-food-delivery" || ssrSelectedfoodCategory === "party-food-delivery"
             ? "Food delivery services for birthdays, anniversaries, house parties, baby showers, and corporate events."
             : "Live buffet catering services with professional chefs for weddings, birthdays, anniversaries, and corporate events.",
         aggregateRating: {
@@ -614,12 +1958,12 @@ console.log('selectedOption',selectedOption)
         "@context": "https://schema.org",
         "@type": "WebPage",
         name:
-          selectedfoodCategory === "party-food-delivery"
+          selectedfoodCategory === "party-food-delivery" || ssrSelectedfoodCategory === "party-food-delivery"
             ? "Party Food Delivery Services"
             : "Live Buffet Catering Services",
-        url: `https://horaservices.com/party-food-delivery-live-catering-buffet/${selectedfoodCategory}`,
+        url: `https://horaservices.com/party-food-delivery-live-catering-buffet/${selectedfoodCategory || ssrSelectedfoodCategory}`,
         description:
-          selectedfoodCategory === "party-food-delivery"
+          selectedfoodCategory === "party-food-delivery" || ssrSelectedfoodCategory === "party-food-delivery"
             ? "Order fresh food for birthdays, anniversaries, and events."
             : "Book live buffet catering services for weddings, parties, and events.",
       }),
@@ -780,5 +2124,64 @@ const styles = {
     height: "32px",
   },
 };
+
+// ====================== SSR ======================
+export async function getServerSideProps(context) {
+  const { selectedfoodCategory } = context.query;
+
+  let initialCuisines = [];
+  let initialMealList = [];
+
+  try {
+    // 1. Cuisines fetch (exactly same as original)
+    const cuisineRes = await axiosApi.post(
+      BASE_URL + GET_CUISINE_ENDPOINT,
+      { type: 'cuisine' },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (cuisineRes.status == API_SUCCESS_CODE) {
+      initialCuisines = cuisineRes.data.data.configuration.map(({ _id, name }) => [
+        _id,
+        name,
+      ]);
+    }
+
+    // 2. Initial meals fetch (exactly same hardcoded ID + is_dish = 1 jaise original default)
+    const mealRes = await axiosApi.post(
+      BASE_URL + GET_MEAL_DISH_ENDPOINT,
+      {
+        cuisineId: ["65f1b256aaba27208a89865f"],
+        is_dish: 1,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (mealRes.status == API_SUCCESS_CODE) {
+      initialMealList = mealRes.data.data.map(item => ({
+        ...item,
+        dish: item.dish
+      }));
+    }
+  } catch (error) {
+    console.log('SSR Error Fetching Data:', error.message);
+  }
+
+  return {
+    props: {
+      initialCuisines,
+      initialMealList,
+      selectedfoodCategory: selectedfoodCategory || null,
+    },
+  };
+}
 
 export default FoodDeliveryCreateOrder;

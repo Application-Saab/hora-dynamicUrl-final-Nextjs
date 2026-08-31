@@ -1,5 +1,5 @@
 import Image from "next/image";
-import WillTryIcon from "@/assets/wonderland/RsvpListWilltry.svg";
+import WillTryIcon from "@/assets/wonderland/RsvpListWillTry.svg";
 import WillComeIcon from "@/assets/wonderland/RsvpListWillCome.svg";
 import "./RsvpListModal.css";
 import CustomModal from "../common/CustomModal";

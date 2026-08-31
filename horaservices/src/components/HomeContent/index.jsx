@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 
-import "@/app/home.css";
+import "../../app/home.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -16,11 +16,11 @@ import PhotoGraphy from "@/assets/Home/Photography.webp";
 import BulkFoodDelivery from "@/assets/Home/BulkFoodDelivery.webp";
 import Entertainment from "@/assets/Home/Entertainment.webp";
 import LiveCatering from "@/assets/Home/LiveCatering.webp";
-import Homevideo from "../../../public/assets/Homevideo.mp4";
+import Homevideo from "../../../public/assets/HomeVideo.mp4";
 import Photographybanner from "@/assets/Home/Photographybanner.webp";
 import decorationbanner from "@/assets/Home/decorationbanner.webp";
 import chefforparty from "@/assets/Home/chefforparty.webp";
-import chef from "@/assets/Home/chef.webp";
+import chef from "@/assets/Home/Chef.webp";
 import partyfood from "@/assets/Home/partyfood.webp";
 import photo1 from "@/assets/Home/photo1.svg";
 import photo2 from "@/assets/Home/photo2.svg";

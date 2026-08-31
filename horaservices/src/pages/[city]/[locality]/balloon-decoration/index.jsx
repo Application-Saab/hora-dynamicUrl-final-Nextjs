@@ -1,7 +1,7 @@
 import SectionDescription from "@/components/Description";
 import FAQAccordion from "@/components/FAQs";
 import LocalitiesSection from "@/components/LocalitiesSection";
-import Decoration from "@/pages/balloon-decoration";
+import Decoration from "@/components/Decoration/Decoration";
 import { decorationCityFAQData } from "@/utils//DecorationCityFAQ";
 import { decorationCityDescription } from "@/utils//DecorationDescription";
 import { DecorationSEOKeywords } from "@/utils/GetSEOKeywords";

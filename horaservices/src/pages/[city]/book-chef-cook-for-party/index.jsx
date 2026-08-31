@@ -29,17 +29,24 @@ import axiosApi from "@/utils/axiosApi";
 const orangeColor = '#FF6F61';
 const defaultColor = '#B0BEC5';
 
-const CreateOrder = ({ history, currentStep }) => {
+const CreateOrder = ({ 
+    history, 
+    currentStep,
+    initialCuisines = [],
+    initialMealList = []
+}) => {
     const [isMobile, setIsMobile] = useState(false);
     const viewBottomSheetRef = useRef(null);
     const bottomSheetRef = useRef(null);
     const [orderType, setOrderType] = useState(2);
     const [isDishSelected, setIsDishSelected] = useState(false);
     const [selected, setSelected] = useState("veg");
-    const [cuisines, setCuisines] = useState([]);
-    const [selectedCuisines, setSelectedCuisines] = useState([]);
+    const [cuisines, setCuisines] = useState(initialCuisines);
+    const [selectedCuisines, setSelectedCuisines] = useState(
+        initialCuisines.length > 0 ? [initialCuisines[0][0]] : []
+    );
     const [expandedCategories, setExpandedCategories] = useState([]);
-    const [mealList, setMealList] = useState([]);
+    const [mealList, setMealList] = useState(initialMealList);
     const [isSelectedDish, setIsSelectedDish] = useState(false);
     const [dishDetail, setDishDetail] = useState(null);
     const [selectedCount, setSelectedCount] = useState(0);
@@ -51,7 +58,7 @@ const CreateOrder = ({ history, currentStep }) => {
     const [isNonVegSelected, setIsNonVegSelected] = useState(false);
     const [isVegSelected, setIsVegSelected] = useState(true);
     const [isPopupVisible, setPopupVisible] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(initialMealList.length === 0);
     const [isWarningVisibleForTotalAmount, setWarningVisibleForTotalAmount] =
         useState(false);
     const [isWarningVisibleForDishCount, setWarningVisibleForDishCount] =
@@ -65,6 +72,7 @@ const CreateOrder = ({ history, currentStep }) => {
         body: "",
         button: "",
     });
+
     // Handler for 'Only Veg' toggle switch
     const handleVegSwitch = () => {
         if (isNonVegSelected) return; // Prevent switching if 'Non-Veg' is selected
@@ -128,6 +136,9 @@ const CreateOrder = ({ history, currentStep }) => {
 
     // get category of cuisines
     useEffect(() => {
+        // Agar SSR se data already aa gaya hai to skip
+        if (initialCuisines.length > 0) return;
+
         const fetchCuisineData = async () => {
             try {
                 const url = BASE_URL + GET_CUISINE_ENDPOINT;
@@ -150,7 +161,7 @@ const CreateOrder = ({ history, currentStep }) => {
             }
         };
         fetchCuisineData();
-    }, []);
+    }, [initialCuisines]);
 
     useEffect(() => {
         if (cuisines.length > 0 && selectedCuisines.length === 0) {
@@ -773,5 +784,61 @@ const styles = {
         height: "32px",
     },
 };
+
+// ====================== SSR ======================
+export async function getServerSideProps(context) {
+  let initialCuisines = [];
+  let initialMealList = [];
+
+  try {
+    // 1. Fetch Cuisines
+    const cuisineRes = await axiosApi.post(
+      BASE_URL + GET_CUISINE_ENDPOINT,
+      { type: "cuisine" },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (cuisineRes.status === API_SUCCESS_CODE) {
+      initialCuisines = cuisineRes.data.data.configuration.map(
+        ({ _id, name }) => [_id, name]
+      );
+    }
+
+    // 2. Initial meals (first cuisine + default veg)
+    if (initialCuisines.length > 0) {
+      const firstCuisineId = initialCuisines[0][0];
+
+      const mealRes = await axiosApi.post(
+        BASE_URL + GET_MEAL_DISH_ENDPOINT,
+        {
+          cuisineId: [firstCuisineId],
+          is_dish: 1, // default veg
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (mealRes.status === API_SUCCESS_CODE) {
+        initialMealList = mealRes.data.data;
+      }
+    }
+  } catch (error) {
+    console.log("SSR Error Fetching Data:", error.message);
+  }
+
+  return {
+    props: {
+      initialCuisines,
+      initialMealList,
+    },
+  };
+}
 
 export default CreateOrder;

@@ -57,7 +57,7 @@ const PhotographySimilarSlider = ({
       <div className="premium-slide-decor-header">
       {title && <h2>{title}</h2>}
         {viewAllLink && (
-          <span onClick={() => handleSliderViewMore(viewAllLink, title)}>
+          <span onClick={() => handleViewMore(viewAllLink, title)}>
             <span style={{ cursor: "pointer", color: "#0070f3" }}>View All</span>
           </span>
         )}

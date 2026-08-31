@@ -15,7 +15,7 @@ import multiGroup from "@/assets/multiGroup.svg";
 import plusVector from "@/assets/plusVector.svg";
 import downloadVector from "@/assets/downloadVector.svg";
 import shareVector from "@/assets/shareVector.svg";
-import deleteVector from "@/assets/DeleteVector.svg";
+import deleteVector from "@/assets/deleteVector.svg";
 import whiteShareIcon from "@/assets/whiteShareIcon.svg";
 import unLike from "@/assets/unLike.svg";
 import like from "@/assets/like.svg";

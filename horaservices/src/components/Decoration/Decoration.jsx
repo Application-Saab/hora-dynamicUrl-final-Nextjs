@@ -2,10 +2,10 @@ import React, { useState, useRef, useMemo } from "react";
 import Head from "next/head";
 import { getDecorationOrganizationSchema } from "../../utils/schema";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import { decCat } from "@/utils/decorationCategories";
 import Image from "next/image";
-import "./decoration.css";
+import "./Decoration.css";
 import whypeople1 from "../../assets/whypeople1.jpg";
 import whypeople2 from "../../assets/whypeople2.jpg";
 import whypeople3 from "../../assets/whypeople3.jpg";
@@ -25,7 +25,7 @@ import DecorGrid from "@/components/DecorGrid";
 import WhyHoraIMG from "../../assets/WhyHoraIMG.webp";
 import DecorationBannerIMG from "../../assets/DecorationBannerIMG.webp";
 import decorCollageIMG from "../../assets/decorCollageIMG.webp";
-import HappyBirthdayImg from "../../assets/HappyBirthdayIMG.png";
+import HappyBirthdayImg from "../../assets/HappyBirthdayImg.png";
 import BabyShowerImg from "../../assets/BabyShowerIMG.webp";
 import kidsBirthdayImg from "../../assets/KidsBirthdayIMG.png";
 import BabyWelcomeImg from "../../assets/WelcomBabyIMG.webp";
@@ -45,29 +45,17 @@ import decorationWedding from "@/assets/decorationwedding.webp";
 import decorationBridetobe from "@/assets/decorationBride-tobe.webp";
 import decorationhaldi from "@/assets/decorationhaldi-Mhendi.webp";
 import Engagementdecoration from "@/assets/engament.webp";
-const ReviewSlider = dynamic(() => import("@/components/ReviewSection"), {
-  ssr: false,
-});
-
-const BannerSlider = dynamic(() => import("@/components/BannerSlider"), {
-  ssr: false,
-});
-
-const DecorSlider = dynamic(() => import("@/components/DecorSlider"), {
-  ssr: false,
-});
-
-const ProductSliderSection = dynamic(
-  () => import("@/components/ProductSliderSection"),
-  { ssr: false },
-);
+const BannerSlider = dynamic(() => import("@/components/BannerSlider"));
+const DecorSlider = dynamic(() => import("@/components/DecorSlider"));
+const ProductSliderSection = dynamic(() => import("@/components/ProductSliderSection"));
+const ReviewSlider = dynamic(() => import("@/components/ReviewSection"));
 import {
   birthdayData,
   BabyShowerData,
   AnniversaryData,
   PremiumData,
 } from "../../utils/DecorationData.js";
-import { usePathname } from "next/navigation";
+// import { usePathname } from "next/navigation";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 
@@ -176,7 +164,7 @@ const Decoration = ({ city, locality }) => {
   const scriptTag = JSON.stringify(schemaOrg);
 
   const hasCityPageParam = city ? true : false;
-  const pathname = usePathname();
+  const pathname = router.asPath;
 
   const categorySlug = useMemo(
     () => getCategorySlugFromPath(pathname, city, locality),
@@ -250,7 +238,9 @@ const Decoration = ({ city, locality }) => {
     trackWAClicks();
     const phoneNumber = "7338584828";
     const message = encodeURIComponent("I want to customize a decoration");
-    window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+    if (typeof window !== "undefined") {
+      window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+    }
   };
   const handleSeeMoreClick = () => {
     setTimeout(() => {

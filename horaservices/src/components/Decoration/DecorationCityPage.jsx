@@ -1,6 +1,6 @@
 import SectionDescription from "@/components/Description";
 import LocalitiesSection from "@/components/LocalitiesSection";
-import Decoration from "@/pages/balloon-decoration";
+import Decoration from "@/components/Decoration/Decoration";
 import { decorationCityFAQData } from "@/utils/DecorationCityFAQ";
 import { decorationCityDescription } from "@/utils/DecorationDescription";
 import { DecorationSEOKeywords } from "@/utils/GetSEOKeywords";
@@ -8,7 +8,7 @@ import { decCat } from "@/utils/decorationCategories";
 import cityData from "@/utils/cityData";
 import { useRouter } from "next/router";
 import React, { useEffect, useState, useCallback } from "react";
-import "../../../css/decoration.css";
+import "../../css/decoration.css";
 import FAQSection from "@/components/FAQSection";
 
 // URL ke pehle segment se city slug nikalo, jaise "/hyderabad/balloon-decoration" -> "hyderabad"
@@ -18,19 +18,24 @@ function getCitySlugFromPath(pathname) {
   return parts[0] || "";
 }
 
-function DecorationCityPage() {
+function DecorationCityPage({ city: serverCity, citySlug: serverCitySlug, locality }) {
   const router = useRouter();
-  const { catValue, locality } = router.query;
+  const { catValue } = router.query;
 
   // Yeh state hamesha ASLI browser URL se derive hoti hai — chahe
   // navigation Next.js router.push se hua ho, ya CityContext ke
   // window.history.pushState (silent URL change) se — dono cases handle honge.
-  const [citySlug, setCitySlug] = useState("");
+const [citySlug, setCitySlug] = useState(serverCitySlug || "");
+  const [city, setCity] = useState(serverCity || "");
 
   const syncCityFromUrl = useCallback(() => {
     if (typeof window === "undefined") return;
-    setCitySlug(getCitySlugFromPath(window.location.pathname));
-  }, []);
+    const newSlug = getCitySlugFromPath(window.location.pathname);
+    if (newSlug && newSlug !== citySlug) {
+      setCitySlug(newSlug);
+      setCity(newSlug.charAt(0).toUpperCase() + newSlug.slice(1));
+    }
+  }, [citySlug]);
 
   // Pehla mount — SSR/hydration ke baad turant sync karo
   useEffect(() => {
@@ -55,9 +60,9 @@ function DecorationCityPage() {
     return () => window.removeEventListener("popstate", syncCityFromUrl);
   }, [syncCityFromUrl]);
 
-  const city = citySlug
-    ? citySlug.charAt(0).toUpperCase() + citySlug.slice(1)
-    : "";
+  // const city = citySlug
+  //   ? citySlug.charAt(0).toUpperCase() + citySlug.slice(1)
+  //   : "";
 
   const formattedCatValue = catValue?.toLowerCase();
 
@@ -89,7 +94,7 @@ function DecorationCityPage() {
 
   // Pehle render (city abhi resolve nahi hui) mein kuch mat dikhao —
   // isse purani/galat city ka flash nahi dikhega
-  if (!city) return null;
+  // if (!city) return null;
 
   return (
     <>

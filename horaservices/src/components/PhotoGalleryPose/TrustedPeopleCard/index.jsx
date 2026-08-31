@@ -1,9 +1,9 @@
 import "./trustedpeoplecard.css";
 import Image from "next/image";
-import camera from "@/assets/poselink/camera.svg";
-import star from "@/assets/poselink/star.svg";
+import camera from "@/assets/poselink/Camera.svg";
+import star from "@/assets/poselink/Star.svg";
 import year from "@/assets/poselink/year.svg";
-import expert from "@/assets/poselink/expert.svg";
+import expert from "@/assets/poselink/Expert.svg";
 const TrustedPeopleCard = ({
   title = "TRUSTED BY 10,000 PEOPLE",
   onClick,

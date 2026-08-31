@@ -1,37 +1,33 @@
-"use client";
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
-import React from 'react';
+import { useEffect, useState, useRef, useMemo } from "react";
+import React from "react";
 
 import {
   BASE_URL,
   GET_DECORATION_CAT_ID,
   GET_DECORATION_CAT_ITEM,
   API_SUCCESS_CODE,
-} from "../../../utils/apiconstants";
+} from "../../utils/apiconstants";
 import { useSelector } from "react-redux";
-import Head from "next/head";
-import { useSearchParams } from "next/navigation";
-import { getDecorationCatOrganizationSchema } from "../../../utils/schema";
-import { setState } from "../../../actions/action";
-import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
-import { usePathname } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
-import logo from "../../../assets/new_logo_light.png";
+import {
+  getSubCategory,
+  getDiscountedPrice,
+  getRandomNumber,
+  getRandomRating,
+} from "@/utils/decorationCatHelpers";
 import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";
 import { NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
-import "./catvaluedecor.css"
+import "./catvaluedecor.css";
 import ProductGrid from "@/components/productGrid";
 import FilterBar from "@/components/FilterBar";
-import customize from "../../../assets/Customizetationbanner.webp";
-import DidyouKnow from "../../../assets/didyouknow.jpg";
-import makeItMemorable from "../../../assets/makeitmemorable.png";
-import steps from "../../../assets/steps.webp";
-import makeitmemorablebanner from "../../../assets/makeitmemorablebanner.png";
-import googleRating from "../../../assets/goglerating.png";
-import Gurantee from "../../../assets/gurantee.jpg";
-import ontime from "../../../assets/ontime.png"
+import DidyouKnow from "../../assets/didyouknow.jpg";
+import makeItMemorable from "../../assets/makeitmemorable.png";
+import steps from "../../assets/steps.webp";
+import makeitmemorablebanner from "../../assets/makeitmemorablebanner.png";
+import googleRating from "../../assets/goglerating.png";
+import Gurantee from "../../assets/gurantee.jpg";
+import ontime from "../../assets/ontime.png";
 import CategoryTabs from "@/components/CategoryTabs/index.jsx";
 import CardSkeleton from "@/components/CardSkeleton";
 import HighPriceProduct from "@/components/Highpriceproduct";
@@ -44,62 +40,57 @@ import DecorationBanner from "@/components/CategoryDecorationBanner";
 import EventDateBanner from "@/components/Eventdatebanner";
 import axiosApi from "@/utils/axiosApi";
 import MakeItYoursBanner from "@/components/MakeItYoursBanner";
-import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
-
-const DecorationCatPage = ({ locality }) => {
-  const dispatch = useDispatch();
+const DecorationCatPage = ({
+  city: cityProp = "",
+  locality = null,
+  catValue: catValueProp = "",
+  initialCatalogueData = [],
+  initialCatId = "",
+  initialHasMore = false,
+}) => {
   const router = useRouter();
-  const pathname = usePathname();
-  const [city, setCity] = useState("");
-  const [catValue, setCatValue] = useState("");
+  const pathname = router.asPath.split("?")[0];
+  const skipInitialFetch = useRef(initialCatalogueData.length > 0);
+
+  const [city, setCity] = useState(cityProp || "");
+  const [catValue, setCatValue] = useState(catValueProp || "");
 
   useEffect(() => {
-    if (router.isReady) {
-      const { catValue: queryCatValue, city: queryCity } = router.query;
-
-      if (queryCatValue) {
-        setCatValue(queryCatValue);
-      }
-
-      if (queryCity) {
-        setCity(queryCity);
-      }
-    } else {
-      const path = window.location.pathname;
-      const parts = path.split("/");
-      const dynamicValue = parts[2];
-      setCatValue(dynamicValue);
+    if (catValueProp) {
+      setCatValue(catValueProp);
+    } else if (router.isReady && router.query.catValue) {
+      setCatValue(router.query.catValue);
     }
-  }, [router.isReady, router.query]);
 
-  const altTagCatValue = catValue.replace(/-/g, " ");
-  const [orderType, setOrderType] = useState(1);
-  const hasCityPageParam = city ? true : false;
-  const containerRef = useRef(null);
+    if (cityProp) {
+      setCity(cityProp);
+    } else if (router.isReady && router.query.city) {
+      setCity(String(router.query.city));
+    }
+  }, [router.isReady, router.query, catValueProp, cityProp]);
+
+  const hasCityPageParam = !!city;
   const [selCat, setSelCat] = useState("");
-  const [catId, setCatId] = useState("");
+  const [catId, setCatId] = useState(initialCatId || "");
   const [showAll, setShowAll] = useState(false);
   const [currentCategoryContent, setCurrentCategoryContent] = useState(
-    DecorationCatDescriptionData[catValue] || []
+    DecorationCatDescriptionData[catValueProp || catValue] || [],
   );
   const { theme } = router.query;
-  const [loading, setLoading] = useState(true);
-  const [isPaginating, setIsPaginating] = useState(false); // 👈 naya
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [discountPercentage, setDiscountPercentage] = useState(0);
-  const [discountedPrice, setDiscountedPrice] = useState(0);
-  const [discountDifference, setDiscountDifference] = useState(0);
+  const hasInitialData = initialCatalogueData.length > 0;
+  const [loading, setLoading] = useState(!hasInitialData);
+  const [isPaginating, setIsPaginating] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(!hasInitialData);
   const [currentPage, setCurrentPage] = useState(1);
-  const [catalogueData, setCatalogueData] = useState([]);
-  const [defaultCatalogueData, setDefaultCatalogueData] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [catalogueData, setCatalogueData] = useState(initialCatalogueData);
+  const [defaultCatalogueData, setDefaultCatalogueData] =
+    useState(initialCatalogueData);
+  const [hasMore, setHasMore] = useState(
+    hasInitialData ? initialHasMore : true,
+  );
   const [themeFilter, setThemeFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const schemaOrg = getDecorationCatOrganizationSchema(catValue);
-  const scriptTag = JSON.stringify(schemaOrg);
-  const searchParams = useSearchParams();
-  const selectedTheme = searchParams.get("theme");
+  const selectedTheme = router.query.themes;
   const isThemePage = !!selectedTheme;
 
   // ---- Price-range theme selector state (Budget / Value / Photogenic / Stage) ----
@@ -210,69 +201,12 @@ const DecorationCatPage = ({ locality }) => {
     return [];
   }, [catValue]);
 
-  function getSubCategory(catValue) {
-    if (!catValue) {
-      const path = window.location.pathname;
-      const parts = path.split("/");
-      const dynamicValue = parts[2];
-      return dynamicValue;
-    }
-
-    if (catValue === "birthday-decoration") {
-      return "Birthday";
-    } else if (catValue === "anniversary-decoration") {
-      return "Anniversary";
-    } else if (catValue === "haldi-mehendi-decoration") {
-      return "Haldi-Mehandi";
-    } else if (catValue === "first-night-decoration") {
-      return "FirstNight";
-    } else if (catValue === "baby-shower-decoration") {
-      return "BabyShower";
-    } else if (catValue === "welcome-baby-decoration") {
-      return "WelcomeBaby";
-    } else if (catValue === "premium-decoration") {
-      return "PremiumDecoration";
-    } else if (catValue === "bachelorette-decoration") {
-      return "bachelorette";
-    } else if (catValue === "naming-ceremony-decoration") {
-      return "NamingCeremony";
-    } else if (catValue === "coorporate-showrooms-decoration") {
-      return "Coorporateshowrooms"
-    } else if (catValue === "car-decoration") {
-      return "CarDecoration"
-    } else if (catValue === "festivals-decoration") {
-      return "Festivals"
-    } else if (catValue === "pet-animals-decoration") {
-      return "PetAnimalsDecoration";
-    } else if (catValue === "engagement-decoration") {
-      return "Engagementdecoration"
-    } else {
-      const parts = catValue.split("-");
-      return parts
-        .slice(0, 2)
-        .map(
-          (part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
-        )
-        .join("");
-    }
-  }
-
-  const { subCategory: stateSubCategory, imgAlt: stateImgAlt } = useSelector(
-    (state) => state.state || {}
+  const { subCategory: stateSubCategory } = useSelector(
+    (state) => state.state || {},
   );
   const subCategory = getSubCategory(catValue) || stateSubCategory;
-  const imgAlt = stateImgAlt || "default alt text";
 
-  // Search tracking ke liye — apni actual redux auth slice ke naam se adjust kar lena
   const { userId } = useSelector((state) => state.auth || {});
-
-  const getRandomNumber = (min, max) => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-
-  const getRandomRating = () => {
-    return (Math.random() * (4.8 - 4.1) + 4.1).toFixed(1);
-  };
 
   useEffect(() => {
     // Price-range segmentation (Budget/Value/Photogenic/Stage) aur
@@ -291,39 +225,10 @@ const DecorationCatPage = ({ locality }) => {
   // ================= CACHE-FIRST: subCategory resolve hote hi check karo =================
   useEffect(() => {
     addSpaces(subCategory);
-
-    if (!subCategory) return;
-
-    const cacheKey = `decorcat:${router.asPath}`;
-    const cached = getPageCache(cacheKey);
-
-    if (cached) {
-      // Cache mila — turant hydrate karo, koi API call nahi.
-      // Data ke saath-saath jo bhi FILTER laga hua tha (sort/search/
-      // price-theme) woh bhi restore karo — taaki back aane par filter
-      // reset na ho, aur content exactly waisa hi rahe (isse global
-      // scroll-restore bhi sahi position pe automatically pahunch jaata
-      // hai, kyunki content ki height match karti hai).
-      setCatId(cached.data.catId);
-      setCatalogueData(cached.data.catalogueData);
-      setDefaultCatalogueData(cached.data.defaultCatalogueData);
-      setCurrentPage(cached.data.currentPage);
-      setHasMore(cached.data.hasMore);
-      setSortOption(cached.data.sortOption || "popularity");
-      setSearchQuery(cached.data.searchQuery || "");
-      setSelectedPriceTheme(cached.data.selectedPriceTheme || null);
-      setLoading(false);
-      setIsInitialLoad(false);
-      hasHydratedFromCache.current = true;
-       if (typeof window !== "undefined") {
-    window.dispatchEvent(new Event("page-content-ready"));
-  }
-      return; // getSubCatId API call bhi skip
+    if (!initialCatId) {
+      getSubCatId(subCategory);
     }
-
-    getSubCatId(subCategory);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subCategory, router.asPath]);
+  }, [subCategory, initialCatId]);
 
   useEffect(() => {
     const handleStickyScroll = () => {
@@ -336,6 +241,31 @@ const DecorationCatPage = ({ locality }) => {
     window.addEventListener("scroll", handleStickyScroll);
     return () => window.removeEventListener("scroll", handleStickyScroll);
   }, []);
+
+  useEffect(() => {
+    if (loading || isPaginating || !hasMore) return;
+
+    const timer = setTimeout(() => {
+      setCurrentPage((prev) => prev + 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [loading, isPaginating, hasMore]);
+
+  useEffect(() => {
+  if (!catId) return;
+
+  // SSR se data aa chuka hai aur abhi koi filter change nahi hua
+  if (skipInitialFetch.current) {
+    skipInitialFetch.current = false;
+    setLoading(false);
+    setIsInitialLoad(false);
+    return;
+  }
+
+  setCurrentPage(1);
+  getSubCatItems(1);
+}, [catId, themeFilter, sortOption, selectedPriceTheme, searchQuery]);
 
   useEffect(() => {
     if (loading || isPaginating || !hasMore) return;
@@ -396,7 +326,7 @@ const DecorationCatPage = ({ locality }) => {
 
   function addSpaces(subCategory) {
     let result = "";
-    for (let i = 0; i < subCategory.length; i++) {
+    for (let i = 0; i < subCategory?.length; i++) {
       if (i !== 0 && subCategory[i] === subCategory[i].toUpperCase()) {
         result += " ";
       }
@@ -409,7 +339,7 @@ const DecorationCatPage = ({ locality }) => {
   const getSubCatId = async (subCategory) => {
     try {
       const response = await axiosApi.get(
-        BASE_URL + GET_DECORATION_CAT_ID + subCategory
+        BASE_URL + GET_DECORATION_CAT_ID + subCategory,
       );
 
       const categoryId = response.data.data?._id;
@@ -417,62 +347,12 @@ const DecorationCatPage = ({ locality }) => {
       if (categoryId) {
         setCatId(categoryId);
       }
-    } catch (error) {
-
-    }
+    } catch (error) {}
   };
 
-  const getDiscountedPrice = (price) => {
-    let discount;
-    if (price < 3000) {
-      discount = 20;
-    } else if (price >= 3000 && price <= 5000) {
-      discount = 27;
-    } else {
-      discount = 35;
-    }
+  const getDiscountedPriceLocal = getDiscountedPrice;
 
-    const discountedPrice = price * (1 + discount / 100);
-    const discountDifference = Math.abs(price - discountedPrice);
-    return { discount, discountedPrice, discountDifference };
-  };
-
-  // Re-fetch page 1 whenever anything that changes the *query* (as opposed to
-  // just the page number) changes: category, theme, sort order, the
-  // price-range theme (Budget/Value/Photogenic/Stage), or a text search.
-  useEffect(() => {
-    if (!catId) return;
-
-    if (hasHydratedFromCache.current) {
-      // Is initial hydration-pass mein fresh-fetch mat karo — data
-      // cache se already aa chuka hai. (Flag "reset" effect neeche
-      // clear karega, isliye future genuine filter-changes normally
-      // is effect ko fresh-fetch ke liye trigger karenge.)
-      return;
-    }
-
-    setCatalogueData([]);
-    setCurrentPage(1);
-    getSubCatItems(1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [catId, themeFilter, sortOption, selectedPriceTheme, searchQuery]);
-
-  // ================= Hydration-flag reset =================
-  // Yeh effect deliberately sabse NEECHE (baad mein) declare kiya gaya hai
-  // — React effects ko component ke andar unki declaration-order mein hi
-  // run karta hai. Isliye jab bhi cache-hydrate effect state update karta
-  // hai (catId/currentPage badalte hain), upar wale dono fetch-effects
-  // pehle apna check kar lete hain (flag abhi true hai => skip), aur
-  // sabse AAKHRI mein yeh effect flag ko false kar deta hai — taaki agli
-  // baar jab koi GENUINE change ho (naya filter, naya category), tab yeh
-  // stale "true" flag galti se kisi zaroori fetch ko skip na kar de.
-  useEffect(() => {
-    if (hasHydratedFromCache.current) {
-      hasHydratedFromCache.current = false;
-    }
-  });
-
-const getSubCatItems = async (page) => {
+  const getSubCatItems = async (page) => {
     if (!catId) return;
 
     try {
@@ -503,8 +383,10 @@ const getSubCatItems = async (page) => {
 
       if (selectedPriceTheme?.priceRange) {
         const { min, max } = selectedPriceTheme.priceRange;
-        if (min !== undefined && min !== null) params.set("minPrice", String(min));
-        if (max !== undefined && max !== null) params.set("maxPrice", String(max));
+        if (min !== undefined && min !== null)
+          params.set("minPrice", String(min));
+        if (max !== undefined && max !== null)
+          params.set("maxPrice", String(max));
       }
 
       if (searchQuery) {
@@ -517,7 +399,8 @@ const getSubCatItems = async (page) => {
       if (response.status === API_SUCCESS_CODE) {
         const decoratedData = response.data.data.map((item) => {
           const numericPrice = Number(item.price);
-          const { discount, discountedPrice, discountDifference } = getDiscountedPrice(numericPrice);
+          const { discount, discountedPrice, discountDifference } =
+            getDiscountedPriceLocal(numericPrice);
           return {
             ...item,
             price: numericPrice,
@@ -529,30 +412,12 @@ const getSubCatItems = async (page) => {
           };
         });
 
-        setCatalogueData((prevData) => {
-          const updated = page === 1 ? decoratedData : [...prevData, ...decoratedData];
-
-          // Jo bhi CURRENT state hai (chahe filter/sort/search laga ho ya
-          // na ho) usko cache karte hain — taaki product-detail se back
-          // aane par bilkul WAHI view (filter + data + scroll-matching
-          // height) turant restore ho jaaye.
-          setPageCache(`decorcat:${router.asPath}`, {
-            catId,
-            catalogueData: updated,
-            defaultCatalogueData: searchQuery ? defaultCatalogueData : updated,
-            currentPage: page,
-            hasMore: page < response.data.pagination.totalPages,
-            sortOption,
-            searchQuery,
-            selectedPriceTheme,
-          });
-
-          return updated;
-        });
-
+        setCatalogueData((prevData) =>
+          page === 1 ? decoratedData : [...prevData, ...decoratedData],
+        );
         if (!searchQuery) {
           setDefaultCatalogueData((prevData) =>
-            page === 1 ? decoratedData : [...prevData, ...decoratedData]
+            page === 1 ? decoratedData : [...prevData, ...decoratedData],
           );
         }
         setHasMore(page < response.data.pagination.totalPages);
@@ -579,13 +444,6 @@ const getSubCatItems = async (page) => {
       setIsInitialLoad(false);
     }
   };
-  
-  function trimText(text) {
-    if (text.length > 60) {
-      return text.slice(0, 60) + "...";
-    }
-    return text;
-  }
 
   const normalizeCatValue = (val) => {
     if (!val) return "";
@@ -596,7 +454,10 @@ const getSubCatItems = async (page) => {
 
   const shouldHideBanner = (name) => {
     const hideFor = ["wedding", "haldi-mehendi-decoration"];
-    return hideFor.includes(normalizedCat) && ["makeItMemorable", "DidyouKnow", "makeitmemorablebanner"].includes(name);
+    return (
+      hideFor.includes(normalizedCat) &&
+      ["makeItMemorable", "DidyouKnow", "makeitmemorablebanner"].includes(name)
+    );
   };
 
   const handleViewDetails = (item) => {
@@ -607,11 +468,7 @@ const getSubCatItems = async (page) => {
       item.product_slug ||
       item.name.toLowerCase().replace(/\s+/g, "-");
 
-    const categorySlug = getCategorySlugFromPath(
-      pathname,
-      city,
-      locality
-    );
+    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
 
     if (!categorySlug || !catValue) {
       console.warn("Missing categorySlug or catValue", {
@@ -663,11 +520,9 @@ const getSubCatItems = async (page) => {
   const sortedCatalogueData = catalogueData;
   const priceThemeFilteredData = catalogueData;
 
-  const shouldShowSearchBar =
-    isPriceThemeSelectorPage ||
-    catValue?.toLowerCase() === "naming-ceremony-decoration";
-
-  const highPriceProducts = sortedCatalogueData.filter((item) => Number(item.price) > 11000);
+  const highPriceProducts = sortedCatalogueData.filter(
+    (item) => Number(item.price) > 11000,
+  );
 
   // Small reusable skeleton block used whenever we're (re)fetching after a
   // filter/theme/sort/search change, so the UI never has to guess "empty" vs
@@ -685,9 +540,10 @@ const getSubCatItems = async (page) => {
 
     window.open(
       `https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`,
-      "_blank"
+      "_blank",
     );
   };
+
   return (
     <div className="decCatPage">
       <SeoHead
@@ -707,7 +563,7 @@ const getSubCatItems = async (page) => {
         <>
           {!isThemePage && (
             <>
-              <section >
+              <section>
                 <DecorationBanner category={normalizedCat} />
               </section>
               <SearchSortBar
@@ -729,48 +585,49 @@ const getSubCatItems = async (page) => {
                   selectedThemeId={selectedPriceTheme?.id || null}
                 />
               )}
-              {catValue?.toLowerCase() === "kids-birthday-decoration" && !isSearchActive && (
-                <div className="category-tabs-container">
-                  <CategoryTabs
-                    data={themeFilters.map((item) => ({
-                      id: item.value,
-                      name: item.label,
-                      image: item.image,
-                      value: item.value,
-                      catValue: "kids-birthday-decoration",
-                    }))}
-                    onSelect={(item) => openCatItems(item, themeFilter)}
-                    city={city}
-                    hasCityPageParam={hasCityPageParam}
-                    locality={locality}
-                    variant="grid"
-                    catValue="kids-birthday-decoration"
-                  />
-                </div>
-              )}
+              {catValue?.toLowerCase() === "kids-birthday-decoration" &&
+                !isSearchActive && (
+                  <div className="category-tabs-container">
+                    <CategoryTabs
+                      data={themeFilters.map((item) => ({
+                        id: item.value,
+                        name: item.label,
+                        image: item.image,
+                        value: item.value,
+                        catValue: "kids-birthday-decoration",
+                      }))}
+                      onSelect={(item) => openCatItems(item, themeFilter)}
+                      city={city}
+                      hasCityPageParam={hasCityPageParam}
+                      locality={locality}
+                      variant="grid"
+                      catValue="kids-birthday-decoration"
+                    />
+                  </div>
+                )}
 
-              {catValue?.toLowerCase() === "naming-ceremony-decoration" && !isSearchActive && (
-                <div className="category-tabs-outer">
-                  <CategoryTabs
-                    data={NamingCeremonyThemes.map((item) => ({
-                      id: item.value,
-                      name: item.label,
-                      image: item.image,
-                      value: item.value,
-                      catValue: "naming-ceremony-decoration",
-                    }))}
-                    onSelect={(item) => openCatItems(item, themeFilter)}
-                    city={city}
-                    hasCityPageParam={hasCityPageParam}
-                    locality={locality}
-                    variant="grid"
-                    catValue="naming-ceremony-decoration"
-                  />
-                </div>
-              )}
+              {catValue?.toLowerCase() === "naming-ceremony-decoration" &&
+                !isSearchActive && (
+                  <div className="category-tabs-outer">
+                    <CategoryTabs
+                      data={NamingCeremonyThemes.map((item) => ({
+                        id: item.value,
+                        name: item.label,
+                        image: item.image,
+                        value: item.value,
+                        catValue: "naming-ceremony-decoration",
+                      }))}
+                      onSelect={(item) => openCatItems(item, themeFilter)}
+                      city={city}
+                      hasCityPageParam={hasCityPageParam}
+                      locality={locality}
+                      variant="grid"
+                      catValue="naming-ceremony-decoration"
+                    />
+                  </div>
+                )}
               <EventDateBanner userId={userId} />
-              {(isPriceThemeActive || isSearchActive) ? (
-
+              {isPriceThemeActive || isSearchActive ? (
                 <>
                   {loading ? (
                     <FilterLoadingSkeleton />
@@ -808,14 +665,22 @@ const getSubCatItems = async (page) => {
               ) : (
                 // ---- DEFAULT LAYOUT: banners interspersed with product grids ----
                 <>
-                  <ProductGrid data={sortedCatalogueData.slice(0, 4)} onCardClick={handleViewDetails} catValue={catValue} />
+                  <ProductGrid
+                    data={sortedCatalogueData.slice(0, 4)}
+                    onCardClick={handleViewDetails}
+                    catValue={catValue}
+                  />
 
                   <HighPriceProduct
                     data={highPriceProducts.slice(0, 1)}
                     onCardClick={handleViewDetails}
                   />
                   <MakeItYoursBanner />
-                  <ProductGrid data={sortedCatalogueData.slice(4, 10)} onCardClick={handleViewDetails} catValue={catValue} />
+                  <ProductGrid
+                    data={sortedCatalogueData.slice(4, 10)}
+                    onCardClick={handleViewDetails}
+                    catValue={catValue}
+                  />
 
                   <HighPriceProduct
                     data={highPriceProducts.slice(1, 2)}
@@ -823,59 +688,120 @@ const getSubCatItems = async (page) => {
                   />
                   {!shouldHideBanner("DidyouKnow") && (
                     <section className="decorationBanner">
-                      <Image src={DidyouKnow} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+                      <Image
+                        src={DidyouKnow}
+                        alt="Decoration-Banner"
+                        width={1200}
+                        height={400}
+                        className="decorationBanner-image"
+                        priority
+                      />
                     </section>
                   )}
 
-                  <ProductGrid data={sortedCatalogueData.slice(10, 14)} onCardClick={handleViewDetails} catValue={catValue} />
+                  <ProductGrid
+                    data={sortedCatalogueData.slice(10, 14)}
+                    onCardClick={handleViewDetails}
+                    catValue={catValue}
+                  />
                   <HighPriceProduct
                     data={highPriceProducts.slice(2, 3)}
                     onCardClick={handleViewDetails}
                   />
                   {!shouldHideBanner("makeItMemorable") && (
                     <section className="decorationBanner">
-                      <Image src={makeItMemorable} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+                      <Image
+                        src={makeItMemorable}
+                        alt="Decoration-Banner"
+                        width={1200}
+                        height={400}
+                        className="decorationBanner-image"
+                        priority
+                      />
                     </section>
                   )}
 
-                  <ProductGrid data={sortedCatalogueData.slice(14, 20)} onCardClick={handleViewDetails} catValue={catValue} />
+                  <ProductGrid
+                    data={sortedCatalogueData.slice(14, 20)}
+                    onCardClick={handleViewDetails}
+                    catValue={catValue}
+                  />
                   <HighPriceProduct
                     data={highPriceProducts.slice(3, 4)}
                     onCardClick={handleViewDetails}
                   />
                   <section className="decorationBanner">
-                    <Image src={steps} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+                    <Image
+                      src={steps}
+                      alt="Decoration-Banner"
+                      width={1200}
+                      height={400}
+                      className="decorationBanner-image"
+                      priority
+                    />
                   </section>
 
-                  <ProductGrid data={sortedCatalogueData.slice(20, 26)} onCardClick={handleViewDetails} catValue={catValue} />
+                  <ProductGrid
+                    data={sortedCatalogueData.slice(20, 26)}
+                    onCardClick={handleViewDetails}
+                    catValue={catValue}
+                  />
                   <HighPriceProduct
                     data={highPriceProducts.slice(4, 5)}
                     onCardClick={handleViewDetails}
                   />
                   {!shouldHideBanner("makeitmemorablebanner") && (
                     <section className="decorationBanner">
-                      <Image src={makeitmemorablebanner} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+                      <Image
+                        src={makeitmemorablebanner}
+                        alt="Decoration-Banner"
+                        width={1200}
+                        height={400}
+                        className="decorationBanner-image"
+                        priority
+                      />
                     </section>
                   )}
 
-                  <ProductGrid data={sortedCatalogueData.slice(26, 32)} onCardClick={handleViewDetails} catValue={catValue} />
+                  <ProductGrid
+                    data={sortedCatalogueData.slice(26, 32)}
+                    onCardClick={handleViewDetails}
+                    catValue={catValue}
+                  />
                   <HighPriceProduct
                     data={highPriceProducts.slice(5, 6)}
                     onCardClick={handleViewDetails}
                   />
                   <div className="highlight-wrapper">
-                    <h3 className="highlight-title">Excellence Backed by Happy Customers</h3>
+                    <h3 className="highlight-title">
+                      Excellence Backed by Happy Customers
+                    </h3>
                     <div className="highlight-cards">
                       <div className="highlight-card">
-                        <Image src={googleRating} alt="Google Rating" width={60} height={60} />
+                        <Image
+                          src={googleRating}
+                          alt="Google Rating"
+                          width={60}
+                          height={60}
+                        />
                         <p>4.7+ GOOGLE RATING</p>
                       </div>
                       <div className="highlight-card">
-                        <Image src={ontime} alt="On Time Completion" width={60} height={60} />
+                        <Image
+                          src={ontime}
+                          alt="On Time Completion"
+                          width={60}
+                          height={60}
+                        />
                         <p>ON TIME COMPLETION</p>
                       </div>
                       <div className="highlight-card">
-                        <Image src={Gurantee} alt="100% Full Fill Guarantee" width={60} height={60} />
+                        <Image
+                          src={Gurantee}
+                          alt="100% Full Fill Guarantee"
+                          width={60}
+                          height={60}
+                        />
                         <p>100% FULL FILL GUARANTEE</p>
                       </div>
                     </div>
@@ -888,11 +814,12 @@ const getSubCatItems = async (page) => {
           {/* Grouped "load more" section — skipped while a price-range filter
               OR a search is active, to avoid showing the full catalogue
               underneath the filtered/search results */}
-          {!isPriceThemeActive && !isSearchActive &&
+          {!isPriceThemeActive &&
+            !isSearchActive &&
             Array.from(
               {
                 length: Math.ceil(
-                  sortedCatalogueData.slice(isThemePage ? 0 : 32).length / 6
+                  sortedCatalogueData.slice(isThemePage ? 0 : 32).length / 6,
                 ),
               },
               (_, groupIndex) => {
@@ -914,14 +841,14 @@ const getSubCatItems = async (page) => {
                       <HighPriceProduct
                         data={highPriceProducts.slice(
                           highPriceIndex,
-                          highPriceIndex + 1
+                          highPriceIndex + 1,
                         )}
                         onCardClick={handleViewDetails}
                       />
                     )}
                   </React.Fragment>
                 );
-              }
+              },
             )}
           {isPaginating && (
             <div className="skeleton-wrapper" style={{ marginTop: "12px" }}>
@@ -930,32 +857,32 @@ const getSubCatItems = async (page) => {
             </div>
           )}
           <div className="category-content">
-            {Array.isArray(currentCategoryContent) && currentCategoryContent.length > 0 && (
-              <>
-                {currentCategoryContent
-                  .slice(0, showAll ? currentCategoryContent.length : 2)
-                  .map((item, index) => (
-                    <div key={index} className="category-item">
-                      <h1>{item.title}</h1>
-                      <div
-                        className="item-content"
-                        dangerouslySetInnerHTML={{ __html: item.htmlContent }}
-                      />
-                    </div>
-                  ))}
-                {currentCategoryContent.length > 2 && (
-                  <button onClick={toggleShowAll} className="toggle-btn">
-                    {showAll ? 'See Less' : 'See More'}
-                  </button>
-                )}
-              </>
-            )}
+            {Array.isArray(currentCategoryContent) &&
+              currentCategoryContent.length > 0 && (
+                <>
+                  {currentCategoryContent
+                    .slice(0, showAll ? currentCategoryContent.length : 2)
+                    .map((item, index) => (
+                      <div key={index} className="category-item">
+                        <h1>{item.title}</h1>
+                        <div
+                          className="item-content"
+                          dangerouslySetInnerHTML={{ __html: item.htmlContent }}
+                        />
+                      </div>
+                    ))}
+                  {currentCategoryContent.length > 2 && (
+                    <button onClick={toggleShowAll} className="toggle-btn">
+                      {showAll ? "See Less" : "See More"}
+                    </button>
+                  )}
+                </>
+              )}
           </div>
-
         </>
       )}
     </div>
   );
-}
+};
 
 export default DecorationCatPage;

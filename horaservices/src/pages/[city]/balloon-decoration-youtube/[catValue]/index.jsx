@@ -6,7 +6,7 @@ import Head from 'next/head';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons"
 import logo from '../../../../assets/new_logo_light.png';
-import { CardSkeleton } from "../../../../components/CardSkeleton";
+import CardSkeleton from "../../../../components/CardSkeleton";
 import { getDecorationCatOrganizationSchema } from "../../../../utils/schema";
 import '../../../../css/decoration.css';
 import { setState } from '../../../../actions/action';
@@ -23,30 +23,24 @@ const DecorationCatPage = () => {
     // let { city } = useParams();
     const [city, setCity] = useState('');
   const [catValue, setCatValue] = useState('');
-  useEffect(() => {
-    if (router.isReady) {
-      const { catValue: queryCatValue, city: queryCity } = router.query;
 
-      if (queryCatValue) {
-        setCatValue(queryCatValue);
-        //alert(`catValue: ${queryCatValue}`);
-      }
+useEffect(() => {
+  if (!router.isReady) return;
 
-      if (queryCity) {
-        setCity(queryCity);
-        ///alert(`city: ${queryCity}`);
-      }
-    }
-    else {
-      const path = window.location.pathname; // e.g., /balloon-decoration/kids-birthday-decoration
-      const parts = path.split('/'); // Split by '/'
-      const dynamicValue = parts[2];
+  const { catValue: queryCatValue, city: queryCity } = router.query;
 
-      setCatValue(dynamicValue);
+  if (queryCatValue) {
+    setCatValue(
+      Array.isArray(queryCatValue) ? queryCatValue[0] : queryCatValue
+    );
+  }
 
-    }
-  }, [router.isReady, router.query]);
-  const altTagCatValue = catValue.replace(/-/g, ' ');
+  if (queryCity) {
+    setCity(Array.isArray(queryCity) ? queryCity[0] : queryCity);
+  }
+}, [router.isReady, router.query]);
+
+  const altTagCatValue = (catValue || "").replace(/-/g, " ");
   const [orderType, setOrderType] = useState(1);
   const hasCityPageParam = city ? true : false;
   //   const { catValue } = useParams();
@@ -94,25 +88,23 @@ const DecorationCatPage = () => {
     { label: 'Sport Football theme', value: 'Football' },
     { label: 'Unicorn Theme', value: 'Unicorn' },
   ];
-  function getSubCategory(catValue) {
-    if (!catValue){
-      
-      const path = window.location.pathname; // e.g., /balloon-decoration/kids-birthday-decoration
-      const parts = path.split('/'); // Split by '/'
-      const dynamicValue = parts[2];
-      return dynamicValue
-    }
-    if (catValue === 'birthday-decoration') {
-      return 'Birthday';
-    } else if (catValue === 'anniversary-decoration') {
-      return 'Anniversary';
-    } else {
-      const parts = catValue.split('-'); // Split by hyphens
-      return parts.slice(0, 2) // Take only the first two parts
-        .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()) // Capitalize each part
-        .join(''); // Join parts together without spaces
-    }
+
+function getSubCategory(catValue) {
+  if (!catValue) return "";
+
+  if (catValue === "birthday-decoration") {
+    return "Birthday";
   }
+  if (catValue === "anniversary-decoration") {
+    return "Anniversary";
+  }
+
+  const parts = catValue.split("-");
+  return parts
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join("");
+}
 
   // UseSelector to get state from Redux
   // const { subCategory: stateSubCategory, imgAlt: stateImgAlt } = useSelector((state) => state.state || {});
@@ -130,26 +122,36 @@ const DecorationCatPage = () => {
   };
 
 
-  useEffect(() => {
-    addSpaces(subCategory);
-    getSubCatId(subCategory); // Fetch category ID based on the selected subcategory
-    window.addEventListener('scroll', handleScroll); // Add scroll event listener
+  // useEffect(() => {
+  //   addSpaces(subCategory);
+  //   getSubCatId(subCategory); // Fetch category ID based on the selected subcategory
+  //   window.addEventListener('scroll', handleScroll); // Add scroll event listener
 
-    return () => {
-      window.removeEventListener('scroll', handleScroll); // Cleanup on unmount
-    };
-  }, [subCategory]);
+  //   return () => {
+  //     window.removeEventListener('scroll', handleScroll); // Cleanup on unmount
+  //   };
+  // }, [subCategory]);
+
+  useEffect(() => {
+  if (!subCategory) return;
+
+  addSpaces(subCategory);
+  getSubCatId(subCategory);
 
   const handleScroll = () => {
-    const filterElement = document.querySelector('.filterdropdown');
-    if (filterElement) {
-      if (window.scrollY > 50) {
-        filterElement.classList.add('sticky');
-      } else {
-        filterElement.classList.remove('sticky');
-      }
+    const filterElement = document.querySelector(".filterdropdown");
+    if (!filterElement) return;
+    if (window.scrollY > 50) {
+      filterElement.classList.add("sticky");
+    } else {
+      filterElement.classList.remove("sticky");
     }
   };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [subCategory]);
+
   const filteredData = catalogueData.filter(item => {
     let priceCondition = true;
     let themeCondition = true;

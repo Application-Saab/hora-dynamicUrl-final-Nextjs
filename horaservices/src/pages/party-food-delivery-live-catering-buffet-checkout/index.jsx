@@ -1,3 +1,4 @@
+"use client";
 // import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
@@ -107,7 +108,7 @@ const FoodDeliveryCheckout = () => {
 
 
     const selectedMealList = selectedDishesFoodDelivery
-        ? Object.values(selectedDishesFoodDelivery).map(dish => {
+        ? Object.values(selectedDishesFoodDelivery)?.map(dish => {
             return {
                 name: dish.name,
                 image: dish.image,
@@ -771,7 +772,7 @@ const FoodDeliveryCheckout = () => {
                                 </div>
 
                                 <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%' , gap:"10px" }}>
-                                    {selectedDishQuantities.map((item, index) => (
+                                    {selectedDishQuantities?.map((item, index) => (
                                         <RenderDishQuantity key={index} item={item} />
                                     ))}
                                 </div>
@@ -987,7 +988,7 @@ const FoodDeliveryCheckout = () => {
                 
 
                                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", flexFlow: "wrap" , gap:"10px" }} className='foode-deliry-mobile'>
-                                        {selectedDishQuantities.map((item, index) => (
+                                        {selectedDishQuantities?.map((item, index) => (
                                         <RenderDishQuantity key={index} item={item} />
                                         ))}
                                         </div>
@@ -1100,7 +1101,7 @@ export const CustomTimePicker = ({ selectedTimeSlot, handleTimeSlotChange, gener
                 className="timeslot"
             >
                 <option value="">Food Delivery Time</option>
-                {generateTimeSlots().map((timeSlot, index) => (
+                {generateTimeSlots()?.map((timeSlot, index) => (
                     <option key={index} value={timeSlot}>
                         {timeSlot}
                     </option>

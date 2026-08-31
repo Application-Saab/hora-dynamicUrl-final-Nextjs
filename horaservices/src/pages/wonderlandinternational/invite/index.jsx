@@ -13,6 +13,7 @@ import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import TemplateRenderer from "@/components/wonderland/common/TemplateRenderer";
 import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templatecardSkeleton";
 import useRsvpStatus from "@/hooks/useRsvpStatus";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const InvitesPage = () => {
   const router = useRouter();

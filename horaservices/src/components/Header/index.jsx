@@ -12,7 +12,7 @@ import MobileDrawer from "./MobileDrawer";
 import DesktopMenu from "./DesktopMenu";
 import OtploginPopup from "../OtpLoginPopup";
 import LogoutModal from "@/utils/LogoutModal";
-import cityNameToSlug from "@/utils/cityNameToSlug";
+import cityNameToSlug from "../../utils/Citynametoslug.json";
 import { useCity } from "@/utils/cityContext";
 import { safeGetItem } from "@/utils/safeStorage";
 
@@ -57,8 +57,7 @@ const Header = () => {
    * AUTH
    ------------------------ */
   const isLoggedIn =
-    typeof window !== "undefined" &&
-    safeGetItem("isLoggedIn") === "true";
+    typeof window !== "undefined" && safeGetItem("isLoggedIn") === "true";
 
   const handleLogout = () => {
     localStorage.clear();
@@ -96,7 +95,9 @@ const Header = () => {
       <header className="sec-header">
         <div className="pageWidth header-wrapper">
           {/* LOGO */}
-          <Link href={isWonderlandInternational ? "/wonderlandinternational" : "/"}>
+          <Link
+            href={isWonderlandInternational ? "/wonderlandinternational" : "/"}
+          >
             <Image src={logo} alt="Logo" className="header-logo" />
           </Link>
 
@@ -113,12 +114,7 @@ const Header = () => {
               {isMounted && !isLoggedIn ? (
                 /* LOGIN */
                 <div onClick={() => setIsLoginOpen(true)} className="auth-btn">
-                  <Image
-                    src={loginImg}
-                    alt="Login"
-                    width={20}
-                    height={20}
-                  />
+                  <Image src={loginImg} alt="Login" width={20} height={20} />
                   <span>Login</span>
                 </div>
               ) : (
@@ -134,9 +130,19 @@ const Header = () => {
           {!isWonderlandInternational && (
             <div className="mobile-only mobile-header">
               {/* CITY SELECTOR PILL — SIRF venue-list route par dikhega */}
-              {isPillVisibleRoute && (
-                <div className="citySelectorPill" onClick={() => setShowCityModal(true)}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ marginBottom: "2px" }}>
+              {/* CITY SELECTOR PILL — mount ke baad hi, hydration safe */}
+              {isMounted && isPillVisibleRoute && (
+                <div
+                  className="citySelectorPill"
+                  onClick={() => setShowCityModal(true)}
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    style={{ marginBottom: "2px" }}
+                  >
                     <path
                       d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z"
                       stroke="#97538C"
@@ -144,7 +150,13 @@ const Header = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     />
-                    <circle cx="12" cy="10" r="2.5" stroke="#97538C" strokeWidth="2" />
+                    <circle
+                      cx="12"
+                      cy="10"
+                      r="2.5"
+                      stroke="#97538C"
+                      strokeWidth="2"
+                    />
                   </svg>
                   <span className="citySelectorPill-text">
                     {selectedCityName || "Select City"}
