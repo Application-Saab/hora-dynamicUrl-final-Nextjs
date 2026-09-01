@@ -63,7 +63,7 @@ import StarIcon from "@/assets/Staricon.svg";
 import fireIcon from "@/assets/fireIcon.svg";
 import hearticon from "@/assets/hearticon.svg";
 import GoogleReviewsCard from "@/components/PhotoGalleryPose/GoogleReviewsCard";
-import { reviewsData } from "@/utils/poselinkreviews";
+import { balloonreviewsproduct } from "@/utils/balloonReviews";
 
 import ActionButtons from "@/components/Actionbuttons";
 import WhyHoraSection from "@/components/WhyHoraSection";
@@ -1070,7 +1070,7 @@ const generateSlug = (name) => {
                <WhyHoraSection/>
   
           <div ref={reviewsRef}>
-        <GoogleReviewsCard reviews={reviewsData} />
+        <GoogleReviewsCard reviews={balloonreviewsproduct} />
       </div>
             <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
   <VideoTestimonial videoSrc={VideoClint} />

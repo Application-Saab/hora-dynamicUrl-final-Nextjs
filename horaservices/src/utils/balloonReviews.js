@@ -108,3 +108,44 @@ export const balloonreviews = [
     text: "I had Adil Shaikh as the service provider from Hora Services, who did a wonderful job. I'm impressed and the decoration was of utmost quality. Adil and his associate were very humble and professional.",
   },
 ];
+
+
+export const balloonreviewsproduct = [
+  {
+    image: image1,
+    name: "Pooja Sharma",
+    review:
+      "The birthday decoration was absolutely beautiful! Everything looked exactly like the reference picture and my daughter loved it!",
+  },
+  {
+    image: image2,
+    name: "Balu Nanduri",
+    review:
+      "Amazing decoration for my son's birthday! The balloons and setup looked wonderful. The team was very professional and punctual.",
+  },
+  {
+    image: image3,
+    name: "Priya Das",
+    review:
+      "The decoration was done so beautifully and exactly as we expected. The entire setup looked elegant and perfect for the occasion.",
+  },
+  {
+    image: image4,
+    name: "Diksha Sharma",
+    review:
+      "Loved the decoration! The team arrived on time and completed everything perfectly. The setup looked exactly like what we booked.",
+  },
+  {
+    image: image5,
+    name: "Sushmitha Shivakumar",
+    review:
+      "Really happy with the service! The decoration was beautiful, colorful and exactly as shown in the pictures. Highly recommended.",
+  },
+  {
+    image: image6,
+    name: "Sunil Vishnoi",
+    review:
+      "The decoration quality was excellent. The service provider was humble and professional, and the entire setup looked amazing.",
+  },
+];
+
