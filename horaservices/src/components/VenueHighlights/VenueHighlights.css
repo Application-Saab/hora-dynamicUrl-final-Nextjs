@@ -15,26 +15,25 @@ gap: clamp(4.8px, 1.527vw, 6px);
 }
 
 .vh-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   row-gap: clamp(12.8px, 4.071vw, 16px);
-  column-gap: clamp(8px, 2.545vw, 10px);
-  position: relative;
+  column-gap: clamp(16px, 5.1vw, 20px);
   width: 100%;
 }
 
 .vh-stat-item {
-  position: relative;
+  position: relative;   /* ✅ ye line missing thi */
   display: flex;
   align-items: center;
-gap: clamp(3px, 1.27vw, 5px);
+  gap: clamp(3px, 1.27vw, 5px);
   font-family: "Inter", sans-serif;
-font-weight: 600;
-font-size: clamp(6.94px, 2.206vw, 8.67px);
+  font-weight: 600;
+  font-size: clamp(6.94px, 2.206vw, 8.67px);
   color: #1a1a1a;
   min-width: 0;
+  flex: 0 1 calc(50% - 10px);
 }
-
 .vh-stat-item strong {
   font-weight: 700;
 }

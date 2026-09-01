@@ -765,6 +765,7 @@ useEffect(() => {
     itemQuantities={itemQuantities}
     onAdd={handleAddToCartAndScrollBack}
     onRemove={handleRemoveFromCart}
+    title = "Add-ons"  
         />
 </div>
      

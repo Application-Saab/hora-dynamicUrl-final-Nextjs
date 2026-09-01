@@ -1,4 +1,5 @@
 "use client";
+
 import { useLayoutEffect } from "react";
 
 export function useLockBodyScroll(locked = true) {
@@ -25,14 +26,20 @@ export function useLockBodyScroll(locked = true) {
     body.style.overflow = "hidden";
 
     return () => {
+      // Restore body first
       body.style.position = original.position;
       body.style.top = original.top;
       body.style.left = original.left;
       body.style.right = original.right;
       body.style.width = original.width;
       body.style.overflow = original.overflow;
-      // scroll position exactly wahin restore karo jahan se lock hua tha
-      window.scrollTo(0, scrollY);
+
+      // Restore scroll before browser paints
+      window.scrollTo({
+        top: scrollY,
+        left: 0,
+        behavior: "instant",
+      });
     };
   }, [locked]);
 }
