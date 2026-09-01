@@ -42,7 +42,6 @@ const VenuelandMainPage = ({
 
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const [loggedinUserId, setLoggedinUserId] = useState("");
-  const [showHostLoginModal, setShowHostLoginModal] = useState(false);
   const [activeEvent, setActiveEvent] = useState(initialEventType);
   const [activeVenueType, setActiveVenueType] = useState(initialVenueType);
   const [guestCapacity, setGuestCapacity] = useState("");
@@ -159,14 +158,6 @@ const VenuelandMainPage = ({
 
         <VenueFeatures />
       </div>
-
-      <LoginModal
-        isOpen={showHostLoginModal}
-        onClose={() => {
-          setShowHostLoginModal(false);
-          router.replace("/venue-list");
-        }}
-      />
     </>
   );
 };

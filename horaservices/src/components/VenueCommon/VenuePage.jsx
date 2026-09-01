@@ -1,6 +1,5 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import "../../pages/venue-list/venue/venue.css";
-import InviteActions from "@/components/wonderland/common/InviteActions";
 import VenueWallSection from "@/components/wonderland/event-wall/VenueWallSection";
 import { useRouter } from "next/router";
 import useApi from "@/hooks/useApi";
@@ -16,7 +15,6 @@ import TemplateRenderer from "@/components/wonderland/common/TemplateRenderer";
 import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templatecardSkeleton";
 import VenueFoodModal from "@/components/VenueFoodModal";
 import VenueFoodCard from "@/components/VenueFoodCard";
-import TermsModal from "@/components/TermsModal";
 import useRsvpStatus from "@/hooks/useRsvpStatus";
 import { safeGetItem } from "@/utils/safeStorage";
 import VenueAddressSection from "@/components/VenueAddressSection";
@@ -40,14 +38,10 @@ const router = useRouter();
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [eventDetails, setEventDetails] = useState(initialEventDetails);
   const [userData, setUserData] = useState({});
-  // SSR data hai to loader mat dikhao
   const [fullPageLoader, setFullPageLoader] = useState(!initialEventDetails);
   const [showGuestLoginModal, setShowGuestLoginModal] = useState(false);
-  const [showHostActionSection, setShowHostActionSection] = useState(false);
-  // Hydration-safe: localStorage sirf client pe
   const [loggedinUserId, setLoggedinUserId] = useState("");
   const [selectedPackage, setSelectedPackage] = useState(null);
-  const [pushRsvpClick, setPushRsvpClick] = useState(false);
   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
   const [venuePackages, setVenuePackages] = useState(initialPackages || []);
   const [venueCategories, setVenueCategories] = useState(
@@ -55,7 +49,7 @@ const router = useRouter();
   );
 
   const {} = useRsvpStatus(venueId, skipRsvpCheck);
-  const { data, loading } = useApi(`${GET_VENUE_CATEGORIES_LIST}`, "get");
+  const { data } = useApi(`${GET_VENUE_CATEGORIES_LIST}`, "get");
   const {
     data: eventData,
     loading: fetchEventLoading,
@@ -247,15 +241,6 @@ const router = useRouter();
     return () => window.removeEventListener("popstate", handleBack);
   }, [selectedPackage, showGuestLoginModal]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      if (eventDetails && eventDetails?.userId === loggedinUserId) {
-        setShowHostActionSection(true);
-      } else {
-        setShowHostActionSection(false);
-      }
-    }, 1000);
-  }, [eventDetails, loggedinUserId]);
 const PHONE = "7338584828"; 
 
 const handleEnquire = () => {
@@ -384,7 +369,7 @@ if (fullPageLoader && !eventDetails) return <InvitePageFlashLoader />;
             </h2>
             <VenueWallSection
               userData={userData}
-              setPushRsvpClick={setPushRsvpClick}
+              setPushRsvpClick={false}
               rsvpSubmitted={false}
               isHost={eventDetails?.userId === loggedinUserId}
               isVenueHost={true}
