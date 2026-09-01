@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useLayoutEffect, useState, useRef } from "react";
 import "@/components/wonderland/wonderland.css";
-import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import TopBanner from "@/components/Venue/Topbanner";
 import venueTopBanner from "@/assets/venuelanding/Topbanner.webp";
 import VenueCircle from "@/components/Venue/VenueCircle";
@@ -144,7 +143,7 @@ const VenuelandMainPage = ({
           eventType={activeEvent}
           venueType={activeVenueType}
           guestCapacity={guestCapacity}
-          city={cityForSEO || selectedCityName}
+          city={cityForSEO}
           search={searchText}
           initialVenues={
             // Sirf tab use karo jab filters abhi default SSR wale hain
