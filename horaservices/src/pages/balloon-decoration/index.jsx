@@ -18,7 +18,7 @@ import BabyWelcome from "../../assets/BabyWelcomeIMG.webp";
 import Anniversary from "../../assets/AnniversaryIMG.webp";
 import arrowIcon from "../../assets/arrow-down.svg";
 import CategoryTabs from "@/components/CategoryTabs";
-import { balloonreviews } from "@/utils/balloonReviews";
+import {  balloonreviewsproduct } from "@/utils/balloonReviews";
 import SmallCardGrid from "@/components/SmallCardGrid";
 import CategoryGrid from "@/components/CategoryGrid";
 import DecorGrid from "@/components/DecorGrid";
@@ -70,6 +70,7 @@ import {
 import { usePathname } from "next/navigation";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+import GoogleReviewsCard from "@/components/PhotoGalleryPose/GoogleReviewsCard";
 
 const stats = [
   {
@@ -257,7 +258,7 @@ const Decoration = ({ city, locality }) => {
       smallCardRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100); // small delay ensures it's rendered first
   };
-
+ const reviewsRef    = useRef(null);
   const openCatItems = (item) => {
     if (!item?.catValue) return;
 
@@ -533,8 +534,9 @@ const Decoration = ({ city, locality }) => {
         title="Excellence Backed by Happy Customers"
         items={brandItems}
       />
-
-      <ReviewSlider reviews={balloonreviews} title="Customer Reviews" />
+ <div ref={reviewsRef} style={{margin:" 10px 0px"}}>
+            <GoogleReviewsCard reviews={balloonreviewsproduct} />
+            </div>
     </div>
   );
 };
