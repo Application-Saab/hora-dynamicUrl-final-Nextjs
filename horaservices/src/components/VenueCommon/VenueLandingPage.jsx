@@ -4,7 +4,7 @@ import "@/components/wonderland/wonderland.css";
 import TopBanner from "@/components/Venue/Topbanner";
 import venueTopBanner from "@/assets/venuelanding/Topbanner.webp";
 import VenueCircle from "@/components/Venue/VenueCircle";
-import VenueList from "@/components/venueCommon/InvitesListing";
+import VenueList from "./InvitesListing";
 import VenueFeatures from "@/components/Venue/VenueFeatures";
 import "@/pages/venue-list/venue/venue.css";
 import { useCity } from "@/utils/cityContext";
