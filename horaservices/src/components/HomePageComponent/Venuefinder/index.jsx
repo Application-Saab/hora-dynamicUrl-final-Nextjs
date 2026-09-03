@@ -6,6 +6,9 @@ import arrowIcon from"@/assets/arrowicon.svg";
 const venues = venueData.filter((v) => v.id !== "all");
 
 export default function VenueFinder({ onViewAll, onSelectVenue }) {
+  const handleViewAll = () => {
+  window.location.href = "https://horaservices.com/venue-list";
+};
   return (
     <div className="venue-finder">
       <div className="venue-hero">
@@ -40,7 +43,7 @@ export default function VenueFinder({ onViewAll, onSelectVenue }) {
         ))}
       </div>
 
-      <button className="venue-cta" onClick={onViewAll}>
+      <button className="venue-cta" onClick={handleViewAll}>
         View All Venues
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
           <path d="M9 6l6 6-6 6" />

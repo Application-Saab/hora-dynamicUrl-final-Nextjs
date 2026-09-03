@@ -5,7 +5,6 @@
   margin: 0 auto;
   font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
   background-color: white;
-  margin-top: clamp(14px, 5.34vw, 21px);
 }
 
 .planning-hero {

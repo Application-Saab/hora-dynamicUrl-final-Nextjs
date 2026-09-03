@@ -6,28 +6,26 @@ import iconShare from "@/assets/Homepageimages/icon-share.webp";
 import Image from "next/image";
 import editIcon from "@/assets/Homepageimages/edit-icon.svg";
 import arrowIcon from "@/assets/Homepageimages/arrow-right.svg";
+import { useRouter } from "next/navigation";
+
 const features = [
-  {
-    label: "Quick",
-    text: "Create in mins",
-    icon: iconQuick,
-  },
-  {
-    label: "Beautiful",
-    text: "Stunning designs",
-    icon: iconBeautiful,
-  },
-  {
-    label: "Share",
-    text: "With loved ones",
-    icon: iconShare,
-  },
+  { label: "Quick", text: "Create in mins", icon: iconQuick },
+  { label: "Beautiful", text: "Stunning designs", icon: iconBeautiful },
+  { label: "Share", text: "With loved ones", icon: iconShare },
 ];
 
 export default function InviteCard({ onCreate }) {
+  const router = useRouter();
+  const handleCreate = () => {
+    router.push("/wonderland");
+  };
+
   return (
-    <div className="invite-card">
-      <div className="invite-card-content">
+    <div className="invite-card" style={{ position: "relative" }}>
+      <div
+        className="invite-card-content"
+        style={{ paddingRight: "clamp(90px, 12vw, 110px)" }}
+      >
         <div className="invite-card-text">
           <h2>Create Smart Invitation</h2>
           <p>Design beautiful invites in minutes for any celebration</p>
@@ -52,25 +50,11 @@ export default function InviteCard({ onCreate }) {
         />
       </div>
 
-     <button className="cta-btn" onClick={onCreate}>
-  <Image
-    src={editIcon}
-    alt="Edit"
-    width={20}
-    height={20}
-    className="cta-icon"
-  />
-
-  Create Invitation
-
-  <Image
-    src={arrowIcon}
-    alt="Arrow"
-    width={20}
-    height={20}
-    className="cta-icon"
-  />
-</button>
+      <button className="cta-btn" onClick={handleCreate}>
+        <Image src={editIcon} alt="Edit" width={20} height={20} className="cta-icon" />
+        Create Invitation
+        <Image src={arrowIcon} alt="Arrow" width={20} height={20} className="cta-icon" />
+      </button>
     </div>
   );
 }

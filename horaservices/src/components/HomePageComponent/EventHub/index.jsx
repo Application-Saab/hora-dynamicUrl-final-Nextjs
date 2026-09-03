@@ -2,9 +2,12 @@ import useApi from "@/hooks/useApi";
 import { GET_ALL_EVENTS_BY_USERID } from "@/utils/apiconstants";
 import { usePathname, useRouter } from "next/navigation";
 import "./Eventhub.css";
-
+import Image from "next/image";
+import celebrationRight from "@/assets/Homepageimages/celebration-right.webp";
+import celebrationLeft from "@/assets/Homepageimages/celebration-left.webp"
 const EventHub = ({ userId }) => {
   const router = useRouter();
+  
   const pathname = usePathname();
   const { data, loading } = useApi(
     userId ? `${GET_ALL_EVENTS_BY_USERID}/${userId}` : null,
@@ -26,7 +29,12 @@ const EventHub = ({ userId }) => {
       return "Invalid Date";
     }
   };
-
+const DUMMY_AVATARS = [
+  "https://i.pravatar.cc/100?img=12",
+  "https://i.pravatar.cc/100?img=32",
+  "https://i.pravatar.cc/100?img=47",
+  "https://i.pravatar.cc/100?img=49",
+];
   const handleClickViewEvent = (eventData) => {
     if (isWonderlandInternational) {
       router.push(`/wonderlandinternational/invite?eventid=${eventData._id}`);
@@ -40,14 +48,30 @@ const EventHub = ({ userId }) => {
   return (
     <div className="event-hub">
       {/* HEADER */}
-      <div className="event-hub-header">
-        <span className="header-icon">🎉</span>
-        <div className="header-text">
-          <h2>Event Hub</h2>
-          <p>A timeline of all the celebrations you've hosted and participated in.</p>
-        </div>
-        <span className="header-icon">🎈</span>
-      </div>
+     <div className="event-hub-header">
+  <Image
+    src={celebrationLeft}
+    alt="Celebration"
+    className="header-icon"
+    width={50}
+    height={50}
+  />
+
+  <div className="header-text">
+    <h2>Event Hub</h2>
+    <p>
+      A timeline of all the celebrations you've hosted and participated in.
+    </p>
+  </div>
+
+  <Image
+    src={celebrationRight}
+    alt="Celebration"
+    className="header-icon"
+    width={50}
+    height={50}
+  />
+</div>
 
       {loading ? (
         <p className="loading-text">Loading your events...</p>
@@ -94,23 +118,37 @@ const EventHub = ({ userId }) => {
                   <span>{formatDate(event.eventDate)}</span>
                 </div>
 
-                <div className="event-avatars-row">
-                  <div className="event-avatars">
-                    {(event.guests || []).slice(0, 4).map((g, i) => (
-                      <img
-                        key={i}
-                        src={g.avatar || "/default-avatar.png"}
-                        alt={g.name || "guest"}
-                        className="avatar"
-                        style={{ zIndex: 10 - i }}
-                      />
-                    ))}
-                  </div>
-                  {event.guests?.length > 4 && (
-                    <span className="avatar-more">+{event.guests.length - 4}</span>
-                  )}
-                </div>
+               <div className="event-avatars-row">
+  <div className="event-avatars">
+    {(event.guests || []).slice(0, 4).map((g, i) => (
+      <img
+        key={g._id || g.id || i}
+        src={g.avatar || DUMMY_AVATARS[i % DUMMY_AVATARS.length]}
+        alt={g.name || "guest"}
+        className="avatar"
+        style={{ zIndex: 10 - i }}
+      />
+    ))}
 
+    {/* Dummy avatars jab guests available nahi hain */}
+    {(!event.guests || event.guests.length === 0) &&
+      DUMMY_AVATARS.map((avatar, i) => (
+        <img
+          key={`dummy-${i}`}
+          src={avatar}
+          alt="Guest"
+          className="avatar"
+          style={{ zIndex: 10 - i }}
+        />
+      ))}
+  </div>
+
+  {event.guests?.length > 4 && (
+    <span className="avatar-more">
+      +{event.guests.length - 4}
+    </span>
+  )}
+</div>
                 <button
                   className="visit-btn"
                   onClick={() => handleClickViewEvent(event)}
