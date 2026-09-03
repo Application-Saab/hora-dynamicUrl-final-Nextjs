@@ -817,9 +817,31 @@ orderId={orderDetail?.order_id}
                   <h1>
                     {product.name}
                   </h1>
+                  {product.inclusion && product.inclusion.length > 0 && (
                   <div style={{ marginBottom: "12px" }}>
                     {getItemInclusion(product.inclusion)}
                   </div>
+                  )}
+
+                  {orderDetail.customInclusion?.length > 0 && (
+                    <div style={{ marginBottom: "12px" }}>
+                      <div>
+                        {orderDetail.customInclusion.map((item, index) => (
+                          <div key={index} className="info-row">
+                            <div className="info-icon">
+                              <Image
+                                src={checkIcon}
+                                alt="Info"
+                                className="info-icon-img"
+                              />
+                            </div>
+
+                            <div>{item}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   <div style={{ marginBottom: "12px" }}>
                     <div className="fw-semiBold myOrderDetails-heading">
