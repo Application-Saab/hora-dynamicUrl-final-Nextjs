@@ -1,3 +1,7 @@
 # Allow all bots to crawl everything
 User-agent: *
 Allow: /
+
+# Reference both sitemaps
+Sitemap: https://horaservices.com/product.xml
+Sitemap: https://horaservices.com/sitemap.xml
