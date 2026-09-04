@@ -31,21 +31,20 @@ const VenuePage = ({
   initialCategories = null,
   venueId: propVenueId = null,
 }) => {
-const router = useRouter();
+  const router = useRouter();
   const { venueid: queryVenueId, city: queryCity } = router.query;
   const venueId = queryVenueId || propVenueId;
-
-  const [showTermsModal, setShowTermsModal] = useState(false);
   const [eventDetails, setEventDetails] = useState(initialEventDetails);
   const [userData, setUserData] = useState({});
   const [fullPageLoader, setFullPageLoader] = useState(!initialEventDetails);
-  const [showGuestLoginModal, setShowGuestLoginModal] = useState(false);
   const [loggedinUserId, setLoggedinUserId] = useState("");
+  const [authReady, setAuthReady] = useState(false);
+  const [showGuestLoginModal, setShowGuestLoginModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
   const [venuePackages, setVenuePackages] = useState(initialPackages || []);
   const [venueCategories, setVenueCategories] = useState(
-    initialCategories || []
+    initialCategories || [],
   );
 
   const {} = useRsvpStatus(venueId, skipRsvpCheck);
@@ -64,21 +63,17 @@ const router = useRouter();
     ? {
         ...eventDetails,
         guestCapacity: eventDetails.guestCapacity || guests,
-        isParkingAvailable:
-          eventDetails.isParkingAvailable ?? parking === "1",
+        isParkingAvailable: eventDetails.isParkingAvailable ?? parking === "1",
         totalRoomsAvailable:
           eventDetails.totalRoomsAvailable || Number(rooms) || 0,
         hallType:
-          eventDetails.hallType ||
-          (hallsParam ? JSON.parse(hallsParam) : []),
+          eventDetails.hallType || (hallsParam ? JSON.parse(hallsParam) : []),
       }
     : null;
 
   const city =
     propCity ||
-    (queryCity
-      ? queryCity.charAt(0).toUpperCase() + queryCity.slice(1)
-      : "");
+    (queryCity ? queryCity.charAt(0).toUpperCase() + queryCity.slice(1) : "");
 
   const cityDisplay = city;
   const venueLocationLabel = eventDetails?.location || cityDisplay;
@@ -97,21 +92,28 @@ const router = useRouter();
   const canonicalUrl = city
     ? `https://horaservices.com/${String(city).toLowerCase()}/venue-list/venue`
     : `https://horaservices.com/venue-list/venue`;
-
-  useEffect(() => {
-    setLoggedinUserId(safeGetItem("userID") || "");
+  
+    useEffect(() => {
+    const id =
+      safeGetItem("userID") ||
+      safeGetItem("userId") ||
+      safeGetItem("userid") ||
+      "";
+    setLoggedinUserId(id);
+    setAuthReady(true);
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!router.isReady) return;
-      if (venueId && !loggedinUserId) {
-        setShowGuestLoginModal(true);
-      }
-      setFullPageLoader(false);
-    }, initialEventDetails ? 0 : 600);
-    return () => clearTimeout(timer);
-  }, [router.isReady, venueId, loggedinUserId, initialEventDetails]);
+    if (!router.isReady || !authReady) return;
+
+    if (venueId && !loggedinUserId) {
+      setShowGuestLoginModal(true);
+    } else {
+      setShowGuestLoginModal(false);
+    }
+
+    setFullPageLoader(false);
+  }, [router.isReady, authReady, venueId, loggedinUserId]);
 
   // Categories — SSR miss pe client
   useEffect(() => {
@@ -145,7 +147,7 @@ const router = useRouter();
     }
 
     fetchEventInvite(`${GET_VENUE_DETAILS_BY_ID}/${venueId}`, "GET").catch(
-      (err) => console.error(err)
+      (err) => console.error(err),
     );
   }, [venueId, loggedinUserId]);
 
@@ -176,10 +178,7 @@ const router = useRouter();
       setVenuePackages(cached.data);
       if (!cached.isStale) return;
     }
-    fetchVenuePackages(
-      `${GET_VENUE_PACKAGES_BY_VENUE_ID}/${venueId}`,
-      "GET"
-    )
+    fetchVenuePackages(`${GET_VENUE_PACKAGES_BY_VENUE_ID}/${venueId}`, "GET")
       .then((resp) => {
         setVenuePackages(resp?.data || []);
         setPageCache(cacheKey, resp?.data);
@@ -206,8 +205,16 @@ const router = useRouter();
   }, [eventDetails, loggedinUserId]);
 
   useEffect(() => {
-    const syncLoginState = () =>
-      setLoggedinUserId(safeGetItem("userID") || "");
+    const syncLoginState = () => {
+      const id =
+        safeGetItem("userID") ||
+        safeGetItem("userId") ||
+        safeGetItem("userid") ||
+        "";
+      setLoggedinUserId(id);
+      if (id) setShowGuestLoginModal(false); // login hone pe band
+    };
+
     window.addEventListener("storage", syncLoginState);
     window.addEventListener("loginStateChange", syncLoginState);
     return () => {
@@ -241,25 +248,25 @@ const router = useRouter();
     return () => window.removeEventListener("popstate", handleBack);
   }, [selectedPackage, showGuestLoginModal]);
 
-const PHONE = "7338584828"; 
+  const PHONE = "7338584828";
 
-const handleEnquire = () => {
-  const venueName = eventDetails?.venueName || "this venue";
-  const location = eventDetails?.city || eventDetails?.location || "";
-  const capacity = eventDetails?.guestCapacity;
-  const price = eventDetails?.startingPrice;
+  const handleEnquire = () => {
+    const venueName = eventDetails?.venueName || "this venue";
+    const location = eventDetails?.city || eventDetails?.location || "";
+    const capacity = eventDetails?.guestCapacity;
+    const price = eventDetails?.startingPrice;
 
-  const message = `Hi, I'm interested in *${venueName}*${location ? ` (${location})` : ""}.
+    const message = `Hi, I'm interested in *${venueName}*${location ? ` (${location})` : ""}.
 ${capacity ? `Guest Capacity: ${capacity}` : ""}
 ${price ? `Starting Price: ₹${price}/plate` : ""}
 
 Please share more details and availability.`;
 
-  const encodedMessage = encodeURIComponent(message.trim());
-  window.open(`https://wa.me/91${PHONE}?text=${encodedMessage}`, "_blank");
-};
+    const encodedMessage = encodeURIComponent(message.trim());
+    window.open(`https://wa.me/91${PHONE}?text=${encodedMessage}`, "_blank");
+  };
 
-if (fullPageLoader && !eventDetails) return <InvitePageFlashLoader />;
+  if (fullPageLoader && !eventDetails) return <InvitePageFlashLoader />;
 
   return (
     <>
@@ -358,7 +365,10 @@ if (fullPageLoader && !eventDetails) return <InvitePageFlashLoader />;
             <span className="venue-tax-line" />
           </div>
           <div className="enquire-card">
-           <VenueHighlights venue={venueForHighlights} onEnquire={handleEnquire} />
+            <VenueHighlights
+              venue={venueForHighlights}
+              onEnquire={handleEnquire}
+            />
             <VenueCategoryPills categories={eventDetails?.venueType} />
           </div>
 
