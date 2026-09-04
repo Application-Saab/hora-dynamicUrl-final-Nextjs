@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect, useRef } from "react";
 
 const EventLazyImage = ({
@@ -12,12 +11,10 @@ const EventLazyImage = ({
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
-
   const wrapperRef = useRef(null);
 
   useEffect(() => {
     const currentRef = wrapperRef.current;
-
     if (!currentRef) return;
 
     const observer = new IntersectionObserver(
@@ -25,7 +22,6 @@ const EventLazyImage = ({
         setIsInView(entry.isIntersecting);
       },
       {
-        // Image viewport ke 200px pehle/baad DOM me aayegi
         rootMargin: "200px 0px 200px 0px",
         threshold: 0,
       }
@@ -58,24 +54,18 @@ const EventLazyImage = ({
             alt={alt}
             decoding="async"
             loading="lazy"
-            className={`event - lazy - image - actual - img ${
-  className || ""
-} ${ isLoaded ? "loaded" : "loading" } `}
+            className={`event-lazy-image-actual-img ${className || ""} ${isLoaded ? "loaded" : "loading"} `}
             style={{
-              objectFit:
-                postType === "thankYouNote" ? "fill" : "cover",
+              objectFit: postType === "thankYouNote" ? "fill" : "cover",
             }}
             onLoad={handleLoadDone}
             onError={() => {
               handleLoadDone();
-              console.warn(`Failed to load image: ${ src } `);
+              console.warn(`Failed to load image: ${src} `);
             }}
           />
-
           {progress && (
-            <div className="lazy-image-progress-overlay">
-              {progress}
-            </div>
+            <div className="lazy-image-progress-overlay">{progress}</div>
           )}
         </>
       )}
