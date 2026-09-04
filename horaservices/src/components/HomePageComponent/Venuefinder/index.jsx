@@ -6,8 +6,8 @@ import { useMemo } from "react";
 import "./VenueFinder.css";
 import { venueData } from "@/utils/venueCircleData"; // apna actual path daal dena
 import arrowIcon from "@/assets/arrowicon.svg";
+import celebrationBanner from "@/assets/Homepageimages/celebration-banner.svg"; // apna actual path daal dena
 
-// "all" ko scroller me nahi dikhana, baaki sab venues dikhayenge
 const venues = venueData.filter((v) => v.id !== "all");
 
 export default function VenueFinder({ onSelectVenue }) {
@@ -59,12 +59,20 @@ export default function VenueFinder({ onSelectVenue }) {
         ))}
       </div>
 
-      <Link href={buildHref("/venue-list")} className="venue-cta">
-        View All Venues
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-          <path d="M9 6l6 6-6 6" />
-        </svg>
-      </Link>
+      {/* IMAGE BACKGROUND + OVERLAY BUTTON */}
+  <div className="venue-celebration-banner">
+  <Image
+    src={celebrationBanner}
+    alt="Every Celebration Brings People Closer. Create Memories And Live After"
+    className="celebration-banner-img"
+  />
+  <Link href={buildHref("/venue-list")} className="venue-cta venue-cta-overlay">
+    View All Venues
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <path d="M9 6l6 6-6 6" />
+    </svg>
+  </Link>
+</div>
     </div>
   );
 }

@@ -17,6 +17,7 @@ margin: clamp(18px, 6.37vw, 25px) auto 0;
   vertical-align: middle;
   text-transform: capitalize;
   color: #464646;
+  margin-bottom: clamp(4.8px, 1.53vw, 6px);
 }
 
 .banner-hero p {

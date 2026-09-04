@@ -83,7 +83,7 @@ box-shadow:
   font-family: "Inter", sans-serif;
   font-weight: 700;
   font-style: normal;
-  font-size: clamp(11px, 1.15vw, 12.77px);
+font-size: clamp(10.22px, 3.25vw, 12.77px);
   color:#484948;
       margin: 2.5px 0px;
 }
@@ -92,7 +92,7 @@ box-shadow:
    font-family: "Inter", sans-serif;
   font-weight: 300;
   font-style: normal;
-  font-size: clamp(8px, 0.82vw, 9.12px);
+  font-size: clamp(7.3px, 2.32vw, 9.12px);
  margin-bottom: clamp(3px, 1.16vw, 4.56px);
   color: #62667E;
    width:87px;

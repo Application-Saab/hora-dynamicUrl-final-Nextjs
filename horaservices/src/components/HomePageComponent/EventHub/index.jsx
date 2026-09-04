@@ -2,13 +2,12 @@
 import useApi from "@/hooks/useApi";
 import { GET_ALL_EVENTS_BY_USERID } from "@/utils/apiconstants";
 import { usePathname } from "next/navigation";
-import { useMemo } from "react";
 import Link from "next/link";
 import "./Eventhub.css";
 import Image from "next/image";
 import celebrationRight from "@/assets/Homepageimages/celebration-right.webp";
 import celebrationLeft from "@/assets/Homepageimages/celebration-left.webp";
-
+import promoimage from "@/assets/Homepageimages/promoimage.svg"
 const DUMMY_AVATARS = [
   "https://i.pravatar.cc/100?img=12",
   "https://i.pravatar.cc/100?img=32",
@@ -25,17 +24,6 @@ const EventHub = ({ userId }) => {
   const isWonderlandInternational = pathname?.startsWith(
     "/wonderlandinternational"
   );
-
-  // Sirf city nikaal rahe hain, locality nahi
-  const city = useMemo(() => {
-    const segments = pathname?.split("/")?.filter(Boolean) || [];
-    return segments[0] || null;
-  }, [pathname]);
-
-  const buildHref = (path) => {
-    if (city) return `/${city}${path}`;
-    return path;
-  };
 
   const formatDate = (dateString) => {
     if (!dateString) return "Event Date";
@@ -54,7 +42,7 @@ const EventHub = ({ userId }) => {
     const basePath = isWonderlandInternational
       ? "/wonderlandinternational/invite"
       : "/wonderland/invite";
-    return buildHref(`${basePath}?eventid=${event._id}`);
+    return `${basePath}?eventid=${event._id}`;
   };
 
   const events = data?.data || [];
@@ -146,7 +134,7 @@ const EventHub = ({ userId }) => {
                               key={g._id || g.id || `${event._id}-${i}`}
                               src={g.url || DUMMY_AVATARS[i % DUMMY_AVATARS.length]}
                               alt={g.name || "guest"}
-                              className="avatar"
+                              className="avatarss"
                               style={{ zIndex: 10 - i }}
                             />
                           ))
@@ -181,13 +169,14 @@ const EventHub = ({ userId }) => {
 
           {/* STATIC PROMO CARD - always shown at the end */}
           <div className="event-hub-promo-card">
-            <div className="promo-icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 11v2a1 1 0 001 1h2l4 4V6L6 10H4a1 1 0 00-1 1z" />
-                <path d="M16 8a4 4 0 010 8" />
-                <path d="M19 5a8 8 0 010 14" />
-              </svg>
-            </div>
+           <div className="promo-icon-wrap">
+  <Image
+    src={promoimage}
+    alt="Promo"
+    width={50}
+    height={50}
+  />
+</div>
             <p>Don't let memories fade—track and relive every event.</p>
           </div>
         </div>

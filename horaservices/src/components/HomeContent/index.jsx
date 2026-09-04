@@ -117,14 +117,16 @@ export default function HomeContent() {
     <div className="home-wrapper">
       {/* TOP BANNER */}
       <HomeBanner />
-      <InviteCard />
+<InviteCard />
 
-      {isUserLoggedIn && loggedinUserId && (
-        <EventHub userId={loggedinUserId} />
-      )}
-
-      <PlanningCategories />
-      <VenueFinder />
+{isUserLoggedIn && loggedinUserId && (
+  <EventHub userId={loggedinUserId} />
+)}
+<div  style={!isUserLoggedIn ? { marginTop: "10px" } : undefined}>
+<PlanningCategories
+/>
+</div>
+<VenueFinder />
    </div>
   );
 }
