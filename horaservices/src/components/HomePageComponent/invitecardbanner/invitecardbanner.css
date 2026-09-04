@@ -71,7 +71,7 @@ opacity: 1;
  gap: clamp(5px, 1.53vw, 6px);
 }
 .feature-text{
-    line-height: clamp(9px, 0.9vw, 10px);
+ line-height: clamp(6.4px, 2.04vw, 8px);
 }
 .feature-icon {
 width: clamp(15px, 4.79vw, 18.84px);

@@ -1,86 +1,3 @@
-// import "./planningcategories.css";
-// import venueImg from "@/assets/Homepageimages/cat-venue.webp";
-// import decorationImg from "@/assets/Homepageimages/cat-decoration.webp";
-// import photographyImg from "@/assets/Homepageimages/cat-photography.webp";
-// import foodDeliveryImg from "@/assets/Homepageimages/cat-food-delivery.webp";
-// import chefImg from "@/assets/Homepageimages/cat-chef.webp";
-// import cateringImg from "@/assets/Homepageimages/cat-catering.webp";
-// import fireworksImg from "@/assets/Homepageimages/cat-fireworks.webp";
-// import Image from "next/image";
-// import arrowIcon from"@/assets/arrowicon.svg";
-// const categories = [
-//   {
-//     title: "Venue",
-//     subtitle: "Banquet Halls, Farmhouse & more.",
-//     image: venueImg,
-//   },
-//   {
-//     title: "Decoration",
-//     subtitle: "Balloons, Light & beautiful setups",
-//     image: decorationImg,
-//   },
-//   {
-//     title: "Photography",
-//     subtitle: "Capture moments, cherish forever",
-//     image: photographyImg,
-//   },
-//   {
-//     title: "Food Delivery",
-//     subtitle: "Delicious food, delivered to you",
-//     image: foodDeliveryImg,
-//   },
-//   {
-//     title: "Chef for Party",
-//     subtitle: "Hire expert chefs for your special menu",
-//     image: chefImg,
-//   },
-//   {
-//     title: "Food Catering",
-//     subtitle: "Catering service for any size of event",
-//     image: cateringImg,
-//   },
-//   {
-//     title: "Celebration Boosters",
-//     subtitle: "Balloons, Light & beautiful setups",
-//     image: fireworksImg,
-//   },
-// ];
-
-// export default function PlanningCategories({ onSelect }) {
-//   return (
-//     <div className="planning">
-//       <div className="planning-hero">
-//         <h1>Planning Celebration?</h1>
-//         <p>Pick a category to explore beautiful ideas and make your event unforgettable</p>
-//       </div>
-
-//       <div className="planning-grid">
-//         {categories.map((cat) => (
-//           <div className="planning-card" key={cat.title}>
-//             <div className="planning-image">
-//               <Image src={cat.image} alt={cat.title} />
-//             </div>
-//             <div className="planning-body">
-//               <h3>{cat.title}</h3>
-//               <p>{cat.subtitle}</p>
-//             </div>
-//             <button
-//               className="planning-arrow"
-//               onClick={() => onSelect && onSelect(cat.title)}
-//               aria-label={`Explore ${cat.title}`}
-//             >
-//             <Image
-//   src={arrowIcon}
-//   alt="Arrow"
-//   className="arrow-plan"
-// />
-//             </button>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
 "use client";
 import "./planningcategories.css";
 import venueImg from "@/assets/Homepageimages/cat-venue.webp";
@@ -91,7 +8,9 @@ import chefImg from "@/assets/Homepageimages/cat-chef.webp";
 import cateringImg from "@/assets/Homepageimages/cat-catering.webp";
 import fireworksImg from "@/assets/Homepageimages/cat-fireworks.webp";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useMemo } from "react";
 import arrowIcon from "@/assets/arrowicon.svg";
 
 const categories = [
@@ -140,11 +59,21 @@ const categories = [
 ];
 
 export default function PlanningCategories({ onSelect }) {
-  const router = useRouter();
+  const pathname = usePathname();
 
-  const goTo = (path, title) => {
-    if (onSelect) onSelect(title);
-    router.push(path);
+  // HomeContent / VenueFinder jaisa hi city/locality nikaalne ka logic
+  const { city, locality } = useMemo(() => {
+    const segments = pathname?.split("/")?.filter(Boolean) || [];
+    return {
+      city: segments[0] || null,
+      locality: segments[1] || null,
+    };
+  }, [pathname]);
+
+  const buildHref = (path) => {
+    if (city && locality) return `/${city}/${locality}${path}`;
+    if (city) return `/${city}${path}`;
+    return path;
   };
 
   return (
@@ -156,15 +85,11 @@ export default function PlanningCategories({ onSelect }) {
 
       <div className="planning-grid">
         {categories.map((cat) => (
-          <div
+          <Link
+            href={buildHref(cat.path)}
             className="planning-card"
             key={cat.title}
-            role="button"
-            tabIndex={0}
-            onClick={() => goTo(cat.path, cat.title)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") goTo(cat.path, cat.title);
-            }}
+            onClick={() => onSelect && onSelect(cat.title)}
           >
             <div className="planning-image">
               <Image src={cat.image} alt={cat.title} />
@@ -173,17 +98,10 @@ export default function PlanningCategories({ onSelect }) {
               <h3>{cat.title}</h3>
               <p>{cat.subtitle}</p>
             </div>
-            <button
-              className="planning-arrow"
-              onClick={(e) => {
-                e.stopPropagation(); // card ka click dobara trigger na ho
-                goTo(cat.path, cat.title);
-              }}
-              aria-label={`Explore ${cat.title}`}
-            >
-              <Image src={arrowIcon} alt="Arrow" className="arrow-plan" />
-            </button>
-          </div>
+            <span className="planning-arrow" aria-hidden="true">
+              <Image src={arrowIcon} alt="" className="arrow-plan" />
+            </span>
+          </Link>
         ))}
       </div>
     </div>
