@@ -23,7 +23,9 @@ export const poseGridData = [
  { title: "New Born Baby", image: pose8, folder: "new born ",customerId: "64137625549b58e3dc39a685" },
 { title: "House warming", image: pose9, folder: "House warming weblink",customerId: "64137625549b58e3dc39a685" },
   { title: "Babyshower", image: pose10, folder: "baby shower" ,customerId: "6683e5d43e33c54c0ebde8f2"},
+{ title: "Welcome Baby", image: pose11, folder: "welcomeBaby_poseLink",customerId: "6a7f09a01144665025c88d8e" },
 { title: "Naming Ceremony", image: pose12, folder: "naming ceremony weblink",customerId: "64137625549b58e3dc39a685" },
+{ title: "Corporate", image: pose13, folder: "corporatePoselink",customerId: "6a7f09a01144665025c88d8e" },
 
 
 ];

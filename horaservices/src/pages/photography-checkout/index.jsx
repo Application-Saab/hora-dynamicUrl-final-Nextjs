@@ -45,7 +45,9 @@ let category =
   const rawAddOns = router.query.selectedAddOnProduct
     ? JSON.parse(router.query.selectedAddOnProduct)
     : [];
-
+const selectedThemes = router.query.selectedThemes
+  ? JSON.parse(router.query.selectedThemes)
+  : [];
   const selectedAddOnProduct = rawAddOns.map(item => ({
     ...item,
     totalPrice: item.price * (item.quantity || 1),
@@ -344,7 +346,8 @@ const balanceAmount = totalAmount - advanceAmount;
         "order_pincode": pinCode,
         "items": [product._id],
         "decoration_comments": getFinalComment(),
-        "status": 0
+        "status": 0,
+        "themes": selectedThemes,
       }
       const token = await safeGetItem('token');
       const response = await axiosApi.post(url, requestData, {
@@ -672,7 +675,7 @@ const contactUsRedirection = (productName) => {
              
               <p className='productTitle'>{productData?.name || "N/A"}</p>
             </div>
-           <div className='prod-detailsp'>
+           <div >
              <Image
   className="checkoutRightImg"
   src={getPhotographyImageUrl(product)}
@@ -705,7 +708,34 @@ const contactUsRedirection = (productName) => {
     </ul>
   </>
 )}
+{selectedThemes.length > 0 && (
+  <div className='addon-prices'>
+    <label>Selected Themes:</label>
+    <ul className="addon-list">
+      {selectedThemes.map((theme, index) => {
+        const fileName = theme?.image || theme?.featured_image || theme?.icon || "";
+        const imgUrl = !fileName
+          ? "/default-image.webp"
+          : fileName.startsWith("http")
+          ? fileName
+          : `https://horaservices.com/api/uploads/compressed_webp/${fileName.split(".")[0]}.webp`;
 
+        return (
+          <li key={theme._id || index} className="addon-item" style={{ display: "flex", alignItems: "center" }}>
+            <Image
+              src={imgUrl}
+              alt={theme.title || "Theme"}
+              width={28}
+              height={28}
+              style={{ borderRadius: "4px", objectFit: "cover", marginRight: "6px" }}
+            />
+            <span className="addon-title">{index + 1}. {theme.title}</span>
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+)}
                         </div>
                       </div>
                      

@@ -1,3 +1,4 @@
+// components/VenueCommon/VenuePage.jsx
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import "../../pages/venue-list/venue/venue.css";
 import VenueWallSection from "@/components/wonderland/event-wall/VenueWallSection";
@@ -34,17 +35,21 @@ const VenuePage = ({
   const router = useRouter();
   const { venueid: queryVenueId, city: queryCity } = router.query;
   const venueId = queryVenueId || propVenueId;
+
   const [eventDetails, setEventDetails] = useState(initialEventDetails);
   const [userData, setUserData] = useState({});
   const [fullPageLoader, setFullPageLoader] = useState(!initialEventDetails);
+  const [showGuestLoginModal, setShowGuestLoginModal] = useState(false);
+  const [showHostActionSection, setShowHostActionSection] = useState(false);
+  // Hydration-safe — localStorage sirf client pe
   const [loggedinUserId, setLoggedinUserId] = useState("");
   const [authReady, setAuthReady] = useState(false);
-  const [showGuestLoginModal, setShowGuestLoginModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
+  const [pushRsvpClick, setPushRsvpClick] = useState(false);
   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
   const [venuePackages, setVenuePackages] = useState(initialPackages || []);
   const [venueCategories, setVenueCategories] = useState(
-    initialCategories || [],
+    initialCategories || []
   );
 
   const {} = useRsvpStatus(venueId, skipRsvpCheck);
@@ -63,46 +68,63 @@ const VenuePage = ({
     ? {
         ...eventDetails,
         guestCapacity: eventDetails.guestCapacity || guests,
-        isParkingAvailable: eventDetails.isParkingAvailable ?? parking === "1",
+        isParkingAvailable:
+          eventDetails.isParkingAvailable ?? parking === "1",
         totalRoomsAvailable:
           eventDetails.totalRoomsAvailable || Number(rooms) || 0,
         hallType:
-          eventDetails.hallType || (hallsParam ? JSON.parse(hallsParam) : []),
+          eventDetails.hallType ||
+          (hallsParam ? JSON.parse(hallsParam) : []),
       }
     : null;
 
   const city =
     propCity ||
-    (queryCity ? queryCity.charAt(0).toUpperCase() + queryCity.slice(1) : "");
+    (queryCity
+      ? queryCity.charAt(0).toUpperCase() + queryCity.slice(1)
+      : "");
 
-  const cityDisplay = city;
-  const venueLocationLabel = eventDetails?.location || cityDisplay;
+  const venueLocationLabel = eventDetails?.location || city;
+
   const venueTitle = eventDetails?.venueName
     ? `${eventDetails.venueName}${
         venueLocationLabel ? `, ${venueLocationLabel}` : ""
       } — Book Now`
     : "Venue Details & Booking";
+
   const venueDescription = eventDetails?.venueName
     ? `Book ${eventDetails.venueName}${
         venueLocationLabel ? ` in ${venueLocationLabel}` : ""
       } for your next event. Check packages, guest capacity & real photos.`
     : "View venue packages, capacity, and photos for your next event.";
 
-  // Canonical — window mat use karo SSR me
+  // SSR-safe canonical (window mat use karo)
   const canonicalUrl = city
     ? `https://horaservices.com/${String(city).toLowerCase()}/venue-list/venue`
     : `https://horaservices.com/venue-list/venue`;
-  
-    useEffect(() => {
-    const id =
-      safeGetItem("userID") ||
-      safeGetItem("userId") ||
-      safeGetItem("userid") ||
-      "";
+
+  // ----- Auth -----
+  useEffect(() => {
+    const id = safeGetItem("userID") || "";
     setLoggedinUserId(id);
     setAuthReady(true);
   }, []);
 
+  useEffect(() => {
+    const syncLoginState = () => {
+      const id = safeGetItem("userID") || "";
+      setLoggedinUserId(id);
+      if (id) setShowGuestLoginModal(false);
+    };
+    window.addEventListener("storage", syncLoginState);
+    window.addEventListener("loginStateChange", syncLoginState);
+    return () => {
+      window.removeEventListener("storage", syncLoginState);
+      window.removeEventListener("loginStateChange", syncLoginState);
+    };
+  }, []);
+
+  // Modal sirf auth check ke baad
   useEffect(() => {
     if (!router.isReady || !authReady) return;
 
@@ -111,11 +133,10 @@ const VenuePage = ({
     } else {
       setShowGuestLoginModal(false);
     }
-
     setFullPageLoader(false);
   }, [router.isReady, authReady, venueId, loggedinUserId]);
 
-  // Categories — SSR miss pe client
+  // ----- Categories -----
   useEffect(() => {
     if (initialCategories?.length) return;
     const cached = getPageCache("venue-categories");
@@ -129,9 +150,10 @@ const VenuePage = ({
     }
   }, [data]);
 
-  // Details — client refetch only if no SSR / login ke baad host features
+  // ----- Details / packages / user -----
   useLayoutEffect(() => {
     if (!venueId) return;
+    // Guest + SSR data → skip client fetch
     if (initialEventDetails && !loggedinUserId) {
       setFullPageLoader(false);
       return;
@@ -147,24 +169,26 @@ const VenuePage = ({
     }
 
     fetchEventInvite(`${GET_VENUE_DETAILS_BY_ID}/${venueId}`, "GET").catch(
-      (err) => console.error(err),
+      (err) => console.error("Error fetching event details:", err)
     );
   }, [venueId, loggedinUserId]);
 
   useLayoutEffect(() => {
     if (!venueId || !loggedinUserId) return;
+
     const cacheKey = `venue-user-${loggedinUserId}`;
     const cached = getPageCache(cacheKey);
     if (cached) {
       setUserData(cached.data);
       if (!cached.isStale) return;
     }
+
     fetchUserData(`${GET_USER_BY_ID}/${loggedinUserId}`, "GET")
       .then((resp) => {
         setUserData(resp?.data);
         setPageCache(cacheKey, resp?.data);
       })
-      .catch(console.error);
+      .catch((err) => console.error("Error fetching user details:", err));
   }, [venueId, loggedinUserId]);
 
   useLayoutEffect(() => {
@@ -178,12 +202,13 @@ const VenuePage = ({
       setVenuePackages(cached.data);
       if (!cached.isStale) return;
     }
+
     fetchVenuePackages(`${GET_VENUE_PACKAGES_BY_VENUE_ID}/${venueId}`, "GET")
       .then((resp) => {
         setVenuePackages(resp?.data || []);
         setPageCache(cacheKey, resp?.data);
       })
-      .catch(console.error);
+      .catch((err) => console.error("Error fetching venue packages:", err));
   }, [venueId, loggedinUserId]);
 
   useLayoutEffect(() => {
@@ -196,49 +221,34 @@ const VenuePage = ({
 
   useLayoutEffect(() => {
     if (eventDetails && loggedinUserId) {
-      if (eventDetails?.userId === loggedinUserId) {
-        setSkipRsvpCheck(true);
-      } else {
-        setSkipRsvpCheck(false);
-      }
+      setSkipRsvpCheck(eventDetails?.userId === loggedinUserId);
     }
   }, [eventDetails, loggedinUserId]);
 
   useEffect(() => {
-    const syncLoginState = () => {
-      const id =
-        safeGetItem("userID") ||
-        safeGetItem("userId") ||
-        safeGetItem("userid") ||
-        "";
-      setLoggedinUserId(id);
-      if (id) setShowGuestLoginModal(false); // login hone pe band
-    };
+    const t = setTimeout(() => {
+      if (eventDetails && eventDetails?.userId === loggedinUserId) {
+        setShowHostActionSection(true);
+      } else {
+        setShowHostActionSection(false);
+      }
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [eventDetails, loggedinUserId]);
 
-    window.addEventListener("storage", syncLoginState);
-    window.addEventListener("loginStateChange", syncLoginState);
-    return () => {
-      window.removeEventListener("storage", syncLoginState);
-      window.removeEventListener("loginStateChange", syncLoginState);
-    };
-  }, []);
-
-  // Back button handler
+  // Back: sirf close, pushState mat
   useEffect(() => {
     const anyModalOpen = selectedPackage || showGuestLoginModal;
-
     if (anyModalOpen) {
       window.history.pushState({ modalOpen: true }, "");
     }
 
     const handleBack = () => {
       if (selectedPackage) {
-        window.history.pushState({ modalOpen: true }, "");
         setSelectedPackage(null);
         return;
       }
       if (showGuestLoginModal) {
-        window.history.pushState({ modalOpen: true }, "");
         setShowGuestLoginModal(false);
         return;
       }
@@ -256,14 +266,18 @@ const VenuePage = ({
     const capacity = eventDetails?.guestCapacity;
     const price = eventDetails?.startingPrice;
 
-    const message = `Hi, I'm interested in *${venueName}*${location ? ` (${location})` : ""}.
+    const message = `Hi, I'm interested in *${venueName}*${
+      location ? ` (${location})` : ""
+    }.
 ${capacity ? `Guest Capacity: ${capacity}` : ""}
 ${price ? `Starting Price: ₹${price}/plate` : ""}
 
 Please share more details and availability.`;
 
-    const encodedMessage = encodeURIComponent(message.trim());
-    window.open(`https://wa.me/91${PHONE}?text=${encodedMessage}`, "_blank");
+    window.open(
+      `https://wa.me/91${PHONE}?text=${encodeURIComponent(message.trim())}`,
+      "_blank"
+    );
   };
 
   if (fullPageLoader && !eventDetails) return <InvitePageFlashLoader />;
@@ -275,7 +289,6 @@ Please share more details and availability.`;
         <meta name="description" content={venueDescription} />
         <meta name="robots" content="index, follow" />
         {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
-
         <meta property="og:title" content={venueTitle} />
         <meta property="og:description" content={venueDescription} />
         <meta property="og:type" content="place" />
@@ -284,7 +297,6 @@ Please share more details and availability.`;
           <meta property="og:image" content={eventDetails.venueImageUrl} />
         )}
         <meta property="og:locale" content="en_IN" />
-
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={venueTitle} />
         <meta name="twitter:description" content={venueDescription} />
@@ -295,7 +307,6 @@ Please share more details and availability.`;
 
       <div className="invite-page">
         <div className="invite-page-container">
-          {/* Template */}
           <div
             className="invite-template-shell"
             style={{ position: "relative", marginTop: "12px" }}
@@ -320,7 +331,6 @@ Please share more details and availability.`;
             )}
           </div>
 
-          {/* Address + Google Map — date/time hide */}
           {(eventDetails?.location || eventDetails?.googleMapLink) && (
             <div className="invite-address-section">
               <VenueAddressSection
@@ -330,7 +340,6 @@ Please share more details and availability.`;
             </div>
           )}
 
-          {/* Food Packages */}
           {venuePackages.length > 0 && (
             <div
               className="whos-joining-container"
@@ -364,6 +373,7 @@ Please share more details and availability.`;
             <span className="venue-tax-text">* Included All Plus Taxes *</span>
             <span className="venue-tax-line" />
           </div>
+
           <div className="enquire-card">
             <VenueHighlights
               venue={venueForHighlights}
@@ -372,14 +382,13 @@ Please share more details and availability.`;
             <VenueCategoryPills categories={eventDetails?.venueType} />
           </div>
 
-          {/* Celebration Wall */}
           <div className="event-wall-container">
             <h2 className="wall-heading mt-2 p-0" style={{ textAlign: "left" }}>
               Explore Spaces
             </h2>
             <VenueWallSection
               userData={userData}
-              setPushRsvpClick={false}
+              setPushRsvpClick={setPushRsvpClick}
               rsvpSubmitted={false}
               isHost={eventDetails?.userId === loggedinUserId}
               isVenueHost={true}

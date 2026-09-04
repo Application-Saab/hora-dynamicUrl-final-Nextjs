@@ -1,22 +1,11 @@
+// pages/photography-page/[catValue]/product/[productName].jsx
+// (city / locality wrappers me bhi same props pass karo)
+
 import { useRouter } from "next/router";
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-
-import photographyAddOns from "@/utils/photographyAddOns.json";
 import { faqData } from "@/utils/photographyFAQData.js";
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
-import { SeoWork } from "@/utils/photoGraphyHead";
-import { BASE_URL, GET_ADDON_BY_ID } from "@/utils/apiconstants";
-import axiosApi from "@/utils/axiosApi";
-import { fetchWithError } from "@/utils/fetchWithError";
-
-import FAQSection from "@/components/FAQSection";
-import BrandBanner from "@/components/BrandBanner";
-import AdditionalServices from "@/components/AdditionalServices";
-import PhotographySimilarSlider from "@/components/PhotographySimilarSlider";
-import AddonModal from "@/components/AddonModal";
-import AddOnsList from "@/components/AddOnsList";
-
 import ShareIcon from "@/assets/shareIcon.svg";
 import PROFESSIONALPHOTOGRAPHERS from "@/assets/professionalPhoto.png";
 import SECURESTORAGE from "@/assets/secureStorage.png";
@@ -29,10 +18,20 @@ import SocialMediaIMG from "@/assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "@/assets/TpBrandsIMG.png";
 import checkImage from "@/assets/tick.svg";
 import logo from "@/assets/new_logo_light.png";
+import "./productDetails.css";
+import { BASE_URL, GET_ADDON_BY_ID } from "@/utils/apiconstants";
+import FAQSection from "@/components/FAQSection";
+import BrandBanner from "@/components/BrandBanner";
+import AdditionalServices from "@/components/AdditionalServices";
+import PhotographySimilarSlider from "@/components/PhotographySimilarSlider";
+import { SeoWork } from "@/utils/photoGraphyHead";
 import fallbackImg from "@/assets/fallback-image.png";
 import pencil from "@/assets/pencil.svg";
-
-import "./productDetails.css";
+import AddonModal from "@/components/AddonModal";
+import AddOnsList from "@/components/AddOnsList";
+import Categorythemeselector from "@/components/Categorythemeselector";
+import { fetchWithError } from "@/utils/fetchWithError";
+import axiosApi from "@/utils/axiosApi";
 
 // ---------- helpers ----------
 const getDiscountedPrice = (price = 0) => {
@@ -63,6 +62,26 @@ const getMappedCatValue = (slug) => {
   return map[slug] || slug;
 };
 
+async function fetchAddonsByIds(ids = []) {
+  if (!ids?.length) return [];
+  const q = new URLSearchParams();
+  ids.forEach((id) => id && q.append("ids", id));
+  if (![...q].length) return [];
+  const res = await axiosApi.get(`${BASE_URL}${GET_ADDON_BY_ID}?${q}`);
+  return res.data?.data || [];
+}
+
+async function fetchThemesByIds(ids = []) {
+  if (!ids?.length) return [];
+  const q = new URLSearchParams();
+  ids.forEach((id) => id && q.append("ids", id));
+  if (![...q].length) return [];
+  const res = await axiosApi.get(
+    `${BASE_URL}/api/photography-theme/get?${q}`
+  );
+  return res.data?.data || [];
+}
+
 // ---------- SSR ----------
 export async function getServerSideProps(context) {
   const { catValue, city, locality, productName } = context.params || {};
@@ -76,13 +95,13 @@ export async function getServerSideProps(context) {
   let work = null;
   let similarProducts = [];
   let addonData = [];
+  let themeData = [];
   let error = null;
 
   if (productId) {
     try {
-      // 1) Product details
       const res = await axiosApi.get(
-        `${BASE_URL}/api/photography/details/${productId}`,
+        `${BASE_URL}/api/photography/details/${productId}`
       );
       const data = res.data?.data;
 
@@ -98,42 +117,36 @@ export async function getServerSideProps(context) {
           advance_amount: Number(data.advance_amount || 0),
         };
 
-        // 2) Similar products
         const tagId = data?.tag?.[0]?._id;
         if (tagId) {
           try {
             const similarRes = await axiosApi.get(
-              `${BASE_URL}/api/photography/searchByTag/${tagId}`,
+              `${BASE_URL}/api/photography/searchByTag/${tagId}`
             );
             similarProducts = (similarRes.data?.data || []).filter(
-              (p) => p._id !== productId,
+              (p) => p._id !== productId
             );
           } catch (e) {
-            console.error("SSR similar fetch error:", e.message);
+            console.error("SSR similar:", e.message);
           }
         }
 
-        // 3) Addons
-        const addonIds = data?.addons || [];
-        if (addonIds.length > 0) {
-          try {
-            const q = new URLSearchParams();
-            addonIds.forEach((id) => id && q.append("ids", id));
-            if ([...q].length > 0) {
-              const addonRes = await axiosApi.get(
-                `${BASE_URL}${GET_ADDON_BY_ID}?${q.toString()}`,
-              );
-              addonData = addonRes.data?.data || [];
-            }
-          } catch (e) {
-            console.error("SSR addons fetch error:", e.message);
-          }
+        try {
+          addonData = await fetchAddonsByIds(data?.addons || []);
+        } catch (e) {
+          console.error("SSR addons:", e.message);
+        }
+
+        try {
+          themeData = await fetchThemesByIds(data?.ThemesId || []);
+        } catch (e) {
+          console.error("SSR themes:", e.message);
         }
       } else {
         error = "No product found";
       }
     } catch (err) {
-      console.error("SSR product details error:", err.message);
+      console.error("SSR product:", err.message);
       error = err.message;
     }
   }
@@ -143,25 +156,73 @@ export async function getServerSideProps(context) {
       initialWork: work,
       initialSimilar: similarProducts,
       initialAddons: addonData,
+      initialThemes: themeData,
       productId: productId || null,
       city: finalCity,
       locality: finalLocality,
       catValue: finalCatValue,
+      productName: productName || null,
       ssrError: error,
     },
   };
 }
 
+const SkeletonLoader = () => (
+  <div
+    className="skeleton-loader"
+    style={{ maxWidth: "1200px", margin: "0 auto", backgroundColor: "white" }}
+  >
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        paddingTop: 20,
+        paddingBottom: 20,
+      }}
+      className="decDetails"
+    >
+      <div style={{ width: "50%", textAlign: "center" }} className="decDetailsLeft">
+        <div
+          style={{
+            width: "80%",
+            height: 300,
+            backgroundColor: "#f0f0f0",
+            margin: "0 auto",
+          }}
+        />
+      </div>
+      <div
+        style={{ width: "50%", paddingLeft: 20, paddingRight: 50 }}
+        className="decDetailsRight"
+      >
+        {[60, 40, 80, 60, 60, 60, 60, 100, 100].map((w, i) => (
+          <div
+            key={i}
+            style={{
+              height: i % 2 ? 30 : 20,
+              backgroundColor: "#f0f0f0",
+              marginBottom: 12,
+              width: `${w}%`,
+              borderRadius: 4,
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
 // ---------- Page ----------
 const ProductDetails = ({
-  initialWork,
-  initialSimilar,
-  initialAddons,
-  productId: ssrProductId,
-  city: ssrCity,
-  locality: ssrLocality,
-  catValue: ssrCatValue,
-  ssrError,
+  initialWork = null,
+  initialSimilar = null,
+  initialAddons = null,
+  initialThemes = null,
+  productId: ssrProductId = null,
+  city: ssrCity = null,
+  locality: ssrLocality = null,
+  catValue: ssrCatValue = null,
 }) => {
   const router = useRouter();
   const productId = router.query.id || ssrProductId;
@@ -174,6 +235,13 @@ const ProductDetails = ({
   const [similarProducts, setSimilarProducts] = useState(initialSimilar || []);
   const [addonData, setAddonData] = useState(initialAddons || []);
   const [addonIds, setAddonIds] = useState(initialWork?.addons || []);
+  const [themeIds, setThemeIds] = useState(initialWork?.ThemesId || []);
+  const [themeData, setThemeData] = useState(initialThemes || []);
+  const [themeLoading, setThemeLoading] = useState(
+    !(initialThemes && initialThemes.length >= 0) && !initialWork
+  );
+  const [themeError, setThemeError] = useState(null);
+  const [selectedThemeData, setSelectedThemeData] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [isArrowDown, setIsArrowDown] = useState(false);
@@ -215,7 +283,7 @@ const ProductDetails = ({
     },
   ];
 
-  // Client navigation: different product id
+  // Client nav: alag product id
   useEffect(() => {
     if (!productId) return;
     if (productId === ssrProductId && initialWork) {
@@ -227,12 +295,13 @@ const ProductDetails = ({
       try {
         setLoading(true);
         const res = await axiosApi.get(
-          `${BASE_URL}/api/photography/details/${productId}`,
+          `${BASE_URL}/api/photography/details/${productId}`
         );
         const data = res.data?.data;
         if (!data) throw new Error("No product found");
 
         setAddonIds(data?.addons || []);
+        setThemeIds(data?.ThemesId || []);
 
         const { discount, discountedPrice, discountDifference } =
           getDiscountedPrice(Number(data.price));
@@ -248,10 +317,10 @@ const ProductDetails = ({
         const tagId = data?.tag?.[0]?._id;
         if (tagId) {
           const similarRes = await axiosApi.get(
-            `${BASE_URL}/api/photography/searchByTag/${tagId}`,
+            `${BASE_URL}/api/photography/searchByTag/${tagId}`
           );
           setSimilarProducts(
-            (similarRes.data?.data || []).filter((p) => p._id !== productId),
+            (similarRes.data?.data || []).filter((p) => p._id !== productId)
           );
         } else {
           setSimilarProducts([]);
@@ -267,10 +336,9 @@ const ProductDetails = ({
     fetchProductAndSimilar();
   }, [productId, ssrProductId, initialWork]);
 
-  // Addons (only if client navigated / SSR miss)
+  // Addons — SSR miss / client nav
   useEffect(() => {
     if (!addonIds?.length) return;
-    // SSR already filled
     if (productId === ssrProductId && initialAddons?.length) return;
 
     const getAddons = async () => {
@@ -280,7 +348,7 @@ const ProductDetails = ({
         if (![...q].length) return;
 
         const response = await fetchWithError(
-          `${BASE_URL}${GET_ADDON_BY_ID}?${q.toString()}`,
+          `${BASE_URL}${GET_ADDON_BY_ID}?${q}`
         );
         const data = await response.json();
         if (!response.ok || data.error) {
@@ -294,7 +362,50 @@ const ProductDetails = ({
     getAddons();
   }, [addonIds, productId, ssrProductId, initialAddons]);
 
-  // Restore / persist addons in sessionStorage
+  // Themes — SSR miss / client nav
+  useEffect(() => {
+    if (!themeIds?.length) {
+      if (!(productId === ssrProductId && initialThemes)) {
+        setThemeData([]);
+      }
+      setThemeLoading(false);
+      return;
+    }
+    if (productId === ssrProductId && initialThemes) {
+      setThemeLoading(false);
+      return;
+    }
+
+    const getThemes = async () => {
+      try {
+        setThemeLoading(true);
+        setThemeError(null);
+        const q = new URLSearchParams();
+        themeIds.forEach((id) => id && q.append("ids", id));
+        if (![...q].length) {
+          setThemeData([]);
+          return;
+        }
+        const response = await fetchWithError(
+          `${BASE_URL}/api/photography-theme/get?${q}`
+        );
+        const data = await response.json();
+        if (!response.ok || data.error) {
+          throw new Error(data.message || "Failed to fetch themes");
+        }
+        setThemeData(data.data || []);
+      } catch (error) {
+        console.error("Error fetching themes:", error);
+        setThemeError(error.message || "Something went wrong");
+        setThemeData([]);
+      } finally {
+        setThemeLoading(false);
+      }
+    };
+    getThemes();
+  }, [themeIds, productId, ssrProductId, initialThemes]);
+
+  // sessionStorage addons
   useEffect(() => {
     if (!productId) return;
     try {
@@ -314,14 +425,14 @@ const ProductDetails = ({
     try {
       sessionStorage.setItem(
         `photo_addons_${productId}`,
-        JSON.stringify({ selectedAddOnProduct, itemQuantities }),
+        JSON.stringify({ selectedAddOnProduct, itemQuantities })
       );
     } catch (e) {
       console.error("Error saving addons:", e);
     }
   }, [selectedAddOnProduct, itemQuantities, productId]);
 
-  // ---------- handlers ----------
+  // ---------- handlers (same as tumhara) ----------
   const calculateTotalPrice = (productPrice) => {
     let totalPrice = Number(work?.price || productPrice || 0);
     selectedAddOnProduct.forEach((item) => {
@@ -343,7 +454,6 @@ const ProductDetails = ({
     const idx = updated.findIndex((a) => a.title === item.title);
     if (idx !== -1) updated[idx].quantity += 1;
     else updated.push({ ...item, quantity: 1 });
-
     setSelectedAddOnProduct(updated);
     setItemQuantities({
       ...itemQuantities,
@@ -361,7 +471,6 @@ const ProductDetails = ({
     const qty = { ...itemQuantities };
     if (qty[item.title] > 1) qty[item.title] -= 1;
     else delete qty[item.title];
-
     setSelectedAddOnProduct(updated);
     setItemQuantities(qty);
   };
@@ -384,9 +493,8 @@ const ProductDetails = ({
     const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, " ");
     const statements = withoutSpecialChars.split("<div>");
     const inclusionItems = statements.flatMap((statement) =>
-      statement.split("-").filter((item) => item.trim() !== ""),
+      statement.split("-").filter((item) => item.trim() !== "")
     );
-
     return (
       <div className="inclusion-section">
         <div className="inclusion-heading">Inclusions</div>
@@ -405,16 +513,14 @@ const ProductDetails = ({
   const getAddonTotalPrice = () => {
     let addonTotal = 0;
     selectedAddOnProduct.forEach((item) => {
-      const qty = itemQuantities[item.title] || 0;
-      addonTotal += Number(item.price) * qty;
+      addonTotal += Number(item.price) * (itemQuantities[item.title] || 0);
     });
     return addonTotal;
   };
 
   const getFinalAdvanceAmount = () => {
     const productAdvance = Number(work?.advance_amount || 0);
-    const addonTotal = getAddonTotalPrice();
-    const addonAdvance = addonTotal * 0.35;
+    const addonAdvance = getAddonTotalPrice() * 0.35;
     return Math.round(productAdvance + addonAdvance);
   };
 
@@ -422,12 +528,6 @@ const ProductDetails = ({
     const totalPrice = calculateTotalPrice(product.price);
     const advanceAmount = getFinalAdvanceAmount();
     const balanceAmount = totalPrice - advanceAmount;
-
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "book_now_click",
-      product_name: product.name,
-    });
 
     router.push({
       pathname: "/photography-checkout",
@@ -437,6 +537,7 @@ const ProductDetails = ({
         ProductPrice: product.discountedPrice || product.price,
         selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
         itemQuantities: JSON.stringify(itemQuantities),
+        selectedThemes: JSON.stringify(selectedThemeData),
         totalAmount: totalPrice,
         advanceAmount,
         balanceAmount,
@@ -449,13 +550,9 @@ const ProductDetails = ({
     if (!work?._id || typeof window === "undefined") return;
     const cleanPath = router.asPath.split("?")[0];
     const shareUrl = `${window.location.origin}${cleanPath}?id=${work._id}`;
-
     try {
       if (navigator.share) {
-        await navigator.share({
-          title: work?.name || "Product",
-          url: shareUrl,
-        });
+        await navigator.share({ title: work?.name || "Product", url: shareUrl });
       } else {
         await navigator.clipboard.writeText(shareUrl);
         alert("Link copied!");
@@ -465,65 +562,8 @@ const ProductDetails = ({
     }
   };
 
-  // ---------- render ----------
-  if (loading && !work) {
-    return (
-      <div
-        className="skeleton-loader"
-        style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          backgroundColor: "white",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "flex-start",
-            paddingTop: 20,
-            paddingBottom: 20,
-          }}
-          className="decDetails"
-        >
-          <div
-            style={{ width: "50%", textAlign: "center" }}
-            className="decDetailsLeft"
-          >
-            <div
-              style={{
-                width: "80%",
-                height: 300,
-                backgroundColor: "#f0f0f0",
-                margin: "0 auto",
-              }}
-            />
-          </div>
-          <div
-            style={{ width: "50%", paddingLeft: 20, paddingRight: 50 }}
-            className="decDetailsRight"
-          >
-            {[60, 40, 80, 60, 60, 60, 60, 100, 100].map((w, i) => (
-              <div
-                key={i}
-                style={{
-                  height: i % 2 ? 30 : 20,
-                  backgroundColor: "#f0f0f0",
-                  marginBottom: 12,
-                  width: `${w}%`,
-                  borderRadius: 4,
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!work) {
-    return <div className="photodetails-loading">Work not found</div>;
-  }
+  if (loading && !work) return <SkeletonLoader />;
+  if (!work) return <div className="photodetails-loading">Work not found</div>;
 
   return (
     <div>
@@ -536,7 +576,6 @@ const ProductDetails = ({
 
       <div style={{ maxWidth: "600px", margin: "0 auto" }}>
         <div className="decDetails">
-          {/* Image */}
           <div className="decDetailsLeft">
             <div style={{ position: "relative" }}>
               <Image
@@ -572,7 +611,6 @@ const ProductDetails = ({
             </div>
           </div>
 
-          {/* Details */}
           <div className="decDetailsRight">
             <div
               style={{
@@ -668,14 +706,25 @@ const ProductDetails = ({
             </p>
           </div>
 
+          {!themeLoading && themeData.length > 0 && (
+            <Categorythemeselector
+              themes={themeData}
+              loading={themeLoading}
+              error={themeError}
+              maxSelect={3}
+              onSelectionChange={setSelectedThemeData}
+            />
+          )}
+
           <div ref={addonRef}>
             <AddonModal
-              isOpen={isModalOpen}
+              isopen={isModalOpen}
               setIsOpen={setIsModalOpen}
               addOnProducts={addonData}
               itemQuantities={itemQuantities}
               onAdd={handleAddToCartAndScrollBack}
               onRemove={handleRemoveFromCart}
+              title="Add-ons"
             />
           </div>
 
@@ -733,9 +782,7 @@ const ProductDetails = ({
             title="Excellence Backed by Happy Customers"
             items={brandItems}
           />
-
           <AdditionalServices />
-
           <div className="tab-section-details-productpage">
             <FAQSection faqData={faqData} />
           </div>

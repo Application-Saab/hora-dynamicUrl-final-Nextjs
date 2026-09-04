@@ -14,6 +14,11 @@ export const MOBILE_DRAWER_MENU = [
     href: "/photography-page",
     type: "link"
   },
+   {
+    label: "Venues",
+    href: "/venue-list",
+    type: "link"
+  },
   {
     label: "Chef for Party",
     href: "/book-chef-cook-for-party",
