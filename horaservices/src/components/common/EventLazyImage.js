@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect, useRef } from "react";
 
 const EventLazyImage = ({
@@ -7,85 +8,78 @@ const EventLazyImage = ({
   className,
   onClick,
   progress,
-  postType
+  postType,
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
-  const wrapperRef = useRef(null);
-  const imgRef = useRef(null);
 
-  useEffect(() => {
-    return () => {
-      if (imgRef.current) {
-        imgRef.current.src = "";
-      }
-    };
-  }, []);
+  const wrapperRef = useRef(null);
 
   useEffect(() => {
     const currentRef = wrapperRef.current;
+
     if (!currentRef) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          if (currentRef) {
-            observer.unobserve(currentRef);
-          }
-        }
+        setIsInView(entry.isIntersecting);
       },
       {
-        rootMargin: "0px 0px 300px 0px",
+        // Image viewport ke 200px pehle/baad DOM me aayegi
+        rootMargin: "200px 0px 200px 0px",
+        threshold: 0,
       }
     );
 
     observer.observe(currentRef);
 
     return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef);
-      }
+      observer.disconnect();
     };
   }, []);
+
+  const handleLoadDone = () => {
+    setIsLoaded(true);
+  };
 
   return (
     <div
       ref={wrapperRef}
-      className='event-masonry-item'
+      className="event-masonry-item"
       onClick={onClick}
       style={{
         backgroundColor: isLoaded ? "#FFFFFF" : "#e9ecef",
       }}
     >
-      {/* Render img tag only when in view to start loading */}
       {isInView && (
         <>
           <img
-            ref={imgRef}
             src={src}
             alt={alt}
             decoding="async"
             loading="lazy"
-            className={`event-lazy-image-actual-img ${className || ""} ${
-              isLoaded ? "loaded" : "loading"
-            }`}
+            className={`event - lazy - image - actual - img ${
+  className || ""
+} ${ isLoaded ? "loaded" : "loading" } `}
             style={{
-              objectFit: postType === 'thankYouNote' ? 'fill' : 'cover'
+              objectFit:
+                postType === "thankYouNote" ? "fill" : "cover",
             }}
-            onLoad={() => setIsLoaded(true)}
+            onLoad={handleLoadDone}
             onError={() => {
-              setIsLoaded(true);
-              console.warn(`Failed to load image: ${src}`);
+              handleLoadDone();
+              console.warn(`Failed to load image: ${ src } `);
             }}
           />
+
           {progress && (
-            <div className="lazy-image-progress-overlay">{progress}</div>
+            <div className="lazy-image-progress-overlay">
+              {progress}
+            </div>
           )}
         </>
       )}
 
-      {/* Spinner overlay: shown when in view but image not yet loaded (or failed) */}
       {isInView && !isLoaded && (
         <div className="event-lazy-image-spinner-container placeholder-glow p-1">
           <div className="placeholder w-100 h-100"></div>
