@@ -1,7 +1,7 @@
 import "../app/globals.css";
 import "../app/home.css";
 import "../app/homepage.css";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PageLayout from "@/components/pagelayout";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -22,7 +22,16 @@ import { useScrollRestoration } from "@/hooks/useScrollRestoration";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
+  const [waReady, setWaReady] = useState(false);
   const pathname = router.asPath;
+
+  useEffect(() => {
+    setWaReady(true);
+  }, []);
+
+  const pathOnly = (router.asPath || "").split("?")[0];
+  const hideWhatsApp =
+    pathOnly === "/weblink-gallery" || pathOnly.startsWith("/weblink-gallery/");
 
   // ================= SCROLL RESTORATION (moved to hooks/useScrollRestoration.js) =================
   useScrollRestoration(router);
@@ -114,7 +123,8 @@ function MyApp({ Component, pageProps }) {
             ></iframe>
           </noscript>
 
-          {pathname !== "/weblink-gallery" && (
+          {/* Server + first client paint: kuch mat dikhao → hydration match */}
+          {waReady && !hideWhatsApp && (
             <div className="whatsapp-container">
               <WhatsAppIcon router={router} />
             </div>
