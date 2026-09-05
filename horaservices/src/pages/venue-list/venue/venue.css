@@ -368,7 +368,6 @@ font-family: Inter, sans-serif;
 }
 .enquire-card{
 border-radius: clamp(7.86px, 2.5vw, 9.82px);
-border: 0.51px solid #00000021;
 padding: clamp(6.4px, 2.036vw, 8px)
          clamp(4.8px, 1.527vw, 6px);
 
@@ -382,7 +381,7 @@ opacity: 1;
   align-items: center;
   justify-content: center;
   gap: 2px;
-  margin: clamp(11.48px, 3.85vw, 18.38px);
+  margin: clamp(11.48px, 3.85vw, 18.38px) 0px 0px;
 }
 .venue-tax-line {
   width: 60px;

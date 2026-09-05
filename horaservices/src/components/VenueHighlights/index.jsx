@@ -36,39 +36,39 @@ const VenueHighlights = ({ venue, onEnquire }) => {
   return (
     <div className="venue-highlights-row">
       {/* ── Left: Stats card (sirf tab dikhega jab data ho) ── */}
-      {hasStats && (
-        <div className="venue-highlights-stats">
-          <div className="vh-stats-grid">
-            {guestCapacity && (
-              <span className="vh-stat-item">
-                <Image src={guestIcon} alt="Guests" width={24} height={24} />
-                <span><strong>{guestCapacity}</strong>&nbsp;Guests</span>
-              </span>
-            )}
-
-            {isParkingAvailable && (
-              <span className="vh-stat-item">
-                <Image src={parkingIcon} alt="Parking" width={26} height={20} />
-                <span>Parking Available</span>
-              </span>
-            )}
-
-            {totalRoomsAvailable > 0 && (
-              <span className="vh-stat-item">
-                <Image src={roomIcon} alt="Rooms" width={24} height={20} />
-                <span>{totalRoomsAvailable} Room<br />Available</span>
-              </span>
-            )}
-
-            {halls.length > 0 && (
-              <span className="vh-stat-item">
-                <Image src={hallIcon} alt="Halls" width={22} height={22} />
-                <span>{halls.length} Hall{halls.length > 1 ? "s" : ""}<br />{hallLabel}</span>
-              </span>
-            )}
-          </div>
-        </div>
+     {hasStats && (
+  <div className="venue-highlights-stats">
+    <div className="vh-stats-grid">
+      {guestCapacity && (
+        <span className="vh-stat-item">
+          <Image src={guestIcon} alt="Guests" width={24} height={24} />
+          <span>{guestCapacity}&nbsp;- Guest</span>
+        </span>
       )}
+
+      {isParkingAvailable && (
+        <span className="vh-stat-item">
+          <Image src={parkingIcon} alt="Parking" width={26} height={20} />
+          <span>Parking Available</span>
+        </span>
+      )}
+
+      {halls.length > 0 && (
+        <span className="vh-stat-item">
+          <Image src={hallIcon} alt="Halls" width={22} height={22} />
+          <span>{halls.length} Hall{halls.length > 1 ? "s" : ""} {hallLabel}</span>
+        </span>
+      )}
+
+      {totalRoomsAvailable > 0 && (
+        <span className="vh-stat-item">
+          <Image src={roomIcon} alt="Rooms" width={24} height={20} />
+          <span>{totalRoomsAvailable} Room Available</span>
+        </span>
+      )}
+    </div>
+  </div>
+)}
 
       {/* ── Right: Enquiry banner (hamesha dikhega) ── */}
       <div className={`venue-highlights-enquiry ${!hasStats ? "full-width" : ""}`}>
