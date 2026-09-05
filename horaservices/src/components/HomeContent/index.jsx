@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -28,14 +28,39 @@ import photo3 from "@/assets/Home/photo3.svg";
 // import ReviewSlider from "@/components/ReviewSection";
 import { balloonreviews } from "@/utils/balloonReviews";
 import { openWhatsApp } from "@/utils/WhatsAppRedirection";
+import HomeBanner from "../HomePageComponent/HomeBanner";
+import InviteCard from "../HomePageComponent/invitecardbanner";
+import PlanningCategories from "../HomePageComponent/Planningcategories";
+import VenueFinder from "../HomePageComponent/Venuefinder";
+import EventHub from "../HomePageComponent/EventHub";
+
 const ReviewSlider = dynamic(() => import("@/components/ReviewSection"), {
   ssr: false,
   loading: () => <div></div>,
 });
 
+// Centralize the localStorage key name here to avoid future case-mismatch bugs
+const STORAGE_KEYS = {
+  USER_ID: "userID", // NOTE: capital "ID" - matches what's actually stored on login
+};
+
 export default function HomeContent() {
   const router = useRouter();
   const pathname = usePathname();
+
+  // ---- LOGIN STATE ----
+  const [loggedinUserId, setLoggedinUserId] = useState(null);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem(STORAGE_KEYS.USER_ID);
+    if (storedUserId) {
+      setLoggedinUserId(storedUserId);
+      setIsUserLoggedIn(true);
+    }
+  }, []);
+  // ----------------------
+
   const { city, locality } = useMemo(() => {
     const segments = pathname?.split("/")?.filter(Boolean) || [];
 
@@ -91,432 +116,17 @@ export default function HomeContent() {
   return (
     <div className="home-wrapper">
       {/* TOP BANNER */}
-      <div className="top-banner">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          className="top-banner-video"
-        >
-          <source src={Homevideo} type="video/mp4" />
-        </video>
-      </div>
+      <HomeBanner />
+<InviteCard />
 
-      {/* HEADING */}
-      <div className="section-heading">
-        <h1 className="heading">India’s One-Stop Party Services Platform</h1>
-      </div>
-
-      {/* CARD 1 - LEFT IMAGE */}
-
-      <div
-        className="feature-card left-img"
-        onClick={() => goTo("/balloon-decoration")}
-        role="button"
-        tabIndex={0}
-      >
-        <Image
-          priority
-          src={decorationbanner}
-          alt="balloon decoration for birthday party"
-          className="card-bg-img"
-        />
-        <div className="card-content">
-          <h2>DECORATION</h2>
-          <button
-            onClick={(e) => {
-              goTo("/balloon-decoration");
-            }}
-          >
-            Explore Designs
-          </button>
-        </div>
-      </div>
-
-      {/* CARD 2 - RIGHT IMAGE */}
-
-      <div
-        className="feature-card right-img"
-        role="button"
-        tabIndex={0}
-        onClick={() => goTo("/photography-page")}
-      >
-        <Image
-          priority
-          src={Photographybanner}
-          alt="professional event photography services"
-          className="card-bg-img"
-        />
-        <div className="card-content">
-          <h2>PHOTOGRAPHY</h2>
-          <button
-            onClick={(e) => {
-              goTo("/photography-page");
-            }}
-          >
-            Explore Packages
-          </button>
-        </div>
-      </div>
-      {/* CARD 3 - LEFT IMAGE */}
-
-      <div
-        className="feature-card left-img"
-        role="button"
-        tabIndex={0}
-        onClick={() => goTo("/party-food-delivery-live-catering-buffet")}
-      >
-        <Image
-          priority
-          src={partyfood}
-          alt="party food delivery and catering"
-          className="card-bg-img"
-        />
-        <div className="card-content">
-          <h2>PARTY FOOD</h2>
-          <button
-            onClick={(e) => {
-              goTo(
-                "/party-food-delivery-live-catering-buffet",
-              );
-            }}
-          >
-            Explore Packages
-          </button>
-        </div>
-      </div>
-      {/* CARD 4 - RIGHT IMAGE */}
-      <div
-        className="feature-card right-img"
-        role="button"
-        tabIndex={0}
-        onClick={() => goTo("/book-chef-cook-for-party")}
-      >
-        <Image
-          priority
-          src={chefforparty}
-          alt="chef for party at home in India"
-          className="card-bg-img"
-        />
-        <div className="card-content">
-          <h2>CHEF FOR PARTY</h2>
-          <button
-            onClick={(e) => {
-              goTo("/book-chef-cook-for-party");
-            }}
-          >
-            Explore Dishes
-          </button>
-        </div>
-      </div>
-
-      <div className="why-hora">
-        <h2 className="why-title">
-          <Image src={sparkle} alt="" className="heading-icon" />
-          Why Choose HORA?
-        </h2>
-
-        <div className="why-cards">
-          <div className="why-card">
-            <Image src={photo1} alt="One Stop Solution" />
-            <p>One-Stop Solution</p>
-          </div>
-
-          <div className="why-card">
-            <Image src={photo2} alt="Affordable Package" />
-            <p>Affordable Package</p>
-          </div>
-
-          <div className="why-card">
-            <Image src={photo3} alt="Trusted Professional" />
-            <p>Trusted Professional</p>
-          </div>
-        </div>
-      </div>
-      <div className="btn-wrapper">
-        <button className="contact-btn" onClick={handleContactClick}>
-          Contact Us
-        </button>
-      </div>
-      <ReviewSlider
-        reviews={balloonreviews}
-        title="What Our Customers Say About HORA"
-      />
-      <div className="services-container">
-        {/* Card 1 */}
-        <div className="service-card">
-          <Image
-            loading="lazy"
-            src={Decoration}
-            alt="party decoration packages by HORA"
-            className="service-card-image"
-          />
-          <h2>Decoration</h2>
-          <p className="points">
-            <Image loading="lazy" src={sparkle} alt="" className="points-icon" />
-            1000+ unique designs – Birthdays, Anniversaries, Baby showers,
-            Weddings, and more!
-          </p>
-          <p className="points">
-            <Image loading="lazy" src={sparkle} alt="" className="points-icon" />
-            Get your venue decorated in just 2 hours, indoors or outdoors.
-          </p>
-          <p className="points">
-            <Image loading="lazy" src={sparkle} alt="" className="points-icon" />
-            Best prices, timely service, and support
-          </p>
-          <div className="package-wrapper">
-            <button
-              className="package-btn"
-              onClick={() => goTo("/balloon-decoration")}
-            >
-              Explore Designs
-            </button>
-          </div>
-        </div>
-
-        {/* Card 2 */}
-        <div className="service-card">
-          <Image
-            loading="lazy"
-            src={PhotoGraphy}
-            alt="photography packages for parties and events"
-            className="service-card-image"
-          />
-          <h2>Photography</h2>
-          <p className="points">
-            <Image
-              loading="lazy"
-              src={sparkle}
-              alt=""
-              className="points-icon"
-            />
-            100+ Professional Photographers – Best prices, timely service,
-            expert support.
-          </p>
-          <p className="points">
-            <Image
-              loading="lazy"
-              src={sparkle}
-              alt=""
-              className="points-icon"
-            />
-            Life time photo storage
-          </p>
-          <p className="points">
-            <Image
-              loading="lazy"
-              src={sparkle}
-              alt=""
-              className="points-icon"
-            />
-            Best prices, timely service, and support
-          </p>
-          <div className="package-wrapper">
-            <button
-              className="package-btn"
-              onClick={() => goTo("/photography-page")}
-            >
-              Explore Packages
-            </button>
-          </div>
-        </div>
-
-        {/* Card 3 */}
-        <div className="service-card">
-          <Image
-            loading="lazy"
-            src={chef}
-            alt="private chef service for parties"
-            className="service-card-image"
-          />
-          <h2>Chef for Party</h2>
-          <p className="points">
-            <Image
-              loading="lazy"
-              src={sparkle}
-              alt=""
-              className="points-icon"
-            />
-            HORA brings professional chefs to your kitchen
-          </p>
-          <p className="points">
-            <Image
-              loading="lazy"
-              src={sparkle}
-              alt=""
-              className="points-icon"
-            />
-            They use your ingredients and utensils
-          </p>
-          <p className="points">
-            <Image
-              loading="lazy"
-              src={sparkle}
-              alt=""
-              className="points-icon"
-            />
-            Experience 400 restaurant-style dishes.
-          </p>
-          <p className="points">
-            <Image
-              loading="lazy"
-              src={sparkle}
-              alt=""
-              className="points-icon"
-            />
-            Affordable & customizable.
-          </p>
-          <p className="points">
-            <Image
-              loading="lazy"
-              src={sparkle}
-              alt=""
-              className="points-icon"
-            />
-            Full hygiene control.
-          </p>
-          <div className="package-wrapper">
-            <button
-              className="package-btn"
-              onClick={() => goTo("/book-chef-cook-for-party")}
-            >
-              Explore Dishes
-            </button>
-          </div>
-        </div>
-
-        {/* Card 4 */}
-        <div className="service-card">
-          <Image
-            loading="lazy"
-            src={BulkFoodDelivery}
-            alt="bulk food delivery for parties"
-            className="service-card-image"
-          />
-          <h2>Bulk Food Delivery</h2>
-          <p className="points">
-            <Image loading="lazy" src={sparkle} alt="" className="points-icon" />
-            Enjoy food delivery with Hora{" "}
-          </p>
-          <p className="points">
-            <Image loading="lazy" src={sparkle} alt="" className="points-icon" />
-            Best prices , Timely service
-          </p>
-          <p className="points">
-            <Image loading="lazy" src={sparkle} alt="" className="points-icon" />
-            Delicious taste
-          </p>
-          <p className="points">
-            <Image loading="lazy" src={sparkle} alt="" className="points-icon" />
-            Good Packing
-          </p>
-          <p className="points">
-            <Image loading="lazy" src={sparkle} alt="" className="points-icon" />
-            Guaranteed support
-          </p>
-          <div className="package-wrapper">
-            <button
-              className="package-btn"
-              onClick={() =>
-                goTo("/party-food-delivery-live-catering-buffet?type=bulkFood")
-              }
-            >
-              Explore Packages
-            </button>
-          </div>
-        </div>
-        {/* Card 5 */}
-        <div className="service-card">
-          <Image
-            loading="lazy"
-            src={Entertainment}
-            alt="party entertainment services"
-            className="service-card-image"
-          />
-          <h2>Entertainment</h2>
-          <p className="points">
-            <Image
-              loading="lazy"
-              src={sparkle}
-              alt=""
-              className="points-icon"
-            />
-            Make your event unforgettable by engaging your guests! ✨ Choose
-            from over 10 amazing services
-          </p>
-          <p>🎨 Tattoo Artist , 🎩 Magician, 🎉 Party Host</p>
-          <p>🐻 Mascot , 🌿 Mehandi , 💅 Nail Art ..and so much more!</p>
-          <div className="package-wrapper">
-            <button
-              className="package-btn"
-              onClick={handleEntertainmentWhatsApp}
-            >
-              Explore More..
-            </button>
-          </div>
-        </div>
-        {/* Card 6 */}
-        <div className="service-card">
-          <Image
-            loading="lazy"
-            src={LiveCatering}
-            alt="live catering and buffet service"
-            className="service-card-image"
-          />
-          <h2>Live Catering</h2>
-          <p className="points">
-            <Image
-              loading="lazy"
-              src={sparkle}
-              alt=""
-              className="points-icon"
-            />
-            Best prices , Timely service
-          </p>
-          <p className="points">
-            <Image
-              loading="lazy"
-              src={sparkle}
-              alt=""
-              className="points-icon"
-            />
-            Delicious taste
-          </p>
-          <p className="points">
-            <Image
-              loading="lazy"
-              src={sparkle}
-              alt=""
-              className="points-icon"
-            />
-            Good packing
-          </p>
-          <p className="points">
-            <Image
-              loading="lazy"
-              src={sparkle}
-              alt=""
-              className="points-icon"
-            />
-            Guaranteed support
-          </p>
-          <div className="package-wrapper">
-            <button
-              className="package-btn"
-              onClick={() =>
-                goTo(
-                  "/party-food-delivery-live-catering-buffet?type=liveCatering",
-                )
-              }
-            >
-              Explore Packages
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+{isUserLoggedIn && loggedinUserId && (
+  <EventHub userId={loggedinUserId} />
+)}
+<div  style={!isUserLoggedIn ? { marginTop: "10px" } : undefined}>
+<PlanningCategories
+/>
+</div>
+<VenueFinder />
+   </div>
   );
 }
