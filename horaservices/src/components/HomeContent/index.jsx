@@ -28,7 +28,7 @@ import photo3 from "@/assets/Home/photo3.svg";
 // import ReviewSlider from "@/components/ReviewSection";
 import { balloonreviews } from "@/utils/balloonReviews";
 import { openWhatsApp } from "@/utils/WhatsAppRedirection";
-import HomeBanner from "../HomePageComponent/HomeBanner/indes";
+import HomeBanner from "../HomePageComponent/HomeBanner";
 import InviteCard from "../HomePageComponent/invitecardbanner";
 import PlanningCategories from "../HomePageComponent/Planningcategories";
 import VenueFinder from "../HomePageComponent/Venuefinder";
