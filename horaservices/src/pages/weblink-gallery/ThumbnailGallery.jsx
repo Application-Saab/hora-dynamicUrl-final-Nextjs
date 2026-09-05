@@ -10,7 +10,7 @@ import React, {
 import Image from "next/image";
 import "./gallery.css"; // Ensure this path is correct
 import { BASE_URL, CAPSULE_LIKE_TOGGLE } from "@/utils/apiconstants";
-import HeaderCards from "@/components/Gallery/headerCards.css";
+import HeaderCards from "@/components/Gallery/HeaderCards";
 import share from "../../assets/share.svg";
 import multiGroup from "../../assets/multiGroup.svg";
 import plusVector from "../../assets/plusVector.svg";
@@ -102,6 +102,7 @@ const ThumbnailGallery = ({
   const [matchedKeys, setMatchedKeys] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
   const [isPrivateFolder, setIsPrivateFolder] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const isMyPhotosTab =
     subFolders.find((sf) => sf._id === activeTab)?.type === "my_photos";
@@ -390,18 +391,14 @@ const showSnackbar = (message) => {
 
   };
 
-  useEffect(() => {
-    const loggedIn = safeGetItem("isLoggedIn");
-
-    if (loggedIn === "true") {
-      setIsLogin(true);
-    } else {
-      setIsLogin(false);
-      setIsLoginOpen(true);
-    }
-
-    setAuthChecked(true);
-  }, []);
+useEffect(() => {
+  setMounted(true);
+  // phir auth / localStorage
+  const loggedIn = safeGetItem("isLoggedIn") === "true";
+  setIsLogin(loggedIn);
+  setIsLoginOpen(!loggedIn);
+  setAuthChecked(true);
+}, []);
 
   useEffect(() => {
     const mobileNumber = safeGetItem("mobileNumber");
@@ -1450,6 +1447,14 @@ const handleAddToLocker = async (imgData) => {
       </div>
     </div>,
   ];
+
+  if (!mounted || !authChecked) {
+  return (
+    <div className="thumbnail-gallery">
+      <HeaderCardsFlashLoader />
+    </div>
+  );
+}
 
   return (
     <div className="thumbnail-gallery">
