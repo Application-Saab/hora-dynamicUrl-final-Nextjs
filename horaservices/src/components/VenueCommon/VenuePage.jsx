@@ -1,5 +1,5 @@
 // components/VenueCommon/VenuePage.jsx
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState, useRef } from "react";
 import "../../pages/venue-list/venue/venue.css";
 import VenueWallSection from "@/components/wonderland/event-wall/VenueWallSection";
 import { useRouter } from "next/router";
@@ -237,18 +237,34 @@ const VenuePage = ({
   }, [eventDetails, loggedinUserId]);
 
   // Back: sirf close, pushState mat
-  useEffect(() => {
-    const anyModalOpen = selectedPackage || showGuestLoginModal;
-    if (anyModalOpen) {
-      window.history.pushState({ modalOpen: true }, "");
-    }
+   // Back button handling — modal open/close ke history state ko sahi se manage karo
+  const modalHistoryPushedRef = useRef(false);
 
+  useEffect(() => {
+    const anyModalOpen = !!(selectedPackage || showGuestLoginModal);
+
+    if (anyModalOpen && !modalHistoryPushedRef.current) {
+      // Modal abhi khula — ek history entry push karo (back trap ke liye)
+      window.history.pushState({ modalOpen: true }, "");
+      modalHistoryPushedRef.current = true;
+    } else if (!anyModalOpen && modalHistoryPushedRef.current) {
+      // Modal UI se (cross button) band hua — pending entry ko khud consume karo
+      modalHistoryPushedRef.current = false;
+      if (window.history.state?.modalOpen) {
+        window.history.back();
+      }
+    }
+  }, [selectedPackage, showGuestLoginModal]);
+
+  useEffect(() => {
     const handleBack = () => {
       if (selectedPackage) {
+        modalHistoryPushedRef.current = false;
         setSelectedPackage(null);
         return;
       }
       if (showGuestLoginModal) {
+        modalHistoryPushedRef.current = false;
         setShowGuestLoginModal(false);
         return;
       }

@@ -3,6 +3,7 @@
   display: flex;
 gap: clamp(4.8px, 1.527vw, 6px);
   align-items: stretch;
+  margin-top:clamp(10.5px, 3.053vw, 12px);
 }
 
 .venue-highlights-stats {
@@ -28,7 +29,7 @@ gap: clamp(4.8px, 1.527vw, 6px);
 font-family: "Poppins", sans-serif;
 font-weight: 400;
 font-style: normal;
-font-size: clamp(12.07px, 3.61vw, 16.33px);
+font-size: clamp(11px, 3.61vw, 16.33px);
   min-width: 0;
   width: 100%;
   padding: clamp(10.2px, 3.05vw, 13.8px) 0;
@@ -54,7 +55,7 @@ font-size: clamp(12.07px, 3.61vw, 16.33px);
 
 .vh-stat-item img,
 .vh-stat-item svg {
-width: clamp(20.74px, 6.21vw, 28.06px);
+width: clamp(18px, 6vw, 28.06px);
 height: clamp(20.74px, 6.21vw, 28.06px);
   flex-shrink: 0;
 }
