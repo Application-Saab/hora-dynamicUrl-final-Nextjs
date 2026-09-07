@@ -8,7 +8,7 @@ const VenueCategoryPills = ({ categories = [] }) => {
   return (
     <div className="venue-category-row">
       <div className="venue-category-home">
-        <svg viewBox="0 0 24 24" width="12.16" height="12" fill="none">
+        <svg viewBox="0 0 24 24" width="15.16" height="15" fill="none">
           <path
             d="M3 11.5L12 4l9 7.5M5.5 10v9a1 1 0 001 1h4v-6h3v6h4a1 1 0 001-1v-9"
             stroke="#7B2D8E"

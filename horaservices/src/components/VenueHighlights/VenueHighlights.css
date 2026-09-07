@@ -13,59 +13,51 @@ gap: clamp(4.8px, 1.527vw, 6px);
   display: flex;
   align-items: center;
 }
-
 .vh-stats-grid {
   display: flex;
-  flex-wrap: wrap;
-  row-gap: clamp(12.8px, 4.071vw, 16px);
-  column-gap: clamp(16px, 5.1vw, 20px);
+  flex-direction: column;
   width: 100%;
 }
 
 .vh-stat-item {
-  position: relative;   /* ✅ ye line missing thi */
+  position: relative;
   display: flex;
   align-items: center;
-  gap: clamp(3px, 1.27vw, 5px);
-  font-family: "Inter", sans-serif;
-  font-weight: 600;
-  font-size: clamp(6.94px, 2.206vw, 8.67px);
-  color: #1a1a1a;
+  gap: clamp(8px, 2.5vw, 10px);
+  color: #000000;
+font-family: "Poppins", sans-serif;
+font-weight: 400;
+font-style: normal;
+font-size: clamp(12.07px, 3.61vw, 16.33px);
   min-width: 0;
-  flex: 0 1 calc(50% - 10px);
+  width: 100%;
+  padding: clamp(10.2px, 3.05vw, 13.8px) 0;
 }
-.vh-stat-item strong {
-  font-weight: 700;
+
+.vh-stat-item:first-child {
+  padding-top: 0;
+}
+
+.vh-stat-item:last-child {
+  padding-bottom: 0;
+}
+
+/* har row ke niche dotted line, last row ke alawa */
+.vh-stat-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  border-bottom: 1px dashed #d9d9d9;
 }
 
 .vh-stat-item img,
 .vh-stat-item svg {
- width: clamp(11.76px, 3.74vw, 14.7px);
-height: clamp(11.76px, 3.74vw, 14.7px);
+width: clamp(20.74px, 6.21vw, 28.06px);
+height: clamp(20.74px, 6.21vw, 28.06px);
+  flex-shrink: 0;
 }
-
-/* Vertical dotted divider between the two columns */
-.vh-stat-item:nth-child(odd)::after {
-content: "";
-    position: absolute;
-    top: 50%;
-    right: 4px;
-    transform: translateY(-50%);
-    height: 20px;
-    border-right: 1px dotted #c4c4c4;
-}
-
-/* Horizontal dotted divider before row 2 */
-.vh-stat-item:nth-child(3)::before,
-.vh-stat-item:nth-child(4)::before {
-  content: "";
-  position: absolute;
-  top: -8px;
-  left: 0px;
-  width: calc(200% + 10px);
-  border-top: 1px dotted #c4c4c4;
-}
-
 /* ── Enquiry banner ── */
 .venue-highlights-enquiry {
   flex: 0 0 42%;
@@ -75,52 +67,36 @@ content: "";
   position: relative;
   z-index: 1;
   flex-shrink: 0;
-    width: clamp(22.4px, 7.125vw, 28px);
-height: clamp(19.36px, 6.158vw, 24.2px);
+width: clamp(47.6px, 14.25vw, 64.4px);
+height: clamp(41.65px, 12.47vw, 56.35px);
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: clamp(4px, 1.3vw, 6px);
 }
- 
+
 .enquiry-banner-icon img {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
+
 .enquiry-banner {
   position: relative;
   height: 100%;
+  width: 100%;
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
- padding: clamp(4px, 1.272vw, 5px) clamp(8px, 2.545vw, 10px);
-  border-radius: clamp(3.24px, 1.031vw, 4.05px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(6px, 2.04vw, 10px);
+  border-radius: clamp(8px, 2.5vw, 12px);
   overflow: hidden;
   background: linear-gradient(135deg, #f2d3ee 0%, #f8ecf6 40%, #f4d9f1 70%, #e9b8e0 100%);
 }
 
-/* soft blob decorations, matching reference image's rounded fluid shapes */
-.enquiry-banner::before,
-.enquiry-banner::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-  z-index: 0;
-}
-.enquiry-banner::before {
-  width: 140px;
-  height: 140px;
-  bottom: -60px;
-  right: -20px;
-  background: radial-gradient(circle at 30% 30%, rgba(216, 130, 199, 0.55), rgba(216, 130, 199, 0));
-}
-.enquiry-banner::after {
-  width: 90px;
-  height: 90px;
-  bottom: -10px;
-  right: 70px;
-  background: radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
-}
+
 
 
 .eb-sparkle {
@@ -133,14 +109,19 @@ height: clamp(19.36px, 6.158vw, 24.2px);
   position: relative;
   z-index: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .enquiry-banner-title {
- font-family: "Poppins", sans-serif;
+  font-family: "Poppins", sans-serif;
 font-weight: 600;
-font-size: clamp(6.8px, 2.163vw, 8.5px);
+font-style: normal;
+font-size: clamp(11.9px, 3.56vw, 16.1px);
   color: #1a1a1a;
   margin: 0 0 4px 0;
+  text-align: center;
 }
 
 .enquiry-banner-title span {
@@ -148,27 +129,30 @@ font-size: clamp(6.8px, 2.163vw, 8.5px);
 }
 
 .enquiry-banner-sub {
- font-family: "Poppins", sans-serif;
-font-weight: 400;
-font-size: clamp(4.8px, 1.527vw, 6px);
-  color: #5b5b5b;
-  margin: 0px;
-  max-width: 220px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+font-size: clamp(8.5px, 2.54vw, 11.5px);
+  color: #655F6D;
+  margin: 0 auto clamp(8px, 2.5vw, 11px) auto;
+  max-width: 200px;
+  text-align: center;
 }
 
 .enquiry-banner-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   border: none;
   cursor: pointer;
-border-radius: clamp(34.78px, 11.064vw, 43.48px);
-padding: clamp(1.6px, 0.509vw, 2px) clamp(6.4px, 2.036vw, 8px);
-background-color: #97538C;
-color: #FFFFFF;
-gap: clamp(3.2px, 1.018vw, 4px);
-font-family: "Poppins", sans-serif;
+  border-radius: clamp(34.78px, 11.064vw, 43.48px);
+  padding: clamp(4px, 1.3vw, 5.5px) clamp(10px, 3.2vw, 13px);
+  background-color: #97538C;
+  color: #FFFFFF;
+  gap: clamp(3.2px, 1.018vw, 4px);
+  font-family: "Poppins", sans-serif;
 font-weight: 500;
-font-size: clamp(7.2px, 2.29vw, 9px);
+font-style: normal;
+font-size: clamp(11.25px, 3.37vw, 15.23px);
 }
 
 .enquiry-banner-btn:hover {
@@ -182,7 +166,6 @@ font-size: clamp(7.2px, 2.29vw, 9px);
 .enquiry-banner-btn:hover .eb-arrow {
   transform: translateX(3px);
 }
-
 /* ═══════════ Category Pills Row ═══════════ */
 .venue-category-row {
   display: flex;
@@ -190,7 +173,7 @@ align-items: center;
 gap: clamp(8px, 2.545vw, 10px);
 margin-top: clamp(8px, 2.545vw, 10px);
 padding-top: clamp(6.4px, 2.036vw, 8px);
- border-top: 0.49px solid #00000033
+ border-top: 0.49px solid #97538C;
 }
 
 .venue-category-home {
@@ -226,14 +209,13 @@ gap: clamp(1.6px, 0.509vw, 2px);
  color: #97538C;
 font-family: "Inter", sans-serif;
 font-weight: 500;
-font-size: clamp(5.25px, 1.669vw, 6.56px);
-
-  background: #fff;
+font-size: clamp(7.5px, 2.24vw, 10.5px);
+  background: #97538C1A;
   white-space: nowrap;
 }
 .pill-cat-img{
-    width: clamp(5.51px, 1.753vw, 6.89px);
-height: clamp(5.51px, 1.753vw, 6.89px);
+    width: clamp(7.87px, 2.35vw, 11px);
+height: clamp(7.87px, 2.35vw, 11px);
 }
 .arrowICON{
 width: clamp(7px, 2.29vw, 9px);
