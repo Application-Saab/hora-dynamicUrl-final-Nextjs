@@ -35,8 +35,13 @@ const CITY_API_DONE_FLAG = "cityApiCallDone";
 
 // City URL/pill/modal logic SIRF venue-list ke liye active hai.
 // Tracking API is se koi lena dena nahi rakhti — wo har page par apna kaam karti hai.
-const CITY_ALLOWED_ROUTES = ["/venue-list"];
-
+const CITY_ALLOWED_ROUTES = [
+  "/",                     // home page
+  "/venue-list",
+  "/balloon-decoration",
+  "/photography-page",
+  "/chef-near-me",
+];
 const slugToCityName = {
   delhi: "Delhi",
   mumbai: "Mumbai",
