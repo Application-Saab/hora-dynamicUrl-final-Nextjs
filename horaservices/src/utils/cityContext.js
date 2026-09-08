@@ -41,7 +41,12 @@ const CITY_ALLOWED_ROUTES = [
   "/balloon-decoration",
   "/photography-page",
   "/chef-near-me",
+  "/book-chef-cook-for-party",
+  // "/party-food-delivery-live-catering-buffet/party-food-delivery",
+  // "/party-food-delivery-live-catering-buffet/party-live-buffet-catering",
+  // "/photo-gallery",
 ];
+
 const slugToCityName = {
   delhi: "Delhi",
   mumbai: "Mumbai",
@@ -283,13 +288,27 @@ export const CityProvider = ({ children }) => {
   useEffect(() => {
     if (!pathname) return;
 
+    const match = pathname.match(CITY_PATH_REGEX);
+
     if (!isPillVisibleRoute) {
       setShowCityModal(false);
+
+      // GUARD 1: city already in URL on a disallowed route — strip ONLY
+      // the city segment, keep the rest of the current page exactly as is.
+      if (match) {
+        const restOfCurrentPage = pathname.slice(match[0].length);
+        const cleanedPath = restOfCurrentPage.startsWith("/")
+          ? restOfCurrentPage
+          : "/" + restOfCurrentPage;
+
+        if (cleanedPath && cleanedPath !== pathname) {
+          setUrlSilently(cleanedPath, { replace: true });
+        }
+      }
       return;
     }
 
-    // Case 1: URL mein pehle se city hai (e.g. /delhi/venue-list) — usi ko source of truth maano.
-    const match = pathname.match(CITY_PATH_REGEX);
+    // Case 1: URL already has a city (e.g. /delhi/venue-list) — treat as source of truth.
     if (match && match[1]) {
       const citySlugFromUrl = match[1].toLowerCase();
       setSelectedCitySlug(citySlugFromUrl);
@@ -298,9 +317,7 @@ export const CityProvider = ({ children }) => {
       return;
     }
 
-    // Case 2: URL mein city nahi hai. Jab tak tracking flow apna resolve
-    // complete na kar le, kuch mat karo (na modal, na redirect) — warna
-    // refresh par galat waqt par modal flash ho sakta hai.
+    // Case 2: no city in URL, tracking flow still resolving — do nothing yet.
     if (!citySourceReady) return;
 
     // Case 3: City pata hai (localStorage/state se) — URL mein silently inject karo.
@@ -339,8 +356,13 @@ export const CityProvider = ({ children }) => {
       saveCityToServer(cityName);
 
       const strippedPath = stripAllCitySegments(pathname);
-      const newPath = `/${slug}${strippedPath === "/" ? "" : strippedPath}`;
-      setUrlSilently(newPath);
+
+      // GUARD 2: only inject the city if this route is allowed to carry one.
+      if (isRouteCityAllowed(strippedPath)) {
+        const newPath = `/${slug}${strippedPath === "/" ? "" : strippedPath}`;
+        setUrlSilently(newPath);
+      }
+      // else: leave the URL exactly as it is — no city added.
     },
     [pathname, setUrlSilently]
   );
