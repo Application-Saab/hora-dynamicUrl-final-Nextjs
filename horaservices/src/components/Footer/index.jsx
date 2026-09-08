@@ -166,7 +166,7 @@ function Footer() {
     }
   };
 
-  return (
+return (
     <footer style={style.footer}>
       <div className="page-width footerlist">
           {footerColumns.map((column, index) => (
@@ -187,7 +187,12 @@ function Footer() {
                         {link.text}
                       </Link>
                     ) : (
-                      <Link href={link.href} style={style.link}>{link.text}</Link>
+                      <a
+                        href={link.href}
+                        style={style.link}
+                      >
+                        {link.text}
+                      </a>
                     )}
                   </li>
                 ))}
