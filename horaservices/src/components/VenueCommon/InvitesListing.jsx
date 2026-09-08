@@ -11,7 +11,7 @@ import roomIcon from "@/assets/venuelanding/rooms.svg";
 import galleryIcon from "@/assets/venuelanding/galleryicon.svg";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { BASE_URL, VENUE_PUBLIC_LISTING } from "@/utils/apiconstants";
+import { BASE_URL, VENUE_PUBLIC_LISTING, GET_ALL_VENUE_IMAGES } from "@/utils/apiconstants";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
 
@@ -50,7 +50,8 @@ const VenueList = ({
   const [loadingMore, setLoadingMore] = useState(false);
   const router = useRouter();
   const loadTimerRef = useRef(null);
-
+   const [imageCounts, setImageCounts] = useState({}); // { [venueId]: count }
+  const fetchedIdsRef = useRef(new Set());
   useEffect(() => {
     const key = getCacheKey(eventType, venueType, guestCapacity, city);
 
@@ -151,7 +152,36 @@ const VenueList = ({
       }
     };
   }, [loading, visibleCount, filteredVenues.length]);
+  useEffect(() => {
+    const displayed = filteredVenues.slice(0, visibleCount);
+    const idsToFetch = displayed
+      .map((v) => v._id)
+      .filter((id) => id && !fetchedIdsRef.current.has(id));
 
+    if (idsToFetch.length === 0) return;
+
+    idsToFetch.forEach((id) => fetchedIdsRef.current.add(id));
+
+    idsToFetch.forEach((id) => {
+      const cacheKey = `venue-image-count-${id}`;
+      const cached = getPageCache(cacheKey);
+      if (cached) {
+        setImageCounts((prev) => ({ ...prev, [id]: cached.data }));
+        return;
+      }
+
+      fetchWithError(`${BASE_URL}${GET_ALL_VENUE_IMAGES}/${id}`)
+        .then((r) => r.json())
+        .then((res) => {
+          const count = Array.isArray(res?.data) ? res.data.length : 0;
+          setPageCache(cacheKey, count);
+          setImageCounts((prev) => ({ ...prev, [id]: count }));
+        })
+        .catch(() => {
+          // fail silently, count stays undefined
+        });
+    });
+  }, [filteredVenues, visibleCount]);
   if (loading) return null;
 
   if (!venues.length) {
@@ -220,31 +250,33 @@ const VenueList = ({
                   alt={v.venueName}
                   className="venue-card-img"
                 />
-                <button
-                  type="button"
-                  className="see-photos-btn"
-                  onClick={() =>
-                    router.push({
-                      pathname: getVenueRoute(city),
-                      query: {
-                        venueid: v._id,
-                        guests: v.guestCapacity || "",
-                        parking: v.isParkingAvailable ? "1" : "",
-                        rooms: v.totalRoomsAvailable || "",
-                        halls: JSON.stringify(halls),
-                      },
-                    })
-                  }
-                >
-                  <Image
-                    src={galleryIcon}
-                    alt="Gallery"
-                    className="stat-icon"
-                    width={14}
-                    height={14}
-                  />
-                  See Photos (20+)
-                </button>
+              <button
+  type="button"
+  className="see-photos-btn"
+  onClick={() =>
+    router.push({
+      pathname: getVenueRoute(city),
+      query: {
+        venueid: v._id,
+        guests: v.guestCapacity || "",
+        parking: v.isParkingAvailable ? "1" : "",
+        rooms: v.totalRoomsAvailable || "",
+        halls: JSON.stringify(halls),
+      },
+    })
+  }
+>
+  <Image
+    src={galleryIcon}
+    alt="Gallery"
+    className="stat-icon"
+    width={14}
+    height={14}
+  />
+{imageCounts[v._id] != null
+  ? `See Photos (+${imageCounts[v._id]})`
+  : "See Photos"}
+</button>
               </div>
 
               <div className="venue-card-body">

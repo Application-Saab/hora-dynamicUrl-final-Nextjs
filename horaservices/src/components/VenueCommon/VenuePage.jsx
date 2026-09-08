@@ -238,24 +238,39 @@ const VenuePage = ({
 
   // Back: sirf close, pushState mat
    // Back button handling — modal open/close ke history state ko sahi se manage karo
-  const modalHistoryPushedRef = useRef(false);
+const modalHistoryPushedRef = useRef(false);
 
-  useEffect(() => {
-    const anyModalOpen = !!(selectedPackage || showGuestLoginModal);
+// Modal open hone par ek hi baar pushState
+useEffect(() => {
+  const anyModalOpen = !!(selectedPackage || showGuestLoginModal);
+  if (anyModalOpen && !modalHistoryPushedRef.current) {
+    window.history.pushState({ modalOpen: true }, "");
+    modalHistoryPushedRef.current = true;
+  }
+}, [selectedPackage, showGuestLoginModal]);
 
-    if (anyModalOpen && !modalHistoryPushedRef.current) {
-      // Modal abhi khula — ek history entry push karo (back trap ke liye)
-      window.history.pushState({ modalOpen: true }, "");
-      modalHistoryPushedRef.current = true;
-    } else if (!anyModalOpen && modalHistoryPushedRef.current) {
-      // Modal UI se (cross button) band hua — pending entry ko khud consume karo
+// Sirf ek jagah se state clear hoga — popstate ke through
+useEffect(() => {
+  const handlePopState = () => {
+    if (modalHistoryPushedRef.current) {
       modalHistoryPushedRef.current = false;
-      if (window.history.state?.modalOpen) {
-        window.history.back();
-      }
+      setSelectedPackage(null);
+      setShowGuestLoginModal(false);
     }
-  }, [selectedPackage, showGuestLoginModal]);
+  };
+  window.addEventListener("popstate", handlePopState);
+  return () => window.removeEventListener("popstate", handlePopState);
+}, []);
 
+// Cross/outside click bhi isi function se close karega
+const closeModal = () => {
+  if (modalHistoryPushedRef.current) {
+    window.history.back(); // yahi se popstate fire hoga, state khud-ba-khud clear hoga
+  } else {
+    setSelectedPackage(null);
+    setShowGuestLoginModal(false);
+  }
+};
   useEffect(() => {
     const handleBack = () => {
       if (selectedPackage) {
@@ -417,7 +432,7 @@ Please share more details and availability.`;
       {selectedPackage && (
         <VenueFoodModal
           data={selectedPackage}
-          onClose={() => setSelectedPackage(null)}
+            onClose={closeModal} 
           categories={venueCategories}
         />
       )}
