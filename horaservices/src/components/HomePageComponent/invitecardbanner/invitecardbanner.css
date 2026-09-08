@@ -1,0 +1,128 @@
+.invite-card {
+  position: relative; /* zaroori hai, taaki image isi ke relative position ho */
+  border: 1px solid #0000001A;
+  border-radius: 10px;
+  padding: clamp(6px, 2.1vw, 8.2px)
+          clamp(4px, 1.3vw, 5.2px)
+          clamp(10px, 3.8vw, 15.14px)
+          clamp(10px, 3.8vw, 15.19px);
+  box-shadow: 0px 4px 4px 0px #AEAAAA40;
+  width: 98%;
+  margin: auto;
+  max-width: 480px;
+}
+
+.invite-card-content {
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 1.27vw, 5px);
+  margin-bottom: clamp(10px, 3.82vw, 15px);
+  padding-right: clamp(90px, 12vw, 110px); /* text ko image ke niche jaane se roke */
+}
+
+.invite-illustration {
+  position: absolute;
+right: clamp(7px, 2.04vw, 8px);
+bottom: clamp(20px, 6.36vw, 25px);
+width: clamp(105px, 31.55vw, 124px);
+height: clamp(87px, 26.21vw, 103px);
+  opacity: 1;
+}
+
+.invite-card-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.invite-card h2 {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+ font-size: clamp(15px, 4.58vw, 18px);
+  margin: 1px 0px;
+  background: linear-gradient(90deg, #25118C 0%, #8A10B2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.invite-card-text > p {
+   color: #3C3E51;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: clamp(8px, 0.8vw, 9.01px);
+ margin:0px
+}
+
+/* .invite-illustration {
+  width: clamp(105px, 12.6vw, 124px);
+height: clamp(88px, 10.5vw, 103px);
+opacity: 1;
+} */
+
+.feature-row {
+  display: flex;
+  gap: clamp(4px, 1.46vw, 5.73px);
+  margin-top: clamp(10px, 3.87vw, 15.18px);
+}
+
+.feature {
+  display: flex;
+  align-items: flex-start;
+ gap: clamp(5px, 1.53vw, 6px);
+}
+.feature-text{
+ line-height: clamp(6.4px, 2.04vw, 8px);
+}
+.feature-icon {
+width: clamp(15px, 4.79vw, 18.84px);
+height: clamp(15px, 4.73vw, 18.61px);
+opacity: 1;
+}
+
+.feature-text b {
+  display: block;
+  color: #06070E;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: clamp(8.5px, 0.85vw, 9.83px);
+}
+
+.feature-text span {
+   color: #45465A;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+font-size: clamp(5px, 1.67vw, 6.55px);
+}
+
+.cta-btn {
+   width: clamp(150px, 46vw, 181px);
+  height: clamp(30px, 8.5vw, 33.52px);
+ color:white;
+  border-radius: clamp(4px, 1.25vw, 4.94px);
+  gap: clamp(6px, 1.8vw, 7.06px);
+ border:none;
+  background: linear-gradient(90deg, #64239E 0%, #B02D95 100%);
+  opacity: 1;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: clamp(12px, 1.3vw, 14.41px);
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  cursor: pointer;
+}
+
+.cta-btn:hover {
+  filter: brightness(1.05);
+}
+
+.cta-btn svg {
+  width: 16px;
+  height: 16px;
+}
+.cta-icon {
+width: clamp(12px, 3.77vw, 14.8px);
+height: clamp(12px, 3.64vw, 14.3px);
+opacity: 1;
+}
