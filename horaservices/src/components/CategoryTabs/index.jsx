@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -12,16 +11,15 @@ const CategoryTabs = ({
   city = "",
   locality = "",
   variant = "grid",
-  catValue, 
+  catValue,
   heading,
   hasBg = false,
-  icon,        
+  icon,
   fireIcon,
 }) => {
   const router = useRouter();
   const pathname = usePathname();
   const scrollRef = useRef(null);
-  // const autoScrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
@@ -33,12 +31,10 @@ const CategoryTabs = ({
     return `${base}${path}`;
   };
 
+  // ===== Grid variant click (for tracking only) =====
   const GridhandleClick = (cat) => {
     if (!cat || !catValue) return;
 
-    const ROOT_CATEGORY = "balloon-decoration";
-
-    // 🔹 GTM / dataLayer (same as before)
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "theme_circle_clicked",
@@ -48,19 +44,12 @@ const CategoryTabs = ({
       city: city || "default",
       locality: locality || "default",
     });
-
-    // theme value ke aage "-decoration" add karo
-    const themeSlug = `${cat.value}-theme-decoration`;
-
-    const path = formatPath(`/${ROOT_CATEGORY}/${catValue}/${themeSlug}`);
-
-    router.push(path);
   };
 
+  // ===== Circle tabs click (for tracking only) =====
   const handleClick = (cat) => {
     if (!cat) return;
 
-    // 🔹 GTM / dataLayer
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "circle_tabs_clicked",
@@ -71,13 +60,23 @@ const CategoryTabs = ({
       city: city || "default",
       locality: locality || "default",
     });
-
-    // 🔹 Navigate
-    const baseRoute = getCategorySlugFromPath(pathname, city, locality);
-    const path = formatPath(`/${baseRoute}/${cat.catValue || catValue}`);
-    router.push(path);
   };
 
+  // Helper to get href for Grid variant
+  const getGridHref = (cat) => {
+    if (!cat || !catValue) return "#";
+    const ROOT_CATEGORY = "balloon-decoration";
+    const themeSlug = `${cat.value}-theme-decoration`;
+    return formatPath(`/${ROOT_CATEGORY}/${catValue}/${themeSlug}`);
+  };
+
+  // Helper to get href for Circle tabs variant
+  const getCircleHref = (cat) => {
+    if (!cat) return "#";
+    const baseRoute = getCategorySlugFromPath(pathname, city, locality);
+    return formatPath(`/${baseRoute}/${cat.catValue || catValue}`);
+  };
+  
   // ---- Scroll helpers (grid variant only) ----
   const updateArrowVisibility = useCallback(() => {
     const el = scrollRef.current;
@@ -93,46 +92,17 @@ const CategoryTabs = ({
     el.scrollBy({ left: amount, behavior: "smooth" });
   };
 
-  // const stopAutoScroll = () => {
-  //   if (autoScrollRef.current) {
-  //     clearInterval(autoScrollRef.current);
-  //     autoScrollRef.current = null;
-  //   }
-  // };
-
-  // const startAutoScroll = useCallback(() => {
-  //   stopAutoScroll();
-  //   const el = scrollRef.current;
-  //   if (!el) return;
-
-  //   autoScrollRef.current = setInterval(() => {
-  //     const node = scrollRef.current;
-  //     if (!node) return;
-
-  //     const maxScrollLeft = node.scrollWidth - node.clientWidth;
-
-  //     // Agar end tak pahunch gaye to wapas start par chale jao
-  //     if (node.scrollLeft >= maxScrollLeft - 4) {
-  //       node.scrollTo({ left: 0, behavior: "smooth" });
-  //     } else {
-  //       node.scrollBy({ left: 90, behavior: "smooth" }); // slow, small step
-  //     }
-  //   }, 2800); // speed kam — har ~2.8s me ek chhota step
-  // }, []);
-
   useEffect(() => {
     if (variant !== "grid") return;
     const el = scrollRef.current;
     if (!el) return;
 
     updateArrowVisibility();
-    // startAutoScroll();
 
     el.addEventListener("scroll", updateArrowVisibility, { passive: true });
     window.addEventListener("resize", updateArrowVisibility);
 
     return () => {
-      // stopAutoScroll();
       el.removeEventListener("scroll", updateArrowVisibility);
       window.removeEventListener("resize", updateArrowVisibility);
     };
@@ -140,7 +110,8 @@ const CategoryTabs = ({
 
   return variant === "grid" ? (
     <div className={`category-tabs-outer ${hasBg ? "has-bg" : ""}`}>
-      {heading &&    <div className="category-slide-header">
+      {heading && (
+        <div className="category-slide-header">
           {fireIcon && (
             <Image
               src={fireIcon}
@@ -162,7 +133,8 @@ const CategoryTabs = ({
               height={26}
             />
           )}
-        </div>}
+        </div>
+      )}
 
       <div className="category-tabs-slider-wrap">
         {canScrollLeft && (
@@ -184,19 +156,14 @@ const CategoryTabs = ({
           </button>
         )}
 
-        <div
-          className="category-tabs-grid"
-          ref={scrollRef}
-          // onMouseEnter={stopAutoScroll}
-          // onMouseLeave={startAutoScroll}
-          // onTouchStart={stopAutoScroll}
-          // onTouchEnd={startAutoScroll}
-        >
+        <div className="category-tabs-grid" ref={scrollRef}>
           {data
             .filter((cat) => cat.image)
             .map((cat) => (
-              <button
+              <a
                 key={cat.id}
+                type="button"
+                href={getGridHref(cat)}
                 className="category-tabs-card"
                 onClick={() => GridhandleClick(cat)}
               >
@@ -208,7 +175,7 @@ const CategoryTabs = ({
                   height={80}
                 />
                 <span className="category-tabs-title">{cat.name}</span>
-              </button>
+              </a>
             ))}
         </div>
 
@@ -238,8 +205,10 @@ const CategoryTabs = ({
         .filter((cat) => cat.image)
         .slice(0, 14)
         .map((cat) => (
-          <button
+          <a
             key={cat.id}
+            type="button"
+            href={getCircleHref(cat)}
             className="ctabs-btn"
             role="listitem"
             onClick={() => handleClick(cat)}
@@ -249,7 +218,7 @@ const CategoryTabs = ({
               style={{ backgroundImage: `url(${cat.image})` }}
             />
             <span className="ctabs-label">{cat.name}</span>
-          </button>
+          </a>
         ))}
     </div>
   );

@@ -18,7 +18,7 @@ import BabyWelcome from "../../assets/BabyWelcomeIMG.webp";
 import Anniversary from "../../assets/AnniversaryIMG.webp";
 import arrowIcon from "../../assets/arrow-down.svg";
 import CategoryTabs from "@/components/CategoryTabs";
-import {  balloonreviewsproduct } from "@/utils/balloonReviews";
+import { balloonreviewsproduct } from "@/utils/balloonReviews";
 import SmallCardGrid from "@/components/SmallCardGrid";
 import CategoryGrid from "@/components/CategoryGrid";
 import DecorGrid from "@/components/DecorGrid";
@@ -47,7 +47,9 @@ import decorationhaldi from "@/assets/decorationhaldi-Mhendi.webp";
 import Engagementdecoration from "@/assets/engament.webp";
 const BannerSlider = dynamic(() => import("@/components/BannerSlider"));
 const DecorSlider = dynamic(() => import("@/components/DecorSlider"));
-const ProductSliderSection = dynamic(() => import("@/components/ProductSliderSection"));
+const ProductSliderSection = dynamic(
+  () => import("@/components/ProductSliderSection"),
+);
 const ReviewSlider = dynamic(() => import("@/components/ReviewSection"));
 import {
   birthdayData,
@@ -248,7 +250,7 @@ const Decoration = ({ city, locality }) => {
       smallCardRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100); // small delay ensures it's rendered first
   };
- const reviewsRef    = useRef(null);
+  const reviewsRef = useRef(null);
   const openCatItems = (item) => {
     if (!item?.catValue) return;
 
@@ -397,13 +399,29 @@ const Decoration = ({ city, locality }) => {
           <li> 🛠️ Easy Customize</li>
           <li>💬 Customer Support</li>
         </ul>
-        <button onClick={handleWhatsApp} className="whatsapp-btn">
+        {/* <button onClick={handleWhatsApp} className="whatsapp-btn">
           <img
             src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png"
             alt="WhatsApp"
           />
           Chat Now on WhatsApp
-        </button>
+        </button> */}
+        <a
+          type="button"
+          href={`https://wa.me/7338584828?text=${encodeURIComponent(
+            "I want to customize a decoration",
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={handleWhatsApp}
+          className="whatsapp-btn"
+        >
+          <img
+            src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png"
+            alt="WhatsApp"
+          />
+          Chat Now on WhatsApp
+        </a>
       </div>
 
       <div ref={smallCardRef}>
@@ -524,9 +542,9 @@ const Decoration = ({ city, locality }) => {
         title="Excellence Backed by Happy Customers"
         items={brandItems}
       />
- <div ref={reviewsRef} style={{margin:" 10px 0px"}}>
-            <GoogleReviewsCard reviews={balloonreviewsproduct} />
-            </div>
+      <div ref={reviewsRef} style={{ margin: " 10px 0px" }}>
+        <GoogleReviewsCard reviews={balloonreviewsproduct} />
+      </div>
     </div>
   );
 };
