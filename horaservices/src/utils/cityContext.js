@@ -86,8 +86,9 @@ const isRouteCityAllowed = (strippedPath) => {
   const p = strippedPath || "/";
 
   return CITY_ALLOWED_ROUTES.some((route) => {
-    const exactRegex = new RegExp(`^${route}/?$`, "i");
-    return exactRegex.test(p);
+    // route ke exact match ke alawa, route/xyz jaisे nested paths bhi allow honge
+    const prefixRegex = new RegExp(`^${route}(/.*)?$`, "i");
+    return prefixRegex.test(p);
   });
 };
 
