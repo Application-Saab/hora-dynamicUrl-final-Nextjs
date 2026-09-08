@@ -1,5 +1,3 @@
-
-
 import astronautImg from "@/assets/Astronoutsapcetheme.webp";
 import avengersImg from "@/assets/Avengerstheme.webp";
 import bossBabyImg from "@/assets/bossbaby.webp";
@@ -39,6 +37,22 @@ import Baptism from "@/assets/Baptism.webp";
 import Candyland from "@/assets/candyland.webp";
 import peppaPigImg from "@/assets/pig.webp";
 import Kpop from "@/assets/kpop.webp";
+
+// ---- Newly added imports ----
+import MotuPatluImg from "@/assets/MotuPatlu.webp";
+import TomJerryImg from "@/assets/TomJerry.webp";
+import DoremonImg from "@/assets/Doremon.webp";
+import ShinchanImg from "@/assets/Shinchan.webp";
+import HulkImg from "@/assets/Hulk.webp";
+import AeroplaneImg from "@/assets/Aeroplane.webp";
+import ElephantImg from "@/assets/Elephant.webp";
+import MarioImg from "@/assets/Mario.webp";
+import BlueyImg from "@/assets/Bluey.webp";
+import CricketImg from "@/assets/Cricket.webp";
+import LeloImg from "@/assets/Lelo.webp";
+import NarutoImg from "@/assets/Naruto.webp";
+import BowThemeImg from "@/assets/BowTheme.webp";
+
 export const themeFilters = [
   { label: "Astronaut space ", value: "Astronaut-space", image: astronautImg },
   { label: "Super Hero ", value: "Hero", image: heroImg },
@@ -65,21 +79,36 @@ export const themeFilters = [
   { label: "Super dogs ", value: "dogs", image: dogsImg },
   { label: "Sport Football ", value: "Football", image: footballImg },
   { label: "Unicorn ", value: "Unicorn", image: unicornImg },
-  {label:"Masha and Bear ",value:"Masha",image: mashaImg},
-  {label:"Paw Patrol ",value:"paw",image:PawImg},
-   {label:"Butterfly ",value:"Butterfly",image:ButterflyImg},
-  {label:"Minion ",value:"Minion",image: MinionImg},
-  {label:"Sonic ",value:"Sonic",image: SonicImg},
-  {label:"Krishna ",value:"Krishna",image:KrishnaImg},
-  {label:"Avengers ",value:"Avengers",image: avengersImg},
-  {label:"Candyland",value:"Candy",image:Candyland},
-  {label:"Peppa pig",value:"pig",image:peppaPigImg},
-  {label:"Kpop",value:"pop",image:Kpop},
+  { label: "Masha and Bear ", value: "Masha", image: mashaImg },
+  { label: "Paw Patrol ", value: "paw", image: PawImg },
+  { label: "Butterfly ", value: "Butterfly", image: ButterflyImg },
+  { label: "Minion ", value: "Minion", image: MinionImg },
+  { label: "Sonic ", value: "Sonic", image: SonicImg },
+  { label: "Krishna ", value: "Krishna", image: KrishnaImg },
+  { label: "Avengers ", value: "Avengers", image: avengersImg },
+  { label: "Candyland", value: "Candy", image: Candyland },
+  { label: "Peppa pig", value: "pig", image: peppaPigImg },
+  { label: "Kpop", value: "pop", image: Kpop },
+
+  // ---- Newly added themes ----
+  { label: "Motu Patlu ", value: "Motu-Patlu", image: MotuPatluImg },
+  { label: "Tom and Jerry ", value: "Tom-Jerry", image: TomJerryImg },
+  { label: "Doremon ", value: "Doremon", image: DoremonImg },
+  { label: "Shinchan ", value: "Shinchan", image: ShinchanImg },
+  { label: "Hulk ", value: "Hulk", image: HulkImg },
+  { label: "Aeroplane ", value: "Aeroplane", image: AeroplaneImg },
+  { label: "Elephant ", value: "Elephant", image: ElephantImg },
+  { label: "Mario ", value: "Mario", image: MarioImg },
+  { label: "Bluey ", value: "Bluey", image: BlueyImg },
+  { label: "Cricket ", value: "Cricket", image: CricketImg },
+  { label: "Lelo ", value: "Lelo", image: LeloImg },
+  { label: "Naruto ", value: "Naruto", image: NarutoImg },
+  { label: "Bow theme ", value: "Bow-theme", image: BowThemeImg },
 ];
 
 export const NamingCeremonyThemes = [
-   { label: "Naming Ceremony", value: "Naming", image: NamingCeremony },
-  { label: "Name Revealing ", value: "Revealing", image: NameRevealing  },
-  { label: "Annaprashan ", value: "Annaprashan", image: Annaprashan }, 
-   { label: "Baptism ", value: "Baptism", image: Baptism },
-  ];
+  { label: "Naming Ceremony", value: "Naming", image: NamingCeremony },
+  { label: "Name Revealing ", value: "Revealing", image: NameRevealing },
+  { label: "Annaprashan ", value: "Annaprashan", image: Annaprashan },
+  { label: "Baptism ", value: "Baptism", image: Baptism },
+];

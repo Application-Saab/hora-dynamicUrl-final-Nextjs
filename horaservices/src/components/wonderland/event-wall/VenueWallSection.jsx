@@ -1040,7 +1040,7 @@ useEffect(() => {
                               <Image src={plusVector} width={19} height={15} />
                               <span>Add to Folder</span>
                             </div> */}
-                            {currentImage?.type !== "video" && (
+                            {/* {currentImage?.type !== "video" && (
                               <div
                                 className="action-item flex"
                                 onClick={() => {
@@ -1056,7 +1056,7 @@ useEffect(() => {
                                 />
                                 <span>Download</span>
                               </div>
-                            )}
+                            )} */}
 
                             <div
                               onClick={() => {

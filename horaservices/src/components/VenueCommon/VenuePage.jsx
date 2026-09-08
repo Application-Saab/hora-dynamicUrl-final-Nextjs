@@ -1,5 +1,5 @@
 // components/VenueCommon/VenuePage.jsx
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState, useRef } from "react";
 import "../../pages/venue-list/venue/venue.css";
 import VenueWallSection from "@/components/wonderland/event-wall/VenueWallSection";
 import { useRouter } from "next/router";
@@ -237,18 +237,49 @@ const VenuePage = ({
   }, [eventDetails, loggedinUserId]);
 
   // Back: sirf close, pushState mat
-  useEffect(() => {
-    const anyModalOpen = selectedPackage || showGuestLoginModal;
-    if (anyModalOpen) {
-      window.history.pushState({ modalOpen: true }, "");
-    }
+   // Back button handling — modal open/close ke history state ko sahi se manage karo
+const modalHistoryPushedRef = useRef(false);
 
+// Modal open hone par ek hi baar pushState
+useEffect(() => {
+  const anyModalOpen = !!(selectedPackage || showGuestLoginModal);
+  if (anyModalOpen && !modalHistoryPushedRef.current) {
+    window.history.pushState({ modalOpen: true }, "");
+    modalHistoryPushedRef.current = true;
+  }
+}, [selectedPackage, showGuestLoginModal]);
+
+// Sirf ek jagah se state clear hoga — popstate ke through
+useEffect(() => {
+  const handlePopState = () => {
+    if (modalHistoryPushedRef.current) {
+      modalHistoryPushedRef.current = false;
+      setSelectedPackage(null);
+      setShowGuestLoginModal(false);
+    }
+  };
+  window.addEventListener("popstate", handlePopState);
+  return () => window.removeEventListener("popstate", handlePopState);
+}, []);
+
+// Cross/outside click bhi isi function se close karega
+const closeModal = () => {
+  if (modalHistoryPushedRef.current) {
+    window.history.back(); // yahi se popstate fire hoga, state khud-ba-khud clear hoga
+  } else {
+    setSelectedPackage(null);
+    setShowGuestLoginModal(false);
+  }
+};
+  useEffect(() => {
     const handleBack = () => {
       if (selectedPackage) {
+        modalHistoryPushedRef.current = false;
         setSelectedPackage(null);
         return;
       }
       if (showGuestLoginModal) {
+        modalHistoryPushedRef.current = false;
         setShowGuestLoginModal(false);
         return;
       }
@@ -401,7 +432,7 @@ Please share more details and availability.`;
       {selectedPackage && (
         <VenueFoodModal
           data={selectedPackage}
-          onClose={() => setSelectedPackage(null)}
+            onClose={closeModal} 
           categories={venueCategories}
         />
       )}
