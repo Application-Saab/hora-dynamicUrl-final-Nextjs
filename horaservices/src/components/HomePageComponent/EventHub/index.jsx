@@ -127,27 +127,27 @@ const EventHub = ({ userId }) => {
                   </div>
 
                   <div className="event-avatars-row">
-                    <div className="event-avatars">
-                      {realGuests.length > 0
-                        ? realGuests.slice(0, 4).map((g, i) => (
-                            <img
-                              key={g._id || g.id || `${event._id}-${i}`}
-                              src={g.url || DUMMY_AVATARS[i % DUMMY_AVATARS.length]}
-                              alt={g.name || "guest"}
-                              className="avatarss"
-                              style={{ zIndex: 10 - i }}
-                            />
-                          ))
-                        : DUMMY_AVATARS.map((avatar, i) => (
-                            <img
-                              key={`dummy-${i}`}
-                              src={avatar}
-                              alt="Guest"
-                              className="avatar"
-                              style={{ zIndex: 10 - i }}
-                            />
-                          ))}
-                    </div>
+                  <div className="event-avatars">
+  {realGuests.length > 0
+    ? realGuests.slice(0, 4).map((g, i) => (
+        <img
+          key={g._id || g.id || `${event._id}-${i}`}
+          src={g.url || DUMMY_AVATARS[i % DUMMY_AVATARS.length]}
+          alt={g.name || "guest"}
+          className="avatarss"
+          style={{ zIndex: 10 - i }}
+        />
+      ))
+    : DUMMY_AVATARS.map((avatar, i) => (
+        <img
+          key={`dummy-${i}`}
+          src={avatar}
+          alt="Guest"
+          className="avatarss"
+          style={{ zIndex: 10 - i }}
+        />
+      ))}
+</div>
 
                     {realGuests.length > 4 && (
                       <span className="avatar-more">
