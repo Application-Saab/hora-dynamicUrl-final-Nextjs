@@ -59,7 +59,7 @@
  font-family: Inter, sans-serif;
 font-weight: 500;
 font-style: normal;
-font-size: clamp(5.42px, 1.69vw, 8.17px);
+font-size: clamp(7px, 2.1875vw, 10.5px);
   cursor: pointer;
 }
 .gallery-icon{

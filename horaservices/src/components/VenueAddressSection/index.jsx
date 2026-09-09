@@ -31,16 +31,7 @@ const VenueAddressSection = ({ eventData, hideDateAndTime }) => {
   return (
     <div className="vas-card">
       {/* LEFT — Pin avatar */}
-      <div className="vas-pinAvatar">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M12 2C7.86 2 4.5 5.36 4.5 9.5C4.5 15.25 12 22 12 22C12 22 19.5 15.25 19.5 9.5C19.5 5.36 16.14 2 12 2Z"
-            fill="#fff"
-          />
-          <circle cx="12" cy="9.5" r="2.5" fill="#8c4a9e" />
-        </svg>
-      </div>
-
+  
       {/* MIDDLE — Venue name + address */}
       <div className="vas-info">
         {venueName && <h4 className="vas-venueName">{venueName}</h4>}
