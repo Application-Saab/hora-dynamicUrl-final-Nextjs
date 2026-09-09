@@ -215,17 +215,21 @@ gap: clamp(8px, 2.54vw, 10px);
 }
 
 .avatarss {
-  width: clamp(11px, 3.49vw, 13.72px);
-  height: clamp(11px, 3.49vw, 13.72px);
-
+  width: clamp(15px, 4.31vw, 16.95px);
+height: clamp(15px, 4.31vw, 16.95px);
   border-radius: 50%;
   border: clamp(1.6px, 0.51vw, 2px) solid #fff;
-
   object-fit: cover;
-
-  background: #eee;
 }
-
+.avatar-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+ font-size: clamp(7px, 2.04vw, 8px);
+  text-transform: uppercase;
+}
 .avatarss:first-child {
   margin-left: 0;
 }

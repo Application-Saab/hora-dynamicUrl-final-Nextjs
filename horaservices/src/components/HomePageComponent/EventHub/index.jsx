@@ -7,13 +7,44 @@ import "./Eventhub.css";
 import Image from "next/image";
 import celebrationRight from "@/assets/Homepageimages/celebration-right.webp";
 import celebrationLeft from "@/assets/Homepageimages/celebration-left.webp";
-import promoimage from "@/assets/Homepageimages/promoimage.svg"
-const DUMMY_AVATARS = [
-  "https://i.pravatar.cc/100?img=12",
-  "https://i.pravatar.cc/100?img=32",
-  "https://i.pravatar.cc/100?img=47",
-  "https://i.pravatar.cc/100?img=49",
+import promoimage from "@/assets/Homepageimages/promoimage.svg";
+
+// Har letter ke liye consistent color generate karne ke liye
+const AVATAR_COLORS = [
+  "#B91C1C", "#C2410C", "#A16207", "#15803D",
+  "#0E7490", "#1D4ED8", "#6D28D9", "#BE185D",
 ];
+
+const getAvatarColor = (name) => {
+  const char = (name || "G").trim().charAt(0).toUpperCase();
+  const index = char.charCodeAt(0) % AVATAR_COLORS.length;
+  return AVATAR_COLORS[index];
+};
+
+const GuestAvatar = ({ guest, zIndex }) => {
+  const name = guest?.name || "Guest";
+  const initial = name.trim().charAt(0).toUpperCase();
+
+  if (guest?.url) {
+    return (
+      <img
+        src={guest.url}
+        alt={name}
+        className="avatarss"
+        style={{ zIndex }}
+      />
+    );
+  }
+
+  return (
+    <div
+      className="avatarss avatar-letter"
+      style={{ zIndex, backgroundColor: getAvatarColor(name) }}
+    >
+      {initial}
+    </div>
+  );
+};
 
 const EventHub = ({ userId }) => {
   const pathname = usePathname();
@@ -126,35 +157,25 @@ const EventHub = ({ userId }) => {
                     <span>{formatDate(event.eventDate)}</span>
                   </div>
 
-                  <div className="event-avatars-row">
-                  <div className="event-avatars">
-  {realGuests.length > 0
-    ? realGuests.slice(0, 4).map((g, i) => (
-        <img
-          key={g._id || g.id || `${event._id}-${i}`}
-          src={g.url || DUMMY_AVATARS[i % DUMMY_AVATARS.length]}
-          alt={g.name || "guest"}
-          className="avatarss"
-          style={{ zIndex: 10 - i }}
-        />
-      ))
-    : DUMMY_AVATARS.map((avatar, i) => (
-        <img
-          key={`dummy-${i}`}
-          src={avatar}
-          alt="Guest"
-          className="avatarss"
-          style={{ zIndex: 10 - i }}
-        />
-      ))}
-</div>
+                  {realGuests.length > 0 && (
+                    <div className="event-avatars-row">
+                      <div className="event-avatars">
+                        {realGuests.slice(0, 4).map((g, i) => (
+                          <GuestAvatar
+                            key={g._id || g.id || `${event._id}-${i}`}
+                            guest={g}
+                            zIndex={10 - i}
+                          />
+                        ))}
+                      </div>
 
-                    {realGuests.length > 4 && (
-                      <span className="avatar-more">
-                        +{realGuests.length - 4}
-                      </span>
-                    )}
-                  </div>
+                      {realGuests.length > 4 && (
+                        <span className="avatar-more">
+                          +{realGuests.length - 4}
+                        </span>
+                      )}
+                    </div>
+                  )}
 
                   <span className="visit-btn">
                     Visit Event
@@ -169,14 +190,14 @@ const EventHub = ({ userId }) => {
 
           {/* STATIC PROMO CARD - always shown at the end */}
           <div className="event-hub-promo-card">
-           <div className="promo-icon-wrap">
-  <Image
-    src={promoimage}
-    alt="Promo"
-    width={50}
-    height={50}
-  />
-</div>
+            <div className="promo-icon-wrap">
+              <Image
+                src={promoimage}
+                alt="Promo"
+                width={50}
+                height={50}
+              />
+            </div>
             <p>Don't let memories fade—track and relive every event.</p>
           </div>
         </div>
