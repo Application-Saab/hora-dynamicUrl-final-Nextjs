@@ -215,8 +215,8 @@ gap: clamp(8px, 2.54vw, 10px);
 }
 
 .avatarss {
-  width: clamp(15px, 4.31vw, 16.95px);
-height: clamp(15px, 4.31vw, 16.95px);
+width: clamp(16px, 4.58vw, 18px);
+height: clamp(16px, 4.58vw, 18px);
   border-radius: 50%;
   border: clamp(1.6px, 0.51vw, 2px) solid #fff;
   object-fit: cover;

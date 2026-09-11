@@ -93,8 +93,8 @@ color:#282424;
 }
 
 .venue-arrow {
-width: clamp(10.5px, 3.1vw, 12.17px);
-height: clamp(10.5px, 3.1vw, 12.17px);
+width: clamp(12.44px, 3.56vw, 14px);
+height: clamp(12.44px, 3.56vw, 14px);
   border-radius: 50%;
   border: none;
   background: linear-gradient(180deg, #67239D 0%, #AD2D95 100%);
@@ -105,10 +105,7 @@ height: clamp(10.5px, 3.1vw, 12.17px);
   cursor: pointer;
 }
 
-.venue-arrow svg {
-  width: 11px;
-  height: 11px;
-}
+
 .venue-cta-overlay {
   position: absolute;
   top: clamp(14px, 4.58vw, 22px);
@@ -126,13 +123,12 @@ width: clamp(140px, 46.06vw, 181px);
 
   padding: clamp(6px, 2.04vw, 8px) ;
 
-  font-size: clamp(12px, 3.82vw, 15px);
+  font-size: clamp(12.81px, 3.66vw, 14.41px);
   font-weight: 700;
 
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  gap: clamp(14px, 4vw, 20px);
 
   box-sizing: border-box;
 }
@@ -147,8 +143,8 @@ width: clamp(140px, 46.06vw, 181px);
   height:  clamp(16px, 5.09vw, 20px);
 }
 .arrow-venue {
-  width: clamp(10px, 3.05vw, 12px);
-  height: clamp(10px, 3.05vw, 12px);
+width: clamp(11.56px, 3.31vw, 13px);
+height: clamp(11.56px, 3.31vw, 13px);
   object-fit: contain;
 }
 .venue-celebration-banner {
