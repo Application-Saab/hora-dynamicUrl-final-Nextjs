@@ -102,8 +102,8 @@ font-size: clamp(10.22px, 3.25vw, 12.77px);
   position: absolute;
   bottom: 8px;
   right: 8px;
-  width: clamp(16px, 1.85vw, 18.25px);
-  height: clamp(16px, 1.85vw, 18.25px);
+width: clamp(18px, 5.34vw, 21px);
+height: clamp(18px, 5.34vw, 21px);
   border-radius: 50%;
   border: none;
  background: linear-gradient(180deg, #67239D 0%, #AD2D95 100%);
@@ -116,7 +116,6 @@ font-size: clamp(10.22px, 3.25vw, 12.77px);
 }
 
 .arrow-plan {
-  width: 12px;
-  height: 12px;
-  object-fit: contain;
+ width: clamp(14px, 4.07vw, 16px);
+height: clamp(14px, 4.07vw, 16px);
 }

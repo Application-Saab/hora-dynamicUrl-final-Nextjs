@@ -1,24 +1,55 @@
 "use client";
 import useApi from "@/hooks/useApi";
-import { GET_ALL_EVENTS_BY_USERID } from "@/utils/apiconstants";
+import { GET_ALL_EVENT_HUB } from "@/utils/apiconstants";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import "./Eventhub.css";
 import Image from "next/image";
 import celebrationRight from "@/assets/Homepageimages/celebration-right.webp";
 import celebrationLeft from "@/assets/Homepageimages/celebration-left.webp";
-import promoimage from "@/assets/Homepageimages/promoimage.svg"
-const DUMMY_AVATARS = [
-  "https://i.pravatar.cc/100?img=12",
-  "https://i.pravatar.cc/100?img=32",
-  "https://i.pravatar.cc/100?img=47",
-  "https://i.pravatar.cc/100?img=49",
+import promoimage from "@/assets/Homepageimages/promoimage.svg";
+
+// Har letter ke liye consistent color generate karne ke liye
+const AVATAR_COLORS = [
+  "#B91C1C", "#C2410C", "#A16207", "#15803D",
+  "#0E7490", "#1D4ED8", "#6D28D9", "#BE185D",
 ];
+
+const getAvatarColor = (name) => {
+  const char = (name || "G").trim().charAt(0).toUpperCase();
+  const index = char.charCodeAt(0) % AVATAR_COLORS.length;
+  return AVATAR_COLORS[index];
+};
+
+const GuestAvatar = ({ guest, zIndex }) => {
+  const name = guest?.name || "Guest";
+  const initial = name.trim().charAt(0).toUpperCase();
+
+  if (guest?.url) {
+    return (
+      <img
+        src={guest.url}
+        alt={name}
+        className="avatarss"
+        style={{ zIndex }}
+      />
+    );
+  }
+
+  return (
+    <div
+      className="avatarss avatar-letter"
+      style={{ zIndex, backgroundColor: getAvatarColor(name) }}
+    >
+      {initial}
+    </div>
+  );
+};
 
 const EventHub = ({ userId }) => {
   const pathname = usePathname();
   const { data, loading } = useApi(
-    userId ? `${GET_ALL_EVENTS_BY_USERID}/${userId}` : null,
+    userId ? `${GET_ALL_EVENT_HUB}/${userId}` : null,
     "get"
   );
   const isWonderlandInternational = pathname?.startsWith(
@@ -38,7 +69,24 @@ const EventHub = ({ userId }) => {
     }
   };
 
+  // Capsule type event hai ya nahi, API "dataType": "capsule" se batati hai.
+  const isCapsuleEvent = (event) =>
+    (event?.dataType || "").toString().toLowerCase() === "capsule";
+
   const getEventHref = (event) => {
+    if (isCapsuleEvent(event)) {
+      if (!event.capsuleUrl) {
+        // Capsule event hai lekin URL nahi mila — card ko clickable nahi rakhna,
+        // taaki galti se normal invite page pe na chala jaye.
+        return null;
+      }
+      // API khud hi direct capsuleUrl deti hai, usi ko use karo.
+      // Agar usme fromPanel=true already nahi hai to add kar do.
+      return event.capsuleUrl.includes("fromPanel=")
+        ? event.capsuleUrl
+        : `${event.capsuleUrl}${event.capsuleUrl.includes("?") ? "&" : "?"}fromPanel=true`;
+    }
+
     const basePath = isWonderlandInternational
       ? "/wonderlandinternational/invite"
       : "/wonderland/invite";
@@ -84,12 +132,12 @@ const EventHub = ({ userId }) => {
               (g) => g && (g.url || g.name)
             );
 
-            return (
-              <Link
-                href={getEventHref(event)}
-                className="event-hub-card"
-                key={event._id}
-              >
+            const href = getEventHref(event);
+            const capsule = isCapsuleEvent(event);
+            const isDisabled = !href;
+
+            const cardInner = (
+              <>
                 {/* LEFT - THUMBNAIL IMAGE */}
                 <div className="event-hub-thumb">
                   {thumbSrc ? (
@@ -126,57 +174,80 @@ const EventHub = ({ userId }) => {
                     <span>{formatDate(event.eventDate)}</span>
                   </div>
 
-                  <div className="event-avatars-row">
-                    <div className="event-avatars">
-                      {realGuests.length > 0
-                        ? realGuests.slice(0, 4).map((g, i) => (
-                            <img
-                              key={g._id || g.id || `${event._id}-${i}`}
-                              src={g.url || DUMMY_AVATARS[i % DUMMY_AVATARS.length]}
-                              alt={g.name || "guest"}
-                              className="avatarss"
-                              style={{ zIndex: 10 - i }}
-                            />
-                          ))
-                        : DUMMY_AVATARS.map((avatar, i) => (
-                            <img
-                              key={`dummy-${i}`}
-                              src={avatar}
-                              alt="Guest"
-                              className="avatar"
-                              style={{ zIndex: 10 - i }}
-                            />
-                          ))}
+                  {realGuests.length > 0 ? (
+                    <div className="event-avatars-row">
+                      <div className="event-avatars">
+                        {realGuests.slice(0, 4).map((g, i) => (
+                          <GuestAvatar
+                            key={g._id || g.id || `${event._id}-${i}`}
+                            guest={g}
+                            zIndex={10 - i}
+                          />
+                        ))}
+                      </div>
+
+                      {realGuests.length > 4 && (
+                        <span className="avatar-more">
+                          +{realGuests.length - 4}
+                        </span>
+                      )}
                     </div>
+                  ) : (
+                    <div className="event-avatars-row event-avatars-empty">
+                      <span className="no-guests-text">No guests</span>
+                    </div>
+                  )}
 
-                    {realGuests.length > 4 && (
-                      <span className="avatar-more">
-                        +{realGuests.length - 4}
-                      </span>
-                    )}
-                  </div>
-
-                  <span className="visit-btn">
-                    Visit Event
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <path d="M9 6l6 6-6 6" />
-                    </svg>
-                  </span>
+                  {isDisabled ? (
+                    <span className="visit-btn visit-btn-disabled">
+                      Link not available
+                    </span>
+                  ) : (
+                    <span className="visit-btn">
+                      Visit Event
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M9 6l6 6-6 6" />
+                      </svg>
+                    </span>
+                  )}
                 </div>
+              </>
+            );
+
+            // capsuleUrl na milne par card ko clickable nahi rakhte — plain div.
+            if (isDisabled) {
+              return (
+                <div
+                  className="event-hub-card event-hub-card-disabled"
+                  key={event._id}
+                >
+                  {cardInner}
+                </div>
+              );
+            }
+
+            return (
+              <Link
+                href={href}
+                className="event-hub-card"
+                key={event._id}
+                {...(capsule ? { target: "_self" } : {})}
+              >
+                {cardInner}
               </Link>
             );
           })}
 
           {/* STATIC PROMO CARD - always shown at the end */}
           <div className="event-hub-promo-card">
-           <div className="promo-icon-wrap">
-  <Image
-    src={promoimage}
-    alt="Promo"
-    width={50}
-    height={50}
-  />
-</div>
+            <div className="promo-icon-wrap">
+              <Image
+                src={promoimage}
+                alt="Promo"
+                width={50}
+                height={50}
+              />
+            </div>
             <p>Don't let memories fade—track and relive every event.</p>
           </div>
         </div>

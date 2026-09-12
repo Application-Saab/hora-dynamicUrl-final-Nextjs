@@ -34,11 +34,11 @@ export default function VenueFinder({ onSelectVenue }) {
         <p>Book the Best Venues for your unforgettable events</p>
       </div>
 
-      <div className="venue-scroll-row">
+      <div className="venue-scroll">
         {venues.map((v) => (
           <Link
-            href={buildHref(`/venue-list/${v.slug}`)}
-            className="venue-Scard"
+            href={buildHref(v.path || `/venue-list?category=${v.id}`)}
+            className="venue-card"
             key={v.id}
             onClick={() => onSelectVenue && onSelectVenue(v.id)}
           >
@@ -60,19 +60,22 @@ export default function VenueFinder({ onSelectVenue }) {
       </div>
 
       {/* IMAGE BACKGROUND + OVERLAY BUTTON */}
-      <div className="venue-celebration-banner">
-        <Image
-          src={celebrationBanner}
-          alt="Every Celebration Brings People Closer. Create Memories And Live After"
-          className="celebration-banner-img"
-        />
-        <Link href={buildHref("/venue-list")} className="venue-cta venue-cta-overlay">
-          View All Venues
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M9 6l6 6-6 6" />
-          </svg>
-        </Link>
-      </div>
+  <div className="venue-celebration-banner">
+  <Image
+    src={celebrationBanner}
+    alt="Every Celebration Brings People Closer. Create Memories And Live After"
+    className="celebration-banner-img"
+  />
+<Link href={buildHref("/venue-list")} className="venue-cta-overlay">
+  <div className="venue-cta">
+    <span>View All Venues</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <path d="M9 6l6 6-6 6" />
+    </svg>
+  </div>
+  
+</Link>
+</div>
     </div>
   );
 }
