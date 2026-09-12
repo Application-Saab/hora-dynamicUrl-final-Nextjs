@@ -1,6 +1,6 @@
 import OtpLogin from "@/components/OtpLoginPopup";
 import { useRouter } from "next/router";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import wonderlandBanner from "@/assets/wonderlandBanner1.webp";
 import howitworks from "@/assets/howitworks2.jpg";
@@ -24,6 +24,10 @@ const WonderlandMainPage = () => {
   const [loggedinUserId, setLoggedinUserId] = useState("");
   const [authChecked, setAuthChecked] = useState(false);
   const [showHostLoginModal, setShowHostLoginModal] = useState(false);
+
+  // Guard: redirect-on-login timer sirf ek baar hi trigger ho, chahe
+  // storage/loginStateChange events kitni bhi baar fire hon.
+  const hasScheduledRedirect = useRef(false);
 
   // ---- Client-only: read login state + sync across tabs ----
   useEffect(() => {
@@ -50,13 +54,15 @@ const WonderlandMainPage = () => {
   // ---- Client-only: auto-redirect logged-in users ----
   useLayoutEffect(() => {
     if (!authChecked) return;
+    if (!isUserLoggedIn || !loggedinUserId) return;
+    if (hasScheduledRedirect.current) return; // already scheduled, don't re-arm
 
-    let timer;
-    if (isUserLoggedIn && loggedinUserId) {
-      timer = setTimeout(() => {
-        router.push(`/wonderland`);
-      }, 2500);
-    }
+    hasScheduledRedirect.current = true;
+
+    const timer = setTimeout(() => {
+      // scroll: false — taaki is redirect ki wajah se page scroll top pe reset na ho
+      router.push(`/wonderland`, undefined, { scroll: false });
+    }, 2500);
 
     return () => clearTimeout(timer);
   }, [authChecked, isUserLoggedIn, loggedinUserId, router]);
@@ -95,7 +101,7 @@ const WonderlandMainPage = () => {
       return;
     }
 
-    router.replace("/wonderland/invite");
+    router.replace("/wonderland/invite", undefined, { scroll: false });
   };
 
   return (
@@ -169,7 +175,7 @@ const WonderlandMainPage = () => {
         isOpen={showHostLoginModal}
         onClose={() => {
           setShowHostLoginModal(false);
-          router.replace("/wonderland/invite");
+          router.replace("/wonderland/invite", undefined, { scroll: false });
         }}
       />
     </>

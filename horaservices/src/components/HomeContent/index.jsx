@@ -53,11 +53,31 @@ export default function HomeContent() {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem(STORAGE_KEYS.USER_ID);
-    if (storedUserId) {
-      setLoggedinUserId(storedUserId);
-      setIsUserLoggedIn(true);
-    }
+    const syncLoginState = () => {
+      const storedUserId = localStorage.getItem(STORAGE_KEYS.USER_ID);
+      if (storedUserId) {
+        setLoggedinUserId(storedUserId);
+        setIsUserLoggedIn(true);
+      } else {
+        // user ne logout kiya ho to state bhi clear ho jaye
+        setLoggedinUserId(null);
+        setIsUserLoggedIn(false);
+      }
+    };
+
+    // Initial read (page load / hard refresh)
+    syncLoginState();
+
+    // Same-tab login (bina page reload ke) — jahan bhi login success hota hai,
+    // wahan window.dispatchEvent(new Event("loginStateChange")) call karna hoga.
+    window.addEventListener("loginStateChange", syncLoginState);
+    // Cross-tab login/logout sync
+    window.addEventListener("storage", syncLoginState);
+
+    return () => {
+      window.removeEventListener("loginStateChange", syncLoginState);
+      window.removeEventListener("storage", syncLoginState);
+    };
   }, []);
   // ----------------------
 
