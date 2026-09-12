@@ -616,11 +616,11 @@ function DecorationCatDetails({
               </div>
             </div>
 
-            <div style={{ padding: "0 10px" }}>
+            <div style={{     padding: "clamp(8px, 2.5vw, 10px) clamp(8px, 2.5vw, 10px) 0px", }}>
               {getItemInclusion(product.inclusion)}
-              <MakeItYoursBanner />
+             
             </div>
-
+ <MakeItYoursBanner />
             <div ref={addonRef}>
               <AddonModal
                 isOpen={isModalOpen}
