@@ -29,8 +29,8 @@ const VenuelandMainPage = ({
 }) => {
   const router = useRouter();
   const { selectedCityName } = useCity();
-  const { city: queryCity } = router.query;
 
+const { city: queryCity, venueCat: queryVenueCat } = router.query; // venue -> venueCat
   const [pathCitySlug, setPathCitySlug] = useState(propCitySlug || "");
 
   useEffect(() => {
@@ -52,6 +52,19 @@ const VenuelandMainPage = ({
     setIsUserLoggedIn(safeGetItem("isLoggedIn") === "true");
     setLoggedinUserId(safeGetItem("userID") || "");
   }, []);
+
+  // URL ke venue slug ko activeVenueType ke saath sync karo
+useEffect(() => {
+  if (!router.isReady) return;
+
+  if (!queryVenueCat) {
+    setActiveVenueType("all");
+    return;
+  }
+
+  const matched = venueData.find((v) => v.slug === queryVenueCat);
+  setActiveVenueType(matched ? matched.id : "all");
+}, [queryVenueCat, router.isReady]);
 
   // Priority: SSR prop > query > path > context
   const rawCitySlug = propCitySlug || queryCity || pathCitySlug || "";
@@ -137,7 +150,11 @@ const VenuelandMainPage = ({
           />
         </div>
 
-        <VenueCircle active={activeVenueType} onSelect={setActiveVenueType} />
+        <VenueCircle
+          active={activeVenueType}
+          onSelect={setActiveVenueType}
+          citySlug={rawCitySlug}
+        />
 
         <VenueList
           eventType={activeEvent}
