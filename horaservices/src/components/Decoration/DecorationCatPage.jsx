@@ -460,54 +460,50 @@ const DecorationCatPage = ({
     );
   };
 
-  const handleViewDetails = (item) => {
-    if (!item?.slug && !item?.product_slug && !item?.name) return;
+  const buildBasePath = () => {
+  let base = "";
+  if (city) base += `/${city.toLowerCase()}`;
+  if (locality) base += `/${locality.toLowerCase()}`;
+  return base;
+};
 
-    const productSlug =
-      item.slug ||
-      item.product_slug ||
-      item.name.toLowerCase().replace(/\s+/g, "-");
+// Real product URL for <a href>
+const getProductHref = (item) => {
+  if (!item) return "#";
+  const productSlug =
+    item.slug ||
+    item.product_slug ||
+    (item.name ? item.name.toLowerCase().replace(/\s+/g, "-") : "");
+  if (!productSlug || !catValue) return "#";
+  const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+  if (!categorySlug) return "#";
+  return `${buildBasePath()}/${categorySlug}/${catValue}/product/${productSlug}`;
+};
 
-    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+const getCategoryHref = (item) => {
+  if (!item?.value || !catValue) return "#";
+  const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+  return `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}`;
+};
 
-    if (!categorySlug || !catValue) {
-      console.warn("Missing categorySlug or catValue", {
-        categorySlug,
-        catValue,
-      });
-      return;
-    }
+// Tracking only — navigation <a href> se hogi
+const handleViewDetails = (item) => {
+  if (!item) return;
+  // optional GTM yahan
+};
 
-    let base = "";
-    if (city) base += `/${city.toLowerCase()}`;
-    if (locality) base += `/${locality.toLowerCase()}`;
+const openCatItems = (item) => {
+  if (!item?.value || !catValue) return;
 
-    const finalPath = `${base}/${categorySlug}/${catValue}/product/${productSlug}`;
+  hasHydratedFromCache.current = false;
+  setSelectedPriceTheme(null);
 
-    router.push(finalPath);
-  };
-
-  // Navigates to the themed variant of the current category page (?theme=...).
-  // Used by CategoryTabs (kids-birthday / naming-ceremony) and by the
-  // "Matching Categories" results in the search dropdown.
-  const openCatItems = (item) => {
-    if (!item?.value || !catValue) return;
-
-    // CategoryTabs se koi theme (jaise Cocomelon) select ho raha hai —
-    // isliye price-range segmentation (Budget/Value/Photogenic/Stage)
-    // clear kar dete hain, dono ek saath active nahi rehne chahiye.
-    hasHydratedFromCache.current = false; // genuine navigation/user action
-    setSelectedPriceTheme(null);
-
-    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
-
-    let base = "";
-    if (city) base += `/${city.toLowerCase()}`;
-    if (locality) base += `/${locality.toLowerCase()}`;
-
-    const finalPath = `${base}/${categorySlug}/${catValue}/${item.value}`;
-    router.push(finalPath);
-  };
+  // CategoryTabs ab khud <a href> se navigate karega.
+  // SearchSortBar abhi bhi onCategorySelect pe depend karta hai:
+  const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+  const finalPath = `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}`;
+  router.push(finalPath);
+};
 
   const toggleShowAll = () => {
     setShowAll((prev) => !prev);
@@ -567,13 +563,14 @@ const DecorationCatPage = ({
                 <DecorationBanner category={normalizedCat} />
               </section>
               <SearchSortBar
-                sortOption={sortOption}
                 onSortChange={handleSortChange}
                 searchCategoryList={searchCategoryList}
                 products={sortedCatalogueData}
-                onCategorySelect={(item) => openCatItems(item, themeFilter)}
+                onCategorySelect={openCatItems}
                 onProductSelect={handleViewDetails}
                 onSearchChange={handleSearchChange}
+                getProductHref={getProductHref}
+                getCategoryHref={getCategoryHref}
                 userId={userId}
               />
 
@@ -635,6 +632,7 @@ const DecorationCatPage = ({
                     <ProductGrid
                       data={priceThemeFilteredData}
                       onCardClick={handleViewDetails}
+                      getHref={getProductHref}
                       catValue={catValue}
                     />
                   ) : isSearchActive ? (
@@ -643,6 +641,7 @@ const DecorationCatPage = ({
                       <ProductGrid
                         data={defaultCatalogueData}
                         onCardClick={handleViewDetails}
+                        getHref={getProductHref}
                         catValue={catValue}
                       />
                     ) : null
@@ -668,23 +667,27 @@ const DecorationCatPage = ({
                   <ProductGrid
                     data={sortedCatalogueData.slice(0, 4)}
                     onCardClick={handleViewDetails}
+                    getHref={getProductHref}
                     catValue={catValue}
                   />
 
                   <HighPriceProduct
                     data={highPriceProducts.slice(0, 1)}
                     onCardClick={handleViewDetails}
+                    getHref={getProductHref}
                   />
                   <MakeItYoursBanner />
                   <ProductGrid
                     data={sortedCatalogueData.slice(4, 10)}
                     onCardClick={handleViewDetails}
+                    getHref={getProductHref}
                     catValue={catValue}
                   />
 
                   <HighPriceProduct
                     data={highPriceProducts.slice(1, 2)}
                     onCardClick={handleViewDetails}
+                    getHref={getProductHref}
                   />
                   {!shouldHideBanner("DidyouKnow") && (
                     <section className="decorationBanner">
@@ -703,10 +706,12 @@ const DecorationCatPage = ({
                     data={sortedCatalogueData.slice(10, 14)}
                     onCardClick={handleViewDetails}
                     catValue={catValue}
+                    getHref={getProductHref}
                   />
                   <HighPriceProduct
                     data={highPriceProducts.slice(2, 3)}
                     onCardClick={handleViewDetails}
+                    getHref={getProductHref}
                   />
                   {!shouldHideBanner("makeItMemorable") && (
                     <section className="decorationBanner">
@@ -725,10 +730,12 @@ const DecorationCatPage = ({
                     data={sortedCatalogueData.slice(14, 20)}
                     onCardClick={handleViewDetails}
                     catValue={catValue}
+                    getHref={getProductHref}
                   />
                   <HighPriceProduct
                     data={highPriceProducts.slice(3, 4)}
                     onCardClick={handleViewDetails}
+                    getHref={getProductHref}
                   />
                   <section className="decorationBanner">
                     <Image
@@ -745,10 +752,12 @@ const DecorationCatPage = ({
                     data={sortedCatalogueData.slice(20, 26)}
                     onCardClick={handleViewDetails}
                     catValue={catValue}
+                    getHref={getProductHref}
                   />
                   <HighPriceProduct
                     data={highPriceProducts.slice(4, 5)}
                     onCardClick={handleViewDetails}
+                    getHref={getProductHref}
                   />
                   {!shouldHideBanner("makeitmemorablebanner") && (
                     <section className="decorationBanner">
@@ -767,10 +776,12 @@ const DecorationCatPage = ({
                     data={sortedCatalogueData.slice(26, 32)}
                     onCardClick={handleViewDetails}
                     catValue={catValue}
+                    getHref={getProductHref}
                   />
                   <HighPriceProduct
                     data={highPriceProducts.slice(5, 6)}
                     onCardClick={handleViewDetails}
+                    getHref={getProductHref}
                   />
                   <div className="highlight-wrapper">
                     <h3 className="highlight-title">
@@ -835,6 +846,7 @@ const DecorationCatPage = ({
                       data={groupProducts}
                       onCardClick={handleViewDetails}
                       catValue={catValue}
+                      getHref={getProductHref}
                     />
 
                     {!isThemePage && highPriceProducts[highPriceIndex] && (
@@ -844,6 +856,7 @@ const DecorationCatPage = ({
                           highPriceIndex + 1,
                         )}
                         onCardClick={handleViewDetails}
+                        getHref={getProductHref}
                       />
                     )}
                   </React.Fragment>

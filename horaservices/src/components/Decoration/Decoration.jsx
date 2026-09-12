@@ -399,13 +399,6 @@ const Decoration = ({ city, locality }) => {
           <li> 🛠️ Easy Customize</li>
           <li>💬 Customer Support</li>
         </ul>
-        {/* <button onClick={handleWhatsApp} className="whatsapp-btn">
-          <img
-            src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png"
-            alt="WhatsApp"
-          />
-          Chat Now on WhatsApp
-        </button> */}
         <a
           type="button"
           href={`https://wa.me/7338584828?text=${encodeURIComponent(

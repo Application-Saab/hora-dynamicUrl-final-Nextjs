@@ -1,12 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 import "./DecorGrid.css";
 
 const DecorGrid = ({ largeCard, smallCards, city = "", locality = "", decCat = [] }) => {
-  const router = useRouter();
   const pathname = usePathname();
 
   // Normalize string for matching
@@ -27,6 +26,7 @@ const DecorGrid = ({ largeCard, smallCards, city = "", locality = "", decCat = [
     return path;
   };
 
+  // Only tracking (navigation ab <a href> se hogi)
   const handleClick = (card) => {
     const matched = decCat.find(
       (cat) => normalize(cat.catValue) === normalize(card.catValue)
@@ -37,7 +37,6 @@ const DecorGrid = ({ largeCard, smallCards, city = "", locality = "", decCat = [
       return;
     }
 
-    // 🔹 GTM / dataLayer event
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "decoration_item_clicked",
@@ -50,9 +49,6 @@ const DecorGrid = ({ largeCard, smallCards, city = "", locality = "", decCat = [
       city: city || "default",
       locality: locality || "default",
     });
-
-    // ✅ Navigate
-    router.push(buildCardPath(card));
   };
 
   return (
@@ -60,7 +56,7 @@ const DecorGrid = ({ largeCard, smallCards, city = "", locality = "", decCat = [
       <div className="decor-card-grid">
         <h4 className="decorke-wedding-heading">Your Dream Wedding Starts Here</h4>
 
-        {/* 🔶 Large Card */}
+        {/* Large Card */}
         <div className="decor-large-card">
           <div className="decor-large-image-box">
             <Image
@@ -74,17 +70,25 @@ const DecorGrid = ({ largeCard, smallCards, city = "", locality = "", decCat = [
           <div className="decor-large-content">
             <h3 className="decor-large-title">{largeCard.title}</h3>
             <p className="decor-large-subtitle">{largeCard.description}</p>
-            <button className="decor-view-btn" onClick={() => handleClick(largeCard)}>
+
+            <a
+              type="button"
+              href={buildCardPath(largeCard)}
+              className="decor-view-btn"
+              onClick={() => handleClick(largeCard)}
+            >
               View more
-            </button>
+            </a>
           </div>
         </div>
 
-        {/* 🔹 Small Cards */}
+        {/* Small Cards */}
         <div className="decor-small-cards-container">
           {smallCards.map((card, index) => (
-            <div
+            <a
               key={index}
+              type="button"
+              href={buildCardPath(card)}
               className="decor-small-card-wrapper"
               onClick={() => handleClick(card)}
               style={{ cursor: "pointer" }}
@@ -101,7 +105,7 @@ const DecorGrid = ({ largeCard, smallCards, city = "", locality = "", decCat = [
                 </div>
               </div>
               <h4 className="decor-small-label">{card.title}</h4>
-            </div>
+            </a>
           ))}
         </div>
       </div>

@@ -94,6 +94,8 @@ function SearchDropdown({
   categoryType,
   onSelectCategory,
   onSelectProduct,
+  getProductHref,
+  getCategoryHref,
 }) {
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [showAllProducts, setShowAllProducts] = useState(false);
@@ -173,10 +175,15 @@ function SearchDropdown({
           </div>
 
           {visibleCategories.map((cat) => (
-            <div
+            <a
               key={cat.id}
+              type="button"
+              href={getCategoryHref?.(cat) || "#"}
               className="search-category-row"
-              onClick={() => onSelectCategory?.(cat)}
+              onClick={(e) => {
+                // tracking + close dropdown parent handle karega
+                onSelectCategory?.(cat);
+              }}
             >
               <div className="search-category-thumb">
                 {cat.image && (
@@ -192,7 +199,7 @@ function SearchDropdown({
                 <div className="search-category-name">{cat.label}</div>
               </div>
               <ChevronRight size={18} className="search-row-chevron" />
-            </div>
+            </a>
           ))}
         </div>
       )}
@@ -206,8 +213,10 @@ function SearchDropdown({
           {visibleProducts.map((product, idx) => {
             const thumb = getProductThumb(product);
             return (
-              <div
+              <a
                 key={product._id || product.id || idx}
+                type="button"
+                href={getProductHref?.(product) || "#"}
                 className="search-product-row"
                 onClick={() => onSelectProduct?.(product)}
               >
@@ -228,7 +237,7 @@ function SearchDropdown({
                 <div className="search-product-price">
                   {getProductPrice(product)}
                 </div>
-              </div>
+              </a>
             );
           })}
 
@@ -256,6 +265,8 @@ export default function SearchSortBar({
   onCategorySelect,
   onProductSelect,
   onSearchChange,
+  getProductHref,
+  getCategoryHref,
   userId = null,
 }) {
   const [isSortOpen, setIsSortOpen] = useState(false);
@@ -478,6 +489,8 @@ export default function SearchSortBar({
             categoryType={categoryType}
             onSelectCategory={handleCategoryClick}
             onSelectProduct={handleProductClick}
+            getProductHref={getProductHref}
+            getCategoryHref={getCategoryHref}
           />
         )}
 

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useRef, useEffect, useState, useCallback } from "react";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 import "./CategoryTabs.css";
@@ -17,7 +17,6 @@ const CategoryTabs = ({
   icon,
   fireIcon,
 }) => {
-  const router = useRouter();
   const pathname = usePathname();
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -63,12 +62,18 @@ const CategoryTabs = ({
   };
 
   // Helper to get href for Grid variant
+  // const getGridHref = (cat) => {
+  //   if (!cat || !catValue) return "#";
+  //   const ROOT_CATEGORY = "balloon-decoration";
+  //   const themeSlug = `${cat.value}-theme-decoration`;
+  //   return formatPath(`/${ROOT_CATEGORY}/${catValue}/${themeSlug}`);
+  // };
   const getGridHref = (cat) => {
-    if (!cat || !catValue) return "#";
-    const ROOT_CATEGORY = "balloon-decoration";
-    const themeSlug = `${cat.value}-theme-decoration`;
-    return formatPath(`/${ROOT_CATEGORY}/${catValue}/${themeSlug}`);
-  };
+  if (!cat || !catValue) return "#";
+  const baseRoute = getCategorySlugFromPath(pathname, city, locality);
+  // Match openCatItems: /{categorySlug}/{catValue}/{themeValue}
+  return formatPath(`/${baseRoute}/${catValue}/${cat.value}`);
+};
 
   // Helper to get href for Circle tabs variant
   const getCircleHref = (cat) => {
