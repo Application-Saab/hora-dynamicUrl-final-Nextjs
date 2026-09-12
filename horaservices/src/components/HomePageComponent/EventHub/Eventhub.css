@@ -266,7 +266,7 @@ font-size: clamp(5.8px, 1.73vw, 6.8px);
   line-height: 100%;
   letter-spacing: 0;
   text-align: center;
-
+  margin-top:auto;
   color: #69249E;
 
   padding: clamp(3.2px, 1.02vw, 4px);
@@ -330,4 +330,9 @@ width: clamp(56px, 16.79vw, 66px);
 height: clamp(52px, 15.52vw, 61px);
   object-fit: contain;
   flex-shrink: 0;
+}
+.no-guests-text {
+  font-size: 12px;
+  color: #999;
+  font-style: italic;
 }
