@@ -39,12 +39,24 @@ const parseDateSafely = (dateInput) => {
 
   return new Date(dateInput);
 };
+
 const pickExistingEventDate = (events) => {
   if (!events || events.length === 0) return null;
 
+  const todayOnly = new Date();
+  todayOnly.setHours(0, 0, 0, 0);
+
   for (let i = events.length - 1; i >= 0; i--) {
     const parsed = parseDateSafely(events[i].date);
-    if (!isNaN(parsed.getTime())) return parsed;
+    if (isNaN(parsed.getTime())) continue;
+
+    const parsedDateOnly = new Date(
+      parsed.getFullYear(),
+      parsed.getMonth(),
+      parsed.getDate()
+    );
+
+    if (parsedDateOnly >= todayOnly) return parsed;
   }
   return null;
 };
@@ -78,7 +90,7 @@ export default function DateSelectionBottomSheet({
     setError(null);
     setResolvedMode(null);
 
- if (initialDate) {
+    if (initialDate) {
       const parsedInitial = parseDateSafely(initialDate);
       if (!isNaN(parsedInitial.getTime())) {
         setSelectedDate(parsedInitial);
@@ -102,7 +114,7 @@ export default function DateSelectionBottomSheet({
         if (cancelled) return;
         const events = json?.data?.eventDates || [];
         setResolvedMode(events.length > 0 ? "add" : "create");
-     const existingDate = pickExistingEventDate(events);
+        const existingDate = pickExistingEventDate(events);
         if (existingDate) {
           setSelectedDate(existingDate);
           setViewMonth(existingDate.getMonth());
@@ -204,6 +216,13 @@ export default function DateSelectionBottomSheet({
       }
 
       const data = await res.json();
+
+      // Is component ka kaam sirf date save karna hai. Reminder-popup
+      // dikhana ab poori tarah parent (jaise EventDateBanner ya
+      // PageLayout) ki zimmedari hai — wahi apna isOpen/showDateSheet
+      // state control karte hain, isliye reminder wahin trigger hona
+      // chahiye, taaki kisi bhi entry-point se sheet band ho jaane ka
+      // race condition reminder ko na roke.
       if (onConfirm) onConfirm(selectedDate, data);
       onClose();
     } catch (err) {
@@ -241,13 +260,18 @@ export default function DateSelectionBottomSheet({
     <div className="dsb-device">
       <div className="dsb-overlay" onClick={onClose} />
 
-      <button className="dsb-close-btn" onClick={onClose} aria-label="Close">
-        <X size={16} strokeWidth={2.4} color="#1a1a1a" />
-      </button>
+      {/* ✅ CHANGE 1: naya wrapper daala jiska overflow visible hai,
+          close button ab isi wrapper ke andar hai — .dsb-sheet ke andar
+          nahi, warna sheet ka apna overflow-y:auto button ko bahar
+          se clip/hide kar deta tha (real device par isiliye X nahi
+          dikh raha tha) */}
+      <div className="dsb-sheet-wrapper">
+        <button className="dsb-close-btn" onClick={onClose} aria-label="Close">
+          <X size={16} strokeWidth={2.4} color="#1a1a1a" />
+        </button>
 
-      <div className="dsb-sheet">
+        <div className="dsb-sheet">
         <div className="dsb-header">
-       
           <Image
             src={calendarBgimage}
             alt=""
@@ -310,6 +334,7 @@ export default function DateSelectionBottomSheet({
         </div>
 
         {error && <p className="dsb-error">{error}</p>}
+        </div>
       </div>
 
       <div className="dsb-footer">
