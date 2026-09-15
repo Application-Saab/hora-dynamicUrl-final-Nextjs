@@ -29,6 +29,7 @@ import OtpLoginPopup from "../../components/OtpLoginPopup";
 import { formatDate } from "../../utils/formateDate";
 import axiosApi from "@/utils/axiosApi";
 import { safeGetItem } from "@/utils/safeStorage";
+import Head from "next/head";
 
 const FoodDeliveryCheckout = () => {
   //   const { selectedDishesFoodDelivery , selectedOption ,orderType, selectedDishDictionary, selectedDishPrice, totalOrderAmount , selectedDishQuantities , peopleCount} = useLocation().state || {}; // Accessing subCategory and itemName safely
