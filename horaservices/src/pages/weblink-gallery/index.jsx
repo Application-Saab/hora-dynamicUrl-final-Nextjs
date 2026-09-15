@@ -31,14 +31,7 @@ const PhotoGallery = () => {
   }, []);
 
   const buildCanonical = () => {
-    if (!folderName || !customerId) {
-      return `${SITE}${GALLERY_PATH}`;
-    }
-    const qs = new URLSearchParams({
-      folderName,
-      customerId,
-    });
-    return `${SITE}${GALLERY_PATH}?${qs.toString()}`;
+    return `${SITE}${GALLERY_PATH}}`;
   };
 
   const canonicalUrl = buildCanonical();
