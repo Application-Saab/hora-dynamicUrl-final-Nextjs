@@ -1,0 +1,133 @@
+/* ==========================================================================
+   SectionDescription.css
+   Standalone styles — no Bootstrap classes used, everything scoped under
+   the .sectionDescription__* classNames from SectionDescription.jsx
+   ========================================================================== */
+
+:root {
+  --hora-purple: #97538C;       /* heading color */
+  --hora-purple-dark: #6a1e70;  /* hover / active state */
+  --hora-purple-soft: #f3e6f5;  /* light tint for table header / hover bg */
+  --hora-text-muted: #000000;   /* body paragraph color */
+  --hora-border: #00000033;
+}
+
+/* Optional Google Fonts — remove this line if your project already loads fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500&display=swap');
+
+.sectionDescription {
+  max-width: 480px;
+  margin: auto;
+  padding: 0 8px;
+}
+
+.sectionDescription__inner {
+  width: 100%;
+}
+
+/* "Description" main title */
+.sectionDescription__title {
+font-family: Inter;
+font-weight: 700;
+font-size: clamp(17px, 4.92vw, 21px);
+  color: var(--hora-purple);
+  text-transform: capitalize;
+  border-bottom: 1px solid var(--hora-border);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+/* Each heading + blocks group */
+.sectionDescription__section {
+  margin-bottom: 10px;
+      border-bottom: 1px solid var(--hora-border);
+}
+
+/* Sub-heading, e.g. "What is included, and how booking works" */
+.sectionDescription__heading {
+font-family: Inter;
+font-weight: 700;
+font-style: Bold;
+font-size: clamp(12px, 3.56vw, 16px);
+  color: var(--hora-purple);
+  margin-bottom: 0.75rem;
+}
+
+/* Body paragraph */
+.sectionDescription__paragraph {
+font-family: Inter;
+font-weight: 400;
+font-style: Regular;
+line-height: 18px;
+font-size: clamp(8.5px, 2.52vw, 11px);
+  color: var(--hora-text-muted);
+  margin-bottom: 0.75rem;
+}
+
+/* Table wrapper — handles horizontal scroll on small screens */
+.sectionDescription__tableWrap {
+  overflow-x: auto;
+  margin-bottom: 0.75rem;
+}
+
+.sectionDescription__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+}
+
+.sectionDescription__tableHeadCell {
+  background-color: var(--hora-purple-soft);
+  color: var(--hora-purple-dark);
+  font-family: Inter;
+font-weight: 500;
+font-style: Medium;
+font-size: clamp(10.5px, 3.05vw, 14px);
+vertical-align: middle;
+  text-align: left;
+  padding: 8px;
+  border: 1px solid var(--hora-border);
+}
+
+.sectionDescription__tableCell {
+    font-family: Inter;
+font-weight: 400;
+font-size: clamp(10.3px, 3vw, 13.5px);
+  color: var(--hora-text-muted);
+  padding: 8px;
+  border: 1px solid var(--hora-border);
+}
+
+.sectionDescription__tableRow:hover .sectionDescription__tableCell {
+  background-color: var(--hora-purple-soft);
+}
+
+/* List (occasions, cities we serve) */
+.sectionDescription__list {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.sectionDescription__listItem {
+ font-family: Inter;
+font-weight: 400;
+font-size: clamp(8.5px, 2.52vw, 11px);
+line-height: 18px;
+letter-spacing: 0%;
+  color: var(--hora-text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.sectionDescription__link {
+  color: var(--hora-purple);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.sectionDescription__link:hover {
+  color: var(--hora-purple-dark);
+  text-decoration: underline;
+}
+
