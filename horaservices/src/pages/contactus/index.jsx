@@ -209,138 +209,102 @@ const ContactUs = () => {
                 className="contact-us-img-section-1"
                 style={styles.cityContact}
               >
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={mumbai} alt="Mumbai" />
-                  <h4 className="contact-us-heading">
-                    <a href="/mumbai">Mumbai</a>
-                  </h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={delhi} alt="Delhi" />
-                  <h4 className="contact-us-heading">
-                    <a href="/delhi">Delhi</a>
-                  </h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image
-                    className="contact-us-img"
-                    src={banglore}
-                    alt="Bengaluru"
-                  />
-                  <h4 className="contact-us-heading">
-                    <a href="/bengaluru">Bengaluru</a>
-                  </h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image
-                    className="contact-us-img"
-                    src={banglore}
-                    alt="Bangalore"
-                  />
-                  <h4 className="contact-us-heading">
-                    <a href="/bangalore">Bangalore</a>
-                  </h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={noida} alt="Noida" />
-                  <h4 className="contact-us-heading">
-                    <a href="/noida">Noida</a>
-                  </h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image
-                    className="contact-us-img"
-                    src={ghaziabad}
-                    alt="Ghaziabad"
-                  />
-                  <h4 className="contact-us-heading">
-                    <a href="/ghaziabad">Gaziabad</a>
-                  </h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image
-                    className="contact-us-img"
-                    src={gurugram}
-                    alt="Gurugram"
-                  />
-                  <h4 className="contact-us-heading">
-                    <a href="/gurugram">Gurugram</a>
-                  </h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image
-                    className="contact-us-img"
-                    src={faridabad}
-                    alt="Faridabad"
-                  />
-                  <h4 className="contact-us-heading">
-                    <a href="/faridabad">Faridabad</a>
-                  </h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image
-                    className="contact-us-img"
-                    src={hydrabad}
-                    alt="Hyderabad"
-                  />
-                  <h4 className="contact-us-heading">
-                    <a href="/hyderabad">Hydrabad</a>
-                  </h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={chennai} alt="Chennai" />
-                  <h4 className="contact-us-heading">
-                    <a href="/chennai">Chennai</a>
-                  </h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={kolkata} alt="Kolkata" />
-                  <h4 className="contact-us-heading">
-                    <a href="/kolkata">Kolkata</a>
-                  </h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={lakhnow} alt="Lucknow" />
-                  <h4 className="contact-us-heading">
-                    <a href="/lucknow">Lucknow</a>
-                  </h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={kanpur} alt="Kanpur" />
-                  <h4 className="contact-us-heading">
-                    <a href="/kanpur">Kanpur</a>
-                  </h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={indore} alt="Indore" />
-                  <h4 className="contact-us-heading">
-                    <a href="/indore">Indore</a>
-                  </h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={surat} alt="Surat" />
-                  <h4 className="contact-us-heading">
-                    <a href="/surat">Surat</a>
-                  </h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={bhopal} alt="Bhopal" />
-                  <h4 className="contact-us-heading">
-                    <a href="/bhopal">Bhopal</a>
-                  </h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={goa} alt="Goa" />
-                  <h4 className="contact-us-heading">
-                    <a href="/goa">Goa</a>
-                  </h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={pune} alt="Pune" />
-                  <h4 className="contact-us-heading">
-                    <a href="/pune">Pune</a>
-                  </h4>
-                </div>
+                {[
+                  {
+                    href: "/mumbai",
+                    src: mumbai,
+                    alt: "Mumbai",
+                    label: "Mumbai",
+                  },
+                  { href: "/delhi", src: delhi, alt: "Delhi", label: "Delhi" },
+                  {
+                    href: "/bengaluru",
+                    src: banglore,
+                    alt: "Bengaluru",
+                    label: "Bengaluru",
+                  },
+                  {
+                    href: "/bangalore",
+                    src: banglore,
+                    alt: "Bangalore",
+                    label: "Bangalore",
+                  },
+                  { href: "/noida", src: noida, alt: "Noida", label: "Noida" },
+                  {
+                    href: "/ghaziabad",
+                    src: ghaziabad,
+                    alt: "Ghaziabad",
+                    label: "Ghaziabad",
+                  },
+                  {
+                    href: "/gurugram",
+                    src: gurugram,
+                    alt: "Gurugram",
+                    label: "Gurugram",
+                  },
+                  {
+                    href: "/faridabad",
+                    src: faridabad,
+                    alt: "Faridabad",
+                    label: "Faridabad",
+                  },
+                  {
+                    href: "/hyderabad",
+                    src: hydrabad,
+                    alt: "Hyderabad",
+                    label: "Hyderabad",
+                  },
+                  {
+                    href: "/chennai",
+                    src: chennai,
+                    alt: "Chennai",
+                    label: "Chennai",
+                  },
+                  {
+                    href: "/kolkata",
+                    src: kolkata,
+                    alt: "Kolkata",
+                    label: "Kolkata",
+                  },
+                  {
+                    href: "/lucknow",
+                    src: lakhnow,
+                    alt: "Lucknow",
+                    label: "Lucknow",
+                  },
+                  {
+                    href: "/kanpur",
+                    src: kanpur,
+                    alt: "Kanpur",
+                    label: "Kanpur",
+                  },
+                  {
+                    href: "/indore",
+                    src: indore,
+                    alt: "Indore",
+                    label: "Indore",
+                  },
+                  { href: "/surat", src: surat, alt: "Surat", label: "Surat" },
+                  {
+                    href: "/bhopal",
+                    src: bhopal,
+                    alt: "Bhopal",
+                    label: "Bhopal",
+                  },
+                  { href: "/goa", src: goa, alt: "Goa", label: "Goa" },
+                  { href: "/pune", src: pune, alt: "Pune", label: "Pune" },
+                ].map((city) => (
+                  <div className="contact-us-section-div" key={city.href}>
+                    <a href={city.href} className="contactuscitylink" style={styles.contactuscitylink}>
+                      <Image
+                        className="contact-us-img"
+                        src={city.src}
+                        alt={city.alt}
+                      />
+                      <h4 className="contact-us-heading">{city.label}</h4>
+                    </a>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -412,6 +376,12 @@ const styles = {
   icon: {
     fontSize: "2rem",
     color: "#8a6d3b",
+  },
+  contactuscitylink: {
+    display: "block",
+    textDecoration: "none",
+    color: "inherit",
+    textAlign: "center",
   },
 };
 

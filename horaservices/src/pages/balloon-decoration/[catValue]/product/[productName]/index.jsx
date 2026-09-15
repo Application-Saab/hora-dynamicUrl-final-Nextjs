@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
@@ -140,14 +139,14 @@ function DecorationCatDetails({
   const [catValue, setCatValue] = useState(initialCatValue || "");
   const [subCategory, setSubCategory] = useState(initialSubCategory || "");
   const [apiProduct, setApiProduct] = useState(
-    initialProduct?.name || formatProductName(router.query?.productName)
+    initialProduct?.name || formatProductName(router.query?.productName),
   );
 
   const [selectedAddOnProduct, setSelectedAddOnProduct] = useState([]);
   const [itemQuantities, setItemQuantities] = useState({});
   const [totalAmount, setTotalAmount] = useState();
   const [discountInfo, setDiscountInfo] = useState(
-    initialProduct?.price ? getDiscountedPrice(initialProduct.price) : null
+    initialProduct?.price ? getDiscountedPrice(initialProduct.price) : null,
   );
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [isArrowDown, setIsArrowDown] = useState(true);
@@ -170,10 +169,30 @@ function DecorationCatDetails({
   const kidsCategories = ["kids-birthday-decoration", "kidsbirthday"];
 
   const brandItems = [
-    { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+HAPPY ", sub: "CUSTOMERS" },
-    { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
-    { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
-    { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
+    {
+      img: HappyCustomerIMG,
+      alt: "Happy Customers",
+      bold: "1L+HAPPY ",
+      sub: "CUSTOMERS",
+    },
+    {
+      img: GoogleRatingIMG,
+      alt: "Google Rating",
+      bold: "4.8+ GOOGLE",
+      sub: "RATING",
+    },
+    {
+      img: SocialMediaIMG,
+      alt: "Social Media",
+      bold: "OUR",
+      sub: "SOCIAL MEDIA",
+    },
+    {
+      img: TopBrandIMg,
+      alt: "Top Brands",
+      bold: "TOP BRANDS",
+      sub: "PARTNERED",
+    },
   ];
 
   // Client-side route change (agar user same page pe dusra product open kare)
@@ -197,7 +216,10 @@ function DecorationCatDetails({
   // Client fetch only when product name changes (SSR data already hai)
   useEffect(() => {
     if (!apiProduct) return;
-    if (product?.name && product.name.toLowerCase() === apiProduct.toLowerCase()) {
+    if (
+      product?.name &&
+      product.name.toLowerCase() === apiProduct.toLowerCase()
+    ) {
       setLoading(false);
       return;
     }
@@ -253,7 +275,7 @@ function DecorationCatDetails({
   const getCategoryProducts = async (categoryId) => {
     try {
       const res = await axiosApi.get(
-        `${BASE_URL}/api/Decoration/searchByTag/v2/${categoryId}?page=1&priceFilter=all&sortBy=asc&theme=all&limit=500`
+        `${BASE_URL}/api/Decoration/searchByTag/v2/${categoryId}?page=1&priceFilter=all&sortBy=asc&theme=all&limit=500`,
       );
       setAllProducts(res.data.data || []);
     } catch (e) {
@@ -263,7 +285,9 @@ function DecorationCatDetails({
 
   const getSubCatId = async (catSlug) => {
     try {
-      const res = await axiosApi.get(`${BASE_URL}${GET_DECORATION_CAT_ID}${catSlug}`);
+      const res = await axiosApi.get(
+        `${BASE_URL}${GET_DECORATION_CAT_ID}${catSlug}`,
+      );
       if (res.data?.data) setPassCategoryId(res.data.data._id);
     } catch (e) {
       console.error(e.message);
@@ -272,7 +296,9 @@ function DecorationCatDetails({
 
   useEffect(() => {
     if (product && allProducts.length > 0) {
-      setSimilarByTheme(filterSimilarProducts(product, allProducts, themeFilters));
+      setSimilarByTheme(
+        filterSimilarProducts(product, allProducts, themeFilters),
+      );
     }
   }, [product, allProducts]);
 
@@ -281,7 +307,7 @@ function DecorationCatDetails({
       const { level1, level2 } = filterLevelUpProducts(
         product.price,
         allProducts,
-        product._id
+        product._id,
       );
       setLevelUp1000(level1);
       setLevelUp2000(level2);
@@ -306,7 +332,7 @@ function DecorationCatDetails({
     try {
       sessionStorage.setItem(
         `addons_${product._id}`,
-        JSON.stringify({ selectedAddOnProduct, itemQuantities })
+        JSON.stringify({ selectedAddOnProduct, itemQuantities }),
       );
     } catch (e) {}
   }, [selectedAddOnProduct, itemQuantities, product?._id]);
@@ -333,7 +359,8 @@ function DecorationCatDetails({
     if (!subCategory) return;
     let result = "";
     for (let i = 0; i < subCategory.length; i++) {
-      if (i !== 0 && subCategory[i] === subCategory[i].toUpperCase()) result += " ";
+      if (i !== 0 && subCategory[i] === subCategory[i].toUpperCase())
+        result += " ";
       result += subCategory[i];
     }
     setSelCat(result);
@@ -349,19 +376,31 @@ function DecorationCatDetails({
 
   const handleCustomise = (type) => {
     const messages = {
-      "kids-birthday-decoration": "Hi, I want to customize a kids birthday decoration design, can you help me",
-      "birthday-decoration": "Hi, I want to customize a birthday decoration design, can you help me",
-      "anniversary-decoration": "Hi, I want to customize an anniversary decoration design, can you help me",
-      "baby-shower-decoration": "Hi, I want to customize a baby shower decoration design, can you help me",
-      "welcome-baby-decoration": "Hi, I want to customize a baby welcome decoration design, can you help me",
-      "first-night-decoration": "Hi, I want to customize a first night decoration design, can you help me",
-      "premium-decoration": "Hi, I want to customize a premium decoration design, can you help me",
-      "haldi-mehendi-decoration": "Hi, I want to customize a haldi & mehendi decoration design, can you help me",
-      "wedding-decoration": "Hi, I want to customize a wedding decoration design, can you help me",
-      "bachelorette-decoration": "Hi, I want to customize a bachelorette decoration design, can you help me",
+      "kids-birthday-decoration":
+        "Hi, I want to customize a kids birthday decoration design, can you help me",
+      "birthday-decoration":
+        "Hi, I want to customize a birthday decoration design, can you help me",
+      "anniversary-decoration":
+        "Hi, I want to customize an anniversary decoration design, can you help me",
+      "baby-shower-decoration":
+        "Hi, I want to customize a baby shower decoration design, can you help me",
+      "welcome-baby-decoration":
+        "Hi, I want to customize a baby welcome decoration design, can you help me",
+      "first-night-decoration":
+        "Hi, I want to customize a first night decoration design, can you help me",
+      "premium-decoration":
+        "Hi, I want to customize a premium decoration design, can you help me",
+      "haldi-mehendi-decoration":
+        "Hi, I want to customize a haldi & mehendi decoration design, can you help me",
+      "wedding-decoration":
+        "Hi, I want to customize a wedding decoration design, can you help me",
+      "bachelorette-decoration":
+        "Hi, I want to customize a bachelorette decoration design, can you help me",
     };
     const phoneNumber = "917338584828";
-    const message = (messages[type] || "Hi, I want to customize a decoration design, can you help me") + "!";
+    const message =
+      (messages[type] ||
+        "Hi, I want to customize a decoration design, can you help me") + "!";
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
@@ -371,13 +410,23 @@ function DecorationCatDetails({
       eventLabel: "Customization WhatsApp Button",
     });
 
-    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, "_blank");
+    window.open(
+      `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
+      "_blank",
+    );
   };
 
   const showAddOnmodal = () => {
     setIsModalOpen((p) => !p);
     setIsArrowDown((p) => !p);
-    setTimeout(() => addonRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+    setTimeout(
+      () =>
+        addonRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        }),
+      100,
+    );
   };
 
   const updateTotalAmount = () => {
@@ -432,14 +481,20 @@ function DecorationCatDetails({
     handleAddToCart(item);
     setIsModalOpen(false);
     setTimeout(() => {
-      customizationRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      customizationRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
     }, 300);
   };
 
   const handleCheckout = () => {
     const totalPrice = calculateTotalPrice(product.price);
     window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({ event: "book_now_click", product_name: product.name });
+    window.dataLayer.push({
+      event: "book_now_click",
+      product_name: product.name,
+    });
 
     router.push({
       pathname: "/checkout",
@@ -515,35 +570,105 @@ function DecorationCatDetails({
     );
   }
 
+  const SITE = "https://horaservices.com";
+
+  const slugify = (val) =>
+    String(val || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "")
+      .replace(/-+/g, "-");
+
+  // city / locality URL se (agar city routes use ho rahe hain)
+  const cityFromUrl = router.query?.city || null;
+  const localityFromUrl = router.query?.locality || null;
+
+  const productSlug =
+    router.query?.productName ||
+    product?.slug ||
+    generateSlug(product?.name) ||
+    "";
+
+  const buildProductCanonical = () => {
+    const parts = [];
+
+    if (cityFromUrl) parts.push(slugify(cityFromUrl));
+    if (localityFromUrl) parts.push(slugify(localityFromUrl));
+
+    parts.push("balloon-decoration");
+    if (catValue) parts.push(catValue);
+    parts.push("product");
+    if (productSlug) parts.push(productSlug);
+
+    return `${SITE}/${parts.filter(Boolean).join("/")}`;
+  };
+
+  const canonicalUrl = buildProductCanonical();
+
+  const productImage = product?.featured_images?.[0]?.fileName
+    ? `${COMPRESSED_WEBP_IMG_URL}${product.featured_images[0].fileName.split(".")[0]}.webp`
+    : "https://horaservices.com/api/uploads/attachment-1706520980436.png";
   return (
     <div className="App" style={{ backgroundColor: "white" }}>
       <Head>
         <title>{`${product.name} | ${catValue.replace(/-/g, " ")}`}</title>
+
         <meta
           name="description"
-          content={`${product.name} from Hora Services – Beautiful ${catValue.replace(/-/g, " ")} decoration starting at just ₹999. Book for birthdays, anniversaries, weddings & more!`}
+          content={`${product.name} from Hora Services – Beautiful ${catValue.replace(
+            /-/g,
+            " ",
+          )} decoration starting at just ₹999. Book for birthdays, anniversaries, weddings & more!`}
         />
+
         <meta
           name="keywords"
-          content={`${product.name}, ${catValue.replace(/-/g, " ")}, balloon decoration, ${product.name} decoration price`}
+          content={`${product.name}, ${catValue.replace(
+            /-/g,
+            " ",
+          )}, balloon decoration, ${product.name} decoration price`}
         />
-        <meta property="og:title" content={`${product.name} | ${catValue.replace(/-/g, " ")} by Hora Services`} />
+
+        {/* ✅ CANONICAL — no query params */}
+        <link rel="canonical" href={canonicalUrl} />
+
+        <meta
+          property="og:title"
+          content={`${product.name} | ${catValue.replace(/-/g, " ")} by Hora Services`}
+        />
         <meta
           property="og:description"
-          content={`Book ${product.name} decoration by Hora Services. Explore ${catValue.replace(/-/g, " ")} designs for birthdays, anniversaries, baby showers & more.`}
+          content={`Book ${product.name} decoration by Hora Services. Explore ${catValue.replace(
+            /-/g,
+            " ",
+          )} designs for birthdays, anniversaries, baby showers & more.`}
         />
-        <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
-        <meta property="og:image:alt" content={`${product.name}, ${catValue.replace(/-/g, " ")} decoration`} />
+        <meta property="og:image" content={productImage} />
         <meta
-          property="og:url"
-          content={`https://horaservices.com/balloon-decoration/${catValue}/product/${product.name?.replace(/\s+/g, "-")}`}
+          property="og:image:alt"
+          content={`${product.name}, ${catValue.replace(/-/g, " ")} decoration`}
         />
+        
+        <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
+
         <meta name="robots" content="index, follow" />
         <meta name="author" content="Hora Services" />
-        <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: scriptTag }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: faqScriptTag }} />
+        <link
+          rel="icon"
+          href="https://horaservices.com/api/uploads/logo-icon.png"
+          type="image/x-icon"
+        />
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: scriptTag }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: faqScriptTag }}
+        />
       </Head>
 
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
@@ -563,21 +688,44 @@ function DecorationCatDetails({
                 height={300}
                 priority
               />
-              <div style={{ position: "absolute", bottom: 3, right: 3, borderRadius: "50%", padding: 10 }}>
-                <Image src={logo} alt="Hora Services" className="hora-watermark-image" />
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 3,
+                  right: 3,
+                  borderRadius: "50%",
+                  padding: 10,
+                }}
+              >
+                <Image
+                  src={logo}
+                  alt="Hora Services"
+                  className="hora-watermark-image"
+                />
               </div>
             </div>
           </div>
 
           {/* Right content */}
           <div className="decDetailsRight">
-            <div style={{ padding: "clamp(8px, 2.5vw, 10px) clamp(8px, 2.5vw, 10px) 0" }}>
+            <div
+              style={{
+                padding: "clamp(8px, 2.5vw, 10px) clamp(8px, 2.5vw, 10px) 0",
+              }}
+            >
               <div className="breadcrumb-row">
                 <h2 className="breadcrumb-text">
-                  <a className="breadcrumb-link" href="/">Home</a>
+                  <a className="breadcrumb-link" href="/">
+                    Home
+                  </a>
                   {" > "}
-                  <a className="breadcrumb-link" href={`/balloon-decoration/${catValue}`}>
-                    {catValue.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+                  <a
+                    className="breadcrumb-link"
+                    href={`/balloon-decoration/${catValue}`}
+                  >
+                    {catValue
+                      .replace(/-/g, " ")
+                      .replace(/\b\w/g, (l) => l.toUpperCase())}
                   </a>
                   {" > "}
                 </h2>
@@ -588,13 +736,19 @@ function DecorationCatDetails({
               <div className="price-share-row">
                 <div className="pro-details-price">
                   <p className="product-price">₹ {product.price}</p>
-                  <p className="product-old-price">₹ {Math.floor(discountInfo?.discountedPrice || 0)}</p>
+                  <p className="product-old-price">
+                    ₹ {Math.floor(discountInfo?.discountedPrice || 0)}
+                  </p>
                   <div className="product-discount">
                     ₹ {Math.floor(discountInfo?.discountDifference || 0)} off
                   </div>
                 </div>
                 <div className="share-btn" onClick={handleShare}>
-                  <Image src={ShareIcon} alt="share" className="share-icon-img" />
+                  <Image
+                    src={ShareIcon}
+                    alt="share"
+                    className="share-icon-img"
+                  />
                 </div>
               </div>
 
@@ -702,11 +856,18 @@ function DecorationCatDetails({
               <GoogleReviewsCard reviews={reviewsData} />
             </div>
 
-            <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
+            <BrandBanner
+              title="Excellence Backed by Happy Customers"
+              items={brandItems}
+            />
             <VideoTestimonial videoSrc={VideoClint} />
 
             <div className="decorke-celebrate-banner">
-              <Image src={HowitWork} alt="Customize Your Celebration" className="decorke-banner-img" />
+              <Image
+                src={HowitWork}
+                alt="Customize Your Celebration"
+                className="decorke-banner-img"
+              />
             </div>
 
             <AdditionalServices />

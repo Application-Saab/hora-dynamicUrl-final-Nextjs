@@ -49,7 +49,7 @@ const VenuePage = ({
   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
   const [venuePackages, setVenuePackages] = useState(initialPackages || []);
   const [venueCategories, setVenueCategories] = useState(
-    initialCategories || []
+    initialCategories || [],
   );
 
   const {} = useRsvpStatus(venueId, skipRsvpCheck);
@@ -68,21 +68,17 @@ const VenuePage = ({
     ? {
         ...eventDetails,
         guestCapacity: eventDetails.guestCapacity || guests,
-        isParkingAvailable:
-          eventDetails.isParkingAvailable ?? parking === "1",
+        isParkingAvailable: eventDetails.isParkingAvailable ?? parking === "1",
         totalRoomsAvailable:
           eventDetails.totalRoomsAvailable || Number(rooms) || 0,
         hallType:
-          eventDetails.hallType ||
-          (hallsParam ? JSON.parse(hallsParam) : []),
+          eventDetails.hallType || (hallsParam ? JSON.parse(hallsParam) : []),
       }
     : null;
 
   const city =
     propCity ||
-    (queryCity
-      ? queryCity.charAt(0).toUpperCase() + queryCity.slice(1)
-      : "");
+    (queryCity ? queryCity.charAt(0).toUpperCase() + queryCity.slice(1) : "");
 
   const venueLocationLabel = eventDetails?.location || city;
 
@@ -98,10 +94,36 @@ const VenuePage = ({
       } for your next event. Check packages, guest capacity & real photos.`
     : "View venue packages, capacity, and photos for your next event.";
 
-  // SSR-safe canonical (window mat use karo)
-  const canonicalUrl = city
-    ? `https://horaservices.com/${String(city).toLowerCase()}/venue-list/venue`
-    : `https://horaservices.com/venue-list/venue`;
+  const SITE = "https://horaservices.com";
+
+  const slugify = (val) =>
+    String(val || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-");
+
+  // city for path
+  const citySlug = propCity
+    ? slugify(propCity)
+    : queryCity
+      ? slugify(queryCity)
+      : "";
+
+  // venue id (content key)
+  const idForCanonical =
+    (typeof venueId === "string" && venueId) ||
+    (Array.isArray(venueId) ? venueId[0] : "") ||
+    "";
+
+  // ✅ Canonical = path + only venueid (no guests/parking/rooms/utm)
+  const canonicalUrl = (() => {
+    const path = citySlug
+      ? `${SITE}/${citySlug}/venue-list/venue`
+      : `${SITE}/venue-list/venue`;
+
+    if (!idForCanonical) return path;
+    return `${path}?venueid=${encodeURIComponent(idForCanonical)}`;
+  })();
 
   // ----- Auth -----
   useEffect(() => {
@@ -169,7 +191,7 @@ const VenuePage = ({
     }
 
     fetchEventInvite(`${GET_VENUE_DETAILS_BY_ID}/${venueId}`, "GET").catch(
-      (err) => console.error("Error fetching event details:", err)
+      (err) => console.error("Error fetching event details:", err),
     );
   }, [venueId, loggedinUserId]);
 
@@ -237,40 +259,40 @@ const VenuePage = ({
   }, [eventDetails, loggedinUserId]);
 
   // Back: sirf close, pushState mat
-   // Back button handling — modal open/close ke history state ko sahi se manage karo
-const modalHistoryPushedRef = useRef(false);
+  // Back button handling — modal open/close ke history state ko sahi se manage karo
+  const modalHistoryPushedRef = useRef(false);
 
-// Modal open hone par ek hi baar pushState
-useEffect(() => {
-  const anyModalOpen = !!(selectedPackage || showGuestLoginModal);
-  if (anyModalOpen && !modalHistoryPushedRef.current) {
-    window.history.pushState({ modalOpen: true }, "");
-    modalHistoryPushedRef.current = true;
-  }
-}, [selectedPackage, showGuestLoginModal]);
+  // Modal open hone par ek hi baar pushState
+  useEffect(() => {
+    const anyModalOpen = !!(selectedPackage || showGuestLoginModal);
+    if (anyModalOpen && !modalHistoryPushedRef.current) {
+      window.history.pushState({ modalOpen: true }, "");
+      modalHistoryPushedRef.current = true;
+    }
+  }, [selectedPackage, showGuestLoginModal]);
 
-// Sirf ek jagah se state clear hoga — popstate ke through
-useEffect(() => {
-  const handlePopState = () => {
+  // Sirf ek jagah se state clear hoga — popstate ke through
+  useEffect(() => {
+    const handlePopState = () => {
+      if (modalHistoryPushedRef.current) {
+        modalHistoryPushedRef.current = false;
+        setSelectedPackage(null);
+        setShowGuestLoginModal(false);
+      }
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  // Cross/outside click bhi isi function se close karega
+  const closeModal = () => {
     if (modalHistoryPushedRef.current) {
-      modalHistoryPushedRef.current = false;
+      window.history.back(); // yahi se popstate fire hoga, state khud-ba-khud clear hoga
+    } else {
       setSelectedPackage(null);
       setShowGuestLoginModal(false);
     }
   };
-  window.addEventListener("popstate", handlePopState);
-  return () => window.removeEventListener("popstate", handlePopState);
-}, []);
-
-// Cross/outside click bhi isi function se close karega
-const closeModal = () => {
-  if (modalHistoryPushedRef.current) {
-    window.history.back(); // yahi se popstate fire hoga, state khud-ba-khud clear hoga
-  } else {
-    setSelectedPackage(null);
-    setShowGuestLoginModal(false);
-  }
-};
   useEffect(() => {
     const handleBack = () => {
       if (selectedPackage) {
@@ -307,7 +329,7 @@ Please share more details and availability.`;
 
     window.open(
       `https://wa.me/91${PHONE}?text=${encodeURIComponent(message.trim())}`,
-      "_blank"
+      "_blank",
     );
   };
 
@@ -432,7 +454,7 @@ Please share more details and availability.`;
       {selectedPackage && (
         <VenueFoodModal
           data={selectedPackage}
-            onClose={closeModal} 
+          onClose={closeModal}
           categories={venueCategories}
         />
       )}

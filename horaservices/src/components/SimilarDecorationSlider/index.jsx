@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter,usePathname } from "next/navigation";
 import "@/components/DecorSlider/DecorSlider.css";
-import "./similardecorationslider.css"
+import "./similardecorationslider.css";
+
 const getDiscountedDifference = (price) => {
   const numericPrice =
     parseFloat(price?.toString().replace(/[^0-9.-]+/g, "")) || 0;
@@ -22,80 +22,80 @@ const SimilarDecorationSlider = ({
   showDiscount = false,
   city = "",
   locality = "",
-  catValue = "", // ✅ MUST be slug like "baby-shower-decoration"
-  icon,           // 🔑 naya prop
-  sparkleIcon, 
-
+  catValue = "",
+  icon,
+  sparkleIcon,
 }) => {
-  const router = useRouter();
-const pathname = usePathname();
+  // Build product href (same logic as pehle handleCardClick)
+  const getCardHref = (item) => {
+    if (!item || !catValue) return "#";
 
-const handleCardClick = (item) => {
-  if (!item || !catValue) return;
+    const rawSlug = item.slug || item.product_slug || item.name || item.title;
+    if (!rawSlug) return "#";
 
-  const rawSlug = item.slug || item.product_slug || item.name || item.title;
-  if (!rawSlug) return;
+    const productSlug = String(rawSlug)
+      .toLowerCase()
+      .replace(/&/g, "and")
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-");
 
-  const productSlug = rawSlug
-    .toLowerCase()
-    .replace(/&/g, "and")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
+    // Prefer props; fallback to URL parse (client)
+    let citySeg = city || "";
+    let localitySeg = locality || "";
+    let balloonSegment = "balloon-decoration";
 
-  const pathname = window.location.pathname;
-  const parts = pathname.split("/").filter(Boolean);
+    if (typeof window !== "undefined") {
+      const parts = window.location.pathname.split("/").filter(Boolean);
+      const found = parts.find((seg) =>
+        seg.toLowerCase().startsWith("balloon-decoration")
+      );
+      if (found) balloonSegment = found;
 
-  // Dynamic balloon segment
-  const balloonSegment = parts.find((seg) =>
-    seg.toLowerCase().startsWith("balloon-decoration")
-  ) || "balloon-decoration";
+      const balloonIndex = parts.findIndex(
+        (seg) => seg.toLowerCase() === balloonSegment.toLowerCase()
+      );
 
-  const balloonIndex = parts.indexOf(balloonSegment);
+      if (!citySeg && balloonIndex > 0) citySeg = parts[0];
+      if (!localitySeg && balloonIndex > 1) localitySeg = parts[1];
+    }
 
-  const city = balloonIndex > 0 ? parts[0] : "";
-  const locality = balloonIndex > 1 ? parts[1] : "";
-
-  const finalPath = city && locality
-    ? `/${city}/${locality}/${balloonSegment}/${catValue}/product/${productSlug}`
-    : city
-    ? `/${city}/${balloonSegment}/${catValue}/product/${productSlug}`
-    : `/${balloonSegment}/${catValue}/product/${productSlug}`;
-
-  router.push(finalPath);
-};
-
-
+    if (citySeg && localitySeg) {
+      return `/${citySeg}/${localitySeg}/${balloonSegment}/${catValue}/product/${productSlug}`;
+    }
+    if (citySeg) {
+      return `/${citySeg}/${balloonSegment}/${catValue}/product/${productSlug}`;
+    }
+    return `/${balloonSegment}/${catValue}/product/${productSlug}`;
+  };
 
   return (
-     <section style={{ padding: "10px 0px 10px 10px"}}>
-    {title && (
-      <div className="similar-slide-decor-header">
-        <Image
-          src={sparkleIcon}
-          alt=""
-          className="similar-slide-decor-icon"
-        />
+    <section style={{ padding: "10px 0px 10px 10px" }}>
+      {title && (
+        <div className="similar-slide-decor-header">
+          {sparkleIcon && (
+            <Image
+              src={sparkleIcon}
+              alt=""
+              className="similar-slide-decor-icon"
+            />
+          )}
+          <h2>{title}</h2>
+          {icon && (
+            <Image src={icon} alt="" className="similar-slide-decor-sparkle" />
+          )}
+        </div>
+      )}
 
-        <h2>{title}</h2>
-
-        <Image
-          src={icon}
-          alt=""
-          className="similar-slide-decor-sparkle"
-        />
-      </div>
-    )}
-
-    {viewAllLink && (
-      <span
-        onClick={() => router.push(viewAllLink)}
-        style={{ cursor: "pointer", color: "#0070f3" }}
-      >
-        View All
-      </span>
-    )}
-      
+      {viewAllLink && (
+        <a
+          type="button"
+          href={viewAllLink}
+          style={{ cursor: "pointer", color: "#0070f3" }}
+        >
+          View All
+        </a>
+      )}
 
       <div className="similar-scroll-wrapper">
         {Array.isArray(data) && data.length > 0 ? (
@@ -109,36 +109,34 @@ const handleCardClick = (item) => {
             const originalPrice = price + discountDiff;
 
             const imageUrl =
-  item.Image ||
-  (item.featured_images?.[0]?.fileName
-    ? `https://horaservices.com/api/uploads/compressed_webp/${
-        item.featured_images[0].fileName.split(".")[0]
-      }.webp`
-    : "/default.png");
+              item.Image ||
+              (item.featured_images?.[0]?.fileName
+                ? `https://horaservices.com/api/uploads/compressed_webp/${
+                    item.featured_images[0].fileName.split(".")[0]
+                  }.webp`
+                : "/default.png");
 
             const titleText = item.title || item.name || "Decoration";
 
             return (
-              <div
+              <a
                 key={index}
+                type="button"
+                href={getCardHref(item)}
                 className="similar-card"
-                onClick={() => handleCardClick(item)}
                 style={{ cursor: "pointer" }}
               >
                 <div className="similar-img-wrapper">
-  <Image
-    src={imageUrl}
-    alt={titleText}
-    className="similar-img"
-    fill
-    sizes="(max-width:480px) 100vw"
-  />
-
+                  <Image
+                    src={imageUrl}
+                    alt={titleText}
+                    className="similar-img"
+                    fill
+                    sizes="(max-width:480px) 100vw"
+                  />
 
                   {showDiscount && discountDiff > 0 && (
-                    <div className="similar-discount">
-                      ₹{discountDiff} off
-                    </div>
+                    <div className="similar-discount">₹{discountDiff} off</div>
                   )}
                 </div>
 
@@ -153,18 +151,14 @@ const handleCardClick = (item) => {
                 <div className="similar-price-wrapper">
                   <span className="similar-price">₹{price}</span>
                   {showDiscount && (
-                    <span className="similar-original">
-                      ₹{originalPrice}
-                    </span>
+                    <span className="similar-original">₹{originalPrice}</span>
                   )}
                 </div>
-              </div>
+              </a>
             );
           })
         ) : (
-          <p style={{ padding: "10px", color: "#888" }}>
-            No items found
-          </p>
+          <p style={{ padding: "10px", color: "#888" }}>No items found</p>
         )}
       </div>
     </section>

@@ -15,11 +15,11 @@ import TopBrandIMg from "@/assets/TpBrandsIMG.png";
 import { balloonreviews } from "@/utils/balloonReviews";
 import ReviewSlider from "@/components/ReviewSection";
 import VegToggle from "@/components/VegNonVegToggle";
-import { BASE_URL, GET_MEAL_DISH_ENDPOINT } from "@/utils/apiconstants";
 import CateringModal from "@/components/CateringModal";
 import { useRouter } from "next/router";
 import CardSkeleton from "@/components/CardSkeleton";
 import { getMealTypes, getPackages } from "@/services/cateringService";
+import Head from "next/head";
 const brandItems = [
   {
     img: HappyCustomerIMG,
@@ -96,45 +96,30 @@ const FoodDelivery = ({
       setLoading(false);
     });
   };
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const meals = await getMealTypes(foodType);
 
-  //     setMealList(meals);
-
-  //     const formattedMeals = meals
-  //       .filter((item) => item?.mealObject?._id)
-  //       .map((item) => ({
-  //         _id: item.mealObject._id,
-  //         name: item.mealObject.name,
-  //       }));
-
-  //     setMealTypes(formattedMeals);
-  //   };
-
-  //   fetchData();
-  // }, [foodType]);
-  // useEffect(() => {
-  //   if (!packageType) return;
-
-  //   const fetchData = async () => {
-  //     setLoading(true);
-
-  //     const packages = await getPackages(packageType, foodType);
-  //     setData(packages);
-
-  //     setLoading(false);
-  //   };
-
-  //   fetchData();
-  // }, [packageType, foodType]);
-
-  
   const handleCloseModal = () => {
     setSelectedPackage(null);
   };
+
+  const pathOnly =
+    (router.asPath || "").split("?")[0] ||
+    router.pathname ||
+    "/party-food-delivery-live-catering-buffet";
+
+  const activeType =
+    packageType === "liveCatering" ? "liveCatering" : "bulkFood";
+
+  const canonicalUrl =
+    activeType === "liveCatering"
+      ? `${SITE}${pathOnly}?type=liveCatering`
+      : `${SITE}${pathOnly}`;
+
   return (
     <div className="catering-page">
+      <Head>
+        <link rel="canonical" href={canonicalUrl} />
+        <meta name="robots" content="index, follow" />
+      </Head>
       {/* Banner */}
       <CateringBanner image={CateringBannerImage} />
 

@@ -16,6 +16,7 @@ import InfoIcon from "../../../assets/info.png";
 import Image from "next/image";
 import "../../../css/chefOrder.css";
 import { safeGetItem } from "@/utils/safeStorage";
+import Head from "next/head";
 
 const FoodDeliveryselectDate = () => {
   const router = useRouter();
@@ -993,11 +994,25 @@ const FoodDeliveryselectDate = () => {
     }
   };
 
+  // component ke andar:
+  const SITE = "https://horaservices.com";
+
+  // Clean path only — no selectedDishes, packageId, etc.
+  const pathOnly =
+    (router.asPath || "").split("?")[0] ||
+    router.pathname ||
+    "/party-food-delivery-select-date"; // fallback: apna real route daalo
+
+  const canonicalUrl = `${SITE}${pathOnly.startsWith("/") ? pathOnly : `/${pathOnly}`}`;
   return (
     <div
       style={{ width: "90%", margin: "0 auto", backgroundColor: "#EDEDED" }}
       className="selectdatesecouter"
     >
+      <Head>
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:type" content="website" />
+      </Head>
       <div
         style={{
           flexDirection: "row",

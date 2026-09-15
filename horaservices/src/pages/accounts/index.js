@@ -10,12 +10,12 @@ import ArrowIcon from "@/assets/forward_arrow.svg";
 import CallIcon from "@/assets/call_icon.svg";
 import LogoutIcon from "@/assets/logout_icon.svg";
 import myordericon from "@/assets/Myordersicon.png";
-import OtpLogin from "@/components/OtpLoginPopup";
 import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import LogoutModal from "@/utils/LogoutModal";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
+import Head from "next/head";
 
 const AccountPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -143,6 +143,9 @@ const AccountPage = () => {
 
   return (
     <>
+      <Head>
+        <link rel="canonical" href="https://wonderland.com/accounts" />
+      </Head>
       <div className="account-ctn">
         <div className="details-ctn">
           <div className="user-img-ctn">

@@ -264,6 +264,23 @@ const Decoration = ({ city, locality }) => {
   };
 
   const bannerImages = [Banner1, Banner2, Banner3];
+  const SITE = "https://horaservices.com";
+  const slugify = (val) =>
+    String(val || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-");
+
+  // component ke andar (return se pehle)
+  const citySlug = city ? slugify(city) : "";
+  const localitySlug = locality ? slugify(locality) : "";
+
+  const canonicalUrl =
+    citySlug && localitySlug
+      ? `${SITE}/${citySlug}/${localitySlug}/balloon-decoration`
+      : citySlug
+        ? `${SITE}/${citySlug}/balloon-decoration`
+        : `${SITE}/balloon-decoration`;
 
   return (
     <div className="dec-landing-page">
@@ -298,9 +315,20 @@ const Decoration = ({ city, locality }) => {
           }
         />
 
+        {/* ✅ CANONICAL */}
+        <link rel="canonical" href={canonicalUrl} />
+
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Hora Services" />
+        <link
+          rel="icon"
+          href="https://horaservices.com/api/uploads/logo-icon.png"
+          type="image/x-icon"
+        />
+
         <meta
           property="og:title"
-          content="Balloon and Flower Decoration by Professional Decorators"
+          content="Balloon and Flower Decorations by Professional Decorators"
         />
         <meta
           property="og:description"
@@ -314,25 +342,12 @@ const Decoration = ({ city, locality }) => {
           property="og:image:alt"
           content="balloon decoration, birthday decoration, wedding decoration, baby shower decoration"
         />
-        <script type="application/ld+json">{scriptTag}</script>
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Hora Services" />
-        <link
-          rel="icon"
-          href="https://horaservices.com/api/uploads/logo-icon.png"
-          type="image/x-icon"
-        />
-        <meta
-          property="og:url"
-          content={
-            city && locality
-              ? `https://horaservices.com/${city.toLowerCase()}/${locality.toLowerCase()}/balloon-decoration`
-              : city
-                ? `https://horaservices.com/${city.toLowerCase()}/balloon-decoration`
-                : `https://horaservices.com/balloon-decoration`
-          }
-        />
+
+        {/* ✅ og:url = same as canonical */}
+        <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
+
+        <script type="application/ld+json">{scriptTag}</script>
       </Head>
 
       <div className="top-slider">

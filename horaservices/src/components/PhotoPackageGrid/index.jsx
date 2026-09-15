@@ -11,7 +11,10 @@ const getImageUrl = (item) => {
 
   if (item.featured_image && typeof item.featured_image === "string") {
     fileName = item.featured_image;
-  } else if (Array.isArray(item.featured_image) && item.featured_image.length > 0) {
+  } else if (
+    Array.isArray(item.featured_image) &&
+    item.featured_image.length > 0
+  ) {
     fileName = item.featured_image[0]?.fileName || item.featured_image[0];
   } else if (item.featured_images?.[0]?.fileName) {
     fileName = item.featured_images[0].fileName;
@@ -30,7 +33,7 @@ const getTagsForText = (text) => {
   return TAG_RULES.filter(
     (r) =>
       r.words.every((w) => lower.includes(w)) &&
-      !(r.exclude || []).some((w) => lower.includes(w))
+      !(r.exclude || []).some((w) => lower.includes(w)),
   );
 };
 
@@ -129,7 +132,7 @@ const getDurationText = (durationRaw) => {
   if (!durationRaw) return "N/A";
   const text = String(durationRaw);
   const match = text.match(
-    /\d+\s*(?:-\s*\d+\s*)?(?:hours?|hrs?|hr|days?|minutes?|mins?|min)/i
+    /\d+\s*(?:-\s*\d+\s*)?(?:hours?|hrs?|hr|days?|minutes?|mins?|min)/i,
   );
   return match ? match[0].trim() : text.trim();
 };
@@ -137,46 +140,89 @@ const getDurationText = (durationRaw) => {
 // Small inline icons for the meta row (duration / crew) — no extra
 // asset imports needed, colored via currentColor to match the text.
 const ClockIcon = () => (
-  <svg className="photoPkgMetaIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    className="photoPkgMetaIcon"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-    <path d="M12 7v5l3.5 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path
+      d="M12 7v5l3.5 2"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
 const PersonIcon = () => (
-  <svg className="photoPkgMetaIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    className="photoPkgMetaIcon"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="2" />
-    <path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <path
+      d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
   </svg>
 );
 
 const VideoIcon = () => (
-  <svg className="photoPkgMetaIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="3" y="6" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="2" />
-    <path d="M15 10l6-3v10l-6-3" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+  <svg
+    className="photoPkgMetaIcon"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect
+      x="3"
+      y="6"
+      width="12"
+      height="12"
+      rx="2"
+      stroke="currentColor"
+      strokeWidth="2"
+    />
+    <path
+      d="M15 10l6-3v10l-6-3"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
-const PhotoPackageCard = ({ item, onClick }) => {
+const PhotoPackageCard = ({ item, onClick, href }) => {
   const inclusionItems = parseInclusions(item.inclusion);
 
   const totalItems = inclusionItems.length;
   const itemsInLastRow = totalItems % 3 === 0 ? 3 : totalItems % 3;
   const lastRowStartIndex = totalItems - itemsInLastRow;
 
-  // Prefer counts parsed from the inclusion text; fall back to explicit
-  // item.photographers / item.videographers fields if the backend ever
-  // sends those directly and the inclusion text doesn't mention a count.
-  const { photographers: parsedPhotographers, videographers: parsedVideographers, assistants: parsedAssistants } =
-    getCrewCounts(item.inclusion);
+  const {
+    photographers: parsedPhotographers,
+    videographers: parsedVideographers,
+    assistants: parsedAssistants,
+  } = getCrewCounts(item.inclusion);
   const photographerCount = parsedPhotographers ?? item.photographers ?? null;
   const videographerCount = parsedVideographers ?? item.videographers ?? null;
   const assistantCount = parsedAssistants ?? item.assistants ?? null;
 
   return (
-    <div className="photoPkgCard" onClick={() => onClick?.(item)}>
+    <a
+      type="button"
+      href={href || "#"}
+      className="photoPkgCard"
+      onClick={() => onClick?.(item)}
+    >
       <div className="photoPkgCardLeft">
-        {/* Blurred background fill */}
         <Image
           src={getImageUrl(item)}
           alt=""
@@ -184,7 +230,6 @@ const PhotoPackageCard = ({ item, onClick }) => {
           aria-hidden="true"
           className="photoPkgCardImgBlur"
         />
-        {/* Actual image, fully visible, no crop */}
         <Image
           src={getImageUrl(item)}
           alt={item.name}
@@ -234,49 +279,55 @@ const PhotoPackageCard = ({ item, onClick }) => {
           {photographerCount && (
             <span className="photoPkgMetaItem">
               <PersonIcon />
-              {photographerCount} Photographer{photographerCount > 1 ? "s" : ""}
+              {photographerCount} Photographer
+              {Number(photographerCount) > 1 ? "s" : ""}
             </span>
           )}
           {videographerCount && (
             <span className="photoPkgMetaItem">
               <VideoIcon />
-              {videographerCount} Videographer{videographerCount > 1 ? "s" : ""}
+              {videographerCount} Videographer
+              {Number(videographerCount) > 1 ? "s" : ""}
             </span>
           )}
           {assistantCount && (
             <span className="photoPkgMetaItem">
               <PersonIcon />
-              {assistantCount} Assistant{assistantCount > 1 ? "s" : ""}
+              {assistantCount} Assistant{Number(assistantCount) > 1 ? "s" : ""}
             </span>
           )}
         </p>
 
         <div className="photoPkgPriceRow">
           <span className="photoPkgFinalPrice">₹{item.price}/-</span>
-          <span className="photoPkgOldPrice">₹{Math.floor(item.discountedPrice)}/-</span>
-          <span className="photoPkgDiscountBadge">₹{item.discountDifference?.toFixed(0)} off</span>
+          <span className="photoPkgOldPrice">
+            ₹{Math.floor(item.discountedPrice)}/-
+          </span>
+          <span className="photoPkgDiscountBadge">
+            ₹{item.discountDifference?.toFixed(0)} off
+          </span>
         </div>
 
-        <button
-          className="photoPkgViewBtn"
-          onClick={(e) => {
-            e.stopPropagation();
-            onClick?.(item);
-          }}
-        >
+        {/* nested button mat rakho — span / div with same class */}
+        <span className="photoPkgViewBtn">
           View Full Package
           <Image className="photoPkgArrow" src={arrowicon} alt="Arrow" />
-        </button>
+        </span>
       </div>
-    </div>
+    </a>
   );
 };
 
-const PhotoPackageGrid = ({ data = [], onCardClick }) => {
+const PhotoPackageGrid = ({ data = [], onCardClick, getHref }) => {
   return (
     <div className="photoPkgContainer">
       {data.map((item) => (
-        <PhotoPackageCard key={item._id} item={item} onClick={onCardClick} />
+        <PhotoPackageCard
+          key={item._id}
+          item={item}
+          onClick={onCardClick}
+          href={getHref?.(item) || "#"}
+        />
       ))}
     </div>
   );

@@ -226,7 +226,7 @@ const CustomersReviews = ({ allReviewsData = [] }) => {
         <meta name="robots" content="index, follow" />
         <link
           rel="canonical"
-          href="https://horaservices.com/customers-reviews"
+          href="https://horaservices.com/reviews"
         />
       </Head>
 

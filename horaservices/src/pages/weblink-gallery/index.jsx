@@ -1,66 +1,7 @@
-// "use client";
-// import React from "react";
-// import ThumbnailGallery from './ThumbnailGallery'; // Import the ThumbnailGallery component
-// import "slick-carousel/slick/slick.css";
-// import "slick-carousel/slick/slick-theme.css";
-// import { trackShareCapsuleClick } from "@/services/weblinkServices";
-// import { BASE_URL } from "@/utils/apiconstants";
-
-// const PhotoGallery = () => {
-//   const urlParams = new URLSearchParams(window.location.search);
-//   const folderName = urlParams.get('folderName');
-//   const customerId = urlParams.get('customerId');
-
-
-//   const handleShareicon = async (mainFolderId, shortCode) => {
-
-//     await trackShareCapsuleClick(mainFolderId);
-
-//     let linkToShare = "";
-
-//     if (shortCode) {
-//       linkToShare = `${BASE_URL}/eventcapsule/share/${shortCode}`;
-//     } else {
-//       linkToShare = `https://horaservices.com/weblink-gallery?folderName=${encodeURIComponent(folderName)
-//         .replace(/%20/g, "%2520")}&customerId=${customerId}`;
-//     }
-
-//     if (navigator.share) {
-//       try {
-//         await navigator.share({
-//           title: "Photo Gallery",
-//           text: "Check out these photos!",
-//           url: linkToShare,
-//         });
-//       } catch (error) {
-//         console.error("Error sharing:", error);
-//       }
-//     } else {
-//       navigator.clipboard.writeText(linkToShare);
-//       alert("Link copied to clipboard!");
-//     }
-//   };
-
-//   return (
-//     <div className="photo-container">
-//       <ThumbnailGallery folderName={folderName} customerId={customerId} handleShareicon={(id, shortCode) => handleShareicon(id, shortCode)} />
-//     </div>
-//   );
-// };
-
-// export default PhotoGallery;
-
-
-
-
-
-
-
-
-
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Head from "next/head";
 import ThumbnailGallery from "./ThumbnailGallery";
 
 import "slick-carousel/slick/slick.css";
@@ -69,17 +10,19 @@ import "slick-carousel/slick/slick-theme.css";
 import { trackShareCapsuleClick } from "@/services/weblinkServices";
 import { BASE_URL } from "@/utils/apiconstants";
 
+const SITE = "https://horaservices.com";
+const GALLERY_PATH = "/weblink-gallery"; // actual route confirm kar lo
+// agar route /photo-gallery hai to yahan change karo
+
 const PhotoGallery = () => {
   const [folderName, setFolderName] = useState("");
   const [customerId, setCustomerId] = useState("");
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // Component is now running in browser
     setIsClient(true);
 
     const searchParams = new URLSearchParams(window.location.search);
-
     const folder = searchParams.get("folderName") || "";
     const customer = searchParams.get("customerId") || "";
 
@@ -87,6 +30,18 @@ const PhotoGallery = () => {
     setCustomerId(customer);
   }, []);
 
+  const buildCanonical = () => {
+    if (!folderName || !customerId) {
+      return `${SITE}${GALLERY_PATH}`;
+    }
+    const qs = new URLSearchParams({
+      folderName,
+      customerId,
+    });
+    return `${SITE}${GALLERY_PATH}?${qs.toString()}`;
+  };
+
+  const canonicalUrl = buildCanonical();
   const handleShareicon = async (mainFolderId, shortCode) => {
     try {
       await trackShareCapsuleClick(mainFolderId);
@@ -99,10 +54,9 @@ const PhotoGallery = () => {
     if (shortCode) {
       linkToShare = `${BASE_URL}/eventcapsule/share/${shortCode}`;
     } else {
-      linkToShare =
-        `https://horaservices.com/weblink-gallery?folderName=${encodeURIComponent(
-          folderName
-        ).replace(/%20/g, "%2520")}&customerId=${customerId}`;
+      linkToShare = `https://horaservices.com/weblink-gallery?folderName=${encodeURIComponent(
+        folderName,
+      ).replace(/%20/g, "%2520")}&customerId=${customerId}`;
     }
 
     if (navigator.share) {
@@ -127,10 +81,13 @@ const PhotoGallery = () => {
     }
   };
 
-  // Prevent rendering browser-dependent content during SSR
   if (!isClient) {
     return (
       <div className="photo-container">
+        <Head>
+          <title>Photo Gallery | HORA</title>
+          <link rel="canonical" href={`${SITE}${GALLERY_PATH}`} />
+        </Head>
         <div>Loading...</div>
       </div>
     );
@@ -138,6 +95,11 @@ const PhotoGallery = () => {
 
   return (
     <div className="photo-container">
+      <Head>
+        <link rel="canonical" href={canonicalUrl} />
+        <meta name="robots" content="noindex, nofollow" />
+      </Head>
+
       <ThumbnailGallery
         folderName={folderName}
         customerId={customerId}

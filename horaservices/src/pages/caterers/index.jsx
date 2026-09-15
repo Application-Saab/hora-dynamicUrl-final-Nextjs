@@ -468,6 +468,7 @@ export default function Home() {
             href="https://horaservices.com/api/uploads/logo-icon.png"
             type="image/x-icon"
           />
+          <link rel="canonical" href="https://horaservices.com/caterers" />
           <meta property="og:url" content="https://horaservices.com/caterers" />
           <meta property="og:type" content="website" />
         </Head>

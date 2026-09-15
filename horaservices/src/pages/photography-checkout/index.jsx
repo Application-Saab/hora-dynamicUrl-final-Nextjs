@@ -518,12 +518,13 @@ const contactUsRedirection = (productName) => {
            photographers near me, professional photographer near me, professional photographer, freelance photographer, best photographers near me, photoshoot near me, photographer in bangalore, photography in bangalore, bangalore photoshoot, photography services"
         />
         <meta property="og:title" content="HORA Photography : Professional photography for all events" />
+        <link rel="canonical" href="https://horaservices.com/photography-page" />
         <meta
           property="og:description"
           content="Professional event photography for weddings, birthdays, baby showers, and more. Book today for stunning, affordable memories — starting at just ₹3500!"
         />
         <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
-        <meta property="og:url" content="https://horaservices.com/photography" />
+        <meta property="og:url" content="https://horaservices.com/photography-page" />
         <meta property="og:type" content="website" />
         <meta name="robots" content="index, follow" />
         <meta name="author" content="Hora Services" />

@@ -15,9 +15,11 @@ import CheerChatBanner from "@/components/CheerChatBanner";
 import GuestListBanner from "@/components/GuestListBanner";
 import InviteSlider from "@/components/InviteSlider";
 import { safeGetItem } from "@/utils/safeStorage";
+import Head from "next/head";
 
 const WonderlandMainPage = () => {
   const router = useRouter();
+  const CANONICAL_URL = "https://horaservices.com/wonderland";
 
   // SSR-safe defaults – never read localStorage during render
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
@@ -100,6 +102,9 @@ const WonderlandMainPage = () => {
 
   return (
     <>
+      <Head>
+        <link rel="canonical" href={CANONICAL_URL} />
+      </Head>
       <div className="logedin-container">
         <div className="invite-banner">
           <Image

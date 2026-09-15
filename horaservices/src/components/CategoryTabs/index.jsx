@@ -61,19 +61,11 @@ const CategoryTabs = ({
     });
   };
 
-  // Helper to get href for Grid variant
-  // const getGridHref = (cat) => {
-  //   if (!cat || !catValue) return "#";
-  //   const ROOT_CATEGORY = "balloon-decoration";
-  //   const themeSlug = `${cat.value}-theme-decoration`;
-  //   return formatPath(`/${ROOT_CATEGORY}/${catValue}/${themeSlug}`);
-  // };
   const getGridHref = (cat) => {
-  if (!cat || !catValue) return "#";
-  const baseRoute = getCategorySlugFromPath(pathname, city, locality);
-  // Match openCatItems: /{categorySlug}/{catValue}/{themeValue}
-  return formatPath(`/${baseRoute}/${catValue}/${cat.value}`);
-};
+    if (!cat || !catValue) return "#";
+    const baseRoute = getCategorySlugFromPath(pathname, city, locality);
+    return formatPath(`/${baseRoute}/${catValue}/${cat.value}`);
+  };
 
   // Helper to get href for Circle tabs variant
   const getCircleHref = (cat) => {
@@ -81,7 +73,7 @@ const CategoryTabs = ({
     const baseRoute = getCategorySlugFromPath(pathname, city, locality);
     return formatPath(`/${baseRoute}/${cat.catValue || catValue}`);
   };
-  
+
   // ---- Scroll helpers (grid variant only) ----
   const updateArrowVisibility = useCallback(() => {
     const el = scrollRef.current;

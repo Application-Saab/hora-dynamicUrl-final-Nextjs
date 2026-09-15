@@ -441,6 +441,7 @@ return (
         <meta property="og:description" content="Discover HORA Catering for exquisite veg and non-veg options, featuring a diverse menu including Chinese, North Indian, Italian, and Continental cuisines. 🍽️ Perfect for house parties, corporate events, weddings, and birthday celebrations! 🎉 We ensure your occasion is deliciously memorable. 🌟 Customize your menu today! 😊🎈" />
         <meta property="og:image" content="https://horaservices.com/api/uploads/homepage_whatareu4.webp" />
         <script type="application/ld+json">{scriptTag}</script>
+        <link rel="canonical" href="https://horaservices.com/bulk-food-delivery" />
         <meta name="robots" content="index, follow" />
         <meta name="author" content="Hora Services" />
         <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
