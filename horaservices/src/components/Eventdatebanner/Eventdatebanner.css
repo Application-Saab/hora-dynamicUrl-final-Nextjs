@@ -116,11 +116,7 @@ margin-left: clamp(1.63px, calc((2 / 393) * 100vw), 2.44px);
   text-align: center;
   text-transform: capitalize;
 
-  font-size: clamp(
-    20.33px,
-    calc((25 / 393) * 100vw),
-    30.53px
-  );
+font-size: clamp(18px, 5.84vw, 23px);
 
   line-height: 100%;
   letter-spacing: 0;

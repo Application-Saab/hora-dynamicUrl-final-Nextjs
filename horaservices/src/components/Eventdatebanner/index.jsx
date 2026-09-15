@@ -13,7 +13,6 @@ import { useDateGate } from "@/utils/dateGateContext";
 import DateSelectionBottomSheet from "../DateSelectionBottomSheet";
 import PencilEditIcon from "@/assets/pencilEdit.svg";
 import EventReminderPopup from "../EventReminderPopup";
-import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 import { fetchWithError } from "@/utils/fetchWithError";
 
 const MONTH_NAMES = [
@@ -27,11 +26,6 @@ const formatEventDate = (isoString) => {
   const day = String(d.getUTCDate()).padStart(2, "0");
   const month = MONTH_NAMES[d.getUTCMonth()];
   return `${day} ${month}`;
-};
-
-const toDateKey = (isoString) => {
-  const d = new Date(isoString);
-  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 };
 
 export default function EventDateBanner({
@@ -111,21 +105,16 @@ export default function EventDateBanner({
     if (newDate) {
       setEventDate(newDate);
 
-      const { userId, visitorId } = getIds();
-      const identityKey = visitorId || userId || "anon";
-      const dateKey = toDateKey(newDate);
-      const flagKey = `reminder_shown_${identityKey}_${dateKey}`;
-      const alreadyShown = safeGetItem(flagKey);
-
-      if (!alreadyShown) {
-        const today = new Date();
-        const selected = new Date(newDate);
-        const diffMs = selected.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
-        const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-        setReminderVariant(diffDays >= 0 && diffDays <= 4 ? "approaching" : "planner");
-        setReminderOpen(true);
-        safeSetItem(flagKey, "true");
-      }
+      // Reminder ab HAR baar dikhega jab bhi date confirm/edit ki jaaye —
+      // "already shown" wala once-per-date flag-check jaan-boojh kar
+      // hataya gaya hai, kyunki requirement hai ki jitni baar bhi date
+      // change ho, reminder popup aana chahiye.
+      const today = new Date();
+      const selected = new Date(newDate);
+      const diffMs = selected.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
+      const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+      setReminderVariant(diffDays >= 0 && diffDays <= 4 ? "approaching" : "planner");
+      setReminderOpen(true);
     }
     setIsSheetOpen(false);
     fetchEventDate();
