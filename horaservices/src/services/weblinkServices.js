@@ -3,9 +3,12 @@ import { BASE_URL } from "../utils/apiconstants"
 import { MEDIA_WORKER_URL } from "../utils/apiconstants";
 
 // get images api function 
-export const getImagesbyFolderName = async ({ folderName, customerId }) => {
+export const getImagesbyFolderName = async ({ galleryId, folderName }) => {
   try {
-    const url = `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`;
+    
+    const url = galleryId
+      ? `${BASE_URL}/api/photo/thumbnailsWithinProject?galleryId=${encodeURIComponent(galleryId)}`
+      : `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}`;
 
     const response = await fetchWithError(url);
 

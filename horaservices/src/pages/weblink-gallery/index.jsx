@@ -8,8 +8,8 @@ import { BASE_URL } from "@/utils/apiconstants";
 
 const PhotoGallery = () => {
   const urlParams = new URLSearchParams(window.location.search);
+  const galleryId = urlParams.get('galleryId');
   const folderName = urlParams.get('folderName');
-  const customerId = urlParams.get('customerId');
 
 
   const handleShareicon = async (mainFolderId, shortCode) => {
@@ -20,9 +20,11 @@ const PhotoGallery = () => {
 
     if (shortCode) {
       linkToShare = `${BASE_URL}/eventcapsule/share/${shortCode}`;
-    } else {
-      linkToShare = `https://horaservices.com/weblink-gallery?folderName=${encodeURIComponent(folderName)
-        .replace(/%20/g, "%2520")}&customerId=${customerId}`;
+    } else if (galleryId) {
+      linkToShare = `https://horaservices.com/weblink-gallery?galleryId=${encodeURIComponent(galleryId).replace(/%20/g, "%2520")}`;
+    }
+    else{
+      linkToShare = `https://horaservices.com/weblink-gallery?folderName=${encodeURIComponent(folderName).replace(/%20/g, "%2520")}&customerId=${encodeURIComponent(customerId).replace(/%20/g, "%2520")}`;
     }
 
     if (navigator.share) {
@@ -43,7 +45,7 @@ const PhotoGallery = () => {
 
   return (
     <div className="photo-container">
-      <ThumbnailGallery folderName={folderName} customerId={customerId} handleShareicon={(id, shortCode) => handleShareicon(id, shortCode)} />
+      <ThumbnailGallery folderName={folderName}  galleryId={galleryId} handleShareicon={(id, shortCode) => handleShareicon(id, shortCode)} />
     </div>
   );
 };
