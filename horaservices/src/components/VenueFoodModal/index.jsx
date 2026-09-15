@@ -7,28 +7,19 @@ import VEG_ICON from "@/assets/veg.svg";
 import NONVEG_ICON from "@/assets/nonveg.svg";
 // ── 2. KEYWORD → CATEGORY MAP ──
 const KEYWORD_TO_CATEGORY = [
-  {
-    keywords: ["welcome drink", "drink", "beverage", "mocktail", "juice"],
-    category: "Welcome Drink",
-  },
-  { keywords: ["soup"], category: "Soup" },
-  { keywords: ["salad", "Salad/chaat"], category: "Salads" },
-  { keywords: ["starter", "snack"], category: "Starters" },
-  { keywords: ["main course"], category: "Main Course" },
-  { keywords: ["dal"], category: "Dal" },
-  {
-    keywords: ["rice", "noodles", "pasta", "biryani"],
-    category: "Rice / Noodles / Pasta",
-  },
-  { keywords: ["bread", "roti", "naan"], category: "Bread" },
-  { keywords: ["dessert", "sweet", "mithai"], category: "Desserts" },
-  { keywords: ["ice cream"], category: "Ice Cream" },
-  {
-    keywords: ["papad", "accompaniment", "chutney"],
-    category: "Accompaniments",
-  },
-  { keywords: ["raita"], category: "Raita" },
-  { keywords: ["pizza"], category: "Pizza" },
+  { keywords: ["welcome drink", "drink", "beverage", "mocktail", "juice"], category: "Welcome Drink"          },
+  { keywords: ["soup"],                                                     category: "Soup"                   },
+  { keywords: ["salad","Salad/chaat"],                                      category: "Salads"                 },
+  { keywords: ["starter", "snack"],                                         category: "Starters"               },
+  { keywords: ["main course"],                                              category: "Main Course"            },
+  { keywords: ["dal"],                                                      category: "Dal"                    },
+  { keywords: ["rice", "noodles", "pasta", "biryani"],                     category: "Rice / Noodles / Pasta" },
+  { keywords: ["bread", "roti", "naan"],                                   category: "Bread"                  },
+  { keywords: ["dessert", "sweet", "mithai"],                              category: "Desserts"               },
+  { keywords: ["ice cream"],                                               category: "Ice Cream"              },
+  { keywords: ["papad", "accompaniment", "chutney"],                      category: "Accompaniments"         },
+  { keywords: ["raita"],                                                   category: "Raita"                  },
+  { keywords: ["pizza"],                                                   category: "Pizza"                  },
 ];
 
 const SORTED_KEYWORD_TO_CATEGORY = [...KEYWORD_TO_CATEGORY].sort((a, b) => {
@@ -61,7 +52,7 @@ const parseSubTitle = (subTitle = "", categories = []) => {
     const isNonVeg = lower.includes("non veg") || lower.includes("non-veg");
 
     const matched = SORTED_KEYWORD_TO_CATEGORY.find(({ keywords }) =>
-      keywords.some((kw) => lower.includes(kw)),
+      keywords.some((kw) => lower.includes(kw))
     );
 
     if (!matched) {
@@ -80,13 +71,13 @@ const parseSubTitle = (subTitle = "", categories = []) => {
     }
 
     if (isNonVeg) result[cat].nonVegCount += count;
-    else result[cat].vegCount += count;
+    else          result[cat].vegCount    += count;
   });
 
   Object.keys(result).forEach((cat) => {
     const { vegCount, nonVegCount } = result[cat];
     const noteParts = [];
-    if (vegCount > 0) noteParts.push(`${vegCount} Veg`);
+    if (vegCount > 0)    noteParts.push(`${vegCount} Veg`);
     if (nonVegCount > 0) noteParts.push(`${nonVegCount} Non-Veg`);
     result[cat].note = `Choose any ${noteParts.join(" + ")}`;
   });
@@ -98,7 +89,7 @@ const resolveCanonicalCategory = (title = "") => {
   const lower = title.toLowerCase();
 
   const matched = SORTED_KEYWORD_TO_CATEGORY.find(({ keywords }) =>
-    keywords.some((kw) => lower.includes(kw.toLowerCase())),
+    keywords.some((kw) => lower.includes(kw.toLowerCase()))
   );
 
   return matched ? matched.category : title.trim();
@@ -110,19 +101,17 @@ const getCategoryWiseItems = (packageItems = [], categories = []) => {
 
   packageItems.forEach((item) => {
     item.categoryIds?.forEach((categoryId) => {
-      const category = categories.find(
-        (cat) => String(cat._id) === String(categoryId),
-      );
-
+      const category = categories.find((cat) => cat._id === categoryId);
       if (!category) return;
 
-      const categoryName = category.title;
+      // DB ka raw title ("Salad" / "Salad/chaat") ko canonical
+      // category name ("Salads") me resolve karo
+      const canonicalKey = resolveCanonicalCategory(category.title);
 
-      if (!grouped[categoryName]) {
-        grouped[categoryName] = [];
+      if (!grouped[canonicalKey]) {
+        grouped[canonicalKey] = [];
       }
-
-      grouped[categoryName].push(item);
+      grouped[canonicalKey].push(item);
     });
   });
 
@@ -142,13 +131,7 @@ const DishGroup = ({ groupKey, label, icon, items, expanded, onToggle }) => {
   return (
     <>
       <div className="vfm-sub-label">
-        <Image
-          src={icon}
-          alt={label}
-          className="vfm-food-icon"
-          width={14}
-          height={14}
-        />
+        <Image src={icon} alt={label} className="vfm-food-icon" width={14} height={14} />
         <span className="vfm-sub-label-text">{label}</span>
       </div>
 
@@ -189,22 +172,12 @@ const VenueFoodModal = ({ data, onClose, categories = [] }) => {
 
   const subTitleConfig = useMemo(
     () => parseSubTitle(data?.subTitle, categories),
-    [data?.subTitle, categories],
-  );
-  console.log(
-    "%c [ subTitleConfig ]",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    subTitleConfig,
+    [data?.subTitle, categories]
   );
 
   const categoryWiseItems = useMemo(
     () => getCategoryWiseItems(data?.packageItems, categories),
-    [data?.packageItems, categories],
-  );
-  console.log(
-    "%c [ categoryWiseItems ]",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    categoryWiseItems,
+    [data?.packageItems, categories]
   );
 
   if (!data) return null;
@@ -216,12 +189,11 @@ const VenueFoodModal = ({ data, onClose, categories = [] }) => {
   return (
     <div className="vfm-overlay" onClick={onClose}>
       <div className="vfm-card" onClick={(e) => e.stopPropagation()}>
+
         {/* ── HEADER ── */}
         <div className="vfm-header">
           <h2 className="vfm-title">{data.title}</h2>
-          <button className="vfm-close-btn" onClick={onClose}>
-            ✕
-          </button>
+          <button className="vfm-close-btn" onClick={onClose}>✕</button>
 
           <div className="vfm-info-row">
             <div className="vfm-info-cell">
@@ -251,9 +223,7 @@ const VenueFoodModal = ({ data, onClose, categories = [] }) => {
                 />
               </svg>
               <div className="vfm-cell-text">
-                <span className="vfm-cell-main">
-                  {data.maxGuests ?? 50} Guest
-                </span>
+                <span className="vfm-cell-main">{data.maxGuests ?? 50} Guest</span>
                 <span className="vfm-cell-sub">Minimum Guest</span>
               </div>
             </div>
@@ -262,65 +232,55 @@ const VenueFoodModal = ({ data, onClose, categories = [] }) => {
 
         {/* ── BODY ── */}
         <div className="vfm-body">
-          {Object.entries(categoryWiseItems).map(([categoryName, items]) => {
-            const vegItems = items.filter(
-              (item) => item.foodType === "veg" || item?.foodType === "Veg",
-            );
-            const nonVegItems = items.filter(
-              (item) =>
-                item.foodType === "non-veg" ||
-                item.foodType === "nonveg" ||
-                item.foodType === "non veg" ||
-                item.foodType === "Non-Veg",
-            );
+      {Object.entries(categoryWiseItems).map(([categoryName, items]) => {
+  const vegItems    = items.filter((item) => item.foodType === "veg");
+  const nonVegItems = items.filter((item) => item.foodType === "non-veg");
 
-            const config = subTitleConfig[categoryName];
-            const note = config?.note ?? null;
-            const icon = config?.icon ?? TITLE_ICON_MAP[categoryName] ?? null;
+  const config = subTitleConfig[categoryName];
+  const note   = config?.note ?? null;
+  const icon   = config?.icon ?? TITLE_ICON_MAP[categoryName] ?? null;
 
-            const vegKey = `${categoryName}-veg`;
-            const nonVegKey = `${categoryName}-nonveg`;
+  const vegKey    = `${categoryName}-veg`;
+  const nonVegKey = `${categoryName}-nonveg`;
 
-            return (
-              <div className="vfm-section" key={categoryName}>
-                <div className="vfm-sec-pill">
-                  {icon ? (
-                    <Image
-                      className="vfm-sec-icon"
-                      src={icon}
-                      alt={categoryName}
-                      width={20}
-                      height={20}
-                    />
-                  ) : (
-                    <div className="vfm-sec-icon vfm-sec-icon--fallback">
-                      🍽️
-                    </div>
-                  )}
-                  <span className="vfm-sec-title">{categoryName}</span>
-                  {note && <span className="vfm-choose-badge">{note}</span>}
-                </div>
+  return (
+    <div className="vfm-section" key={categoryName}>
+      <div className="vfm-sec-pill">
+       {icon ? (
+  <Image
+    className="vfm-sec-icon"
+    src={icon}
+    alt={categoryName}
+    width={20}
+    height={20}
+  />
+) : (
+  <div className="vfm-sec-icon vfm-sec-icon--fallback">🍽️</div>
+)}
+        <span className="vfm-sec-title">{categoryName}</span>
+        {note && <span className="vfm-choose-badge">{note}</span>}
+      </div>
 
-                <DishGroup
-                  groupKey={vegKey}
-                  label="VEGETARIAN"
-                  icon={VEG_ICON}
-                  items={vegItems}
-                  expanded={!!expandedGroups[vegKey]}
-                  onToggle={toggleGroup}
-                />
+     <DishGroup
+  groupKey={vegKey}
+  label="VEGETARIAN"
+  icon={VEG_ICON}
+  items={vegItems}
+  expanded={!!expandedGroups[vegKey]}
+  onToggle={toggleGroup}
+/>
 
-                <DishGroup
-                  groupKey={nonVegKey}
-                  label="NON VEGETARIAN"
-                  icon={NONVEG_ICON}
-                  items={nonVegItems}
-                  expanded={!!expandedGroups[nonVegKey]}
-                  onToggle={toggleGroup}
-                />
-              </div>
-            );
-          })}
+<DishGroup
+  groupKey={nonVegKey}
+  label="NON VEGETARIAN"
+  icon={NONVEG_ICON}
+  items={nonVegItems}
+  expanded={!!expandedGroups[nonVegKey]}
+  onToggle={toggleGroup}
+/>
+    </div>
+  );
+})}
 
           {/* Add-ons */}
           {data?.packageAddons?.length > 0 && (
@@ -337,6 +297,7 @@ const VenueFoodModal = ({ data, onClose, categories = [] }) => {
             </div>
           )}
         </div>
+
       </div>
     </div>
   );
