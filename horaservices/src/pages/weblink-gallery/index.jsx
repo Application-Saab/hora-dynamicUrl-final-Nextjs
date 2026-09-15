@@ -16,7 +16,7 @@ const GALLERY_PATH = "/weblink-gallery"; // actual route confirm kar lo
 
 const PhotoGallery = () => {
   const [folderName, setFolderName] = useState("");
-  const [customerId, setCustomerId] = useState("");
+  const [galleryId, setGalleryId] = useState("");
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -24,10 +24,10 @@ const PhotoGallery = () => {
 
     const searchParams = new URLSearchParams(window.location.search);
     const folder = searchParams.get("folderName") || "";
-    const customer = searchParams.get("customerId") || "";
+    const galleryId = searchParams.get("galleryId") || "";
 
     setFolderName(folder);
-    setCustomerId(customer);
+    setGalleryId(galleryId);
   }, []);
 
   const buildCanonical = () => {
@@ -53,10 +53,11 @@ const PhotoGallery = () => {
 
     if (shortCode) {
       linkToShare = `${BASE_URL}/eventcapsule/share/${shortCode}`;
-    } else {
-      linkToShare = `https://horaservices.com/weblink-gallery?folderName=${encodeURIComponent(
-        folderName,
-      ).replace(/%20/g, "%2520")}&customerId=${customerId}`;
+    } else if (galleryId) {
+      linkToShare = `https://horaservices.com/weblink-gallery?galleryId=${encodeURIComponent(galleryId).replace(/%20/g, "%2520")}`;
+    }
+    else {
+      linkToShare = `https://horaservices.com/weblink-gallery?folderName=${encodeURIComponent(folderName).replace(/%20/g, "%2520")}`;
     }
 
     if (navigator.share) {
@@ -102,7 +103,7 @@ const PhotoGallery = () => {
 
       <ThumbnailGallery
         folderName={folderName}
-        customerId={customerId}
+        galleryId={galleryId}
         handleShareicon={handleShareicon}
       />
     </div>

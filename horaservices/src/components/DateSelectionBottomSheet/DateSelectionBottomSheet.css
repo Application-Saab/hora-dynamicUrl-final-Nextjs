@@ -12,13 +12,26 @@
   z-index: 1000;
 }
 
-.dsb-close-btn {
+.dsb-sheet-wrapper {
   position: fixed;
-  top: 70px;
+  left: 0;
+  right: 0;
+  bottom: 74px; /* footer ke upar */
+  top: auto;
+  z-index: 1001;
+  max-width: 600px;
+  margin: auto;
+  overflow: visible;
+}
+
+.dsb-close-btn {
+  position: absolute;
+  top: -40px;
   left: 50%;
+  right: auto;
   transform: translateX(-50%);
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: #ffffff;
   border: none;
@@ -30,20 +43,14 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* ✅ FIX: sheet ab content ke hisaab se height leta hai,
-   top fixed nahi — bottom se hi anchor hai, taaki calendar
-   compact rahe aur neeche khali gap na bane */
+/* Sheet ab sirf apna content-scroll aur look sambhalta hai.
+   Fixed positioning wrapper ne le li — isliye ab isko sirf
+   apne andar ka overflow-y clip karna padta hai, button ko nahi
+   (kyunki button ab isme hai hi nahi, wrapper mein hai). */
 .dsb-sheet {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 74px; /* footer ke upar */
-  top: auto;
+  position: relative;
   background: white;
   border-radius: 24px 24px 0 0;
-  z-index: 1001;
-  max-width: 600px;
-  margin: auto;
   max-height: calc(100vh - 74px - 20px);
   overflow-y: auto;
   display: flex;
@@ -99,8 +106,6 @@
   letter-spacing: 0;
 }
 
-/* ✅ FIX: flex:1 hataya — card ab apni natural/content height
-   leta hai, poore sheet tak stretch nahi hota */
 .dsb-calendar-card {
   background: #ffffff;
   border-radius: 20px;
@@ -164,9 +169,6 @@
   text-transform: uppercase;
 }
 
-/* ✅ FIX: flex:1 aur align-content:center hataye — ab grid
-   apni natural height leta hai, rows top se start hote hain,
-   koi forced/centered gap nahi banta */
 .dsb-days-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -213,7 +215,7 @@
   pointer-events: none;
 }
 
-/* ✅ Past dates ke liye — dikhega lekin click/select nahi hoga */
+/* Past dates ke liye — dikhega lekin click/select nahi hoga */
 .dsb-day-disabled {
   color: #c7c7c7 !important;
   cursor: not-allowed !important;

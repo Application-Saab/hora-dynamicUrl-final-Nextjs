@@ -215,18 +215,22 @@ gap: clamp(8px, 2.54vw, 10px);
 }
 
 .avatarss {
-  width: clamp(11px, 3.49vw, 13.72px);
-  height: clamp(11px, 3.49vw, 13.72px);
-
+width: clamp(16px, 4.58vw, 18px);
+height: clamp(16px, 4.58vw, 18px);
   border-radius: 50%;
   border: clamp(1.6px, 0.51vw, 2px) solid #fff;
-
   object-fit: cover;
-
-  background: #eee;
 }
-
-.avatar:first-child {
+.avatar-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+ font-size: clamp(7px, 2.04vw, 8px);
+  text-transform: uppercase;
+}
+.avatarss:first-child {
   margin-left: 0;
 }
 
@@ -262,7 +266,7 @@ font-size: clamp(5.8px, 1.73vw, 6.8px);
   line-height: 100%;
   letter-spacing: 0;
   text-align: center;
-
+  margin-top:auto;
   color: #69249E;
 
   padding: clamp(3.2px, 1.02vw, 4px);
@@ -326,4 +330,9 @@ width: clamp(56px, 16.79vw, 66px);
 height: clamp(52px, 15.52vw, 61px);
   object-fit: contain;
   flex-shrink: 0;
+}
+.no-guests-text {
+  font-size: 12px;
+  color: #999;
+  font-style: italic;
 }

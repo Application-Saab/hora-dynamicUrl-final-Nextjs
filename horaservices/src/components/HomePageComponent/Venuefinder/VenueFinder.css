@@ -86,59 +86,65 @@ height: clamp(96px, 29.49vw, 116px);
 font-family: Inter;
 font-weight: 600;
 font-style: normal;
-font-size: clamp(8px, 2.53vw, 9.96px);
+font-size: clamp(9px, 2.8vw, 11px);
 line-height: 100%;
 letter-spacing: 0;
-vertical-align: middle;
 color:#282424;
 }
 
 .venue-arrow {
-width: clamp(10px, 3.10vw, 12.17px);
-height: clamp(10px, 3.10vw, 12.17px);
+width: clamp(12.44px, 3.56vw, 14px);
+height: clamp(12.44px, 3.56vw, 14px);
   border-radius: 50%;
   border: none;
   background: linear-gradient(180deg, #67239D 0%, #AD2D95 100%);
-
   color: #fff;
   display: flex;
-  align-items: center;
-  justify-content: center;
+
   flex-shrink: 0;
   cursor: pointer;
 }
 
-.venue-arrow svg {
-  width: 11px;
-  height: 11px;
+
+.venue-cta-overlay {
+  position: absolute;
+  top: clamp(14px, 4.58vw, 22px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
 }
 
 .venue-cta {
- margin: auto;
-background: linear-gradient(90deg, #6b21a8, #ec4899);
-color: #fff;
-border: none;
-border-radius: clamp(8px, 2.54vw, 10px);
-padding: clamp(6px, 2.04vw, 8px) clamp(24px, 7.63vw, 30px);
-font-size: clamp(12px, 3.82vw, 15px);
-font-weight: 700;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: clamp(12px, 3.82vw, 15px);
+width: clamp(140px, 46.06vw, 181px);
+  background: linear-gradient(90deg, #64239E 0%, #B02D95 100%);
+  color: #fff;
+  border: none;
+  border-radius: 4.94px;
+
+  padding: clamp(6px, 2.04vw, 8px) ;
+
+  font-size: clamp(12.81px, 3.66vw, 14.41px);
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+
+  box-sizing: border-box;
 }
+
 
 .venue-cta:hover {
   filter: brightness(1.05);
 }
 
 .venue-cta svg {
-  width: 16px;
-  height: 16px;
+  width:  clamp(16px, 5.09vw, 20px);
+  height:  clamp(16px, 5.09vw, 20px);
 }
 .arrow-venue {
-  width: clamp(10px, 3.05vw, 12px);
-  height: clamp(10px, 3.05vw, 12px);
+width: clamp(11.56px, 3.31vw, 13px);
+height: clamp(11.56px, 3.31vw, 13px);
   object-fit: contain;
 }
 .venue-celebration-banner {
@@ -150,13 +156,4 @@ gap: clamp(12px, 3.82vw, 15px);
   width: 100%;
   height: auto;
   display: block;
-}
-
-.venue-cta-overlay {
-  position: absolute;
-top: clamp(14px, 4.58vw, 22px);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  width: max-content;
 }

@@ -489,25 +489,22 @@ function DecorationCatDetails({
   };
 
   const handleCheckout = () => {
-    const totalPrice = calculateTotalPrice(product.price);
+    const totalPrice = calculateTotalPrice(product?.price);
     window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "book_now_click",
-      product_name: product.name,
-    });
+    window.dataLayer.push({ event: "book_now_click", product_name: product?.name });
 
     router.push({
       pathname: "/checkout",
       query: {
         from: typeof window !== "undefined" ? window.location.pathname : "",
         subCategory,
-        product: JSON.stringify(product),
+        product: JSON.stringify(product || {}),
         orderType: "decoration",
         catValue,
         selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
         itemQuantities: JSON.stringify(itemQuantities),
         totalAmount: totalPrice,
-        slug: product.slug || generateSlug(product.name),
+        slug: product?.slug || generateSlug(product?.name),
       },
     });
   };
@@ -515,7 +512,7 @@ function DecorationCatDetails({
   const handleShare = () => {
     const cleanUrl = window.location.origin + window.location.pathname;
     if (navigator.share) {
-      navigator.share({ title: product.name, url: cleanUrl });
+      navigator.share({ title: product?.name || "Hora Services", url: cleanUrl });
     } else {
       navigator.clipboard.writeText(cleanUrl);
       alert("Link copied!");
@@ -612,42 +609,27 @@ function DecorationCatDetails({
   return (
     <div className="App" style={{ backgroundColor: "white" }}>
       <Head>
-        <title>{`${product.name} | ${catValue.replace(/-/g, " ")}`}</title>
-
+        <title>{`${product?.name || ""} | ${catValue.replace(/-/g, " ")}`}</title>
         <meta
           name="description"
-          content={`${product.name} from Hora Services – Beautiful ${catValue.replace(
-            /-/g,
-            " ",
-          )} decoration starting at just ₹999. Book for birthdays, anniversaries, weddings & more!`}
+          content={`${product?.name || "Decoration"} from Hora Services – Beautiful ${catValue.replace(/-/g, " ")} decoration starting at just ₹999. Book for birthdays, anniversaries, weddings & more!`}
         />
 
         <meta
           name="keywords"
-          content={`${product.name}, ${catValue.replace(
-            /-/g,
-            " ",
-          )}, balloon decoration, ${product.name} decoration price`}
+          content={`${product?.name || ""}, ${catValue.replace(/-/g, " ")}, balloon decoration, ${product?.name || ""} decoration price`}
         />
-
-        {/* ✅ CANONICAL — no query params */}
         <link rel="canonical" href={canonicalUrl} />
-
-        <meta
-          property="og:title"
-          content={`${product.name} | ${catValue.replace(/-/g, " ")} by Hora Services`}
-        />
+        <meta property="og:title" content={`${product?.name || ""} | ${catValue.replace(/-/g, " ")} by Hora Services`} />
         <meta
           property="og:description"
-          content={`Book ${product.name} decoration by Hora Services. Explore ${catValue.replace(
-            /-/g,
-            " ",
-          )} designs for birthdays, anniversaries, baby showers & more.`}
+          content={`Book ${product?.name || ""} decoration by Hora Services. Explore ${catValue.replace(/-/g, " ")} designs for birthdays, anniversaries, baby showers & more.`}
         />
-        <meta property="og:image" content={productImage} />
+        <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
+        <meta property="og:image:alt" content={`${product?.name || ""}, ${catValue.replace(/-/g, " ")} decoration`} />
         <meta
-          property="og:image:alt"
-          content={`${product.name}, ${catValue.replace(/-/g, " ")} decoration`}
+          property="og:url"
+          content={`https://horaservices.com/balloon-decoration/${catValue}/product/${product?.name?.replace(/\s+/g, "-") || ""}`}
         />
         
         <meta property="og:url" content={canonicalUrl} />
@@ -682,7 +664,7 @@ function DecorationCatDetails({
                     ? `${COMPRESSED_WEBP_IMG_URL}${product.featured_images[0].fileName.split(".")[0]}.webp`
                     : fallbackImg
                 }
-                alt={`balloon decoration ${altTagCatValue} ${product.name} ${product.price}`}
+                alt={`balloon decoration ${altTagCatValue} ${product?.name || ""} ${product?.price || ""}`}
                 style={{ width: "100%", height: "auto" }}
                 width={300}
                 height={300}
@@ -731,14 +713,12 @@ function DecorationCatDetails({
                 </h2>
               </div>
 
-              <h1 className="product-title">{product.name}</h1>
+              <h1 className="product-title">{product?.name}</h1>
 
               <div className="price-share-row">
                 <div className="pro-details-price">
-                  <p className="product-price">₹ {product.price}</p>
-                  <p className="product-old-price">
-                    ₹ {Math.floor(discountInfo?.discountedPrice || 0)}
-                  </p>
+                  <p className="product-price">₹ {product?.price ?? 0}</p>
+                  <p className="product-old-price">₹ {Math.floor(discountInfo?.discountedPrice || 0)}</p>
                   <div className="product-discount">
                     ₹ {Math.floor(discountInfo?.discountDifference || 0)} off
                   </div>
@@ -770,11 +750,11 @@ function DecorationCatDetails({
               </div>
             </div>
 
-            <div style={{ padding: "0 10px" }}>
-              {getItemInclusion(product.inclusion)}
-              <MakeItYoursBanner />
+            <div style={{     padding: "clamp(8px, 2.5vw, 10px) clamp(8px, 2.5vw, 10px) 0px", }}>
+              {getItemInclusion(product?.inclusion)}
+             
             </div>
-
+ <MakeItYoursBanner />
             <div ref={addonRef}>
               <AddonModal
                 isOpen={isModalOpen}
@@ -881,7 +861,7 @@ function DecorationCatDetails({
         {/* Sticky bottom bar */}
         <div className="confirm-button-wrapper">
           <p style={{ fontWeight: "bold", marginBottom: 0, color: "black" }}>
-            Total: ₹ {calculateTotalPrice(Number(product.price))}
+            Total: ₹ {calculateTotalPrice(Number(product?.price || 0))}
           </p>
           <button className="confirm-button" onClick={handleCheckout}>
             Continue

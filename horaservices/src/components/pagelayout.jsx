@@ -11,7 +11,6 @@ import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 import CitySelector from "@/components/Venue/CitySelector";
 import { CityProvider, useCity } from "@/utils/cityContext";
 import DateSelectionBottomSheet from "@/components/DateSelectionBottomSheet";
-import EventReminderPopup from "@/components/EventReminderPopup";
 import { BASE_URL } from "@/utils/apiconstants";
 import { DateGateProvider, useDateGate } from "@/utils/dateGateContext";
 import { fetchWithError } from "@/utils/fetchWithError";
@@ -91,11 +90,6 @@ const getDateOnlyParts = (dateInput) => {
   };
 };
 
-const toDateKey = (dateInput) => {
-  const { y, m, day } = getDateOnlyParts(dateInput);
-  return `${y}-${String(m + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-};
-
 const daysBetween = (targetDate) => {
   const now = new Date();
   const todayParts = { y: now.getFullYear(), m: now.getMonth(), day: now.getDate() };
@@ -111,12 +105,6 @@ const daysBetween = (targetDate) => {
   return Math.round((targetUTC - todayUTC) / (1000 * 60 * 60 * 24));
 };
 
-const getVariantForDaysLeft = (daysLeft) => {
-  if (Number.isNaN(daysLeft) || daysLeft < 0) return null;
-  if (daysLeft <= 4) return "approaching";
-  return "planner";
-};
-
 const LayoutInner = ({ children }) => {
   const pathname = usePathname();
   const [userId, setUserId] = useState("");
@@ -127,8 +115,6 @@ const LayoutInner = ({ children }) => {
   const { setDateResolved } = useDateGate();
 
   const [showDateSheet, setShowDateSheet] = useState(false);
-  const [reminderVariant, setReminderVariant] = useState(null);
-  const [showReminder, setShowReminder] = useState(false);
 
   const checkStarted = useRef(false);
   const dateSheetTimerRef = useRef(null);
@@ -151,14 +137,13 @@ const LayoutInner = ({ children }) => {
     setIdsReady(true);
   }, []);
 
-  const getIdentityKey = useCallback(() => {
-    return visitorId || userId || "anon";
-  }, [visitorId, userId]);
-
+  // Reminder-popup ab yahan se manage nahi hoti — DateSelectionBottomSheet
+  // apne confirm ke turant baad khud EventReminderPopup dikhata hai. Isse
+  // reminder guaranteed dikhega chahe date-sheet PageLayout se khule ya
+  // kisi bhi doosre entry point (jaise "Change Date" button) se.
+  // Yahan sirf date-sheet ko schedule/resolve karne ka logic bacha hai.
   const checkAndSchedule = useCallback(
-    async (opts = {}) => {
-      const { skipShownFlag = false } = opts;
-
+    async () => {
       if (!idsReady) return;
       if (!userId && !visitorId) return;
 
@@ -191,20 +176,6 @@ const LayoutInner = ({ children }) => {
           .sort((a, b) => a.daysLeft - b.daysLeft);
 
         if (futureEvents.length > 0) {
-          const nearest = futureEvents[0];
-          const variant = getVariantForDaysLeft(nearest.daysLeft);
-
-          const identityKey = getIdentityKey();
-          const dateKey = toDateKey(nearest.date);
-          const flagKey = `reminder_shown_${identityKey}_${dateKey}`;
-          const alreadyShown = safeGetItem(flagKey);
-
-          if (variant && (skipShownFlag || !alreadyShown)) {
-            setReminderVariant(variant);
-            setShowReminder(true);
-            safeSetItem(flagKey, "true");
-          }
-
           setDateResolved(true);
           return;
         }
@@ -237,7 +208,7 @@ const LayoutInner = ({ children }) => {
         }, DATE_SHEET_DELAY_MS);
       }
     },
-    [userId, visitorId, idsReady, getIdentityKey, setDateResolved]
+    [userId, visitorId, idsReady, setDateResolved]
   );
 
   useEffect(() => {
@@ -300,21 +271,14 @@ const LayoutInner = ({ children }) => {
               setDateResolved(true);
             }}
             onConfirm={(date, apiData) => {
-              setShowDateSheet(false);
               setDateResolved(true);
-              checkAndSchedule({ skipShownFlag: true });
+              // Note: yahan setShowDateSheet(false) jaan-boojh kar nahi
+              // bulaya — DateSelectionBottomSheet khud apna reminder
+              // dikhane ke baad onClose() call karke sheet close karega.
             }}
             userId={userId}
             visitorId={visitorId}
             pincode={pincode}
-          />
-        )}
-
-        {isDateSheetAllowedPath && showReminder && (
-          <EventReminderPopup
-            isOpen={showReminder}
-            onClose={() => setShowReminder(false)}
-            variant={reminderVariant}
           />
         )}
 
