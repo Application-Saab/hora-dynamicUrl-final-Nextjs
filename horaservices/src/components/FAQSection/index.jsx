@@ -15,7 +15,7 @@ const FAQSection = ({ faqData, heading = "FAQ" }) => {
 
   return (
     //  style={{ marginTop: "40px", padding: "0 16px" }}
-    <div>
+    <div style={{ margin: "auto", maxWidth:"480px"}}>
       <div
         style={{
           display: "flex",
