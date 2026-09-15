@@ -108,7 +108,7 @@ const FoodDelivery = ({
 
   const activeType =
     packageType === "liveCatering" ? "liveCatering" : "bulkFood";
-
+  const SITE = "https://horaservices.com";
   const canonicalUrl =
     activeType === "liveCatering"
       ? `${SITE}${pathOnly}?type=liveCatering`
