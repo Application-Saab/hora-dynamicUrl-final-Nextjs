@@ -18,11 +18,9 @@ import downloadVector from "../../assets/downloadVector.svg";
 import shareVector from "../../assets/shareVector.svg";
 import deleteVector from "../../assets/deleteVector.svg";
 import HeaderCardsFlashLoader from "@/components/Gallery/HeaderCardsFlashLoader";
-import user2 from "../../assets/user2.svg";
 import { MEDIA_WORKER_URL, GENERATE_CAPSULE_LINK } from "../../utils/apiconstants";
 import CommonImagePopup from "@/components/CommonImagePopup";
 import refreshIcon from "../../assets/refreshIcon.svg";
-import checkWithBoard from "../../assets/checkWithBoard.svg";
 import unLike from "../../assets/unLike.svg";
 import whiteShareIcon from "../../assets/whiteShareIcon.svg";
 import like from "../../assets/like.svg";
@@ -32,7 +30,6 @@ import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
 import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick, trackDevice, createSubfolder } from "@/services/weblinkServices";
 import { downloadFile } from "@/utils/downloadFile";
 import emptyFolder from '../../assets/emptyFolder.svg';
-import { filterThumbnails } from "@/utils/filterThumbnails";
 import PaginationControls from "./capsulePagination";
 import { IoIosCloudDone } from "react-icons/io";
 import Lock from '../../assets/Lock.svg'
@@ -71,7 +68,7 @@ const weblinkUploadsDb = createPendingUploadsDb({
 
 const ThumbnailGallery = ({
   folderName,
-  customerId,
+  galleryId,
   showInternalTitle = true,
   handleShareicon,
 }) => {
@@ -89,7 +86,6 @@ const ThumbnailGallery = ({
   const [authChecked, setAuthChecked] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const prevLoginOpenRef = useRef(isLoginOpen);
   const [showActionMenu, setShowActionMenu] = useState(false);
   const [number, setNumber] = useState("");
   const [showAddToFolderPopup, setShowAddToFolderPopup] = useState(false);
@@ -103,9 +99,8 @@ const ThumbnailGallery = ({
   const [activeTab, setActiveTab] = useState("all");
   const [isPrivateFolder, setIsPrivateFolder] = useState(false);
   const [mounted, setMounted] = useState(false);
-
-  const isMyPhotosTab =
-    subFolders.find((sf) => sf._id === activeTab)?.type === "my_photos";
+  const [resolvedFolderName, setResolvedFolderName] = useState("");
+  const [customerId, setCustomerId] = useState("");
   const isSearchMode = isSearching && matchedKeys.length > 0;
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
   const myPhotosFolder = subFolders.find((sf) => sf.type === "my_photos");
@@ -133,7 +128,6 @@ const ThumbnailGallery = ({
   const [showCameraPopup, setShowCameraPopup] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [likedImages, setLikedImages] = useState({});
-  const [myPhotoSearchResults, setMyPhotoSearchResults] = useState([]);
   const [viewedBy, setViewedBy] = useState([]);
   const [showExitPopup, setShowExitPopup] = useState(false);
   const [showGuestModal, setShowGuestModal] = useState(false);
@@ -256,8 +250,8 @@ const showSnackbar = (message) => {
 
   const uploadingRef = useRef(false);
   const galleryKey = useMemo(
-    () => `${folderName || ""}__${customerId || ""}`,
-    [folderName, customerId],
+    () => `${resolvedFolderName || ""}__${customerId || ""}`,
+    [resolvedFolderName, customerId],
   );
 
   useEffect(() => {
@@ -620,14 +614,14 @@ useEffect(() => {
 
   useEffect(() => {
     const fetchThumbnails = async () => {
-      if (!folderName || !customerId) {
-        setAllThumbnails([]); setLoading(false); setError("Folder name or customer ID is missing."); return;
+      if (!folderName || !galleryId) {
+        setAllThumbnails([]); setLoading(false); setError("Folder name or galleryId is missing."); return;
       }
       setLoading(true); setError(null);
       try {
         const data = await getImagesbyFolderName({
           folderName,
-          customerId,
+          galleryId,
         });
         setSubFolders(data?.folders[0]?.subFolders || []);
         setMainFolderId(data?.folders[0]?._id || null)
@@ -636,6 +630,8 @@ useEffect(() => {
         setDeviceTracking(data?.folders[0]?.deviceTracking || []);
         setShortCode(data?.folders[0]?.shortCode || null);
         setCapsulebannerImageurl(data?.folders[0]?.capsuleBannerImageUrl);
+        setCustomerId(data?.folders[0]?.customerId || "");
+        setResolvedFolderName(data?.folders[0]?.folderName || "");
         const fetchedThumbnails = (data.thumbnails || [])
 
           .map((thumb, index) => ({ ...thumb, stableKey: thumb._id || index }));
@@ -645,7 +641,7 @@ useEffect(() => {
       } finally { setLoading(false); }
     };
     fetchThumbnails();
-  }, [folderName, customerId]);
+  }, [folderName, galleryId]);
 
   // Adjust currentThumbnailsOnPage and totalPages based on isMobileOrTablet
   const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
@@ -823,7 +819,6 @@ useEffect(() => {
     const keys = matches.map((m) => m?.file);
     setMatchedKeys(keys);
     setIsSearching(true);
-    setMyPhotoSearchResults(keys);
   };
 
   const hasChanges = useMemo(() => {
@@ -945,7 +940,7 @@ useEffect(() => {
   );
 
   const upsertPendingUploadsIntoUI = useCallback(async () => {
-    if (!folderName || !customerId) return;
+    if (!resolvedFolderName || !customerId) return;
 
     const pending = await weblinkUploadsDb.getAllFromIndex(
       "galleryKey",
@@ -983,10 +978,10 @@ useEffect(() => {
       );
       return toAdd.length ? [...toAdd, ...prev] : prev;
     });
-  }, [customerId, folderName, galleryKey, localPhoneNumber]);
+  }, [customerId, resolvedFolderName, galleryKey, localPhoneNumber]);
 
   const processWeblinkUploadQueue = useCallback(async () => {
-    if (!folderName || !customerId) return;
+    if (!resolvedFolderName || !customerId) return;
     if (uploadingRef.current) return;
 
     uploadingRef.current = true;
@@ -1029,7 +1024,7 @@ useEffect(() => {
 
           const formData = new FormData();
           formData.append("files", file);
-          formData.append("folderName", folderName);
+          formData.append("folderName", resolvedFolderName);
           formData.append("customerId", localUserId || customerId);
           formData.append("phoneNo", localPhoneNumber || "");
           formData.append("isWeblink", "true");
@@ -1094,18 +1089,18 @@ useEffect(() => {
     }
   }, [
     customerId,
-    folderName,
+    resolvedFolderName,
     galleryKey,
     localPhoneNumber,
     localUserId,
     mapUploadResponseToThumb,
   ]);
   useEffect(() => {
-    if (!folderName || !customerId) return;
+    if (!resolvedFolderName || !customerId) return;
     upsertPendingUploadsIntoUI().finally(() => processWeblinkUploadQueue());
   }, [
     customerId,
-    folderName,
+    resolvedFolderName,
     galleryKey,
     upsertPendingUploadsIntoUI,
     processWeblinkUploadQueue,
@@ -1139,7 +1134,6 @@ const currentUrl =
     setSelectedImages([]);
 
     setIsSearching(false);
-    setMyPhotoSearchResults([]);
 
     if (activeTab !== "my-photos") {
       setIsEditing(false);
@@ -1285,7 +1279,7 @@ const currentUrl =
     if (privateLocker) return privateLocker;
 
     const fd = new FormData();
-    fd.append("folderName", folderName);
+    fd.append("folderName", resolvedFolderName);
     fd.append("subFolderName", "My Locker");
     fd.append("type", "others");
     fd.append("userId", localUserId);
@@ -1479,7 +1473,7 @@ const handleAddToLocker = async (imgData) => {
 
               <div className="thumbnail-gallery-content">
                 <HeaderCards
-                  folderName={folderName}
+                  folderName={resolvedFolderName}
                   customerId={customerId}
                   setIsSearching={setIsSearching}
                   onSearchResults={handleSearchResults}
@@ -1617,8 +1611,8 @@ const handleAddToLocker = async (imgData) => {
               const files = Array.from(e.target.files || []);
               if (!files.length) return;
 
-              if (!folderName || !customerId) {
-                alert("Missing folderName/customerId");
+              if (!resolvedFolderName || !customerId) {
+                alert("Missing resolvedFolderName/customerId");
                 return;
               }
 
@@ -1645,7 +1639,7 @@ const handleAddToLocker = async (imgData) => {
                 await weblinkUploadsDb.add({
                   id,
                   galleryKey,
-                  folderName,
+                  resolvedFolderName,
                   customerId,
                   phoneNo: localPhoneNumber || "",
                   fileName: file.name,
