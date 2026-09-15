@@ -1,8 +1,9 @@
 /* localitiesSection.css */
 
 .containerBox {
-  margin-bottom: 0.5rem; /* smaller bottom spacing */
   padding:8px;
+      max-width: 600px;
+    margin: 10px auto;
 }
 
 .localities-card {
