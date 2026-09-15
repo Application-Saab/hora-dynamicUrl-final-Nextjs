@@ -14,6 +14,7 @@ import TemplateRenderer from "@/components/wonderland/common/TemplateRenderer";
 import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templatecardSkeleton";
 import useRsvpStatus from "@/hooks/useRsvpStatus";
 import { safeGetItem } from "@/utils/safeStorage";
+import Head from "next/head";
 
 const InvitesPage = () => {
   const router = useRouter();
@@ -125,7 +126,10 @@ const InvitesPage = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      if (eventDetails && eventDetails.userId === loggedinUserId || frompanel == 'true') {
+      if (
+        (eventDetails && eventDetails.userId === loggedinUserId) ||
+        frompanel == "true"
+      ) {
         setShowHostActionSection(true);
       } else {
         setShowHostActionSection(false);
@@ -133,10 +137,27 @@ const InvitesPage = () => {
     }, 1000);
   }, [eventDetails, loggedinUserId]);
 
+  const SITE = "https://horaservices.com";
+  const BASE_PATH = "/wonderlandinternational/invite";
+
+  const eventId =
+    typeof queryEventId === "string"
+      ? queryEventId
+      : Array.isArray(queryEventId)
+        ? queryEventId[0]
+        : "";
+
+  const canonicalUrl = eventId
+    ? `${SITE}${BASE_PATH}?eventid=${encodeURIComponent(eventId)}`
+    : `${SITE}${BASE_PATH}`;
+
   if (fullPageLoader) return <InvitePageFlashLoader />;
 
   return (
     <>
+      <Head>
+        <link rel="canonical" href={canonicalUrl} />
+      </Head>
       <div className="invite-page">
         <div className="invite-page-container">
           <div className="invite-template-shell">
@@ -160,7 +181,8 @@ const InvitesPage = () => {
           {((eventDetails && eventDetails?.eventDate) ||
             eventData?.location ||
             eventData?.googleMapLink ||
-            eventData?.eventTime || eventDetails?.hostName) && (
+            eventData?.eventTime ||
+            eventDetails?.hostName) && (
             <div className="invite-address-section">
               <InviteAddressSection eventData={eventDetails} />
             </div>

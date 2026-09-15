@@ -147,6 +147,13 @@ const ChefCitypage = ({
           href="https://horaservices.com/api/uploads/logo-icon.png"
           type="image/x-icon"
         />
+        <link rel="canonical" href={
+            displayCity && displayLocality
+              ? `https://horaservices.com/${displayCity.toLowerCase()}/${displayLocality.toLowerCase()}/chef-near-me`
+              : displayCity
+              ? `https://horaservices.com/${displayCity.toLowerCase()}/chef-near-me`
+              : `https://horaservices.com/chef-near-me`
+          } />
         <meta
           property="og:url"
           content={

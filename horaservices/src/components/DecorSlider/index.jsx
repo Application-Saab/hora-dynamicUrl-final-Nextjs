@@ -1,9 +1,7 @@
-
-
 "use client";
 
 import Image from "next/image";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import "./DecorSlider.css";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 
@@ -19,19 +17,14 @@ const getDiscountedDifference = (price) => {
 const DecorSlider = ({
   title,
   data = [],
-  catValue, // ✅ MAIN HERO
+  catValue,
   showDiscount = false,
   city = "",
   locality = "",
 }) => {
-  const router = useRouter();
   const pathname = usePathname();
 
-  const categorySlug = getCategorySlugFromPath(
-    pathname,
-    city,
-    locality
-  );
+  const categorySlug = getCategorySlugFromPath(pathname, city, locality);
 
   const formatPath = (path) => {
     let base = "";
@@ -40,17 +33,9 @@ const DecorSlider = ({
     return `${base}${path}`;
   };
 
-  const handleItemClick = (item) => {
-    if (!item?.slug || !catValue) {
-      console.warn("Missing slug or catValue", { item, catValue });
-      return;
-    }
-
-    const path = formatPath(
-      `/${categorySlug}/${catValue}/product/${item.slug}`
-    );
-
-    router.push(path);
+  const getItemHref = (item) => {
+    if (!item?.slug || !catValue) return "#";
+    return formatPath(`/${categorySlug}/${catValue}/product/${item.slug}`);
   };
 
   return (
@@ -62,28 +47,26 @@ const DecorSlider = ({
       <div className="premium-scroll-wrapper">
         {data.map((item, index) => {
           const discountDiff = getDiscountedDifference(item.price);
-          const price =
-            parseInt(item.price?.replace(/[^\d]/g, "")) || 0;
+          const price = parseInt(item.price?.replace(/[^\d]/g, "")) || 0;
 
           return (
-            <div
+            <a
               key={index}
+              type="button"
+              href={getItemHref(item)}
               className="premium-card"
-              onClick={() => handleItemClick(item)}
             >
               <div className="premium-img-wrapper">
                 <Image
                   src={item.Image}
                   alt={item.title}
-                  className="premium-img" 
-    fill
-    sizes="(max-width:480px) 100vw"
+                  className="premium-img"
+                  fill
+                  sizes="(max-width:480px) 100vw"
                 />
 
                 {showDiscount && (
-                  <div className="premium-discount">
-                    ₹{discountDiff} off
-                  </div>
+                  <div className="premium-discount">₹{discountDiff} off</div>
                 )}
               </div>
 
@@ -103,7 +86,7 @@ const DecorSlider = ({
                   </span>
                 )}
               </div>
-            </div>
+            </a>
           );
         })}
       </div>

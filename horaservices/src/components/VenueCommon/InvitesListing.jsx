@@ -11,7 +11,11 @@ import roomIcon from "@/assets/venuelanding/rooms.svg";
 import galleryIcon from "@/assets/venuelanding/galleryicon.svg";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { BASE_URL, VENUE_PUBLIC_LISTING, GET_ALL_VENUE_IMAGES } from "@/utils/apiconstants";
+import {
+  BASE_URL,
+  VENUE_PUBLIC_LISTING,
+  GET_ALL_VENUE_IMAGES,
+} from "@/utils/apiconstants";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
 
@@ -24,6 +28,7 @@ const getCacheKey = (eventType, venueType, guestCapacity, city) =>
 // City hai to city-scoped route, nahi to purana default route
 const getVenueRoute = (city) =>
   city ? `/${city.toLowerCase()}/venue-list/venue` : "/venue-list/venue";
+
 const VenueList = ({
   eventType,
   venueType,
@@ -34,6 +39,22 @@ const VenueList = ({
 }) => {
   const cacheKey = getCacheKey(eventType, venueType, guestCapacity, city);
   const cached = typeof window !== "undefined" ? getPageCache(cacheKey) : null;
+
+  const getVenueHref = (venue, halls = []) => {
+    if (!venue?._id) return "#";
+
+    const base = getVenueRoute(city);
+    const params = new URLSearchParams();
+
+    params.set("venueid", venue._id);
+    if (venue.guestCapacity) params.set("guests", String(venue.guestCapacity));
+    if (venue.isParkingAvailable) params.set("parking", "1");
+    if (venue.totalRoomsAvailable)
+      params.set("rooms", String(venue.totalRoomsAvailable));
+    if (halls.length) params.set("halls", JSON.stringify(halls));
+
+    return `${base}?${params.toString()}`;
+  };
 
   const [venues, setVenues] = useState(() => {
     if (Array.isArray(initialVenues)) return initialVenues;
@@ -50,7 +71,7 @@ const VenueList = ({
   const [loadingMore, setLoadingMore] = useState(false);
   const router = useRouter();
   const loadTimerRef = useRef(null);
-   const [imageCounts, setImageCounts] = useState({}); // { [venueId]: count }
+  const [imageCounts, setImageCounts] = useState({}); // { [venueId]: count }
   const fetchedIdsRef = useRef(new Set());
   useEffect(() => {
     const key = getCacheKey(eventType, venueType, guestCapacity, city);
@@ -242,41 +263,37 @@ const VenueList = ({
           const shortLocation =
             [v.locality, v.city].filter(Boolean).join(", ") || v.city || "N/A";
 
+          const href = getVenueHref(v, halls);
           return (
-            <div className="venue-card" key={v._id}>
+            <a
+              key={v._id}
+              type="button"
+              href={href}
+              className="venue-card"
+              style={{
+                textDecoration: "none",
+                color: "inherit",
+                cursor: "pointer",
+              }}
+            >
               <div className="venue-card-img-wrap">
                 <img
                   src={v.venueImageUrl || "/placeholder.jpg"}
                   alt={v.venueName}
                   className="venue-card-img"
                 />
-              <button
-  type="button"
-  className="see-photos-btn"
-  onClick={() =>
-    router.push({
-      pathname: getVenueRoute(city),
-      query: {
-        venueid: v._id,
-        guests: v.guestCapacity || "",
-        parking: v.isParkingAvailable ? "1" : "",
-        rooms: v.totalRoomsAvailable || "",
-        halls: JSON.stringify(halls),
-      },
-    })
-  }
->
-  <Image
-    src={galleryIcon}
-    alt="Gallery"
-    className="stat-icon"
-    width={14}
-    height={14}
-  />
-{imageCounts[v._id] != null
-  ? `See Photos (+${imageCounts[v._id]})`
-  : "See Photos"}
-</button>
+                <span className="see-photos-btn">
+                  <Image
+                    src={galleryIcon}
+                    alt="Gallery"
+                    className="stat-icon"
+                    width={14}
+                    height={14}
+                  />
+                  {imageCounts[v._id] != null
+                    ? `See Photos (+${imageCounts[v._id]})`
+                    : "See Photos"}
+                </span>
               </div>
 
               <div className="venue-card-body">
@@ -407,25 +424,9 @@ const VenueList = ({
                   <span>Starting Price</span>
                 </p>
 
-                <button
-                  className="venue-menu-btn"
-                  onClick={() =>
-                    router.push({
-                      pathname: getVenueRoute(city),
-                      query: {
-                        venueid: v._id,
-                        guests: v.guestCapacity || "",
-                        parking: v.isParkingAvailable ? "1" : "",
-                        rooms: v.totalRoomsAvailable || "",
-                        halls: JSON.stringify(halls),
-                      },
-                    })
-                  }
-                >
-                  View Full Package ➜
-                </button>
+                <span className="venue-menu-btn">View Full Package ➜</span>
               </div>
-            </div>
+            </a>
           );
         })}
       </div>

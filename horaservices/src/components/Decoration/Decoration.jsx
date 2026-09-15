@@ -18,7 +18,7 @@ import BabyWelcome from "../../assets/BabyWelcomeIMG.webp";
 import Anniversary from "../../assets/AnniversaryIMG.webp";
 import arrowIcon from "../../assets/arrow-down.svg";
 import CategoryTabs from "@/components/CategoryTabs";
-import {  balloonreviewsproduct } from "@/utils/balloonReviews";
+import { balloonreviewsproduct } from "@/utils/balloonReviews";
 import SmallCardGrid from "@/components/SmallCardGrid";
 import CategoryGrid from "@/components/CategoryGrid";
 import DecorGrid from "@/components/DecorGrid";
@@ -47,7 +47,9 @@ import decorationhaldi from "@/assets/decorationhaldi-Mhendi.webp";
 import Engagementdecoration from "@/assets/engament.webp";
 const BannerSlider = dynamic(() => import("@/components/BannerSlider"));
 const DecorSlider = dynamic(() => import("@/components/DecorSlider"));
-const ProductSliderSection = dynamic(() => import("@/components/ProductSliderSection"));
+const ProductSliderSection = dynamic(
+  () => import("@/components/ProductSliderSection"),
+);
 const ReviewSlider = dynamic(() => import("@/components/ReviewSection"));
 import {
   birthdayData,
@@ -248,7 +250,7 @@ const Decoration = ({ city, locality }) => {
       smallCardRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100); // small delay ensures it's rendered first
   };
- const reviewsRef    = useRef(null);
+  const reviewsRef = useRef(null);
   const openCatItems = (item) => {
     if (!item?.catValue) return;
 
@@ -262,6 +264,23 @@ const Decoration = ({ city, locality }) => {
   };
 
   const bannerImages = [Banner1, Banner2, Banner3];
+  const SITE = "https://horaservices.com";
+  const slugify = (val) =>
+    String(val || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-");
+
+  // component ke andar (return se pehle)
+  const citySlug = city ? slugify(city) : "";
+  const localitySlug = locality ? slugify(locality) : "";
+
+  const canonicalUrl =
+    citySlug && localitySlug
+      ? `${SITE}/${citySlug}/${localitySlug}/balloon-decoration`
+      : citySlug
+        ? `${SITE}/${citySlug}/balloon-decoration`
+        : `${SITE}/balloon-decoration`;
 
   return (
     <div className="dec-landing-page">
@@ -296,9 +315,20 @@ const Decoration = ({ city, locality }) => {
           }
         />
 
+        {/* ✅ CANONICAL */}
+        <link rel="canonical" href={canonicalUrl} />
+
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Hora Services" />
+        <link
+          rel="icon"
+          href="https://horaservices.com/api/uploads/logo-icon.png"
+          type="image/x-icon"
+        />
+
         <meta
           property="og:title"
-          content="Balloon and Flower Decoration by Professional Decorators"
+          content="Balloon and Flower Decorations by Professional Decorators"
         />
         <meta
           property="og:description"
@@ -312,25 +342,12 @@ const Decoration = ({ city, locality }) => {
           property="og:image:alt"
           content="balloon decoration, birthday decoration, wedding decoration, baby shower decoration"
         />
-        <script type="application/ld+json">{scriptTag}</script>
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Hora Services" />
-        <link
-          rel="icon"
-          href="https://horaservices.com/api/uploads/logo-icon.png"
-          type="image/x-icon"
-        />
-        <meta
-          property="og:url"
-          content={
-            city && locality
-              ? `https://horaservices.com/${city.toLowerCase()}/${locality.toLowerCase()}/balloon-decoration`
-              : city
-                ? `https://horaservices.com/${city.toLowerCase()}/balloon-decoration`
-                : `https://horaservices.com/balloon-decoration`
-          }
-        />
+
+        {/* ✅ og:url = same as canonical */}
+        <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
+
+        <script type="application/ld+json">{scriptTag}</script>
       </Head>
 
       <div className="top-slider">
@@ -397,13 +414,22 @@ const Decoration = ({ city, locality }) => {
           <li> 🛠️ Easy Customize</li>
           <li>💬 Customer Support</li>
         </ul>
-        <button onClick={handleWhatsApp} className="whatsapp-btn">
+        <a
+          type="button"
+          href={`https://wa.me/7338584828?text=${encodeURIComponent(
+            "I want to customize a decoration",
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={handleWhatsApp}
+          className="whatsapp-btn"
+        >
           <img
             src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png"
             alt="WhatsApp"
           />
           Chat Now on WhatsApp
-        </button>
+        </a>
       </div>
 
       <div ref={smallCardRef}>
@@ -524,9 +550,9 @@ const Decoration = ({ city, locality }) => {
         title="Excellence Backed by Happy Customers"
         items={brandItems}
       />
- <div ref={reviewsRef} style={{margin:" 10px 0px"}}>
-            <GoogleReviewsCard reviews={balloonreviewsproduct} />
-            </div>
+      <div ref={reviewsRef} style={{ margin: " 10px 0px" }}>
+        <GoogleReviewsCard reviews={balloonreviewsproduct} />
+      </div>
     </div>
   );
 };

@@ -1,13 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import smallcardBackground from "@/assets/small-cardBackground.png";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 import "./SmallCardGrid.css";
 
 const SmallCardGrid = ({ city = "", locality = "", decCat = [], categories = [] }) => {
-  const router = useRouter();
   const pathname = usePathname();
 
   // Normalize string for matching
@@ -28,19 +27,17 @@ const SmallCardGrid = ({ city = "", locality = "", decCat = [], categories = [] 
     return path;
   };
 
+  // Only tracking (navigation ab <a href> se hogi)
   const handleClick = (item) => {
-const matchedCat = decCat.find(
-  (cat) => normalize(cat.catValue) === normalize(item.catValue)
-);
+    const matchedCat = decCat.find(
+      (cat) => normalize(cat.catValue) === normalize(item.catValue)
+    );
 
+    if (!matchedCat) {
+      console.warn("No matching category in decCat for:", item.catValue);
+      return;
+    }
 
-  if (!matchedCat) {
-  console.warn("No matching category in decCat for:", item.catValue);
-  return;
-}
-
-
-    // 🔹 GTM / dataLayer event
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "decoration_item_clicked",
@@ -53,9 +50,6 @@ const matchedCat = decCat.find(
       city: city || "default",
       locality: locality || "default",
     });
-
-    // ✅ Navigate
-    router.push(buildCardPath(item));
   };
 
   return (
@@ -63,8 +57,10 @@ const matchedCat = decCat.find(
       <div className="page-width">
         <div className="small-card-grid">
           {categories.map((item, index) => (
-            <div
+            <a
               key={index}
+              type="button"
+              href={buildCardPath(item)}
               className="small-card-wrapper"
               onClick={() => handleClick(item)}
               style={{ cursor: "pointer" }}
@@ -86,7 +82,7 @@ const matchedCat = decCat.find(
                 />
               </div>
               <p className="small-card-name">{item.name}</p>
-            </div>
+            </a>
           ))}
         </div>
       </div>

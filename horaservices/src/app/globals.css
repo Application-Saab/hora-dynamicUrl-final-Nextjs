@@ -665,7 +665,7 @@ main.order-list .order-container {
 .price-para {
   text-align: end !important;
 }
-h4.contact-us-heading a {
+.contact-us-heading {
   color: #9252aa;
   margin: 14px 0;
   display: flex;

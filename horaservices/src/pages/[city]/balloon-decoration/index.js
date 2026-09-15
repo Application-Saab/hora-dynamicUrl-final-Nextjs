@@ -43,6 +43,11 @@ export default function BalloonDecorationCityPage({ city, citySlug, locality }) 
           content={`balloon decoration in ${city}, birthday decoration, wedding decoration, baby shower decoration`}
         />
         <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={
+          locality
+            ? `https://horaservices.com/${citySlug}/${locality.toLowerCase()}/balloon-decoration`
+            : `https://horaservices.com/${citySlug}/balloon-decoration`
+        } />
         <meta
           property="og:url"
           content={
