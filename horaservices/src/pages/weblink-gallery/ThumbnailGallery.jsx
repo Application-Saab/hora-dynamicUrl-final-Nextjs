@@ -614,7 +614,7 @@ useEffect(() => {
 
   useEffect(() => {
     const fetchThumbnails = async () => {
-      if (!folderName || !galleryId) {
+      if (!folderName && !galleryId) {
         setAllThumbnails([]); setLoading(false); setError("Folder name or galleryId is missing."); return;
       }
       setLoading(true); setError(null);
