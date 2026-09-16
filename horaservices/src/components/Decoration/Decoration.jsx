@@ -262,76 +262,108 @@ const Decoration = ({ city, locality }) => {
   };
 
   const bannerImages = [Banner1, Banner2, Banner3];
+const citySeoData = {
+  mumbai: {
+    title: "Balloon Decoration in Mumbai at Home, from Rs 1,499 | HORA",
+    description:
+      "Balloon decoration at home in Mumbai, from Rs 1,499. Verified decorators across Andheri, Bandra, Powai and Navi Mumbai, with same-day slots in most areas.",
+  },
+  bangalore: {
+    title: "Balloon Decoration in Bangalore from Rs 1,499 | HORA",
+    description:
+      "Book a balloon decorator at home in Bangalore from Rs 1,499. Same-day setups in Whitefield, Koramangala, HSR and Indiranagar, with honest fixed pricing.",
+  },
+  hyderabad: {
+    title: "Balloon Decoration in Hyderabad at Home | HORA Services",
+    description:
+      "Balloon decoration at home in Hyderabad from Rs 1,499. Verified decorators for HITEC City, Gachibowli, Kukatpally and Banjara Hills, same-day slots open.",
+  },
+  delhi: {
+    title: "Balloon Decoration in Delhi, Same-Day from Rs 1,499 | HORA",
+    description:
+      "Get balloon decoration at home in Delhi from Rs 1,499. Same-day setups across Dwarka, Saket, Rohini and Mayur Vihar, by verified decorators.",
+  },
+  noida: {
+    title: "Balloon Decoration in Noida, Same-Day & Midnight | HORA",
+    description:
+      "Balloon decoration at home in Noida from Rs 1,499, with same-day and midnight slots. Verified decorators across the sectors, Greater Noida and Noida Extension.",
+  },
+  gurugram: {
+    title: "Balloon Decoration in Gurugram from Rs 1,499 | HORA",
+    description:
+      "Book balloon decoration at home in Gurugram from Rs 1,499. Same-day and midnight setups in Cyber City, Golf Course Road, Sohna Road and DLF.",
+  },
+  ghaziabad: {
+    title: "Balloon Decoration at Home in Ghaziabad | HORA Services",
+    description:
+      "Balloon decoration at home in Ghaziabad from Rs 1,499. Verified decorators for Indirapuram, Vaishali, Vasundhara and Raj Nagar, with same-day slots.",
+  },
+  faridabad: {
+    title: "Balloon Decoration in Faridabad from Rs 1,499 | HORA",
+    description:
+      "Balloon decoration at home in Faridabad from Rs 1,499. Same-day setups across the old sectors, NIT and Greater Faridabad, by verified decorators.",
+  },
+};
 
+const defaultSeo = {
+  title: "Balloon Decoration at Home from Rs 1,499 | HORA Services",
+  description:
+    "Book balloon decoration at home from Rs 1,499. Real setups with prices, same-day and midnight slots, and verified decorators across 8 cities. Arch, wall, ring and themed designs.",
+};
+
+const pageSeo = city
+  ? citySeoData[city.toLowerCase()] || defaultSeo
+  : defaultSeo;
   return (
     <div className="dec-landing-page">
-      <Head>
-        <title>
-          {city && locality
-            ? `HORA Decorations in ${locality}, ${city} | Balloon & Flower Decorations for Birthdays, Weddings, Baby Showers & More – Starting at ₹1199`
-            : city
-              ? `HORA Decorations in ${city} | Balloon & Flower Decorations for Birthdays, Weddings, Baby Showers & More – Starting at ₹1199`
-              : `HORA Decorations : Professional Balloons & Flowers Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199`}
-        </title>
+   <Head>
+  <title>{pageSeo.title}</title>
 
-        <meta
-          name="description"
-          content={
-            city && locality
-              ? `📸 Capture Every Moment in ${locality}, ${city}! ✨ HORA Decorations makes every celebration magical. Book your perfect Balloon & Flower decorations for birthdays, weddings, baby showers, and more.`
-              : city
-                ? `📸 Capture Every Moment in ${city}! ✨ HORA Decorations — Professional Balloon & Flower decorators for birthdays, weddings, baby showers & more.`
-                : `📸 Capture Every Moment, Forever! ✨ HORA Decorations — Professional Balloon & Flower decorators for birthdays, parties, weddings & more.`
-          }
-        />
+  <meta name="description" content={pageSeo.description} />
 
-        <meta
-          name="keywords"
-          content={
-            city && locality
-              ? `balloon decoration in ${locality}, ${city}, birthday decoration, wedding decoration, baby shower decoration`
-              : city
-                ? `balloon decoration in ${city}, birthday decoration, wedding decoration, baby shower decoration`
-                : `birthday decoration, anniversary decoration, party themes decorations, balloon room decoration`
-          }
-        />
+  <meta
+    name="keywords"
+    content={
+      city
+        ? `balloon decoration in ${city}, birthday decoration, wedding decoration, baby shower decoration`
+        : `birthday decoration, anniversary decoration, party themes decorations, balloon room decoration`
+    }
+  />
 
-        <meta
-          property="og:title"
-          content="Balloon and Flower Decoration by Professional Decorators"
-        />
-        <meta
-          property="og:description"
-          content="🎉 Explore a wide range of stunning decoration designs for every event and party. Book your ideal design directly through our website for a seamless experience. Need help? Contact us at 7338584828."
-        />
-        <meta
-          property="og:image"
-          content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
-        />
-        <meta
-          property="og:image:alt"
-          content="balloon decoration, birthday decoration, wedding decoration, baby shower decoration"
-        />
-        <script type="application/ld+json">{scriptTag}</script>
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Hora Services" />
-        <link
-          rel="icon"
-          href="https://horaservices.com/api/uploads/logo-icon.png"
-          type="image/x-icon"
-        />
-        <meta
-          property="og:url"
-          content={
-            city && locality
-              ? `https://horaservices.com/${city.toLowerCase()}/${locality.toLowerCase()}/balloon-decoration`
-              : city
-                ? `https://horaservices.com/${city.toLowerCase()}/balloon-decoration`
-                : `https://horaservices.com/balloon-decoration`
-          }
-        />
-        <meta property="og:type" content="website" />
-      </Head>
+  <meta
+    property="og:title"
+    content="Balloon and Flower Decoration by Professional Decorators"
+  />
+  <meta
+    property="og:description"
+    content="🎉 Explore a wide range of stunning decoration designs for every event and party. Book your ideal design directly through our website for a seamless experience. Need help? Contact us at 7338584828."
+  />
+  <meta
+    property="og:image"
+    content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
+  />
+  <meta
+    property="og:image:alt"
+    content="balloon decoration, birthday decoration, wedding decoration, baby shower decoration"
+  />
+  <script type="application/ld+json">{scriptTag}</script>
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+  <link
+    rel="icon"
+    href="https://horaservices.com/api/uploads/logo-icon.png"
+    type="image/x-icon"
+  />
+  <meta
+    property="og:url"
+    content={
+      city
+        ? `https://horaservices.com/${city.toLowerCase()}/balloon-decoration`
+        : `https://horaservices.com/balloon-decoration`
+    }
+  />
+  <meta property="og:type" content="website" />
+</Head>
 
       <div className="top-slider">
         <BannerSlider images={bannerImages} showSeeMore={true} />

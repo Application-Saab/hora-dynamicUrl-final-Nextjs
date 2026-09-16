@@ -5,6 +5,7 @@
 // Shape: CityCategoryDecorationlandingPage[catSlug][citySlug]
 
 export const CityCategoryDecorationlandingPage = {
+  
   "birthday-decoration": {
     mumbai: {
       city: "Mumbai",
@@ -430,9 +431,6 @@ export const CityCategoryDecorationlandingPage = {
     },
   },
 
-  // Aage ke categories isi pattern par add karte jao:
-  // "anniversary-decoration": { mumbai: {...}, delhi: {...} },
-  // "baby-shower-decoration": { ... },
 };
 
 // Helper: catValue aur city dono kisi bhi case/format mein aa sakte hain

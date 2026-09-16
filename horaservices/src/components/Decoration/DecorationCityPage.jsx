@@ -11,7 +11,7 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import "../../css/decoration.css";
 import FAQSection from "@/components/FAQSection";
 import CityDecorationlanding from "./cityDecorationlanding";
-import { CityDecorationlandingPage } from "@/utils/cityDecorationlanding";
+import { CityDecorationlandingPage } from "@/utils/CityDecorationlanding";
 
 // URL ke pehle segment se city slug nikalo, jaise "/hyderabad/balloon-decoration" -> "hyderabad"
 function getCitySlugFromPath(pathname) {

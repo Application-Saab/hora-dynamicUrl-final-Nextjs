@@ -3,7 +3,7 @@ import SectionDescription from "@/components/Description";
 import FAQSection from "@/components/FAQSection";
 import { getCategoryContent } from "@/utils/Decorationcategorycontent";
 import { decorationCityFAQData } from "@/utils/DecorationCityFAQ";
-import { CityDecorationlandingPage } from "@/utils/cityDecorationlanding";
+import { CityDecorationlandingPage } from "@/utils/CityDecorationlanding";
 import { getCityCategoryLanding } from "@/utils/Citycategorydecorationlanding";
 import CityDecorationlanding from "./cityDecorationlanding";
 import { useRouter } from "next/router";

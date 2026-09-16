@@ -1,5 +1,6 @@
 import Head from "next/head";
-import { getDecorationCatOrganizationSchema } from "../utils/schema";
+import { getDecorationCatOrganizationSchema } from "@/utils/schema";
+import { getPageTitleCategory, getPageMetaDescriptionCategory } from "@/utils/Decorationcatseo";
 
 // ─────────────────────────────────────────────
 // SEO DATA — titles & descriptions per catValue
@@ -237,8 +238,8 @@ const SeoHead = ({ catValue, city, locality, theme }) => {
   const schemaOrg = getDecorationCatOrganizationSchema(catValue);
   const scriptTag = JSON.stringify(schemaOrg);
 
-  const title = getPageTitle(catValue, city, locality, theme);
-  const description = getPageMetaDescription(catValue, city, locality);
+  const title = getPageTitleCategory(catValue, city, locality, theme);
+  const description = getPageMetaDescriptionCategory(catValue, city, locality);
 
   const ogUrl =
     locality && city
@@ -252,7 +253,7 @@ const SeoHead = ({ catValue, city, locality, theme }) => {
       <title>{title}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content="Balloon and Flower Decoration @999" />
-      <meta property="og:title" content={getPageTitle(catValue, city, locality)} />
+      <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta
         property="og:image"

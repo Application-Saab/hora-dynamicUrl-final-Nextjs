@@ -2,7 +2,7 @@ import DecorationCatPage from "@/components/Decoration/DecorationCatPage";
 import SectionDescription from "@/components/Description";
 import FAQSection from "@/components/FAQSection";
 import { getDecorationCatServerSideProps } from "@/utils/decorationCatGetServerSideProps";
-import { getCategoryContent } from "@/utils/decorationCategoryContent";
+import { getCategoryContent } from "@/utils/Decorationcategorycontent";
 
 export async function getServerSideProps(context) {
   return getDecorationCatServerSideProps(context);
