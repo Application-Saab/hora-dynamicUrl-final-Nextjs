@@ -1124,8 +1124,7 @@ useEffect(() => {
     return null;
   }
 
-const currentUrl =
-  typeof window !== "undefined" ? window.location.href : "";
+  const currentUrl = `${BASE_URL}/eventcapsule/share/${shortCode}`;
 
 
   const handleSubFolderSelect = (id) => {
