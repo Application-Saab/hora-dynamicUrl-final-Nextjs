@@ -128,7 +128,16 @@ export const getMappedCatValue = (slug) => {
     "welcome-baby-decoration": "WelcomeBaby",
     "premium-decoration": "PremiumDecoration",
     "bachelorette-decoration": "bachelorette",
-    "kids-birthday-decoration": "KidsBirthday"
+    "kids-birthday-decoration": "KidsBirthday",
+    "naming-ceremony-decoration":"NamingCeremony",
+    "house-warming-decoration":"HouseWarming",
+    "coorporate-showrooms-decoration":"Coorporateshowrooms",
+    "car-decoration":"CarDecoration",
+    "pet-animals-decoration":"PetAnimalsDecoration",
+    "festivals-decoration":"Festivals",
+    "engagement-decoration":"Engagementdecoration",
+    "Nation-Pride-decoration":"NationPride",
+    "Wedding":"Wedding",
   };
 
   return map[slug] || slug;
