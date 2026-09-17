@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import logo from "../../assets/new_logo_light.png";
 import "./ProductSliderSection.css";
 import { decCat } from "@/utils/decorationCategories";
@@ -25,17 +25,14 @@ const ProductSliderSection = ({
   title,
   data = [],
   viewLink = "",
-  catValue,       // ✅ Pass sub-category slug like DecorSlider
+  catValue,
   city = "",
   locality = "",
 }) => {
-  const router = useRouter();
   const pathname = usePathname();
 
-  // Extract main category slug from URL
   const categorySlug = getCategorySlugFromPath(pathname, city, locality);
 
-  // Prepend city/locality to any path
   const formatPath = (path) => {
     let base = "";
     if (city) base += `/${city.toLowerCase()}`;
@@ -43,23 +40,23 @@ const ProductSliderSection = ({
     return `${base}${path}`;
   };
 
-  // Build 'View All' link
   const buildViewAllLink = () => {
     if (viewLink) return viewLink;
     return formatPath(`/${categorySlug}`);
   };
 
-  // Handle product click
+  const getProductHref = (item) => {
+    if (!item?.slug || !catValue) return "#";
+    return formatPath(`/${categorySlug}/${catValue}/product/${item.slug}`);
+  };
+
+  // Only tracking (navigation ab <a href> se hogi)
   const handleClick = (item) => {
     if (!item?.slug || !catValue) {
       console.warn("Missing slug or catValue", { item, catValue });
       return;
     }
 
-    // Build product path like DecorSlider
-    const path = formatPath(`/${categorySlug}/${catValue}/product/${item.slug}`);
-
-    // Push GTM event
     const matchedCat = decCat.find(
       (cat) =>
         cat.catValue?.toLowerCase() === categorySlug.toLowerCase() ||
@@ -83,14 +80,14 @@ const ProductSliderSection = ({
       event_category: "SliderSection",
       ...eventData,
     });
-
-    router.push(path);
   };
 
   return (
     <div className="product-section-container">
       <div className="product-section-header">
-        <h2 onClick={() => router.push(buildViewAllLink())}>{title}</h2>
+        <Link href={buildViewAllLink()}>
+          <h2>{title}</h2>
+        </Link>
         <Link href={buildViewAllLink()}>View All</Link>
       </div>
 
@@ -99,8 +96,10 @@ const ProductSliderSection = ({
           item.isViewMore ? (
             <div key={index} className="product-section-view-more-card" />
           ) : (
-            <div
+            <a
               key={index}
+              type="button"
+              href={getProductHref(item)}
               className="product-section-card"
               onClick={() => handleClick(item)}
             >
@@ -130,7 +129,7 @@ const ProductSliderSection = ({
                   </p>
                 </div>
               </div>
-            </div>
+            </a>
           )
         )}
       </div>

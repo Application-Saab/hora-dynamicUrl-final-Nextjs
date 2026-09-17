@@ -6,7 +6,7 @@ import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 import CustomizationModal from "../CustomizationModal";
 import customizationIcon from "@/assets/customizatiton/Custmaizationicon.webp";
 
-const HighPriceProduct = ({ data, onCardClick, catValue }) => {
+const HighPriceProduct = ({ data, onCardClick, getHref, catValue }) => {
   const [selectedItem, setSelectedItem] = useState(null);
 
   if (!data || data.length === 0) return null;
@@ -27,25 +27,32 @@ const HighPriceProduct = ({ data, onCardClick, catValue }) => {
       ? `${COMPRESSED_WEBP_IMG_URL}${item.featured_images[0].fileName.split(".")[0]}.webp`
       : "/fallback-image.png";
 
+  const href = getHref?.(highest) || "#";
+
   return (
     <div className="highdecContainer">
-      <div className="highPriceCard" onClick={() => onCardClick?.(highest)}>
+      <a
+        type="button"
+        href={href}
+        className="highPriceCard"
+        onClick={() => onCardClick?.(highest)}
+      >
         <div className="highPriceImageWrapper">
           {designKey && (
             <div className="highDesignBadge">On {designKey}</div>
           )}
 
-        <Image
-  src={
-    highest.featured_images?.[0]?.fileName
-      ? `${COMPRESSED_WEBP_IMG_URL}${highest.featured_images[0].fileName.split(".")[0]}.webp`
-      : fallbackImg
-  }
-  alt={highest.name}
-  className="highPriceImage"
-  width={300}
-  height={300}
-/>
+          <Image
+            src={
+              highest.featured_images?.[0]?.fileName
+                ? `${COMPRESSED_WEBP_IMG_URL}${highest.featured_images[0].fileName.split(".")[0]}.webp`
+                : fallbackImg
+            }
+            alt={highest.name}
+            className="highPriceImage"
+            width={300}
+            height={300}
+          />
         </div>
 
         <div className="highPriceContent">
@@ -68,6 +75,7 @@ const HighPriceProduct = ({ data, onCardClick, catValue }) => {
           <div
             className="highcustomizationBox"
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
               setSelectedItem(highest);
             }}
@@ -110,7 +118,7 @@ const HighPriceProduct = ({ data, onCardClick, catValue }) => {
             </div>
           </div>
         </div>
-      </div>
+      </a>
 
       <CustomizationModal
         product={selectedItem}

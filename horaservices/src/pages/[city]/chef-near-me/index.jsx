@@ -926,6 +926,11 @@ const ChefCitypage = ({
           property="og:image:alt"
           content="hire chef, private chef, cook for party, catering services, home chef"
         />
+        <link rel="canonical" href={
+            displayCity
+              ? `https://horaservices.com/${displayCity.toLowerCase()}/book-chef-cook-for-party`
+              : `https://horaservices.com/book-chef-cook-for-party`
+          } />
         <meta name="robots" content="index, follow" />
         <meta name="author" content="Hora Services" />
         <link

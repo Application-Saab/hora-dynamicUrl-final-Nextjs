@@ -13,7 +13,6 @@ export default function PhotographyPackageGridSlider({
 }) {
   const router = useRouter();
 
-  // SSR data ho to turant use karo — loading false
   const hasSSRData = Array.isArray(initialProducts);
   const [products, setProducts] = useState(hasSSRData ? initialProducts : []);
   const [loading, setLoading] = useState(!hasSSRData);
@@ -30,7 +29,6 @@ export default function PhotographyPackageGridSlider({
   };
 
   useEffect(() => {
-    // SSR se data aa chuka hai → client pe dubara fetch mat karo
     if (hasSSRData) return;
     if (!tagId) {
       setLoading(false);
@@ -72,8 +70,8 @@ export default function PhotographyPackageGridSlider({
       ?.replace(/[^a-z0-9]+/g, "-")
       ?.replace(/(^-|-$)/g, "");
 
-  const handleCardClick = (work) => {
-    if (!work) return;
+  const getCardHref = (work) => {
+    if (!work) return "#";
 
     const slug = slugify(work.name);
     const categorySlug = slugify(work.categoryValue || "photography");
@@ -84,18 +82,20 @@ export default function PhotographyPackageGridSlider({
     let basePath = `/photography-page/${categorySlug}/product/${slug}`;
 
     if (city && locality) {
-      basePath = `/${String(city).toLowerCase()}/${String(locality).toLowerCase()}${basePath}`;
+      basePath = `/${String(city).toLowerCase()}/${String(
+        locality
+      ).toLowerCase()}${basePath}`;
     } else if (city) {
       basePath = `/${String(city).toLowerCase()}${basePath}`;
     }
 
-    router.push({
-      pathname: basePath,
-      query: { id: work._id },
-    });
+    // pehle query: { id: work._id } tha
+    if (work._id) {
+      return `${basePath}?id=${work._id}`;
+    }
+    return basePath;
   };
 
-  // Same structure server + client — no conditional wrapper that changes DOM shape
   return (
     <section className="premium-slider-decor">
       <div className="premium-slider-decor-header">
@@ -110,9 +110,11 @@ export default function PhotographyPackageGridSlider({
         ) : products.length > 0 ? (
           products.map((item, i) => (
             <div key={item._id || i} className="premium-card">
-              <div
+              <a
+                type="button"
+                href={getCardHref(item)}
                 className="premium-wrapper"
-                onClick={() => handleCardClick(item)}
+                style={{ display: "block", position: "relative" }}
               >
                 <Image
                   src={`https://horaservices.com/api/uploads/compressed_webp/${
@@ -123,7 +125,7 @@ export default function PhotographyPackageGridSlider({
                   sizes="150px"
                   className="premium-img"
                 />
-              </div>
+              </a>
 
               <div className="premium-content">
                 <p className="premium-title">{item.name}</p>
@@ -133,13 +135,13 @@ export default function PhotographyPackageGridSlider({
                     ₹{item.discountedPrice}
                   </span>
                 </div>
-                <button
-                  className="photograpy-book-now-slider"
+                <a
                   type="button"
-                  onClick={() => handleCardClick(item)}
+                  href={getCardHref(item)}
+                  className="photograpy-book-now-slider"
                 >
                   View more
-                </button>
+                </a>
               </div>
             </div>
           ))

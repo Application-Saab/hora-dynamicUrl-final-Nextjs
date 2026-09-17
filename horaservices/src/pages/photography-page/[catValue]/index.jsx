@@ -59,8 +59,7 @@ const MOMENT_KEY_TO_SLUG = {
 const MOMENT_NAME_FILTERS = {
   "pre-wedding": (name) => /pre[\s-]?wedding/i.test(name),
   "haldi-mahandi": (name) => /haldi|mehandi|mehndi|mahandi|sangeet/i.test(name),
-  wedding: (name) =>
-    /wedding/i.test(name) && !/pre[\s-]?wedding/i.test(name),
+  wedding: (name) => /wedding/i.test(name) && !/pre[\s-]?wedding/i.test(name),
 };
 
 const getDiscountedPrice = (price = 0) => {
@@ -90,7 +89,7 @@ export const categoryBannerMap = {
 export const normalizeCatValue = (val) => {
   if (!val) return "";
   const exactMatch = Object.keys(categoryBannerMap).find(
-    (key) => key.toLowerCase() === val.toLowerCase()
+    (key) => key.toLowerCase() === val.toLowerCase(),
   );
   return exactMatch || val.toLowerCase().replace(/ /g, "-");
 };
@@ -166,7 +165,7 @@ export async function getServerSideProps(context) {
     try {
       // 1) Category ID
       const catRes = await axiosApi.get(
-        `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(effectiveCatValue)}`
+        `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(effectiveCatValue)}`,
       );
       catId = catRes.data?.data?._id || null;
 
@@ -175,7 +174,7 @@ export async function getServerSideProps(context) {
       } else {
         // 2) Products
         const prodRes = await axiosApi.get(
-          `${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}${catId}`
+          `${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}${catId}`,
         );
         const data = prodRes.data?.data || [];
 
@@ -258,9 +257,13 @@ export default function CatValuePage({
     if (!router.isReady || !catValue) return;
 
     // Same as SSR payload → skip refetch
-    if (catValue === initialCatValue && initialProducts?.length >= 0 && initialCatId) {
+    if (
+      catValue === initialCatValue &&
+      initialProducts?.length >= 0 &&
+      initialCatId
+    ) {
       setActiveMoment(
-        MOMENT_SLUG_TO_KEY[catValue] ? MOMENT_SLUG_TO_KEY[catValue] : null
+        MOMENT_SLUG_TO_KEY[catValue] ? MOMENT_SLUG_TO_KEY[catValue] : null,
       );
       return;
     }
@@ -269,17 +272,18 @@ export default function CatValuePage({
       setLoading(true);
       setError("");
 
-      const nextEffective =
-        MOMENT_SLUG_TO_KEY[catValue] ? "Wedding-Photography" : catValue;
+      const nextEffective = MOMENT_SLUG_TO_KEY[catValue]
+        ? "Wedding-Photography"
+        : catValue;
 
       setActiveMoment(
-        MOMENT_SLUG_TO_KEY[catValue] ? MOMENT_SLUG_TO_KEY[catValue] : null
+        MOMENT_SLUG_TO_KEY[catValue] ? MOMENT_SLUG_TO_KEY[catValue] : null,
       );
       setGalleryData(categoryToGallery[nextEffective] || null);
 
       try {
         const catRes = await axiosApi.get(
-          `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(nextEffective)}`
+          `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(nextEffective)}`,
         );
         const categoryId = catRes.data?.data?._id;
         if (!categoryId) {
@@ -291,7 +295,7 @@ export default function CatValuePage({
         setCatId(categoryId);
 
         const prodRes = await axiosApi.get(
-          `${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}${categoryId}`
+          `${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}${categoryId}`,
         );
         const data = prodRes.data?.data || [];
         const withDiscount = data.map((item) => {
@@ -309,16 +313,27 @@ export default function CatValuePage({
     };
 
     run();
-  }, [router.isReady, catValue, initialCatValue, initialProducts, initialCatId]);
+  }, [
+    router.isReady,
+    catValue,
+    initialCatValue,
+    initialProducts,
+    initialCatId,
+  ]);
 
   const slugify = (text) =>
-    text.replace(/[^a-zA-Z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    text?.replace(/[^a-zA-Z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "";
 
-  const handleViewMore = (work) => {
+  const getProductHref = (work) => {
+    if (!work?.name) return "#";
+
     const slug = slugify(work.name);
     const categorySlug = slugify(effectiveCatValue || "photography");
 
-    const pathParts = router.asPath.split("?")[0].split("/").filter(Boolean);
+    const pathParts = (router.asPath || "")
+      .split("?")[0]
+      .split("/")
+      .filter(Boolean);
     const photoIndex = pathParts.findIndex((p) => p === "photography-page");
 
     const cityFromPath =
@@ -329,15 +344,20 @@ export default function CatValuePage({
     let basePath = `/photography-page/${categorySlug}/product/${slug}`;
 
     if (cityFromPath && localityFromPath) {
-      basePath = `/${cityFromPath.toLowerCase()}/${localityFromPath.toLowerCase()}${basePath}`;
+      basePath = `/${String(cityFromPath).toLowerCase()}/${String(
+        localityFromPath,
+      ).toLowerCase()}${basePath}`;
     } else if (cityFromPath) {
-      basePath = `/${cityFromPath.toLowerCase()}${basePath}`;
+      basePath = `/${String(cityFromPath).toLowerCase()}${basePath}`;
     }
 
-    router.push({
-      pathname: basePath,
-      query: { id: work._id },
-    });
+    if (work._id) return `${basePath}?id=${work._id}`;
+    return basePath;
+  };
+
+  // Optional tracking only (navigation <a> se)
+  const handleViewMore = (work) => {
+    // GTM yahan if needed
   };
 
   const handleSelectMoment = (key) => {
@@ -358,7 +378,7 @@ export default function CatValuePage({
   const displayedProducts =
     showMomentPicker && activeMoment && MOMENT_NAME_FILTERS[activeMoment]
       ? products.filter((item) =>
-          MOMENT_NAME_FILTERS[activeMoment](item.name || "")
+          MOMENT_NAME_FILTERS[activeMoment](item.name || ""),
         )
       : products;
 
@@ -489,6 +509,7 @@ export default function CatValuePage({
             <PhotoPackageGrid
               data={displayedProducts}
               onCardClick={handleViewMore}
+              getHref={getProductHref}
               categoryType="photography"
             />
           ) : showMomentPicker && activeMoment ? (

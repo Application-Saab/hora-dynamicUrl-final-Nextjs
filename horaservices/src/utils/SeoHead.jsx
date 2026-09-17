@@ -188,6 +188,14 @@ const seoData = {
   },
 };
 
+const SITE = "https://horaservices.com";
+
+const slugify = (val) =>
+  String(val || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+
 // ─────────────────────────────────────────────
 // HELPER — build location string
 // ─────────────────────────────────────────────
@@ -197,20 +205,56 @@ const getLocation = (city, locality) => {
   return null;
 };
 
+/** Canonical for decoration category pages */
+export const buildDecorationCategoryCanonical = ({
+  city,
+  locality,
+  catValue,
+  theme,
+  isBooster = false
+} = {}) => {
+  const parts = [];
+
+  const citySlug = city ? slugify(city) : "";
+  const localitySlug = locality ? slugify(locality) : "";
+
+  if (citySlug) parts.push(citySlug);
+  if (localitySlug) parts.push(localitySlug);
+
+  if (isBooster) {  
+    parts.push("celebration-booster");
+  }else {
+    parts.push("balloon-decoration");
+  }
+
+
+  if (catValue) parts.push(catValue);
+
+  // Theme pages: agar URL me theme path segment hai
+  // e.g. /balloon-decoration/kids-birthday-decoration/cocomelon
+  // aur tum theme ko alag indexable page maante ho to uncomment:
+  if (theme) parts.push(theme);
+
+  // Default: theme filters → base category pe canonical
+  // (duplicate index avoid)
+  const path = "/" + parts.filter(Boolean).join("/");
+  return `${SITE}${path}`;
+};
+
 // ─────────────────────────────────────────────
 // HELPER — get title
 // ─────────────────────────────────────────────
 export const getPageTitle = (catValue, city, locality, theme) => {
   const location = getLocation(city, locality);
   const normalizedKey = Object.keys(seoData).find(
-    (key) => key.toLowerCase() === (catValue || "").toLowerCase()
+    (key) => key.toLowerCase() === (catValue || "").toLowerCase(),
   );
 
   const baseTitle = normalizedKey
     ? seoData[normalizedKey].title(location)
     : location
-    ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${location} – Starting at ₹1199`
-    : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
+      ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${location} – Starting at ₹1199`
+      : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
 
   return theme ? `HORA Decorations - <${theme}> - ${baseTitle}` : baseTitle;
 };
@@ -221,45 +265,53 @@ export const getPageTitle = (catValue, city, locality, theme) => {
 export const getPageMetaDescription = (catValue, city, locality) => {
   const location = getLocation(city, locality);
   const normalizedKey = Object.keys(seoData).find(
-    (key) => key.toLowerCase() === (catValue || "").toLowerCase()
+    (key) => key.toLowerCase() === (catValue || "").toLowerCase(),
   );
 
   return normalizedKey
     ? seoData[normalizedKey].description(location)
     : location
-    ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${location} – Starting at ₹1199`
-    : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
+      ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${location} – Starting at ₹1199`
+      : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
 };
 
 // ─────────────────────────────────────────────
 // MAIN COMPONENT
 // ─────────────────────────────────────────────
-const SeoHead = ({ catValue, city, locality, theme }) => {
+const SeoHead = ({ catValue, city, locality, theme, isBooster = false }) => {
   const schemaOrg = getDecorationCatOrganizationSchema(catValue);
   const scriptTag = JSON.stringify(schemaOrg);
 
   const title = getPageTitleCategory(catValue, city, locality, theme);
   const description = getPageMetaDescriptionCategory(catValue, city, locality);
 
-  const ogUrl =
-    locality && city
-      ? `https://horaservices.com/${city}/${locality}/balloon-decoration/${catValue}`
-      : city
-      ? `https://horaservices.com/${city}/balloon-decoration/${catValue}`
-      : `https://horaservices.com/balloon-decoration/${catValue}`;
+  // one source for canonical + og:url
+  const canonicalUrl = buildDecorationCategoryCanonical({
+    city,
+    locality,
+    catValue,
+    theme,
+    isBooster,
+  });
 
   return (
     <Head>
       <title>{title}</title>
       <meta name="description" content={description} />
-      <meta name="keywords" content="Balloon and Flower Decoration @999" />
+      <meta name="keywords" content="Balloon and Flower Decorations @999" />
+
+      {/* one source for canonical + og:url, so they never drift apart */}
+      <link rel="canonical" href={canonicalUrl} />
+
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta
         property="og:image"
         content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
       />
-      <script type="application/ld+json">{scriptTag}</script>
+      <meta property="og:url" content={canonicalUrl} />
+      <meta property="og:type" content="website" />
+
       <meta name="robots" content="index, follow" />
       <meta name="author" content="Hora Services" />
       <link
@@ -267,8 +319,8 @@ const SeoHead = ({ catValue, city, locality, theme }) => {
         href="https://horaservices.com/api/uploads/logo-icon.png"
         type="image/x-icon"
       />
-      <meta property="og:url" content={ogUrl} />
-      <meta property="og:type" content="website" />
+
+      <script type="application/ld+json">{scriptTag}</script>
     </Head>
   );
 };

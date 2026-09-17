@@ -457,6 +457,7 @@ function CelebrationBoosterDetails({ city, locality }) {
             : `${product.name} | Celebration Boosters by Hora Services`}
         </title>
 
+         <link rel="canonical" href={boosterUrl} />
         <meta
           name="description"
           content={

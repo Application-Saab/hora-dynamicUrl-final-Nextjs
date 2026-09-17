@@ -18,7 +18,7 @@ import BabyWelcome from "../../assets/BabyWelcomeIMG.webp";
 import Anniversary from "../../assets/AnniversaryIMG.webp";
 import arrowIcon from "../../assets/arrow-down.svg";
 import CategoryTabs from "@/components/CategoryTabs";
-import {  balloonreviewsproduct } from "@/utils/balloonReviews";
+import { balloonreviewsproduct } from "@/utils/balloonReviews";
 import SmallCardGrid from "@/components/SmallCardGrid";
 import CategoryGrid from "@/components/CategoryGrid";
 import DecorGrid from "@/components/DecorGrid";
@@ -47,7 +47,9 @@ import decorationhaldi from "@/assets/decorationhaldi-Mhendi.webp";
 import Engagementdecoration from "@/assets/engament.webp";
 const BannerSlider = dynamic(() => import("@/components/BannerSlider"));
 const DecorSlider = dynamic(() => import("@/components/DecorSlider"));
-const ProductSliderSection = dynamic(() => import("@/components/ProductSliderSection"));
+const ProductSliderSection = dynamic(
+  () => import("@/components/ProductSliderSection"),
+);
 const ReviewSlider = dynamic(() => import("@/components/ReviewSection"));
 import {
   birthdayData,
@@ -248,11 +250,9 @@ const Decoration = ({ city, locality }) => {
       smallCardRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100); // small delay ensures it's rendered first
   };
- const reviewsRef    = useRef(null);
+  const reviewsRef = useRef(null);
   const openCatItems = (item) => {
     if (!item?.catValue) return;
-
-    const categorySlug = categorySlug;
 
     const path = hasCityPageParam
       ? `/${city.toLowerCase()}/${categorySlug}/${item.catValue}`
@@ -262,108 +262,137 @@ const Decoration = ({ city, locality }) => {
   };
 
   const bannerImages = [Banner1, Banner2, Banner3];
-const citySeoData = {
-  mumbai: {
-    title: "Balloon Decoration in Mumbai at Home, from Rs 1,499 | HORA",
-    description:
-      "Balloon decoration at home in Mumbai, from Rs 1,499. Verified decorators across Andheri, Bandra, Powai and Navi Mumbai, with same-day slots in most areas.",
-  },
-  bangalore: {
-    title: "Balloon Decoration in Bangalore from Rs 1,499 | HORA",
-    description:
-      "Book a balloon decorator at home in Bangalore from Rs 1,499. Same-day setups in Whitefield, Koramangala, HSR and Indiranagar, with honest fixed pricing.",
-  },
-  hyderabad: {
-    title: "Balloon Decoration in Hyderabad at Home | HORA Services",
-    description:
-      "Balloon decoration at home in Hyderabad from Rs 1,499. Verified decorators for HITEC City, Gachibowli, Kukatpally and Banjara Hills, same-day slots open.",
-  },
-  delhi: {
-    title: "Balloon Decoration in Delhi, Same-Day from Rs 1,499 | HORA",
-    description:
-      "Get balloon decoration at home in Delhi from Rs 1,499. Same-day setups across Dwarka, Saket, Rohini and Mayur Vihar, by verified decorators.",
-  },
-  noida: {
-    title: "Balloon Decoration in Noida, Same-Day & Midnight | HORA",
-    description:
-      "Balloon decoration at home in Noida from Rs 1,499, with same-day and midnight slots. Verified decorators across the sectors, Greater Noida and Noida Extension.",
-  },
-  gurugram: {
-    title: "Balloon Decoration in Gurugram from Rs 1,499 | HORA",
-    description:
-      "Book balloon decoration at home in Gurugram from Rs 1,499. Same-day and midnight setups in Cyber City, Golf Course Road, Sohna Road and DLF.",
-  },
-  ghaziabad: {
-    title: "Balloon Decoration at Home in Ghaziabad | HORA Services",
-    description:
-      "Balloon decoration at home in Ghaziabad from Rs 1,499. Verified decorators for Indirapuram, Vaishali, Vasundhara and Raj Nagar, with same-day slots.",
-  },
-  faridabad: {
-    title: "Balloon Decoration in Faridabad from Rs 1,499 | HORA",
-    description:
-      "Balloon decoration at home in Faridabad from Rs 1,499. Same-day setups across the old sectors, NIT and Greater Faridabad, by verified decorators.",
-  },
-};
 
-const defaultSeo = {
-  title: "Balloon Decoration at Home from Rs 1,499 | HORA Services",
-  description:
-    "Book balloon decoration at home from Rs 1,499. Real setups with prices, same-day and midnight slots, and verified decorators across 8 cities. Arch, wall, ring and themed designs.",
-};
+  /* ------------------------------------------------------------------
+   * CANONICAL URL (from ssr-deployment-latest)
+   * City + locality ke hisaab se proper canonical/og:url banata hai.
+   * ------------------------------------------------------------------ */
+  const SITE = "https://horaservices.com";
+  const slugify = (val) =>
+    String(val || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-");
 
-const pageSeo = city
-  ? citySeoData[city.toLowerCase()] || defaultSeo
-  : defaultSeo;
+  const citySlug = city ? slugify(city) : "";
+  const localitySlug = locality ? slugify(locality) : "";
+
+  const canonicalUrl =
+    citySlug && localitySlug
+      ? `${SITE}/${citySlug}/${localitySlug}/balloon-decoration`
+      : citySlug
+        ? `${SITE}/${citySlug}/balloon-decoration`
+        : `${SITE}/balloon-decoration`;
+
+  /* ------------------------------------------------------------------
+   * PER-CITY SEO COPY (from SEO-WORK-DECORATION-LANDING)
+   * Title/description har city ke liye custom.
+   * ------------------------------------------------------------------ */
+  const citySeoData = {
+    mumbai: {
+      title: "Balloon Decoration in Mumbai at Home, from Rs 1,499 | HORA",
+      description:
+        "Balloon decoration at home in Mumbai, from Rs 1,499. Verified decorators across Andheri, Bandra, Powai and Navi Mumbai, with same-day slots in most areas.",
+    },
+    bangalore: {
+      title: "Balloon Decoration in Bangalore from Rs 1,499 | HORA",
+      description:
+        "Book a balloon decorator at home in Bangalore from Rs 1,499. Same-day setups in Whitefield, Koramangala, HSR and Indiranagar, with honest fixed pricing.",
+    },
+    hyderabad: {
+      title: "Balloon Decoration in Hyderabad at Home | HORA Services",
+      description:
+        "Balloon decoration at home in Hyderabad from Rs 1,499. Verified decorators for HITEC City, Gachibowli, Kukatpally and Banjara Hills, same-day slots open.",
+    },
+    delhi: {
+      title: "Balloon Decoration in Delhi, Same-Day from Rs 1,499 | HORA",
+      description:
+        "Get balloon decoration at home in Delhi from Rs 1,499. Same-day setups across Dwarka, Saket, Rohini and Mayur Vihar, by verified decorators.",
+    },
+    noida: {
+      title: "Balloon Decoration in Noida, Same-Day & Midnight | HORA",
+      description:
+        "Balloon decoration at home in Noida from Rs 1,499, with same-day and midnight slots. Verified decorators across the sectors, Greater Noida and Noida Extension.",
+    },
+    gurugram: {
+      title: "Balloon Decoration in Gurugram from Rs 1,499 | HORA",
+      description:
+        "Book balloon decoration at home in Gurugram from Rs 1,499. Same-day and midnight setups in Cyber City, Golf Course Road, Sohna Road and DLF.",
+    },
+    ghaziabad: {
+      title: "Balloon Decoration at Home in Ghaziabad | HORA Services",
+      description:
+        "Balloon decoration at home in Ghaziabad from Rs 1,499. Verified decorators for Indirapuram, Vaishali, Vasundhara and Raj Nagar, with same-day slots.",
+    },
+    faridabad: {
+      title: "Balloon Decoration in Faridabad from Rs 1,499 | HORA",
+      description:
+        "Balloon decoration at home in Faridabad from Rs 1,499. Same-day setups across the old sectors, NIT and Greater Faridabad, by verified decorators.",
+    },
+  };
+
+  const defaultSeo = {
+    title: "Balloon Decoration at Home from Rs 1,499 | HORA Services",
+    description:
+      "Book balloon decoration at home from Rs 1,499. Real setups with prices, same-day and midnight slots, and verified decorators across 8 cities. Arch, wall, ring and themed designs.",
+  };
+
+  const pageSeo = city
+    ? citySeoData[city.toLowerCase()] || defaultSeo
+    : defaultSeo;
+
   return (
     <div className="dec-landing-page">
-   <Head>
-  <title>{pageSeo.title}</title>
+      <Head>
+        <title>{pageSeo.title}</title>
 
-  <meta name="description" content={pageSeo.description} />
+        <meta name="description" content={pageSeo.description} />
 
-  <meta
-    name="keywords"
-    content={
-      city
-        ? `balloon decoration in ${city}, birthday decoration, wedding decoration, baby shower decoration`
-        : `birthday decoration, anniversary decoration, party themes decorations, balloon room decoration`
-    }
-  />
+        <meta
+          name="keywords"
+          content={
+            city && locality
+              ? `balloon decoration in ${locality}, ${city}, birthday decoration, wedding decoration, baby shower decoration`
+              : city
+                ? `balloon decoration in ${city}, birthday decoration, wedding decoration, baby shower decoration`
+                : `birthday decoration, anniversary decoration, party themes decorations, balloon room decoration`
+          }
+        />
 
-  <meta
-    property="og:title"
-    content="Balloon and Flower Decoration by Professional Decorators"
-  />
-  <meta
-    property="og:description"
-    content="🎉 Explore a wide range of stunning decoration designs for every event and party. Book your ideal design directly through our website for a seamless experience. Need help? Contact us at 7338584828."
-  />
-  <meta
-    property="og:image"
-    content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
-  />
-  <meta
-    property="og:image:alt"
-    content="balloon decoration, birthday decoration, wedding decoration, baby shower decoration"
-  />
-  <script type="application/ld+json">{scriptTag}</script>
-  <meta name="robots" content="index, follow" />
-  <meta name="author" content="Hora Services" />
-  <link
-    rel="icon"
-    href="https://horaservices.com/api/uploads/logo-icon.png"
-    type="image/x-icon"
-  />
-  <meta
-    property="og:url"
-    content={
-      city
-        ? `https://horaservices.com/${city.toLowerCase()}/balloon-decoration`
-        : `https://horaservices.com/balloon-decoration`
-    }
-  />
-  <meta property="og:type" content="website" />
-</Head>
+        {/* ✅ CANONICAL — city+locality aware */}
+        <link rel="canonical" href={canonicalUrl} />
+
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Hora Services" />
+        <link
+          rel="icon"
+          href="https://horaservices.com/api/uploads/logo-icon.png"
+          type="image/x-icon"
+        />
+
+        <meta
+          property="og:title"
+          content="Balloon and Flower Decorations by Professional Decorators"
+        />
+        <meta
+          property="og:description"
+          content="🎉 Explore a wide range of stunning decoration designs for every event and party. Book your ideal design directly through our website for a seamless experience. Need help? Contact us at 7338584828."
+        />
+        <meta
+          property="og:image"
+          content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
+        />
+        <meta
+          property="og:image:alt"
+          content="balloon decoration, birthday decoration, wedding decoration, baby shower decoration"
+        />
+
+        {/* ✅ og:url = same as canonical */}
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="website" />
+
+        <script type="application/ld+json">{scriptTag}</script>
+      </Head>
 
       <div className="top-slider">
         <BannerSlider images={bannerImages} showSeeMore={true} />
@@ -429,13 +458,22 @@ const pageSeo = city
           <li> 🛠️ Easy Customize</li>
           <li>💬 Customer Support</li>
         </ul>
-        <button onClick={handleWhatsApp} className="whatsapp-btn">
+        <a
+          type="button"
+          href={`https://wa.me/7338584828?text=${encodeURIComponent(
+            "I want to customize a decoration",
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={handleWhatsApp}
+          className="whatsapp-btn"
+        >
           <img
             src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png"
             alt="WhatsApp"
           />
           Chat Now on WhatsApp
-        </button>
+        </a>
       </div>
 
       <div ref={smallCardRef}>
@@ -556,9 +594,9 @@ const pageSeo = city
         title="Excellence Backed by Happy Customers"
         items={brandItems}
       />
- <div ref={reviewsRef} style={{margin:" 10px 0px"}}>
-            <GoogleReviewsCard reviews={balloonreviewsproduct} />
-            </div>
+      <div ref={reviewsRef} style={{ margin: " 10px 0px" }}>
+        <GoogleReviewsCard reviews={balloonreviewsproduct} />
+      </div>
     </div>
   );
 };

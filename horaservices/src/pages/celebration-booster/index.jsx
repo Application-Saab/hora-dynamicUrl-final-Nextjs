@@ -9,7 +9,7 @@ import ProductGrid from "@/components/productGrid";
 import CardSkeleton from "@/components/CardSkeleton";
 import SearchSortBar from "@/components/SearchSortBar";
 import SeoHead from "@/utils/SeoHead";
-import boosterBanner from "@/assets/celebrationboosters.webp"
+import boosterBanner from "@/assets/celebrationboosters.webp";
 import "./celebrationbooster.css";
 
 // Ideally move this to utils/apiconstants.js alongside your other endpoints
@@ -70,7 +70,7 @@ const CelebrationBoosterPage = () => {
 
       if (response.data?.error) {
         throw new Error(
-          response.data.message || "Failed to fetch celebration boosters"
+          response.data.message || "Failed to fetch celebration boosters",
         );
       }
 
@@ -137,7 +137,7 @@ const CelebrationBoosterPage = () => {
         break;
       case "newArrival":
         data.sort(
-          (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+          (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0),
         );
         break;
       default:
@@ -147,10 +147,27 @@ const CelebrationBoosterPage = () => {
     return data;
   }, [catalogueData, sortOption, searchQuery, isSearchActive]);
 
+  const getProductHref = (item) => {
+    if (!item) return "#";
+
+    const productSlug =
+      item.slug ||
+      item.name
+        ?.toLowerCase()
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/[^\w-]+/g, "") ||
+      "";
+
+    if (!productSlug) return "#";
+
+    return `/${CATEGORY_SLUG}/product/${productSlug}`;
+  };
+
   return (
     <div className="celebrationBoosterSection">
-      <SeoHead catValue={CATEGORY_SLUG} />
-   <section className="celebrationBoosterBanner">
+      <SeoHead catValue={CATEGORY_SLUG} isBooster={true}/>
+      <section className="celebrationBoosterBanner">
         <Image
           src={boosterBanner}
           alt="Celebration Boosters"
@@ -160,9 +177,6 @@ const CelebrationBoosterPage = () => {
           priority
         />
       </section>
-      
-
-     
 
       {loading ? (
         <div className="skeleton-wrapper">
@@ -184,11 +198,10 @@ const CelebrationBoosterPage = () => {
         <ProductGrid
           data={displayData}
           onCardClick={handleViewDetails}
+          getHref={getProductHref}
           catValue={CATEGORY_SLUG}
         />
       )}
-
-    
     </div>
   );
 };

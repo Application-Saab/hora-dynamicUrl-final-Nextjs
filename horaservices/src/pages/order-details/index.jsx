@@ -1,4 +1,3 @@
-
 import React from "react";
 import OrderDetailTab from "../../components/OrderDetailTab";
 import {
@@ -38,17 +37,28 @@ const OrderDetail = ({
   }
 
   return (
-    <div className="orderheader-orderdetail">
-      <div className="order-detail-page-decoration">
-        <OrderDetailTab
-          orderDetail={orderDetail}
-          orderType={orderType}
-          decorationItems={decorationItems}
-          decorationComments={decorationComments}
-          addOn={addOn}
+    <>
+      <Head>
+        <title>My Orders | Track Your Service Bookings | HORA</title>
+        <meta
+          name="description"
+          content="View and manage all your HORA bookings in one place. Track order status, check booking details, view executor information, and manage your decoration, photography, chef, catering, and event service orders."
         />
+        <meta name="robots" content="noindex, follow" />
+        <link rel="canonical" href="https://horaservices.com/order-details" />
+      </Head>
+      <div className="orderheader-orderdetail">
+        <div className="order-detail-page-decoration">
+          <OrderDetailTab
+            orderDetail={orderDetail}
+            orderType={orderType}
+            decorationItems={decorationItems}
+            decorationComments={decorationComments}
+            addOn={addOn}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -76,21 +86,21 @@ export async function getServerSideProps(context) {
     if (orderType === 2) {
       // Chef
       response = await fetchWithError(
-        `${BASE_URL}${ORDER_DETAILS_ENDPOINT}/v1/${apiOrderId}`
+        `${BASE_URL}${ORDER_DETAILS_ENDPOINT}/v1/${apiOrderId}`,
       );
       responseData = await response.json();
       orderDetail = responseData?.data ?? null;
     } else if (orderType === 8) {
       // Photography
       response = await fetchWithError(
-        `${BASE_URL}${GET_PHOTOGRAPHY_ORDER_DETAILS}/${orderId}`
+        `${BASE_URL}${GET_PHOTOGRAPHY_ORDER_DETAILS}/${orderId}`,
       );
       responseData = await response.json();
       orderDetail = responseData?.data ?? null;
     } else if (orderType === 1) {
       // Decoration
       response = await fetchWithError(
-        `${BASE_URL}${GET_DECORATION_DETAILS}/${orderId}`
+        `${BASE_URL}${GET_DECORATION_DETAILS}/${orderId}`,
       );
       responseData = await response.json();
       orderDetail = responseData?.data ?? null;
@@ -100,14 +110,14 @@ export async function getServerSideProps(context) {
     } else if ([6, 7].includes(orderType)) {
       // Food Delivery / Live Catering
       response = await fetchWithError(
-        `${BASE_URL}${GET_FOOD_DELIVERY_DETAILS}/${orderId}`
+        `${BASE_URL}${GET_FOOD_DELIVERY_DETAILS}/${orderId}`,
       );
       responseData = await response.json();
       orderDetail = responseData?.data ?? null;
     } else if ([3, 4, 5].includes(orderType)) {
       // Waiter / Bar Tender / Cleaner
       response = await fetchWithError(
-        `${BASE_URL}${ORDER_DETAILS_ENDPOINT}/v1/${apiOrderId}`
+        `${BASE_URL}${ORDER_DETAILS_ENDPOINT}/v1/${apiOrderId}`,
       );
       responseData = await response.json();
       orderDetail = responseData?.data ?? null;
