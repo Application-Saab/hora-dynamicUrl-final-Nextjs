@@ -16,14 +16,15 @@ const PhotoGraphyCard = ({
   );
 
   const finalSubCategory = categoryItem?.subCategory || subCategory;
+  const slug = categoryItem?.slug || finalSubCategory?.toLowerCase()?.replace(/\s+/g, "-");
 
   const getHref = () => {
-    if (!finalSubCategory) return "#";
+    if (!slug) return "#";
 
     const citySlug = city?.toLowerCase()?.replace(/\s+/g, "-");
     const localitySlug = locality?.toLowerCase()?.replace(/\s+/g, "-");
 
-    let path = `/photography-page/${finalSubCategory}`;
+    let path = `/photography-page/${slug}`;
 
     if (citySlug && localitySlug) {
       path = `/${citySlug}/${localitySlug}${path}`;

@@ -36,6 +36,7 @@ import ChooseYourMoment from "@/components/Chooseyourmoment";
 import DecorationBanner from "@/components/CategoryDecorationBanner";
 import PhotographyCardSkeleton from "@/components/PhotographyCardSkeleton";
 import PhotoGallery from "@/pages/photo-gallery";
+import { isValidPhotographyCategorySlug } from "@/utils/routeConfig";
 
 // ---------- constants / helpers (same as before) ----------
 const isWeddingCategory = (category) => {
@@ -74,16 +75,16 @@ const getDiscountedPrice = (price = 0) => {
 };
 
 export const categoryBannerMap = {
-  "Engagement-Photography": Engagement,
-  "Wedding-Photography": Wedding,
-  "Anniversary-Photography": Anniversary,
-  "Birthday-Photography": Birthday,
-  "House-Warming-Photography": HouseWarming,
-  "Naming-Ceremony-Photography": NamingCeremony,
-  "Baby-Shower-Photography": BabyShower,
-  "Bachelorette-Photography": Bachelorette,
-  "Maternity-Photography": Maternity,
-  "New-Born-Baby-Photography": NewBorn,
+  "engagement-photography": Engagement,
+  "wedding-photography": Wedding,
+  "anniversary-photography": Anniversary,
+  "birthday-photography": Birthday,
+  "house-warming-photography": HouseWarming,
+  "naming-ceremony-photography": NamingCeremony,
+  "baby-shower-photography": BabyShower,
+  "bachelorette-photography": Bachelorette,
+  "maternity-photography": Maternity,
+  "new-born-baby-photography": NewBorn,
 };
 
 export const normalizeCatValue = (val) => {
@@ -95,43 +96,43 @@ export const normalizeCatValue = (val) => {
 };
 
 const categoryToGallery = {
-  "Engagement-Photography": {
+  "engagement-photography": {
     folderName: "engagement weblink",
     customerId: "64137625549b58e3dc39a685",
   },
-  "Wedding-Photography": {
+  "wedding-photography": {
     folderName: "Wedding",
     customerId: "6683e5d43e33c54c0ebde8f2",
   },
-  "Anniversary-Photography": {
+  "anniversary-photography": {
     folderName: "anniversary poses web link",
     customerId: "64137625549b58e3dc39a685",
   },
-  "Birthday-Photography": {
+  "birthday-photography": {
     folderName: "Candid",
     customerId: "63edb239d680d47d95870fa0",
   },
-  "House-warming-Photography": {
+  "house-warming-photography": {
     folderName: "House warming weblink",
     customerId: "64137625549b58e3dc39a685",
   },
-  "Naming-ceremony-Photography": {
+  "naming-ceremony-photography": {
     folderName: "naming ceremony weblink",
     customerId: "64137625549b58e3dc39a685",
   },
-  "Baby-Shower-Photography": {
+  "baby-shower-photography": {
     folderName: "baby shower weblink",
     customerId: "64137625549b58e3dc39a685",
   },
-  "Bachelorette-Photography": {
+  "bachelorette-photography": {
     folderName: "bacherrolerate",
     customerId: "64137625549b58e3dc39a685",
   },
-  "Maternity-Photography": {
+  "maternity-photography": {
     folderName: "maternity poses",
     customerId: "6683e5d43e33c54c0ebde8f2",
   },
-  "New-Born-Baby-Photography": {
+  "new-born-baby-photography": {
     folderName: "new born ",
     customerId: "64137625549b58e3dc39a685",
   },
@@ -142,6 +143,10 @@ export async function getServerSideProps(context) {
   const { catValue, city, locality } = context.params || {};
   const query = context.query || {};
 
+  if (!isValidPhotographyCategorySlug(catValue)) {
+    return { notFound: true };
+  }
+
   const finalCatValue = catValue || query.catValue || null;
   const finalCity = city || query.city || null;
   const finalLocality = locality || query.locality || null;
@@ -149,7 +154,7 @@ export async function getServerSideProps(context) {
   // Moment slug → Wedding-Photography
   const effectiveCatValue =
     typeof finalCatValue === "string" && MOMENT_SLUG_TO_KEY[finalCatValue]
-      ? "Wedding-Photography"
+      ? "wedding-photography"
       : finalCatValue;
 
   const initialActiveMoment =
@@ -230,7 +235,7 @@ export default function CatValuePage({
 
   const effectiveCatValue =
     typeof catValue === "string" && MOMENT_SLUG_TO_KEY[catValue]
-      ? "Wedding-Photography"
+      ? "wedding-photography"
       : catValue || ssrEffectiveCat;
 
   const [catId, setCatId] = useState(initialCatId);
@@ -273,7 +278,7 @@ export default function CatValuePage({
       setError("");
 
       const nextEffective = MOMENT_SLUG_TO_KEY[catValue]
-        ? "Wedding-Photography"
+        ? "wedding-photography"
         : catValue;
 
       setActiveMoment(
@@ -361,7 +366,7 @@ export default function CatValuePage({
   };
 
   const handleSelectMoment = (key) => {
-    const slug = MOMENT_KEY_TO_SLUG[key] || "Wedding-Photography";
+    const slug = MOMENT_KEY_TO_SLUG[key] || "wedding-photography";
     const pathParts = router.asPath.split("?")[0].split("/").filter(Boolean);
     const photoIndex = pathParts.findIndex((p) => p === "photography-page");
     if (photoIndex === -1) return;

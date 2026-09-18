@@ -1,16 +1,16 @@
 const folderToSubCategory = {
-  "Wedding":                    "Wedding-Photography",
-  "maternity poses":            "Maternity-Photography",
-  "Candid":                     "Birthday-Photography",
-  "pre wedding":                "Engagement-Photography",
-  "HaldiandMehendi":            "Wedding-Photography",
-  "baby shower":                "Baby-Shower-Photography",
-  "naming ceremony weblink":    "Naming-ceremony-Photography",
-  "new born ":                  "New-Born-Baby-Photography",
-  "engagement weblink":         "Engagement-Photography",
-  "anniversary poses web link": "Anniversary-Photography",
-  "House warming weblink":      "House-warming-Photography",
-  "bacherrolerate":             "Bachelorette-Photography",
+  "Wedding":                    "wedding-photography",
+  "maternity poses":            "maternity-photography",
+  "Candid":                     "birthday-photography",
+  "pre wedding":                "engagement-photography",
+  "HaldiandMehendi":            "wedding-photography",
+  "baby shower":                "baby-shower-photography",
+  "naming ceremony weblink":    "naming-ceremony-photography",
+  "new born ":                  "new-born-baby-photography",
+  "engagement weblink":         "engagement-photography",
+  "anniversary poses web link": "anniversary-photography",
+  "House warming weblink":      "house-warming-photography",
+  "bacherrolerate":             "bachelorette-photography",
 };
 
 // ✅ folderName pass karo — photography page ka URL milega

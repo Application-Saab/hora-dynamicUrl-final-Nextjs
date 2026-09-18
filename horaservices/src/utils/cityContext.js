@@ -5,6 +5,8 @@ import cityNameToSlug from "@/utils/Citynametoslug.json";
 import { BASE_URL } from "./apiconstants";
 import { fetchWithError } from "./fetchWithError";
 import { safeGetItem, safeSetItem } from "./safeStorage";
+import { slugToCityName } from "./validCities";
+import { CITY_ROUTES } from "./routeConfig";
 
 const CityContext = createContext({
   selectedCitySlug: "",
@@ -35,37 +37,58 @@ const CITY_API_DONE_FLAG = "cityApiCallDone";
 
 // City URL/pill/modal logic SIRF venue-list ke liye active hai.
 // Tracking API is se koi lena dena nahi rakhti — wo har page par apna kaam karti hai.
-const CITY_ALLOWED_ROUTES = [
-  "/",                     // home page
-  "/venue-list",
-  "/balloon-decoration",
-  "/photography-page",
-  "/chef-near-me",
+// const CITY_ALLOWED_ROUTES = [
+//   "/",                     // home page
+//   "/venue-list",
+//   "/balloon-decoration",
+//   "/photography-page",
+//   "/chef-near-me",
+//   "/book-chef-cook-for-party",
+//   // "/party-food-delivery-live-catering-buffet/party-food-delivery",
+//   // "/party-food-delivery-live-catering-buffet/party-live-buffet-catering",
+//   // "/photo-gallery",
+// ];
+
+// const slugToCityName = {
+//   delhi: "Delhi",
+//   mumbai: "Mumbai",
+//   bangalore: "Bangalore",
+//   noida: "Noida",
+//   ghaziabad: "Ghaziabad",
+//   gurugram: "Gurgaon",
+//   faridabad: "Faridabad",
+//   hyderabad: "Hyderabad",
+//   chennai: "Chennai",
+//   kolkata: "Kolkata",
+//   lucknow: "Lucknow",
+//   kanpur: "Kanpur",
+//   indore: "Indore",
+//   surat: "Surat",
+//   bhopal: "Bhopal",
+//   goa: "Goa",
+//   pune: "Pune",
+//   others: "Others",
+// };
+
+const CITY_OPTIONAL_CHILD_ROUTES = [
   "/book-chef-cook-for-party",
-  // "/party-food-delivery-live-catering-buffet/party-food-delivery",
-  // "/party-food-delivery-live-catering-buffet/party-live-buffet-catering",
-  // "/photo-gallery",
+  // "/another-route",
+  // "/some-other-route",
 ];
 
-const slugToCityName = {
-  delhi: "Delhi",
-  mumbai: "Mumbai",
-  bangalore: "Bangalore",
-  noida: "Noida",
-  ghaziabad: "Ghaziabad",
-  gurugram: "Gurgaon",
-  faridabad: "Faridabad",
-  hyderabad: "Hyderabad",
-  chennai: "Chennai",
-  kolkata: "Kolkata",
-  lucknow: "Lucknow",
-  kanpur: "Kanpur",
-  indore: "Indore",
-  surat: "Surat",
-  bhopal: "Bhopal",
-  goa: "Goa",
-  pune: "Pune",
-  others: "Others",
+const isCityOptionalChildRoute = (pathname) => {
+  if (!pathname) return false;
+
+  const cleanPath = pathname
+    .split("?")[0]
+    .split("#")[0]
+    .replace(/\/+$/, "");
+
+  return CITY_OPTIONAL_CHILD_ROUTES.some((baseRoute) => {
+    const normalizedBaseRoute = baseRoute.replace(/\/+$/, "");
+
+    return cleanPath.startsWith(`${normalizedBaseRoute}/`);
+  });
 };
 
 const stripAllCitySegments = (path) => {
@@ -85,7 +108,7 @@ const stripAllCitySegments = (path) => {
 const isRouteCityAllowed = (strippedPath) => {
   const p = strippedPath || "/";
 
-  return CITY_ALLOWED_ROUTES.some((route) => {
+  return CITY_ROUTES.some((route) => {
     // route ke exact match ke alawa, route/xyz jaisे nested paths bhi allow honge
     const prefixRegex = new RegExp(`^${route}(/.*)?$`, "i");
     return prefixRegex.test(p);
@@ -289,6 +312,18 @@ export const CityProvider = ({ children }) => {
   useEffect(() => {
     if (!pathname) return;
 
+      // ============================================================
+  // CITY OPTIONAL CHILD ROUTE
+  // Example:
+  // /book-chef-cook-for-party/order-details
+  //
+  // Is route ko city ke sath force nahi karna hai.
+  // ============================================================
+  if (isCityOptionalChildRoute(pathname)) {
+    setShowCityModal(false);
+    return;
+  }
+
     const match = pathname.match(CITY_PATH_REGEX);
 
     if (!isPillVisibleRoute) {
@@ -296,16 +331,16 @@ export const CityProvider = ({ children }) => {
 
       // GUARD 1: city already in URL on a disallowed route — strip ONLY
       // the city segment, keep the rest of the current page exactly as is.
-      if (match) {
-        const restOfCurrentPage = pathname.slice(match[0].length);
-        const cleanedPath = restOfCurrentPage.startsWith("/")
-          ? restOfCurrentPage
-          : "/" + restOfCurrentPage;
+      // if (match) {
+      //   const restOfCurrentPage = pathname.slice(match[0].length);
+      //   const cleanedPath = restOfCurrentPage.startsWith("/")
+      //     ? restOfCurrentPage
+      //     : "/" + restOfCurrentPage;
 
-        if (cleanedPath && cleanedPath !== pathname) {
-          setUrlSilently(cleanedPath, { replace: true });
-        }
-      }
+      //   if (cleanedPath && cleanedPath !== pathname) {
+      //     setUrlSilently(cleanedPath, { replace: true });
+      //   }
+      // }
       return;
     }
 
@@ -384,7 +419,7 @@ export const CityProvider = ({ children }) => {
     saveCityToServer(cityName);
   }, []);
 
-  const selectedCityName = slugToCityName[selectedCitySlug] || "";
+  const selectedCityName= slugToCityName[selectedCitySlug] || "";
 
   return (
     <CityContext.Provider

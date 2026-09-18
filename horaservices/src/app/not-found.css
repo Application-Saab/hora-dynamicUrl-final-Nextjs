@@ -1,0 +1,49 @@
+.oops-txt {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-style: "SemiBold";
+  font-size: 22px;
+  line-height: 100%;
+  letter-spacing: 17%;
+  text-align: center;
+  color: #97538c;
+}
+
+.not-found-txt {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-style: "Medium";
+  font-size: 22px;
+  line-height: 27px;
+  letter-spacing: 0%;
+  text-align: center;
+  color: #000000;
+}
+.not-found-inst {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: "Regular";
+  font-size: 12px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  color: #646a83;
+  margin-top: 10px;
+}
+.not-found-go-home-btn {
+  background: #9d4a93;
+  color: #fff;
+  border: none;
+  padding: clamp(4.47px, 1.4cqw, 6.68px);
+  border-radius: clamp(3.1px, 0.97cqw, 4.63px);
+  cursor: pointer;
+  width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(6px, 1.8cqw, 8px);
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: clamp(9.53px, 2.99cqw, 14.23px);
+  text-align: center;
+}
