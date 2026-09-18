@@ -15,7 +15,7 @@ import villas from "@/assets/venuelanding/Villas.webp";
 export const venueData = [
   { id: "all", label: "All", slug: "all", img: all },
   { id: "Banquet hall", label: "Banquet Hall", slug: "banquethall", img: banquet },
-  { id: "Pub & Bar", label: "Pub & Bar", slug: "pubbar", img: pubbar },
+  { id: "Pub & Bar", label: "Pub & Bar", slug: "pub-and-bar", img: pubbar },
   { id: "Poolside", label: "Poolside", slug: "poolside", img: poolside },
   { id: "Rooftop", label: "Rooftop", slug: "rooftop", img: rooftop },
   { id: "Resort", label: "Resorts", slug: "resorts", img: resorts },
