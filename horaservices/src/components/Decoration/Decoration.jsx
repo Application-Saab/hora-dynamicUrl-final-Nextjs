@@ -45,6 +45,7 @@ import decorationWedding from "@/assets/decorationwedding.webp";
 import decorationBridetobe from "@/assets/decorationBride-tobe.webp";
 import decorationhaldi from "@/assets/decorationhaldi-Mhendi.webp";
 import Engagementdecoration from "@/assets/engament.webp";
+import { citySeoData, defaultSeo } from "@/utils/Decorationseodata.json";
 const BannerSlider = dynamic(() => import("@/components/BannerSlider"));
 const DecorSlider = dynamic(() => import("@/components/DecorSlider"));
 const ProductSliderSection = dynamic(
@@ -263,10 +264,6 @@ const Decoration = ({ city, locality }) => {
 
   const bannerImages = [Banner1, Banner2, Banner3];
 
-  /* ------------------------------------------------------------------
-   * CANONICAL URL (from ssr-deployment-latest)
-   * City + locality ke hisaab se proper canonical/og:url banata hai.
-   * ------------------------------------------------------------------ */
   const SITE = "https://horaservices.com";
   const slugify = (val) =>
     String(val || "")
@@ -288,54 +285,6 @@ const Decoration = ({ city, locality }) => {
    * PER-CITY SEO COPY (from SEO-WORK-DECORATION-LANDING)
    * Title/description har city ke liye custom.
    * ------------------------------------------------------------------ */
-  const citySeoData = {
-    mumbai: {
-      title: "Balloon Decoration in Mumbai at Home, from Rs 1,499 | HORA",
-      description:
-        "Balloon decoration at home in Mumbai, from Rs 1,499. Verified decorators across Andheri, Bandra, Powai and Navi Mumbai, with same-day slots in most areas.",
-    },
-    bangalore: {
-      title: "Balloon Decoration in Bangalore from Rs 1,499 | HORA",
-      description:
-        "Book a balloon decorator at home in Bangalore from Rs 1,499. Same-day setups in Whitefield, Koramangala, HSR and Indiranagar, with honest fixed pricing.",
-    },
-    hyderabad: {
-      title: "Balloon Decoration in Hyderabad at Home | HORA Services",
-      description:
-        "Balloon decoration at home in Hyderabad from Rs 1,499. Verified decorators for HITEC City, Gachibowli, Kukatpally and Banjara Hills, same-day slots open.",
-    },
-    delhi: {
-      title: "Balloon Decoration in Delhi, Same-Day from Rs 1,499 | HORA",
-      description:
-        "Get balloon decoration at home in Delhi from Rs 1,499. Same-day setups across Dwarka, Saket, Rohini and Mayur Vihar, by verified decorators.",
-    },
-    noida: {
-      title: "Balloon Decoration in Noida, Same-Day & Midnight | HORA",
-      description:
-        "Balloon decoration at home in Noida from Rs 1,499, with same-day and midnight slots. Verified decorators across the sectors, Greater Noida and Noida Extension.",
-    },
-    gurugram: {
-      title: "Balloon Decoration in Gurugram from Rs 1,499 | HORA",
-      description:
-        "Book balloon decoration at home in Gurugram from Rs 1,499. Same-day and midnight setups in Cyber City, Golf Course Road, Sohna Road and DLF.",
-    },
-    ghaziabad: {
-      title: "Balloon Decoration at Home in Ghaziabad | HORA Services",
-      description:
-        "Balloon decoration at home in Ghaziabad from Rs 1,499. Verified decorators for Indirapuram, Vaishali, Vasundhara and Raj Nagar, with same-day slots.",
-    },
-    faridabad: {
-      title: "Balloon Decoration in Faridabad from Rs 1,499 | HORA",
-      description:
-        "Balloon decoration at home in Faridabad from Rs 1,499. Same-day setups across the old sectors, NIT and Greater Faridabad, by verified decorators.",
-    },
-  };
-
-  const defaultSeo = {
-    title: "Balloon Decoration at Home from Rs 1,499 | HORA Services",
-    description:
-      "Book balloon decoration at home from Rs 1,499. Real setups with prices, same-day and midnight slots, and verified decorators across 8 cities. Arch, wall, ring and themed designs.",
-  };
 
   const pageSeo = city
     ? citySeoData[city.toLowerCase()] || defaultSeo
