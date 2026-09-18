@@ -271,14 +271,13 @@ const PhotographyIndexPage = ({
           </div>
         </div>
 
-        <EventCapsuleBannerImage
-          image={BannerImg}
-          onExploreClick={() =>
-            router.push(
-              "https://horaservices.com/weblink-gallery?folderName=32468_6a7f09a01144665025c88d8e_9406754372&customerId=6a7f09a01144665025c88d8e&fromPanel=true"
-            )
-          }
-        />
+       <EventCapsuleBannerImage
+  image={BannerImg}
+  onExploreClick={() => {
+    window.location.href =
+      "https://horaservices.com/weblink-gallery?folderName=32468_6a7f09a01144665025c88d8e_9406754372&customerId=6a7f09a01144665025c88d8e&fromPanel=true";
+  }}
+/>
 
         <BrandBanner
           title="Excellence Backed by Happy Customers"
