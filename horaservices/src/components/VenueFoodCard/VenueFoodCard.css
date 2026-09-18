@@ -84,7 +84,6 @@ font-size: clamp(11.21px, 3.50vw, 17.41px);
 text-transform: capitalize;
 color:#221F1F;
   margin: 0;
- line-height:  clamp(8px, 2.98vw, 11.72px);
 }
 
 /* ── SUBTITLE ── */

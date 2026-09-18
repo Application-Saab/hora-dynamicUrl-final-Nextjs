@@ -371,16 +371,16 @@ Please share more details and availability.`;
                 borderRadius="10px"
               />
             ) : (
-              <>
+              
                 <TemplateRenderer
                   fetchEventLoading={fetchEventLoading}
                   eventDetails={eventDetails}
                   orderDetails={eventDetails}
                   isHost={true}
                   isVenue={true}
-                />
+                >
                 <VenueNameOverlay venueName={eventDetails?.venueName} />
-              </>
+             </TemplateRenderer>
             )}
           </div>
 
