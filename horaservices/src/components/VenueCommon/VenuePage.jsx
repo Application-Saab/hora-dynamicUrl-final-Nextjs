@@ -378,9 +378,8 @@ Please share more details and availability.`;
                   orderDetails={eventDetails}
                   isHost={true}
                   isVenue={true}
-                >
-                <VenueNameOverlay venueName={eventDetails?.venueName} />
-             </TemplateRenderer>
+                  overlayContent={<VenueNameOverlay venueName={eventDetails?.venueName} />}
+                  />
             )}
           </div>
 
