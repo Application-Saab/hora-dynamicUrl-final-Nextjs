@@ -7,6 +7,7 @@ import {
 import axiosApi from "@/utils/axiosApi";
 import "../../../../../app/homepage.css";
 import { isValidPhotographyCategorySlug } from "@/utils/routeConfig";
+import { categoryToWeblinkFolderName } from "@/utils/photoCategories";
 
 const MOMENT_SLUG_TO_KEY = {
   "pre-wedding": "pre-wedding",
@@ -23,49 +24,6 @@ const getDiscountedPrice = (price = 0) => {
     discountedPrice: Math.round(discountedPrice),
     discountDifference: Math.round(discountDifference),
   };
-};
-
-const categoryToGallery = {
-  "engagement-photography": {
-    folderName: "engagement weblink",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "wedding-photography": {
-    folderName: "Wedding",
-    customerId: "6683e5d43e33c54c0ebde8f2",
-  },
-  "anniversary-photography": {
-    folderName: "anniversary poses web link",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "birthday-photography": {
-    folderName: "Candid",
-    customerId: "63edb239d680d47d95870fa0",
-  },
-  "house-warming-photography": {
-    folderName: "House warming weblink",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "naming-ceremony-photography": {
-    folderName: "naming ceremony weblink",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "baby-shower-photography": {
-    folderName: "baby shower weblink",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "bachelorette-photography": {
-    folderName: "bacherrolerate",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "maternity-photography": {
-    folderName: "maternity poses",
-    customerId: "6683e5d43e33c54c0ebde8f2",
-  },
-  "new-born-baby-photography": {
-    folderName: "new born ",
-    customerId: "64137625549b58e3dc39a685",
-  },
 };
 
 function formatCityDisplay(slug) {
@@ -148,7 +106,7 @@ export async function getServerSideProps(context) {
     products = [];
   }
 
-  const galleryData = categoryToGallery[effectiveCatValue] || null;
+  const galleryData = categoryToWeblinkFolderName[effectiveCatValue] || null;
 
   return {
     props: {

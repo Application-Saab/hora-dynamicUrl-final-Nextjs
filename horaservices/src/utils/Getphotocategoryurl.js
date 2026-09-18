@@ -13,8 +13,7 @@ const folderToSubCategory = {
   "bacherrolerate":             "bachelorette-photography",
 };
 
-// ✅ folderName pass karo — photography page ka URL milega
-export const getPhotoCategoryUrl = (folderName) => {
+export const getWeblinkPhotosUrl = (folderName) => {
   const subCategory = folderToSubCategory[folderName];
   if (!subCategory) return "/photography"; // fallback
   return `/photography-page/${subCategory}`;

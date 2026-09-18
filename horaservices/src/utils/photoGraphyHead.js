@@ -1,10 +1,8 @@
-// utils/photoGraphyHead.js  (ya jahan ye file hai)
-
 import Head from "next/head";
 import {
-  categoryBannerMap,
   normalizeCatValue,
 } from "@/pages/photography-page/[catValue]/index.jsx";
+import { photographyCategoryPageTopBannerHeading } from "./photoCategories";
 
 const SITE = "https://horaservices.com";
 
@@ -14,11 +12,6 @@ const slugify = (val) =>
     .toLowerCase()
     .replace(/\s+/g, "-");
 
-/**
- * Build absolute photography canonical URL.
- * - No utm / tracking params
- * - includeId only for product pages when content depends on ?id=
- */
 export function buildPhotographyCanonical({
   city,
   locality,
@@ -168,7 +161,7 @@ export function SeoCategory({ city, locality, catValue, seoData, scriptTag }) {
 
   const normalizedCat = normalizeCatValue(catValue);
   const bannerToShow =
-    categoryBannerMap[normalizedCat] || categoryBannerMap["default"];
+    photographyCategoryPageTopBannerHeading[normalizedCat] || photographyCategoryPageTopBannerHeading["default"];
   const bannerUrl = bannerToShow?.src || bannerToShow || "";
 
   return (
@@ -240,7 +233,6 @@ export function SeoCategory({ city, locality, catValue, seoData, scriptTag }) {
   );
 }
 
-// ---------- PRODUCT ( /photography-page/[catValue]/product/[productName]?id= ) ----------
 export function SeoWork({
   city,
   locality,

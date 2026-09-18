@@ -4,10 +4,17 @@ import housewarming from "@/assets/photography/House-warming-Photography.svg";
 import naming from "@/assets/photography/Naming-ceremony-Photography.svg";
 import bachelorette from "@/assets/photography/Bachelorette-Photography.svg";
 import babyshower from "@/assets/photography/Baby-Shower-Photography.svg";
-// import wedding from "@/assets/photography/Wedding-Photography.webp";
-// import engagement from "@/assets/photography/Engagement-Photography.webp";
-// import maternity from "@/assets/photography/Maternity-Photography.webp";
-// import newborn from "@/assets/photography/New-Born-Baby-Photography.webp";
+
+import EngagementBanner from "../assets/photographyCategories/Photography9.webp";
+import WeddingBanner from "../assets/photographyCategories/Photography10.webp";
+import AnniversaryBanner from "../assets/photographyCategories/Photography5.webp";
+import BirthdayBanner from "../assets/photographyCategories/birthdaybackground.webp";
+import HouseWarmingBanner from "../assets/photographyCategories/Photography6.webp";
+import NamingCeremonyBanner from "../assets/photographyCategories/Photography4.webp";
+import BabyShowerBanner from "../assets/photographyCategories/Photography8.webp";
+import BacheloretteBanner from "../assets/photographyCategories/Photography7.webp";
+import MaternityBanner from "../assets/photographyCategories/Photography11.webp";
+import NewBornBanner from "../assets/photographyCategories/Photography12.webp";
 
 export const photoCat = [
   {
@@ -206,4 +213,61 @@ export const seoData = {
     h1: "Intimate & Private Event Photoshoot",
     color: "#97538C",
   },
+};
+
+export const categoryToWeblinkFolderName = {
+  "engagement-photography": {
+    folderName: "engagement weblink",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "wedding-photography": {
+    folderName: "Wedding",
+    customerId: "6683e5d43e33c54c0ebde8f2",
+  },
+  "anniversary-photography": {
+    folderName: "anniversary poses web link",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "birthday-photography": {
+    folderName: "Candid",
+    customerId: "63edb239d680d47d95870fa0",
+  },
+  "house-warming-photography": {
+    folderName: "House warming weblink",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "naming-ceremony-photography": {
+    folderName: "naming ceremony weblink",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "baby-shower-photography": {
+    folderName: "baby shower weblink",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "bachelorette-photography": {
+    folderName: "bacherrolerate",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "maternity-photography": {
+    folderName: "maternity poses",
+    customerId: "6683e5d43e33c54c0ebde8f2",
+  },
+  "new-born-baby-photography": {
+    folderName: "new born ",
+    customerId: "64137625549b58e3dc39a685",
+  },
+};
+
+
+export const photographyCategoryPageTopBannerHeading = {
+  "engagement-photography": EngagementBanner,
+  "wedding-photography": WeddingBanner,
+  "anniversary-photography": AnniversaryBanner,
+  "birthday-photography": BirthdayBanner,
+  "house-warming-photography": HouseWarmingBanner,
+  "naming-ceremony-photography": NamingCeremonyBanner,
+  "baby-shower-photography": BabyShowerBanner,
+  "bachelorette-photography": BacheloretteBanner,
+  "maternity-photography": MaternityBanner,
+  "new-born-baby-photography": NewBornBanner,
 };

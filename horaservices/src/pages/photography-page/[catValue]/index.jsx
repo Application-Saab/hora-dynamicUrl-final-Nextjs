@@ -1,21 +1,11 @@
 import { useRouter } from "next/router";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 
 import "./catvaluephoto.css";
 
 import PhotoBanner from "@/assets/PhotoBanner.jpg";
-import Engagement from "../../../assets/photographyCategories/Photography9.webp";
-import Wedding from "../../../assets/photographyCategories/Photography10.webp";
-import Anniversary from "../../../assets/photographyCategories/Photography5.webp";
-import Birthday from "../../../assets/photographyCategories/birthdaybackground.webp";
-import HouseWarming from "../../../assets/photographyCategories/Photography6.webp";
-import NamingCeremony from "../../../assets/photographyCategories/Photography4.webp";
-import BabyShower from "../../../assets/photographyCategories/Photography8.webp";
-import Bachelorette from "../../../assets/photographyCategories/Photography7.webp";
-import Maternity from "../../../assets/photographyCategories/Photography11.webp";
-import NewBorn from "../../../assets/photographyCategories/Photography12.webp";
 import PreWeddingImg from "@/assets/pre-wedding.webp";
 import HaldiMahandiImg from "@/assets/haldi-mahandi.webp";
 import Weddings from "@/assets/wedding.webp";
@@ -27,7 +17,7 @@ import {
 } from "@/utils/apiconstants.js";
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
 import { SeoCategory } from "@/utils/photoGraphyHead";
-import { seoData } from "@/utils/photoCategories";
+import { categoryToWeblinkFolderName, photographyCategoryPageTopBannerHeading, seoData } from "@/utils/photoCategories";
 import axiosApi from "@/utils/axiosApi";
 
 import EventDateBanner from "@/components/Eventdatebanner";
@@ -74,68 +64,12 @@ const getDiscountedPrice = (price = 0) => {
   };
 };
 
-export const categoryBannerMap = {
-  "engagement-photography": Engagement,
-  "wedding-photography": Wedding,
-  "anniversary-photography": Anniversary,
-  "birthday-photography": Birthday,
-  "house-warming-photography": HouseWarming,
-  "naming-ceremony-photography": NamingCeremony,
-  "baby-shower-photography": BabyShower,
-  "bachelorette-photography": Bachelorette,
-  "maternity-photography": Maternity,
-  "new-born-baby-photography": NewBorn,
-};
-
 export const normalizeCatValue = (val) => {
   if (!val) return "";
-  const exactMatch = Object.keys(categoryBannerMap).find(
+  const exactMatch = Object.keys(photographyCategoryPageTopBannerHeading).find(
     (key) => key.toLowerCase() === val.toLowerCase(),
   );
   return exactMatch || val.toLowerCase().replace(/ /g, "-");
-};
-
-const categoryToGallery = {
-  "engagement-photography": {
-    folderName: "engagement weblink",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "wedding-photography": {
-    folderName: "Wedding",
-    customerId: "6683e5d43e33c54c0ebde8f2",
-  },
-  "anniversary-photography": {
-    folderName: "anniversary poses web link",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "birthday-photography": {
-    folderName: "Candid",
-    customerId: "63edb239d680d47d95870fa0",
-  },
-  "house-warming-photography": {
-    folderName: "House warming weblink",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "naming-ceremony-photography": {
-    folderName: "naming ceremony weblink",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "baby-shower-photography": {
-    folderName: "baby shower weblink",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "bachelorette-photography": {
-    folderName: "bacherrolerate",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "maternity-photography": {
-    folderName: "maternity poses",
-    customerId: "6683e5d43e33c54c0ebde8f2",
-  },
-  "new-born-baby-photography": {
-    folderName: "new born ",
-    customerId: "64137625549b58e3dc39a685",
-  },
 };
 
 // ---------- SSR ----------
@@ -196,7 +130,7 @@ export async function getServerSideProps(context) {
     }
   }
 
-  const galleryData = categoryToGallery[effectiveCatValue] || null;
+  const galleryData = categoryToWeblinkFolderName[effectiveCatValue] || null;
 
   return {
     props: {
@@ -284,7 +218,7 @@ export default function CatValuePage({
       setActiveMoment(
         MOMENT_SLUG_TO_KEY[catValue] ? MOMENT_SLUG_TO_KEY[catValue] : null,
       );
-      setGalleryData(categoryToGallery[nextEffective] || null);
+      setGalleryData(categoryToWeblinkFolderName[nextEffective] || null);
 
       try {
         const catRes = await axiosApi.get(
@@ -377,7 +311,7 @@ export default function CatValuePage({
 
   const normalizedCat = normalizeCatValue(effectiveCatValue);
   const bannerToShow =
-    categoryBannerMap[normalizedCat] || categoryBannerMap["default"];
+    photographyCategoryPageTopBannerHeading[normalizedCat] || photographyCategoryPageTopBannerHeading["default"];
   const showMomentPicker = isWeddingCategory(normalizedCat);
 
   const displayedProducts =
@@ -507,7 +441,6 @@ export default function CatValuePage({
             </div>
           </div>
 
-          {/* User-specific — client only, no hydration issue */}
           <EventDateBanner userId={userId} />
 
           {displayedProducts.length > 0 ? (

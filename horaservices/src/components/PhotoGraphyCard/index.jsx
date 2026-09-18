@@ -16,7 +16,7 @@ const PhotoGraphyCard = ({
   );
 
   const finalSubCategory = categoryItem?.subCategory || subCategory;
-  const slug = categoryItem?.slug || finalSubCategory?.toLowerCase()?.replace(/\s+/g, "-");
+  const slug = categoryItem?.slug;
 
   const getHref = () => {
     if (!slug) return "#";
