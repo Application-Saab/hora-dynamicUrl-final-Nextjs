@@ -21,7 +21,7 @@ const TemplateRenderer = ({
   isHost,
   isVenue = false,
   frompanel,
-   overlayContent 
+   topBannerOverlayContent 
 }) => {
   const textRef = useRef(null);
   const templateRef = useRef(null);
@@ -273,7 +273,7 @@ const TemplateRenderer = ({
                 onLoad={handleImageLoad}
               />
             )}
-{ overlayContent} 
+{ topBannerOverlayContent} 
             {!isVideoFile(mediaUrl) &&
               mediaUrl === DefaultTemplate.src &&
               (eventDetails?.hostName || eventDetails?.venueName) && (

@@ -378,7 +378,7 @@ Please share more details and availability.`;
                   orderDetails={eventDetails}
                   isHost={true}
                   isVenue={true}
-                  overlayContent={<VenueNameOverlay venueName={eventDetails?.venueName} />}
+                  topBannerOverlayContent={<VenueNameOverlay venueName={eventDetails?.venueName} />}
                   />
             )}
           </div>
