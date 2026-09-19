@@ -73,25 +73,19 @@ const EventHub = ({ userId }) => {
   const isCapsuleEvent = (event) =>
     (event?.dataType || "").toString().toLowerCase() === "capsule";
 
-  const getEventHref = (event) => {
-    if (isCapsuleEvent(event)) {
-      if (!event.capsuleUrl) {
-        // Capsule event hai lekin URL nahi mila — card ko clickable nahi rakhna,
-        // taaki galti se normal invite page pe na chala jaye.
-        return null;
-      }
-      // API khud hi direct capsuleUrl deti hai, usi ko use karo.
-      // Agar usme fromPanel=true already nahi hai to add kar do.
-      return event.capsuleUrl.includes("fromPanel=")
-        ? event.capsuleUrl
-        : `${event.capsuleUrl}${event.capsuleUrl.includes("?") ? "&" : "?"}fromPanel=true`;
+const getEventHref = (event) => {
+  if (isCapsuleEvent(event)) {
+    if (!event.capsuleUrl) {
+      return null; // capsule event hai but URL nahi mila, card disabled rahega
     }
+    return event.capsuleUrl; // API se jo mila wahi direct use karo, kuch add/append mat karo
+  }
 
-    const basePath = isWonderlandInternational
-      ? "/wonderlandinternational/invite"
-      : "/wonderland/invite";
-    return `${basePath}?eventid=${event._id}`;
-  };
+  const basePath = isWonderlandInternational
+    ? "/wonderlandinternational/invite"
+    : "/wonderland/invite";
+  return `${basePath}?eventid=${event._id}`;
+};
 
   const events = data?.data || [];
 

@@ -1,13 +1,20 @@
 import Image from "next/image";
 import "./Eventcapsulebannerimage.css";
-import arrowImg from "@/assets/arrowicon.svg"
+import arrowImg from "@/assets/arrowicon.svg";
+
 export default function EventCapsuleBannerImage({
-  image,          // apni banner image yaha pass karo (static import ya URL string)
+  image,         
   ctaText = "Explore Event Capsule",
   onExploreClick,
+  openInNewTab = true, 
 }) {
+  const handleClick = (e) => {
+    e.stopPropagation(); 
+    if (onExploreClick) onExploreClick();
+  };
+
   return (
-    <div className="event-wrap" onClick={onExploreClick}>
+    <div className="event-wrap" onClick={handleClick}>
       <Image
         src={image}
         alt="Event Capsule"
@@ -17,15 +24,15 @@ export default function EventCapsuleBannerImage({
         priority
       />
 
-     <button className="event-cta" onClick={onExploreClick}>
-  {ctaText}
-  <Image
-    src={arrowImg}
-    alt=""
-    aria-hidden="true"
-    className="event-cta-arrow"
-  />
-</button>
+      <button className="event-cta" onClick={handleClick} type="button">
+        {ctaText}
+        <Image
+          src={arrowImg}
+          alt=""
+          aria-hidden="true"
+          className="event-cta-arrow"
+        />
+      </button>
     </div>
   );
 }

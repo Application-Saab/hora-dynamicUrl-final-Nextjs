@@ -50,8 +50,8 @@ export default function PlanningCategories({ onSelect }) {
 };
 
   return (
-    <div className="planning">
-      <div className="planning-hero">
+    <div className="planning-Cat">
+      <div className="planning-hero-Cat">
         <h1>Planning Celebration?</h1>
 
         <p>
@@ -60,34 +60,34 @@ export default function PlanningCategories({ onSelect }) {
         </p>
       </div>
 
-      <div className="planning-grid">
+      <div className="planning-grid-Cat">
         {planningCategories.map((cat) => (
           <Link
             href={buildHref(cat.path)}
-            className="planning-card"
+            className="planning-card-Cat"
             key={cat.title}
             onClick={() => onSelect && onSelect(cat.title)}
           >
-            <div className="planning-image">
+            <div className="planning-image-Cat">
               <Image
                 src={cat.image}
                 alt={cat.title}
               />
             </div>
 
-            <div className="planning-body">
+            <div className="planning-body-Cat">
               <h3>{cat.title}</h3>
               <p>{cat.subtitle}</p>
             </div>
 
             <span
-              className="planning-arrow"
+              className="planning-arrow-Cat"
               aria-hidden="true"
             >
               <Image
                 src={arrowIcon}
                 alt=""
-                className="arrow-plan"
+                className="arrow-plan-Cat"
               />
             </span>
           </Link>
