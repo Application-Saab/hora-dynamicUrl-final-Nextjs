@@ -2,6 +2,7 @@ import Index from "@/pages/photography-page";
 import { BASE_URL, GET_PHOTOGRAPHY_BY_TAG } from "@/utils/apiconstants.js";
 import axiosApi from "@/utils/axiosApi";
 import "../../../../app/homepage.css";
+import { validateCityLocality } from "@/utils/validCities";
 
 const STANDARD_PACKAGE_TAG_ID = "66c96b4e22ed47b72117e09a";
 
@@ -32,17 +33,26 @@ function formatCityDisplay(slug) {
 
 // ---------- SSR ----------
 export async function getServerSideProps(context) {
-  const { city, locality } = context.params || {};
+  const citySlug =
+    (context.params?.city || "").toLowerCase();
 
-  const citySlug = (city || "").toLowerCase();
-  const localitySlug = (locality || "").toLowerCase();
+  const localitySlug =
+    (context.params?.locality || "").toLowerCase();
 
-  if (!citySlug || !localitySlug) {
-    return { notFound: true };
+  const validation = validateCityLocality(
+    citySlug,
+    localitySlug
+  );
+
+  if (!validation.valid) {
+    return {
+      notFound: true,
+    };
   }
 
-  const finalCity = formatCityDisplay(citySlug);
-  const finalLocality = formatDisplay(localitySlug);
+  const finalCity = validation.cityName;
+
+  const finalLocality = formatDisplay(validation.localitySlug);
 
   let initialPackages = [];
   try {

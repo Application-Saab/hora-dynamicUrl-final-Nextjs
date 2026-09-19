@@ -6,6 +6,8 @@ import {
 } from "@/utils/apiconstants.js";
 import axiosApi from "@/utils/axiosApi";
 import "../../../../../app/homepage.css";
+import { isValidPhotographyCategorySlug } from "@/utils/routeConfig";
+import { categoryToWeblinkFolderName } from "@/utils/photoCategories";
 
 const MOMENT_SLUG_TO_KEY = {
   "pre-wedding": "pre-wedding",
@@ -22,49 +24,6 @@ const getDiscountedPrice = (price = 0) => {
     discountedPrice: Math.round(discountedPrice),
     discountDifference: Math.round(discountDifference),
   };
-};
-
-const categoryToGallery = {
-  "Engagement-Photography": {
-    folderName: "engagement weblink",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "Wedding-Photography": {
-    folderName: "Wedding",
-    customerId: "6683e5d43e33c54c0ebde8f2",
-  },
-  "Anniversary-Photography": {
-    folderName: "anniversary poses web link",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "Birthday-Photography": {
-    folderName: "Candid",
-    customerId: "63edb239d680d47d95870fa0",
-  },
-  "House-warming-Photography": {
-    folderName: "House warming weblink",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "Naming-ceremony-Photography": {
-    folderName: "naming ceremony weblink",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "Baby-Shower-Photography": {
-    folderName: "baby shower weblink",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "Bachelorette-Photography": {
-    folderName: "bacherrolerate",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "Maternity-Photography": {
-    folderName: "maternity poses",
-    customerId: "6683e5d43e33c54c0ebde8f2",
-  },
-  "New-Born-Baby-Photography": {
-    folderName: "new born ",
-    customerId: "64137625549b58e3dc39a685",
-  },
 };
 
 function formatCityDisplay(slug) {
@@ -84,6 +43,10 @@ function formatLocalityDisplay(slug) {
 export async function getServerSideProps(context) {
   const { city, locality, catValue } = context.params || {};
 
+  if (!isValidPhotographyCategorySlug(catValue)) {
+    return { notFound: true };
+  }
+
   const citySlug = (city || "").toLowerCase();
   const localitySlug = (locality || "").toLowerCase();
   const finalCatValue = catValue || null;
@@ -92,17 +55,26 @@ export async function getServerSideProps(context) {
     return { notFound: true };
   }
 
+  function capitalizeHyphenatedString(str) {
+    return str
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join("-");
+  }
+
+  const result = capitalizeHyphenatedString(finalCatValue);
+
   const finalCity = formatCityDisplay(citySlug);
   const finalLocality = formatLocalityDisplay(localitySlug);
 
   const effectiveCatValue =
-    typeof finalCatValue === "string" && MOMENT_SLUG_TO_KEY[finalCatValue]
-      ? "Wedding-Photography"
-      : finalCatValue;
+    typeof result === "string" && MOMENT_SLUG_TO_KEY[result]
+      ? "wedding-photography"
+      : result;
 
   const initialActiveMoment =
-    typeof finalCatValue === "string" && MOMENT_SLUG_TO_KEY[finalCatValue]
-      ? MOMENT_SLUG_TO_KEY[finalCatValue]
+    typeof result === "string" && MOMENT_SLUG_TO_KEY[result]
+      ? MOMENT_SLUG_TO_KEY[result]
       : null;
 
   let catId = null;
@@ -111,7 +83,7 @@ export async function getServerSideProps(context) {
 
   try {
     const catRes = await axiosApi.get(
-      `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(effectiveCatValue)}`
+      `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(effectiveCatValue)}`,
     );
     catId = catRes.data?.data?._id || null;
 
@@ -119,7 +91,7 @@ export async function getServerSideProps(context) {
       error = "No category found";
     } else {
       const prodRes = await axiosApi.get(
-        `${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}${catId}`
+        `${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}${catId}`,
       );
       const data = prodRes.data?.data || [];
       products = data.map((item) => {
@@ -134,7 +106,7 @@ export async function getServerSideProps(context) {
     products = [];
   }
 
-  const galleryData = categoryToGallery[effectiveCatValue] || null;
+  const galleryData = categoryToWeblinkFolderName[effectiveCatValue] || null;
 
   return {
     props: {

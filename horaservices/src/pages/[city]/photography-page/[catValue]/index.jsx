@@ -1,5 +1,3 @@
-// pages/[city]/photography-page/[catValue]/index.jsx
-
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
 
@@ -12,6 +10,8 @@ import {
 import axiosApi from "@/utils/axiosApi";
 
 import "../../../../app/homepage.css";
+import { isValidPhotographyCategorySlug } from "@/utils/routeConfig";
+import { categoryToWeblinkFolderName } from "@/utils/photoCategories";
 
 // Same helpers as CatValuePage (moment + discount)
 const MOMENT_SLUG_TO_KEY = {
@@ -31,49 +31,6 @@ const getDiscountedPrice = (price = 0) => {
   };
 };
 
-const categoryToGallery = {
-  "Engagement-Photography": {
-    folderName: "engagement weblink",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "Wedding-Photography": {
-    folderName: "Wedding",
-    customerId: "6683e5d43e33c54c0ebde8f2",
-  },
-  "Anniversary-Photography": {
-    folderName: "anniversary poses web link",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "Birthday-Photography": {
-    folderName: "Candid",
-    customerId: "63edb239d680d47d95870fa0",
-  },
-  "House-warming-Photography": {
-    folderName: "House warming weblink",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "Naming-ceremony-Photography": {
-    folderName: "naming ceremony weblink",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "Baby-Shower-Photography": {
-    folderName: "baby shower weblink",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "Bachelorette-Photography": {
-    folderName: "bacherrolerate",
-    customerId: "64137625549b58e3dc39a685",
-  },
-  "Maternity-Photography": {
-    folderName: "maternity poses",
-    customerId: "6683e5d43e33c54c0ebde8f2",
-  },
-  "New-Born-Baby-Photography": {
-    folderName: "new born ",
-    customerId: "64137625549b58e3dc39a685",
-  },
-};
-
 function formatCityDisplay(slug) {
   if (!slug) return "";
   return slug.charAt(0).toUpperCase() + slug.slice(1).toLowerCase();
@@ -90,6 +47,10 @@ export async function getServerSideProps(context) {
   const { city, locality, catValue } = context.params || {};
   const query = context.query || {};
 
+  if(!isValidPhotographyCategorySlug(catValue)) {
+    return { notFound: true };
+  }
+
   const citySlug = (city || query.city || "").toLowerCase();
   const finalCity = formatCityDisplay(citySlug) || null;
   const finalLocality = locality || query.locality || null;
@@ -99,14 +60,41 @@ export async function getServerSideProps(context) {
     return { notFound: true };
   }
 
+  const categoryForApi = {
+    "engagement-photography": "Engagement-Photography",
+    "wedding-photography": "Wedding-Photography",
+    "anniversary-photography": "Anniversary-Photography",
+    "birthday-photography": "Birthday-Photography",
+    "house-warming-photography": "House-warming-Photography",
+    "naming-ceremony-photography": "Naming-ceremony-Photography",
+    "baby-shower-photography": "Baby-Shower-Photography",
+    "bachelorette-photography": "Bachelorette-Photography",
+    "maternity-photography": "Maternity-Photography",
+    "new-born-baby-photography": "New-Born-Baby-Photography",
+  };
+
+  function capitalizeHyphenatedString(str) {
+    return str
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join("-");
+  }
+
+  const result = capitalizeHyphenatedString(finalCatValue);
+  const apiCategory = categoryForApi[finalCatValue];
+  const effectiveCatValueApi =
+    typeof apiCategory === "string" && MOMENT_SLUG_TO_KEY[apiCategory]
+      ? "wedding-photography"
+      : apiCategory;
+
   const effectiveCatValue =
-    typeof finalCatValue === "string" && MOMENT_SLUG_TO_KEY[finalCatValue]
-      ? "Wedding-Photography"
-      : finalCatValue;
+    typeof result === "string" && MOMENT_SLUG_TO_KEY[result]
+      ? "wedding-photography"
+      : result;
 
   const initialActiveMoment =
-    typeof finalCatValue === "string" && MOMENT_SLUG_TO_KEY[finalCatValue]
-      ? MOMENT_SLUG_TO_KEY[finalCatValue]
+    typeof result === "string" && MOMENT_SLUG_TO_KEY[result]
+      ? MOMENT_SLUG_TO_KEY[result]
       : null;
 
   let catId = null;
@@ -115,15 +103,14 @@ export async function getServerSideProps(context) {
 
   try {
     const catRes = await axiosApi.get(
-      `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(effectiveCatValue)}`
+      `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(effectiveCatValueApi)}`,
     );
     catId = catRes.data?.data?._id || null;
-
     if (!catId) {
       error = "No category found";
     } else {
       const prodRes = await axiosApi.get(
-        `${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}${catId}`
+        `${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}${catId}`,
       );
       const data = prodRes.data?.data || [];
       products = data.map((item) => {
@@ -138,12 +125,12 @@ export async function getServerSideProps(context) {
     products = [];
   }
 
-  const galleryData = categoryToGallery[effectiveCatValue] || null;
+  const galleryData = categoryToWeblinkFolderName[effectiveCatValue] || null;
 
   return {
     props: {
       // CatValuePage ko yeh sab chahiye
-      initialCatValue: finalCatValue,
+      initialCatValue: result,
       effectiveCatValue: effectiveCatValue || null,
       city: finalCity,
       locality: finalLocality,
@@ -195,9 +182,7 @@ const PhotographyCityCatPage = (ssrProps) => {
     return () => window.removeEventListener("popstate", syncCityFromUrl);
   }, [syncCityFromUrl]);
 
-  const city = citySlug
-    ? formatCityDisplay(citySlug)
-    : ssrCity || "";
+  const city = citySlug ? formatCityDisplay(citySlug) : ssrCity || "";
 
   const locality = ssrLocality || router.query.locality || null;
 

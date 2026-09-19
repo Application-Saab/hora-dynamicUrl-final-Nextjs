@@ -13,6 +13,7 @@ import FAQSection from "@/components/FAQSection";
 import LocalitiesSection from "@/components/LocalitiesSection";
 
 import "../../../app/homepage.css";
+import { getCityNameFromSlug, isValidCitySlug } from "@/utils/validCities";
 
 const STANDARD_PACKAGE_TAG_ID = "66c96b4e22ed47b72117e09a";
 
@@ -34,14 +35,16 @@ function formatCityDisplay(slug) {
 
 // ---------- SSR ----------
 export async function getServerSideProps(context) {
-  const { city: cityParam } = context.params || {};
-  const citySlug = (cityParam || "").toLowerCase();
-  const city = formatCityDisplay(citySlug);
+  const citySlug =
+    (context.params?.city || "").toLowerCase();
 
-  // Invalid / missing city
-  if (!citySlug) {
-    return { notFound: true };
+   if (!isValidCitySlug(citySlug)) {
+    return {
+      notFound: true,
+    };
   }
+
+  const city = getCityNameFromSlug(citySlug)
 
   // Localities server pe
   const cityLocalitiesList =

@@ -1,7 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import whatsppicon from "../assets/whatsapp-new.webp";
 import cityNameToSlug from "@/utils/Citynametoslug.json";
 
 import {
@@ -43,7 +40,7 @@ import {
 } from "@/utils/whatsappMessages";
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 
-// ✅ Same slug list CityContext uses — deduped so "bengaluru"/"gurugram" etc. don't repeat
+// Same slug list CityContext uses — deduped so "bengaluru"/"gurugram" etc. don't repeat
 const CITY_LIST = [...new Set(Object.values(cityNameToSlug))];
 const CITY_PATH_REGEX = new RegExp(`^/(${CITY_LIST.join("|")})(?=/|$)`, "i");
 
