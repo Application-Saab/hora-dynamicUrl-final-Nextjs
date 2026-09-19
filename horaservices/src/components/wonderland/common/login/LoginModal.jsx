@@ -385,11 +385,12 @@ const LoginModal = ({
           );
 
           if (verifyResponse.status === 200) {
-            const { token, data } = verifyResponse;
+            const { token, data, refreshToken } = verifyResponse;
 
             safeSetItem("isLoggedIn", "true");
             safeSetItem("mobileNumber", phone);
             safeSetItem("token", token);
+            safeSetItem("refreshToken", refreshToken);
             safeSetItem("userID", data?._id);
             assignVisitorToUserId(data?._id, visitorid);
 
@@ -561,10 +562,11 @@ const LoginModal = ({
       });
 
       if (response.status === 200) {
-        const { token, data } = response;
+        const { token, data, refreshToken } = response;
         safeSetItem("isLoggedIn", "true");
         safeSetItem("mobileNumber", phone);
         safeSetItem("token", token);
+        safeSetItem("refreshToken", refreshToken);
         safeSetItem("userID", data?._id);
         safeSetItem("userName", data?.name);
 
