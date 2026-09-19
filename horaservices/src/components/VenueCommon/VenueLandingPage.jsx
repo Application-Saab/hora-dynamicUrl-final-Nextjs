@@ -29,8 +29,8 @@ const VenuelandMainPage = ({
 }) => {
   const router = useRouter();
   const { selectedCityName } = useCity();
-  const { city: queryCity } = router.query;
 
+const { city: queryCity, venueCat: queryVenueCat } = router.query; // venue -> venueCat
   const [pathCitySlug, setPathCitySlug] = useState(propCitySlug || "");
 
   useEffect(() => {
@@ -53,13 +53,26 @@ const VenuelandMainPage = ({
     setLoggedinUserId(safeGetItem("userID") || "");
   }, []);
 
+  // URL ke venue slug ko activeVenueType ke saath sync karo
+useEffect(() => {
+  if (!router.isReady) return;
+
+  if (!queryVenueCat) {
+    setActiveVenueType("all");
+    return;
+  }
+
+  const matched = venueData.find((v) => v.slug === queryVenueCat);
+  setActiveVenueType(matched ? matched.id : "all");
+}, [queryVenueCat, router.isReady]);
+
   // Priority: SSR prop > query > path > context
   const rawCitySlug = propCitySlug || queryCity || pathCitySlug || "";
   const cityForSEO = propCity
     ? propCity
     : rawCitySlug
-      ? rawCitySlug.charAt(0).toUpperCase() + rawCitySlug.slice(1)
-      : selectedCityName;
+    ? rawCitySlug.charAt(0).toUpperCase() + rawCitySlug.slice(1)
+    : selectedCityName;
 
   const selectedVenueCategory = venueData.find((v) => v.id === activeVenueType);
   const categoryLabel =
@@ -106,54 +119,21 @@ const VenuelandMainPage = ({
     };
   }, []);
 
-  const SITE = "https://horaservices.com";
-
-  const slugify = (val) =>
-    String(val || "")
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, "-");
-
-  const citySlugForUrl = propCitySlug
-    ? slugify(propCitySlug)
-    : rawCitySlug
-      ? slugify(rawCitySlug)
-      : "";
-
-  const canonicalUrl = citySlugForUrl
-    ? `${SITE}/${citySlugForUrl}/venue-list`
-    : `${SITE}/venue-list`;
-
   return (
     <>
       <Head>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
-        <link rel="canonical" href={canonicalUrl} />
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Hora Services" />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
-        <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
         <meta
           property="og:image"
-          content={
-            typeof venueTopBanner === "string"
-              ? venueTopBanner
-              : venueTopBanner?.src || venueTopBanner
-          }
+          content={venueTopBanner.src || venueTopBanner}
         />
-
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={pageDescription} />
-
-        <link
-          rel="icon"
-          href="https://horaservices.com/api/uploads/logo-icon.png"
-          type="image/x-icon"
-        />
       </Head>
 
       <div className="venue-container">
@@ -170,7 +150,11 @@ const VenuelandMainPage = ({
           />
         </div>
 
-        <VenueCircle active={activeVenueType} onSelect={setActiveVenueType} />
+        <VenueCircle
+          active={activeVenueType}
+          onSelect={setActiveVenueType}
+          citySlug={rawCitySlug}
+        />
 
         <VenueList
           eventType={activeEvent}
@@ -179,6 +163,7 @@ const VenuelandMainPage = ({
           city={cityForSEO}
           search={searchText}
           initialVenues={
+            // Sirf tab use karo jab filters abhi default SSR wale hain
             activeEvent === initialEventType &&
             activeVenueType === initialVenueType &&
             !guestCapacity
