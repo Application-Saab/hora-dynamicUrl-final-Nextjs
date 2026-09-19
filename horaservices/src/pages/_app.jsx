@@ -109,6 +109,11 @@ function MyApp({ Component, pageProps }) {
     })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
   }, []);
 
+  const logout = () => {
+    localStorage.clear();
+    router.push("/");
+  }
+
   const refreshAccessToken = async () => {
     const refreshToken = safeGetItem("refreshToken");
 
