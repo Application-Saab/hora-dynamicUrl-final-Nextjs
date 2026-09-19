@@ -16,7 +16,7 @@ const cities = [
   { name: "Mumbai", image: mumbai },
   { name: "Delhi", image: delhi },
   { name: "Bangalore", image: bengaluru },
-  { name: "Gurgaon", image: gurgaon },
+  { name: "Gurugram", image: gurgaon },
   { name: "Ghaziabad", image: ghaziabad },
   { name: "Hyderabad", image: hydrabad },
   { name: "Faridabad", image: faridabad },
