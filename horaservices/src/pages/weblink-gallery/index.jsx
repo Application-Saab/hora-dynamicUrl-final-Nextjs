@@ -82,7 +82,6 @@ const PhotoGallery = () => {
           <title>Photo Gallery | HORA</title>
           <link rel="canonical" href={`${SITE}${GALLERY_PATH}`} />
         </Head>
-        <div>Loading...</div>
       </div>
     );
   }
