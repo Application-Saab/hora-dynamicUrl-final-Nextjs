@@ -47,12 +47,10 @@ const CITY_PATH_REGEX = new RegExp(`^/(${CITY_LIST.join("|")})(?=/|$)`, "i");
 const slugToCityName = {
   delhi: "Delhi",
   mumbai: "Mumbai",
-  bengaluru: "Bengaluru",
+  bangalore: "Bangalore",
   noida: "Noida",
   ghaziabad: "Ghaziabad",
-  // gurugram: "Gurgaon",
   gurugram: "Gurugram",
-  gurgaon: "Gurugram",
   faridabad: "Faridabad",
   hyderabad: "Hyderabad",
   chennai: "Chennai",
