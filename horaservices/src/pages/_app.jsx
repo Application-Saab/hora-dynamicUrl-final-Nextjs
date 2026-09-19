@@ -19,6 +19,9 @@ import {
   startMemoryMonitoring,
 } from "@/utils/errorReporter";
 import { useScrollRestoration } from "@/hooks/useScrollRestoration";
+import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
+import { fetchWithError } from "@/utils/fetchWithError";
+import { BASE_URL, CHECK_TOKEN_HEALTH, REFRESH_ACCESS_TOKEN } from "@/utils/apiconstants";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -104,6 +107,84 @@ function MyApp({ Component, pageProps }) {
       f.parentNode.insertBefore(j, f);
       console.log("GTM Script Loaded");
     })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
+  }, []);
+
+  const refreshAccessToken = async () => {
+    const refreshToken = safeGetItem("refreshToken");
+
+    if (!refreshToken) {
+      logout();
+      return null;
+    }
+
+    try {
+      const response = await fetchWithError(`${BASE_URL}${REFRESH_ACCESS_TOKEN}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          refreshToken,
+        }),
+      });
+      
+      if (!response.ok) {
+        logout();
+        return null;
+      }
+      console.log('%c [ response ]', 'font-size:13px; background:pink; color:#bf2c9f;', response)
+      
+      const data = await response.json();
+      console.log('%c [ data ]', 'font-size:13px; background:pink; color:#bf2c9f;', data)
+
+      safeSetItem("token", data.accessToken);
+
+      return data.accessToken;
+    } catch (error) {
+      logout();
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      // const refreshToken = localStorage.getItem("refreshToken");
+
+      // Refresh token hi nahi hai
+      // if (!refreshToken) {
+      //   logout();
+      //   return;
+      // }
+
+      const accessToken = safeGetItem("token");
+
+      try {
+        const response = await fetchWithError(
+          `${BASE_URL}${CHECK_TOKEN_HEALTH}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `${accessToken}`,
+            },
+          },
+        );
+        console.log('%c [ response ]', 'font-size:13px; background:pink; color:#bf2c9f;', response)
+
+        // Access token valid
+        if (response.ok) {
+          return;
+        }
+
+        // Access token expired
+        if (response.status === 401) {
+          await refreshAccessToken();
+        }
+      } catch (error) {
+        console.error("Authentication check failed", error);
+      }
+    };
+
+    checkAuthentication();
   }, []);
 
   const appContent = (

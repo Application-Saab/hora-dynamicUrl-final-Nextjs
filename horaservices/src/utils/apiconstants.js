@@ -1,8 +1,10 @@
-export const BASE_URL = "https://horaservices.com"; 
+export const BASE_URL = "http://localhost:5000"; 
 export const MEDIA_WORKER_URL = "https://horaservices.com/media-api";
 export const FACE_FINDER_URL = "https://horaservices.com/face-api";
 export const BG_REMOVER_URL = "https://horaservices.com/bg-remove/remove-bg";
 export const OTP_GENERATE_END_POINT = "/api/user/otp_generate";
+export const CHECK_TOKEN_HEALTH = "/api/check-token-health";
+export const REFRESH_ACCESS_TOKEN = "/api/user/refresh-token"
 export const API_SUCCESS_CODE = 200;
 export const COMPRESSED_WEBP_IMG_URL =
   "https://horaservices.com/api/uploads/compressed_webp/";

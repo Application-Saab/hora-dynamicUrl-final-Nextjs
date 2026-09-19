@@ -223,6 +223,7 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
         safeSetItem("isLoggedIn", "true");
         safeSetItem("mobileNumber", mobileNumber);
         safeSetItem("token", res.data.token);
+        safeSetItem("refreshToken", res.data.refreshToken);
         safeSetItem("userID", res.data.data._id);
         sendWelcomeMessage(mobileNumber);
         assignVisitorToUserId(res.data.data._id, visitorid)
