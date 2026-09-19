@@ -1,0 +1,167 @@
+/* ==========================================================================
+   CityDecorationlanding.css
+   Same design language as SectionDescription.css — scoped under
+   .cityContent__* classNames used in CityDecorationlanding.jsx
+   ========================================================================== */
+
+:root {
+  --hora-purple: #97538C;       /* heading color */
+  --hora-purple-dark: #6a1e70;  /* hover / active state */
+  --hora-purple-soft: #f3e6f5;  /* light tint for area rows / hover bg */
+  --hora-text-muted: #000000;   /* body paragraph color */
+  --hora-border: #00000033;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500&display=swap');
+
+.cityContent {
+  max-width: 480px;
+  margin: auto;
+  padding: 0 8px;
+}
+
+.cityContent__inner {
+  width: 100%;
+}
+/* City name heading — top of the section, like "Gurugram" in the screenshot */
+.cityContent__title {
+ font-family: Inter;
+font-weight: 700;
+font-style: Bold;
+font-size: clamp(12px, 3.56vw, 16px);
+  color: var(--hora-purple);
+  margin-bottom: 10px;
+}
+/* Intro paragraph, right under the H1/city title */
+.cityContent__intro {
+  font-family: Inter;
+  font-weight: 400;
+  font-style: Regular;
+  line-height: 18px;
+  font-size: clamp(8.5px, 2.52vw, 11px);
+  color: var(--hora-text-muted);
+  margin-bottom: 0.75rem;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--hora-border);
+}
+
+/* Each block: areas we cover / celebrating at home / FAQs */
+.cityContent__block {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--hora-border);
+}
+
+.cityContent__block:last-child {
+  border-bottom: none;
+}
+
+/* Sub-heading e.g. "Areas we cover in Gurugram" */
+.cityContent__heading {
+  font-family: Inter;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: clamp(12px, 3.56vw, 16px);
+  color: var(--hora-purple);
+  margin-bottom: 0.75rem;
+}
+
+/* Body paragraph */
+.cityContent__paragraph {
+  font-family: Inter;
+  font-weight: 400;
+  font-style: Regular;
+  line-height: 18px;
+  font-size: clamp(8.5px, 2.52vw, 11px);
+  color: var(--hora-text-muted);
+  margin-bottom: 0.75rem;
+}
+
+/* Areas we cover list */
+.cityContent__areasList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+}
+
+.cityContent__areaItem {
+  font-family: Inter;
+  font-weight: 400;
+  font-size: clamp(8.5px, 2.52vw, 11px);
+  line-height: 18px;
+  letter-spacing: 0%;
+  color: var(--hora-text-muted);
+  padding: 0.55rem 0.75rem;
+  border-left: 3px solid var(--hora-purple-soft);
+  margin-bottom: 0.4rem;
+  background-color: #fafafa;
+  transition: background-color 0.15s ease;
+}
+
+.cityContent__areaItem:hover {
+  background-color: var(--hora-purple-soft);
+}
+
+.cityContent__areaZone {
+  font-family: Inter;
+  font-weight: 500;
+  font-style: Medium;
+  color: var(--hora-purple-dark);
+}
+
+.cityContent__areaLocalities {
+  color: var(--hora-text-muted);
+}
+
+.cityContent__note {
+  font-family: Inter;
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(8px, 2.3vw, 10px);
+  color: var(--hora-text-muted);
+  opacity: 0.75;
+  margin:auto;
+}
+
+/* FAQs */
+.cityContent__faqItem {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--hora-border);
+}
+
+.cityContent__faqItem:last-child {
+  border-bottom: none;
+}
+
+.cityContent__faqQuestion {
+  font-family: Inter;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: clamp(10.5px, 3.05vw, 14px);
+  line-height: 23.59px;
+  letter-spacing: 0%;
+  color: var(--hora-purple-dark);
+  margin-bottom: 0.4rem;
+}
+
+.cityContent__faqAnswer {
+  font-family: Inter;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: clamp(8.5px, 2.52vw, 11px);
+  line-height: 18px;
+  letter-spacing: 0%;
+  color: var(--hora-text-muted);
+  margin: 0;
+}
+
+.cityContent__link {
+  color: var(--hora-purple);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.cityContent__link:hover {
+  color: var(--hora-purple-dark);
+  text-decoration: underline;
+}

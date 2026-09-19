@@ -120,9 +120,10 @@ align-items: center;
     padding: 10px;
 }
 .tab-section-details-productpage{
-    margin: 0 0 10px 0 !important;
-    padding: 10px !important;
+    padding: 8px !important;
     background-color: #fff;
+        max-width: 600px;
+    margin: 10px auto;
 }
 .tab-section-details-productpage .tabs {
     margin: 0 !important;

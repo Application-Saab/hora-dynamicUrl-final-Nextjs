@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import "./localities.css";
 const LocalitiesSection = ({ title, localities, handleClick }) => {
   return (
-    <div className="container">
+    <div className="containerBox">
       <div className="localities-card">
         <h2>{title}</h2>
 
