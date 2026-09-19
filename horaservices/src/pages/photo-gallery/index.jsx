@@ -22,13 +22,16 @@ import image2 from "@/assets/poselink/image2.jpeg";
 import collageImage from "@/assets/poselink/collageImage.webp";
 import trustimage from "@/assets/poselink/trustedimage.webp";
 import { getBannerConfig, getPlanningCardData, getTrustedCardData } from "@/utils/bannerConfig";
-import { getWeblinkPhotosUrl } from "@/utils/Getphotocategoryurl.js";
+import { getWeblinkPhotosUrl, hasWeblinkCategory } from "@/utils/Getphotocategoryurl.js";
+import { poseGridData } from "@/utils/poseGridData"; 
 import { reviewsData } from "@/utils/poselinkreviews";
 import Head from "next/head";
 
+const WHATSAPP_NUMBER = "917338584828";
+
 const PhotoGallery = ({ folderName: folderNameProp, customerId: customerIdProp, embedded = false }) => {
   const router = useRouter();
-const [urlParams, setUrlParams] = useState({ folderName: null, customerId: null });
+  const [urlParams, setUrlParams] = useState({ folderName: null, customerId: null });
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -45,6 +48,12 @@ const folderName = folderNameProp ?? urlParams.folderName;
   const planningCardData = getPlanningCardData(folderName);
   const trustedData      = getTrustedCardData(folderName);
   const categoryUrl      = getWeblinkPhotosUrl(folderName);
+  const hasCategory      = hasWeblinkCategory(folderName); // false => WhatsApp par redirect
+
+const categoryName =
+  poseGridData.find((p) => p.folder?.trim() === folderName?.trim())?.title ||
+  bannerConfig?.title ||
+  "";
 
   // ==============================
   // REFS
@@ -165,64 +174,60 @@ const folderName = folderNameProp ?? urlParams.folderName;
     };
   }, [folderName, customerId]);
 
-  // ==============================
-  // BUTTON HANDLERS WITH GTM EVENTS
-  // ==============================
-
-  const handleChatNow = () => {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "chat_now_click",
-      eventLabel: bannerConfig.title || folderName || "unknown",
-      folder_name: folderName || "unknown",
-      customer_id: customerId || "guest",
-      last_component_seen: lastViewedComponent.current,
-      scroll_position_pct: lastScrollPercent.current,
-    });
+  const openWhatsApp = () => {
+    const message = categoryName
+      ? `Hi, I'm interested in your ${categoryName} photography services. Please share your packages, pricing, and availability.`
+      : "Hi, I'm interested in your photography services. Please share your packages, pricing, and availability.";
 
     window.open(
-      `https://wa.me/7338584828?text=${encodeURIComponent(
-        "Hi, I'm interested in your photography services. Please share your packages, pricing, and availability."
-      )}`,
+      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
       "_blank"
     );
   };
 
-const handleViewPackages = () => {
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: "view_packages_click",
-    eventLabel: bannerConfig.title || folderName || "unknown",
-    folder_name: folderName || "unknown",
-    customer_id: customerId || "guest",
-    last_component_seen: lastViewedComponent.current,
-    scroll_position_pct: lastScrollPercent.current,
-  });
+  const redirectToCategoryOrWhatsApp = () => {
+    if (embedded) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return "scroll_top";
+    }
+    if (hasCategory) {
+      router.push(categoryUrl);
+      return "category_page";
+    }
+    openWhatsApp();
+    return "whatsapp";
+  };
 
-  if (embedded) {
-    // CatValuePage pe already isi category ka page hai — navigate nahi, sirf top pe scroll
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  } else {
-    router.push(categoryUrl);
-  }
+  // ==============================
+  // BUTTON HANDLERS WITH GTM EVENTS
+  // ==============================
+
+  const pushGtmEvent = (event, extra = {}) => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event,
+      eventLabel: bannerConfig?.title || folderName || "unknown",
+      folder_name: folderName || "unknown",
+      customer_id: customerId || "guest",
+      last_component_seen: lastViewedComponent.current,
+      scroll_position_pct: lastScrollPercent.current,
+      ...extra,
+    });
+  };
+
+  const handleChatNow = () => {
+    pushGtmEvent("chat_now_click");
+    openWhatsApp();
+  };
+
+const handleViewPackages = () => {
+  const redirectType = redirectToCategoryOrWhatsApp();
+    pushGtmEvent("view_packages_click", { redirect_type: redirectType });
 };
 
 const handleBookNow = () => {
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: "book_now_click",
-    eventLabel: bannerConfig.title || folderName || "unknown",
-    folder_name: folderName || "unknown",
-    customer_id: customerId || "guest",
-    last_component_seen: lastViewedComponent.current,
-    scroll_position_pct: lastScrollPercent.current,
-  });
-
-  if (embedded) {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  } else {
-    router.push(categoryUrl);
-  }
+  const redirectType = redirectToCategoryOrWhatsApp();
+  pushGtmEvent("book_now_click", { redirect_type: redirectType });
 };
 
   // ==============================
