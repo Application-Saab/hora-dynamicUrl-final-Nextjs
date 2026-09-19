@@ -1005,13 +1005,6 @@ const ChefCitypage = ({
                 </li>
                 <li
                   className="city-link"
-                  data-city="Bengaluru"
-                  style={{ padding: "0 10px", display: "inline-block" }}
-                >
-                  <Link href="#">Bengaluru</Link>
-                </li>
-                <li
-                  className="city-link"
                   data-city="Bangalore"
                   style={{ padding: "0 10px", display: "inline-block" }}
                 >

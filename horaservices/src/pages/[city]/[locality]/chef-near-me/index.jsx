@@ -845,10 +845,10 @@ const ChefCitypage = ({
                 </li>
                 <li
                   className="city-link"
-                  data-city="Bengaluru"
+                  data-city="Bangalore"
                   style={{ padding: "0 10px", display: "inline-block" }}
                 >
-                  <Link href="#">Bengaluru</Link>
+                  <Link href="#">Bangalore</Link>
                 </li>
                 <li
                   className="city-link"

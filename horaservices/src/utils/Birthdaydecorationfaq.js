@@ -32,7 +32,7 @@ export const birthdayDecorationFAQData = () => [
   {
     question: "Which cities does HORA cover?",
     answer:
-      "We cover Mumbai, Bengaluru, Hyderabad, Delhi, Noida, Gurugram, Ghaziabad and Faridabad, with a dedicated decorator team in each so same-day service is genuinely available and not just promised.",
+      "We cover Mumbai, Bangalore, Hyderabad, Delhi, Noida, Gurugram, Ghaziabad and Faridabad, with a dedicated decorator team in each so same-day service is genuinely available and not just promised.",
   },
   {
     question: "How long does the setup take, and do you clean up?",

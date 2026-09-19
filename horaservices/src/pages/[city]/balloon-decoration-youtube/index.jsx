@@ -961,7 +961,7 @@ height={300}
                                 <Link href={`/${city}/balloon-decoration/youtube`}
 >Kids Birthday Decoration in  {city}</Link>
                             </li>
-                            <li className="city-link" data-city="Bengaluru">
+                            <li className="city-link" data-city="Bangalore">
                                 <Link href={`/${city}/balloon-decoration/youtube`}
                                 >Anniversary Decoration in {city}</Link>
                             </li>
