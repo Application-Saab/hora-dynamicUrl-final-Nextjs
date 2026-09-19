@@ -132,14 +132,10 @@ function MyApp({ Component, pageProps }) {
         logout();
         return null;
       }
-      console.log('%c [ response ]', 'font-size:13px; background:pink; color:#bf2c9f;', response)
-      
       const data = await response.json();
-      console.log('%c [ data ]', 'font-size:13px; background:pink; color:#bf2c9f;', data)
+      safeSetItem("token", data.token);
 
-      safeSetItem("token", data.accessToken);
-
-      return data.accessToken;
+      return data.token;
     } catch (error) {
       logout();
       return null;
@@ -148,18 +144,9 @@ function MyApp({ Component, pageProps }) {
 
   useEffect(() => {
     const checkAuthentication = async () => {
-      // const refreshToken = localStorage.getItem("refreshToken");
-
-      // Refresh token hi nahi hai
-      // if (!refreshToken) {
-      //   logout();
-      //   return;
-      // }
-
       const accessToken = safeGetItem("token");
-
       try {
-        const response = await fetchWithError(
+        const response = await fetch(
           `${BASE_URL}${CHECK_TOKEN_HEALTH}`,
           {
             method: "GET",
@@ -168,8 +155,6 @@ function MyApp({ Component, pageProps }) {
             },
           },
         );
-        console.log('%c [ response ]', 'font-size:13px; background:pink; color:#bf2c9f;', response)
-
         // Access token valid
         if (response.ok) {
           return;
