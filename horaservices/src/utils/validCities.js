@@ -48,7 +48,12 @@ export const isValidCitySlug = (citySlug) => {
 
   const slug = citySlug.toString().trim().toLowerCase();
 
-  return Boolean(slugToCityName[slug] && cityData[slug]);
+  if(slug === 'others') {
+    return Boolean(slugToCityName[slug]);
+  }else {
+    return Boolean(slugToCityName[slug] && cityData[slug]);
+  }
+
 };
 
 /**
