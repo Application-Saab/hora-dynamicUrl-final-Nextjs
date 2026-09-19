@@ -16,17 +16,17 @@ export const contactUsRedirect = ({
 
  const categoryMessages = {
     photography: {
-      "Birthday-Photography": "birthday photography",
-      "Anniversary-Photography": "anniversary photography",
-      "House-warming-Photography": "house warming photography",
-      "Naming-ceremony-Photography": "naming ceremony photography",
-      "Bachelorette-Photography": "bachelorette photography",
-      "Baby-Shower-Photography": "baby shower photography",
-      "Engagement-Photography": "engagement photography",
-      "Wedding-Photography": "wedding photography",
-      "Maternity-Photography": "maternity photography",
-      "New-Born-Baby-Photography": "new born baby photography",
-      "Intimate-Gathering": "intimate gathering photography",
+      "birthday-photography": "birthday photography",
+      "anniversary-photography": "anniversary photography",
+      "house-warming-photography": "house warming photography",
+      "naming-ceremony-photography": "naming ceremony photography",
+      "bachelorette-photography": "bachelorette photography",
+      "baby-shower-photography": "baby shower photography",
+      "engagement-photography": "engagement photography",
+      "wedding-photography": "wedding photography",
+      "maternity-photography": "maternity photography",
+      "new-born-baby-photography": "new born baby photography",
+      "intimate-gathering": "intimate gathering photography",
     },
     decoration: {
       "kids-birthday-decoration": "kids birthday decoration",

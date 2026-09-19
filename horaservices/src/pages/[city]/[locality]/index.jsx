@@ -1,23 +1,48 @@
 import Head from "next/head";
-import { useRouter } from "next/router";
-
 import HomeContent from "@/components/HomeContent";
 
-export default function LocalityPage() {
-  const router = useRouter();
+import {
+  validateCityLocality,
+  slugifyLocality,
+} from "@/utils/validCities";
 
-  const { city, locality } = router.query;
+export async function getServerSideProps({ params }) {
+  const citySlug = params?.city?.toLowerCase();
+  const localitySlug = params?.locality?.toLowerCase();
 
-  const cityName = city
-    ? city.charAt(0).toUpperCase() + city.slice(1)
-    : "";
+  const validation = validateCityLocality(
+    citySlug,
+    localitySlug
+  );
 
-  const localityName = locality
-    ? locality
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ")
-    : "";
+  // Invalid city OR invalid locality => 404
+  if (!validation.valid) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {
+      citySlug: validation.citySlug,
+      cityName: validation.cityName,
+      localitySlug: validation.localitySlug,
+    },
+  };
+}
+
+export default function LocalityPage({
+  citySlug,
+  cityName,
+  localitySlug,
+}) {
+  const localityName = localitySlug
+    .split("-")
+    .map(
+      (word) =>
+        word.charAt(0).toUpperCase() + word.slice(1)
+    )
+    .join(" ");
 
   return (
     <>
@@ -35,7 +60,7 @@ export default function LocalityPage() {
 
         <link
           rel="canonical"
-          href={`https://horaservices.com/${city}/${locality}`}
+          href={`https://horaservices.com/${citySlug}/${localitySlug}`}
         />
 
         <meta
@@ -50,7 +75,7 @@ export default function LocalityPage() {
 
         <meta
           property="og:url"
-          content={`https://horaservices.com/${city}/${locality}`}
+          content={`https://horaservices.com/${citySlug}/${localitySlug}`}
         />
 
         <meta property="og:type" content="website" />
@@ -60,7 +85,10 @@ export default function LocalityPage() {
           content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
         />
 
-        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:card"
+          content="summary_large_image"
+        />
       </Head>
 
       <HomeContent />

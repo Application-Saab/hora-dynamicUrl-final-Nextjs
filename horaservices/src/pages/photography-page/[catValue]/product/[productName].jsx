@@ -48,16 +48,16 @@ const getDiscountedPrice = (price = 0) => {
 const getMappedCatValue = (slug) => {
   if (!slug) return slug;
   const map = {
-    "Engagement-Photography": "Engagement-Photography",
-    "Wedding-Photography": "Wedding-Photography",
-    "Anniversary-Photography": "Anniversary-Photography",
-    "Birthday-Photography": "Birthday-Photography",
-    "House-warming-Photography": "House-warming-Photography",
-    "Naming-ceremony-Photography": "Naming-ceremony-Photography",
-    "Baby-Shower-Photography": "Baby-Shower-Photography",
-    "Bachelorette-Photography": "Bachelorette-Photography",
-    "Maternity-Photography": "Maternity-Photography",
-    "New-Born-Baby-Photography": "New-Born-Baby-Photography",
+    "engagement-photography": "Engagement-Photography",
+    "wedding-photography": "Wedding-Photography",
+    "anniversary-photography": "Anniversary-Photography",
+    "birthday-photography": "Birthday-Photography",
+    "house-warming-photography": "House-warming-Photography",
+    "naming-ceremony-photography": "Naming-ceremony-Photography",
+    "baby-shower-photography": "Baby-Shower-Photography",
+    "bachelorette-photography": "Bachelorette-Photography",
+    "maternity-photography": "Maternity-Photography",
+    "new-born-baby-photography": "New-Born-Baby-Photography",
   };
   return map[slug] || slug;
 };

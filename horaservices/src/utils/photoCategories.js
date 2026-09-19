@@ -1,14 +1,20 @@
-
 import birthday from "@/assets/photography/Birthday-Photography.svg";
 import anniversary from "@/assets/photography/Anniversary-Photography.svg";
 import housewarming from "@/assets/photography/House-warming-Photography.svg";
 import naming from "@/assets/photography/Naming-ceremony-Photography.svg";
 import bachelorette from "@/assets/photography/Bachelorette-Photography.svg";
 import babyshower from "@/assets/photography/Baby-Shower-Photography.svg";
-// import wedding from "@/assets/photography/Wedding-Photography.webp";
-// import engagement from "@/assets/photography/Engagement-Photography.webp";
-// import maternity from "@/assets/photography/Maternity-Photography.webp";
-// import newborn from "@/assets/photography/New-Born-Baby-Photography.webp";
+
+import EngagementBanner from "../assets/photographyCategories/Photography9.webp";
+import WeddingBanner from "../assets/photographyCategories/Photography10.webp";
+import AnniversaryBanner from "../assets/photographyCategories/Photography5.webp";
+import BirthdayBanner from "../assets/photographyCategories/birthdaybackground.webp";
+import HouseWarmingBanner from "../assets/photographyCategories/Photography6.webp";
+import NamingCeremonyBanner from "../assets/photographyCategories/Photography4.webp";
+import BabyShowerBanner from "../assets/photographyCategories/Photography8.webp";
+import BacheloretteBanner from "../assets/photographyCategories/Photography7.webp";
+import MaternityBanner from "../assets/photographyCategories/Photography11.webp";
+import NewBornBanner from "../assets/photographyCategories/Photography12.webp";
 
 export const photoCat = [
   {
@@ -17,14 +23,16 @@ export const photoCat = [
     name: "Birthday-Photography",
     subCategory: "Birthday-Photography",
     catValue: "Birthday-Photography",
+    slug: "birthday-photography",
     imgAlt: "Birthday Photography ideas and packages",
   },
-   {
+  {
     id: "2",
     image: anniversary,
     name: "Anniversary Photography",
     subCategory: "Anniversary-Photography",
     catValue: "Anniversary-Photography",
+    slug: "anniversary-photography",
     imgAlt: "Romantic anniversary couple shoot ideas",
   },
   {
@@ -33,22 +41,25 @@ export const photoCat = [
     name: "House Warming Photography",
     subCategory: "House-warming-Photography",
     catValue: "House-warming-Photography",
+    slug: "house-warming-photography",
     imgAlt: "New home photography and decoration shoots",
   },
-   {
+  {
     id: "4",
     image: naming,
     name: "Naming Ceremony Photography",
     subCategory: "Naming-ceremony-Photography",
     catValue: "Naming-ceremony-Photography",
+    slug: "naming-ceremony-photography",
     imgAlt: "Naming ceremony and baby rituals photography",
   },
-   {
+  {
     id: "5",
     image: bachelorette,
     name: "Bachelorette Photography",
     subCategory: "Bachelorette-Photography",
     catValue: "Bachelorette-Photography",
+    slug: "bachelorette-photography",
     imgAlt: "Fun bachelorette party photoshoot ideas",
   },
   {
@@ -57,133 +68,206 @@ export const photoCat = [
     name: "Baby Shower Photography",
     subCategory: "Baby-Shower-Photography",
     catValue: "Baby-Shower-Photography",
+    slug: "baby-shower-photography",
     imgAlt: "Baby shower and family photoshoot ideas",
   },
-   {
+  {
     id: "7",
-    image: "https://horaservices.com/api/uploads/compressed_webp/Engagement-Photography.webp",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/Engagement-Photography.webp",
     name: "Engagement Photography",
     subCategory: "Engagement-Photography",
     catValue: "Engagement-Photography",
+    slug: "engagement-photography",
     imgAlt: "Engagement photoshoots and pre-wedding moments",
   },
   {
     id: "8",
-    image: "https://horaservices.com/api/uploads/compressed_webp/Wedding-Photography.webp",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/Wedding-Photography.webp",
     name: "Wedding Photography",
     subCategory: "Wedding-Photography",
     catValue: "Wedding-Photography",
+    slug: "wedding-photography",
     imgAlt: "Wedding photography with cinematic shots",
   },
- 
+
   {
     id: "9",
-    image: "https://horaservices.com/api/uploads/compressed_webp/Maternity-Photography.webp",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/Maternity-Photography.webp",
     name: "Maternity Photography",
     subCategory: "Maternity-Photography",
     catValue: "Maternity-Photography",
+    slug: "maternity-photography",
     imgAlt: "Maternity photoshoot themes and poses",
   },
-  
+
   {
     id: "10",
-    image: "https://horaservices.com/api/uploads/compressed_webp/New-Born-Baby-Photography.webp",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/New-Born-Baby-Photography.webp",
     name: "New Born Baby Photography",
     subCategory: "New-Born-Baby-Photography",
     catValue: "New-Born-Baby-Photography",
+    slug: "new-born-baby-photography",
     imgAlt: "Cute newborn photoshoot ideas",
   },
- {
-      id: "10",
-    image: "https://horaservices.com/api/uploads/compressed_webp/New-Born-Baby-Photography.webp",
+  {
+    id: "10",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/New-Born-Baby-Photography.webp",
     name: "Intimate-Gathering",
     subCategory: "Intimate-Gathering",
     catValue: "Intimate-Gathering",
+    slug: "intimate-gathering",
     imgAlt: "Intimate-Gathering",
- },
-  
- 
+  },
 ];
 
-
 export const seoData = {
-  "Birthday-Photography": {
+  "birthday-photography": {
     title: "Birthday Photoshoot | Birthday Party Photographer | HORA",
     description:
       "Book a professional birthday photoshoot at home or venue. Birthday party photographers, cake smash, pre-birthday, 1st birthday & 18th birthday shoots. Starting ₹3600. Book HORA.",
     h1: "Birthday Photoshoot at Home & Venue",
-    color: '#be9be2',
+    color: "#be9be2",
   },
 
-  "Anniversary-Photography": {
+  "anniversary-photography": {
     title: "Anniversary Photoshoot | Couple Photography | HORA",
-    description: "Book a romantic anniversary photoshoot or couple photography session at home or outdoors. Candid and posed styles. Surprise setup available. Book HORA anniversary photography today.",
+    description:
+      "Book a romantic anniversary photoshoot or couple photography session at home or outdoors. Candid and posed styles. Surprise setup available. Book HORA anniversary photography today.",
     h1: "Anniversary Photoshoot for Couples",
-    color: '#5a6b33',
+    color: "#5a6b33",
   },
 
-  "House-warming-Photography": {
+  "house-warming-photography": {
     title: "Housewarming Photography | Griha Pravesh Photoshoot | HORA",
-    description:"Book professional housewarming photography for your griha pravesh or gruhapravesam ceremony. Capture the joy of your new home with HORA. Book a housewarming photographer near you",
+    description:
+      "Book professional housewarming photography for your griha pravesh or gruhapravesam ceremony. Capture the joy of your new home with HORA. Book a housewarming photographer near you",
     h1: "Housewarming & Griha Pravesh Photoshoot",
-    color: '#cea555',
+    color: "#cea555",
   },
 
-  "Naming-ceremony-Photography": {
+  "naming-ceremony-photography": {
     title: "Naming Ceremony Photography | Baby Naming Shoot | HORA",
-    description:"Book professional naming ceremony photography, cradle ceremony photoshoots, baptism & christening photography. Barasala, annaprashan & more. HORA covers all ceremonies near you.",
-        h1: "Baby Naming Ceremony Photoshoot",
-    color: '#774800',
+    description:
+      "Book professional naming ceremony photography, cradle ceremony photoshoots, baptism & christening photography. Barasala, annaprashan & more. HORA covers all ceremonies near you.",
+    h1: "Baby Naming Ceremony Photoshoot",
+    color: "#774800",
   },
 
-  "Bachelorette-Photography": {
+  "bachelorette-photography": {
     title: "Bachelorette Party Photoshoot | Fun Girls Shoot | HORA",
-    description:"Book a professional bachelorette party photographer for your hen party, girls trip or pre-wedding celebration. Candid, fun and stylish photoshoots. Book HORA bachelorette photography",
+    description:
+      "Book a professional bachelorette party photographer for your hen party, girls trip or pre-wedding celebration. Candid, fun and stylish photoshoots. Book HORA bachelorette photography",
     h1: "Bachelorette Party Photoshoot",
-    color: '#2a2a2a',
+    color: "#2a2a2a",
   },
 
-  "Baby-Shower-Photography": {
+  "baby-shower-photography": {
     title: "Baby Shower Photoshoot | Maternity Celebration | HORA",
-    description:"Book professional baby shower photography for your godh bharai or seemantham ceremony. Baby bump photoshoots, maternity-style baby shower coverage. Book HORA baby shower photographer.",
+    description:
+      "Book professional baby shower photography for your godh bharai or seemantham ceremony. Baby bump photoshoots, maternity-style baby shower coverage. Book HORA baby shower photographer.",
     h1: "Baby Shower Photoshoot",
-    color: '#c576bf',
+    color: "#c576bf",
   },
 
-  "Engagement-Photography": {
+  "engagement-photography": {
     title: "Engagement Photoshoot | Pre Wedding Photography | HORA",
-    description:"Book professional engagement photoshoot and ring ceremony photography. Candid, cinematic and traditional styles. Indoor & outdoor sessions. Book HORA engagement photographer today.",
+    description:
+      "Book professional engagement photoshoot and ring ceremony photography. Candid, cinematic and traditional styles. Indoor & outdoor sessions. Book HORA engagement photographer today.",
     h1: "Engagement & Pre-Wedding Photoshoot",
-    color: '#624859',
+    color: "#624859",
   },
 
-  "Wedding-Photography": {
+  "wedding-photography": {
     title: "Wedding Photography | Professional Wedding Photographers | HORA",
-    description:"Book professional wedding photographers and pre-wedding photoshoot packages. Candid, cinematic & traditional wedding coverage. Best prices. Book HORA wedding photography today.",
+    description:
+      "Book professional wedding photographers and pre-wedding photoshoot packages. Candid, cinematic & traditional wedding coverage. Best prices. Book HORA wedding photography today.",
     h1: "Professional Wedding Photography",
-    color: '#bb3a4a',
+    color: "#bb3a4a",
   },
 
-  "Maternity-Photography": {
+  "maternity-photography": {
     title: "Maternity Photoshoot | Pregnancy Photography | HORA",
-    description:"Book a professional maternity photoshoot during pregnancy. Couple maternity sessions, baby bump photography, indoor & outdoor. Expert photographers. Book HORA maternity shoot today.",
+    description:
+      "Book a professional maternity photoshoot during pregnancy. Couple maternity sessions, baby bump photography, indoor & outdoor. Expert photographers. Book HORA maternity shoot today.",
     h1: "Maternity & Pregnancy Photoshoot",
-    color: '#b65f5d',
+    color: "#b65f5d",
   },
 
-  "New-Born-Baby-Photography": {
+  "new-born-baby-photography": {
     title: "Newborn Baby Photoshoot | Baby Photography | HORA",
     description:
       "Capture your newborn baby moments with cute themed photoshoots. Safe & professional baby photography.",
     h1: "Newborn Baby Photoshoot",
-    color: '#92694e',
+    color: "#92694e",
   },
 
-  "Intimate-Gathering": {
+  "intimate-gathering": {
     title: "Intimate Event Photography | Small Party Photoshoot | HORA",
     description:
       "Book photographers for intimate gatherings, small parties & private celebrations. Capture every special moment. Starting ₹1999.",
     h1: "Intimate & Private Event Photoshoot",
-    color: '#97538C',
+    color: "#97538C",
   },
+};
+
+export const categoryToWeblinkFolderName = {
+  "engagement-photography": {
+    folderName: "engagement weblink",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "wedding-photography": {
+    folderName: "Wedding",
+    customerId: "6683e5d43e33c54c0ebde8f2",
+  },
+  "anniversary-photography": {
+    folderName: "anniversary poses web link",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "birthday-photography": {
+    folderName: "Candid",
+    customerId: "63edb239d680d47d95870fa0",
+  },
+  "house-warming-photography": {
+    folderName: "House warming weblink",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "naming-ceremony-photography": {
+    folderName: "naming ceremony weblink",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "baby-shower-photography": {
+    folderName: "baby shower weblink",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "bachelorette-photography": {
+    folderName: "bacherrolerate",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "maternity-photography": {
+    folderName: "maternity poses",
+    customerId: "6683e5d43e33c54c0ebde8f2",
+  },
+  "new-born-baby-photography": {
+    folderName: "new born ",
+    customerId: "64137625549b58e3dc39a685",
+  },
+};
+
+
+export const photographyCategoryPageTopBannerHeading = {
+  "engagement-photography": EngagementBanner,
+  "wedding-photography": WeddingBanner,
+  "anniversary-photography": AnniversaryBanner,
+  "birthday-photography": BirthdayBanner,
+  "house-warming-photography": HouseWarmingBanner,
+  "naming-ceremony-photography": NamingCeremonyBanner,
+  "baby-shower-photography": BabyShowerBanner,
+  "bachelorette-photography": BacheloretteBanner,
+  "maternity-photography": MaternityBanner,
+  "new-born-baby-photography": NewBornBanner,
 };

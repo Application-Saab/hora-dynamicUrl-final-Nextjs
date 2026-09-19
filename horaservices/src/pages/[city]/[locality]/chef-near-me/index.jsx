@@ -29,14 +29,14 @@ const ChefCitypage = ({
   const [city, setCity] = useState(ssrCity || "");
   const [locality, setLocality] = useState(ssrLocality || "");
   const [cityLocalitiesList, setCityLocalitiesList] = useState(
-    ssrCityLocalitiesList || []
+    ssrCityLocalitiesList || [],
   );
 
   const openLink = () => {
     if (typeof window !== "undefined") {
       window.open(
         "https://play.google.com/store/apps/details?id=com.hora",
-        "_blank"
+        "_blank",
       );
     }
   };
@@ -94,8 +94,8 @@ const ChefCitypage = ({
           {displayCity && displayLocality
             ? `HORA Chef Services in ${displayLocality}, ${displayCity} | Hire Private Chef & Cook Near You – Book Now`
             : displayCity
-            ? `HORA Chef Services in ${displayCity} | Hire Private Chef & Cook for Parties – Book Now`
-            : `HORA Chef Services | Hire Private Chef & Cook – Book Now`}
+              ? `HORA Chef Services in ${displayCity} | Hire Private Chef & Cook for Parties – Book Now`
+              : `HORA Chef Services | Hire Private Chef & Cook – Book Now`}
         </title>
 
         <meta
@@ -104,8 +104,8 @@ const ChefCitypage = ({
             displayCity && displayLocality
               ? `🍽️ Book a Professional Chef in ${displayLocality}, ${displayCity}! ✨ HORA Chef Services — Hire trained & verified private chefs and cooks near you for birthdays, house parties, weddings & more.`
               : displayCity
-              ? `🍽️ Book a Professional Chef in ${displayCity}! ✨ HORA Chef Services — Hire trained & verified private chefs and cooks for parties, weddings & more.`
-              : `🍽️ Book a Professional Chef Near You! ✨ HORA Chef Services — Hire trained & verified private chefs and cooks for any event.`
+                ? `🍽️ Book a Professional Chef in ${displayCity}! ✨ HORA Chef Services — Hire trained & verified private chefs and cooks for parties, weddings & more.`
+                : `🍽️ Book a Professional Chef Near You! ✨ HORA Chef Services — Hire trained & verified private chefs and cooks for any event.`
           }
         />
 
@@ -115,8 +115,8 @@ const ChefCitypage = ({
             displayCity && displayLocality
               ? `chef near me in ${displayLocality} ${displayCity}, hire chef in ${displayLocality}, cook for party ${displayLocality} ${displayCity}, private chef ${displayLocality}, catering ${displayLocality} ${displayCity}`
               : displayCity
-              ? `hire chef in ${displayCity}, private chef ${displayCity}, cook near me ${displayCity}, catering services ${displayCity}`
-              : `hire chef, private chef, cook near me, catering services`
+                ? `hire chef in ${displayCity}, private chef ${displayCity}, cook near me ${displayCity}, catering services ${displayCity}`
+                : `hire chef, private chef, cook near me, catering services`
           }
         />
 
@@ -147,21 +147,24 @@ const ChefCitypage = ({
           href="https://horaservices.com/api/uploads/logo-icon.png"
           type="image/x-icon"
         />
-        <link rel="canonical" href={
+        <link
+          rel="canonical"
+          href={
             displayCity && displayLocality
               ? `https://horaservices.com/${displayCity.toLowerCase()}/${displayLocality.toLowerCase()}/chef-near-me`
               : displayCity
-              ? `https://horaservices.com/${displayCity.toLowerCase()}/chef-near-me`
-              : `https://horaservices.com/chef-near-me`
-          } />
+                ? `https://horaservices.com/${displayCity.toLowerCase()}/chef-near-me`
+                : `https://horaservices.com/chef-near-me`
+          }
+        />
         <meta
           property="og:url"
           content={
             displayCity && displayLocality
               ? `https://horaservices.com/${displayCity.toLowerCase()}/${displayLocality.toLowerCase()}/chef-near-me`
               : displayCity
-              ? `https://horaservices.com/${displayCity.toLowerCase()}/book-chef-cook-for-party`
-              : `https://horaservices.com/book-chef-cook-for-party`
+                ? `https://horaservices.com/${displayCity.toLowerCase()}/book-chef-cook-for-party`
+                : `https://horaservices.com/book-chef-cook-for-party`
           }
         />
         <meta property="og:type" content="website" />
@@ -178,7 +181,9 @@ const ChefCitypage = ({
           >
             <div style={styles.pageWidth}>
               <div style={styles.textContainer} className="textContainerhome">
-                <h1 style={{ fontSize: "40px", fontWeight: "500", margin: "0" }}>
+                <h1
+                  style={{ fontSize: "40px", fontWeight: "500", margin: "0" }}
+                >
                   {"Simplifying and Enhancing celebrations."}
                 </h1>
                 <h2
@@ -309,7 +314,10 @@ const ChefCitypage = ({
             >
               CELEBRATE WITH US
             </h3>
-            <div style={styles.celebrateBottomSec} className="celebrateBottomSec">
+            <div
+              style={styles.celebrateBottomSec}
+              className="celebrateBottomSec"
+            >
               <div style={styles.celebrateBox} className="celebrateBox">
                 <Image
                   src={Celebrate1Image}
@@ -1080,23 +1088,24 @@ const styles = {
 
 // ====================== SSR ======================
 export async function getServerSideProps(context) {
-  const city =
-    context.params?.city ||
-    context.query?.city ||
-    "";
-  const locality =
-    context.params?.locality ||
-    context.query?.locality ||
-    "";
+  const citySlug =
+    context.params?.city?.toLowerCase() || context.query?.city || "";
+  const localitySlug =
+    context.params?.locality?.toLowerCase() || context.query?.locality || "";
 
-  const normalizedCity = city ? city.toLowerCase() : "";
+  const validation = validateCityLocality(citySlug, localitySlug);
+  if (!validation.valid) {
+    return {
+      notFound: true,
+    };
+  }
   const cityLocalitiesList =
-    (normalizedCity && cityData[normalizedCity]?.cityLocalitiesList) || [];
+    (citySlug && cityData[citySlug]?.cityLocalitiesList) || [];
 
   return {
     props: {
-      city,
-      locality,
+      city : context.params?.city,
+      locality: context.params?.locality,
       cityLocalitiesList,
     },
   };

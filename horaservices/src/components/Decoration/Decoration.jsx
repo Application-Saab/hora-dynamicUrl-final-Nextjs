@@ -45,6 +45,7 @@ import decorationWedding from "@/assets/decorationwedding.webp";
 import decorationBridetobe from "@/assets/decorationBride-tobe.webp";
 import decorationhaldi from "@/assets/decorationhaldi-Mhendi.webp";
 import Engagementdecoration from "@/assets/engament.webp";
+import { citySeoData, defaultSeo } from "@/utils/Decorationseodata.json";
 const BannerSlider = dynamic(() => import("@/components/BannerSlider"));
 const DecorSlider = dynamic(() => import("@/components/DecorSlider"));
 const ProductSliderSection = dynamic(
@@ -254,8 +255,6 @@ const Decoration = ({ city, locality }) => {
   const openCatItems = (item) => {
     if (!item?.catValue) return;
 
-    const categorySlug = categorySlug;
-
     const path = hasCityPageParam
       ? `/${city.toLowerCase()}/${categorySlug}/${item.catValue}`
       : `/${categorySlug}/${item.catValue}`;
@@ -264,6 +263,7 @@ const Decoration = ({ city, locality }) => {
   };
 
   const bannerImages = [Banner1, Banner2, Banner3];
+
   const SITE = "https://horaservices.com";
   const slugify = (val) =>
     String(val || "")
@@ -271,7 +271,6 @@ const Decoration = ({ city, locality }) => {
       .toLowerCase()
       .replace(/\s+/g, "-");
 
-  // component ke andar (return se pehle)
   const citySlug = city ? slugify(city) : "";
   const localitySlug = locality ? slugify(locality) : "";
 
@@ -282,27 +281,21 @@ const Decoration = ({ city, locality }) => {
         ? `${SITE}/${citySlug}/balloon-decoration`
         : `${SITE}/balloon-decoration`;
 
+  /* ------------------------------------------------------------------
+   * PER-CITY SEO COPY (from SEO-WORK-DECORATION-LANDING)
+   * Title/description har city ke liye custom.
+   * ------------------------------------------------------------------ */
+
+  const pageSeo = city
+    ? citySeoData[city.toLowerCase()] || defaultSeo
+    : defaultSeo;
+
   return (
     <div className="dec-landing-page">
       <Head>
-        <title>
-          {city && locality
-            ? `HORA Decorations in ${locality}, ${city} | Balloon & Flower Decorations for Birthdays, Weddings, Baby Showers & More – Starting at ₹1199`
-            : city
-              ? `HORA Decorations in ${city} | Balloon & Flower Decorations for Birthdays, Weddings, Baby Showers & More – Starting at ₹1199`
-              : `HORA Decorations : Professional Balloons & Flowers Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199`}
-        </title>
+        <title>{pageSeo.title}</title>
 
-        <meta
-          name="description"
-          content={
-            city && locality
-              ? `📸 Capture Every Moment in ${locality}, ${city}! ✨ HORA Decorations makes every celebration magical. Book your perfect Balloon & Flower decorations for birthdays, weddings, baby showers, and more.`
-              : city
-                ? `📸 Capture Every Moment in ${city}! ✨ HORA Decorations — Professional Balloon & Flower decorators for birthdays, weddings, baby showers & more.`
-                : `📸 Capture Every Moment, Forever! ✨ HORA Decorations — Professional Balloon & Flower decorators for birthdays, parties, weddings & more.`
-          }
-        />
+        <meta name="description" content={pageSeo.description} />
 
         <meta
           name="keywords"
@@ -315,7 +308,7 @@ const Decoration = ({ city, locality }) => {
           }
         />
 
-        {/* ✅ CANONICAL */}
+        {/* ✅ CANONICAL — city+locality aware */}
         <link rel="canonical" href={canonicalUrl} />
 
         <meta name="robots" content="index, follow" />

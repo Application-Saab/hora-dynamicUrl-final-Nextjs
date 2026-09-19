@@ -1,7 +1,7 @@
 import React from "react";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import PageLayout from "../components/PageLayout";
+import PageLayout from "../components/pagelayout";
 import { homeMetadata } from "@/utils/metadata"; // ← import
 
 const inter = Inter({ subsets: ["latin"] });

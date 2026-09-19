@@ -13,69 +13,17 @@ import rooftop from "@/assets/venuelanding/roof_top_.webp";
 import villas from "@/assets/venuelanding/Villas.webp";
 
 export const venueData = [
-  {
-    id: "all",
-    label: "All",
-    img: all,
-  },
-  {
-    id: "Banquet hall",
-    label: "Banquet Hall",
-    img: banquet,
-  },
-  {
-    id: "Pub & Bar",
-    label: "Pub & Bar",
-    img: pubbar,
-  },
-  {
-    id: "Poolside",
-    label: "Poolside",
-    img: poolside,
-  },
-  {
-    id: "Rooftop",
-    label: "Rooftop",
-    img: rooftop,
-  },
-  {
-    id: "Resort",
-    label: "Resorts",
-    img: resorts,
-  },
-  {
-    id: "Villa",
-    label: "Villas",
-    img: villas,
-  },
-  {
-    id: "Game Zone",
-    label: "Game Zone",
-    img: gamezone,
-  },
-  {
-    id: "Restaurant",
-    label: "Restaurants",
-    img: restaurants,
-  },
-  {
-    id: "Farmhouse",
-    label: "Farmhouse",
-    img: farmhouse,
-  },
-  {
-    id: "Lawn",
-    label: "Lawns",
-    img: lawns,
-  },
-  {
-    id: "Hotels",
-    label: "Hotels",
-    img: hotels,
-  },
-  {
-    id: "Fort/Place",
-    label: "Forts & Palaces",
-    img: fort,
-  },
+  { id: "all", label: "All", slug: "all", img: all },
+  { id: "Banquet hall", label: "Banquet Hall", slug: "banquethall", img: banquet },
+  { id: "Pub & Bar", label: "Pub & Bar", slug: "pub-and-bar", img: pubbar },
+  { id: "Poolside", label: "Poolside", slug: "poolside", img: poolside },
+  { id: "Rooftop", label: "Rooftop", slug: "rooftop", img: rooftop },
+  { id: "Resort", label: "Resorts", slug: "resorts", img: resorts },
+  { id: "Villa", label: "Villas", slug: "villas", img: villas },
+  { id: "Game Zone", label: "Game Zone", slug: "gamezone", img: gamezone },
+  { id: "Restaurant", label: "Restaurants", slug: "restaurants", img: restaurants },
+  { id: "Farmhouse", label: "Farmhouse", slug: "farmhouse", img: farmhouse },
+  { id: "Lawn", label: "Lawns", slug: "lawns", img: lawns },
+  { id: "Hotels", label: "Hotels", slug: "hotels", img: hotels },
+  { id: "Fort/Place", label: "Forts & Palaces", slug: "fortspalaces", img: fort },
 ];

@@ -7,9 +7,11 @@ import { DecorationSEOKeywords } from "@/utils/GetSEOKeywords";
 import { decCat } from "@/utils/decorationCategories";
 import cityData from "@/utils/cityData";
 import { useRouter } from "next/router";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import "../../css/decoration.css";
 import FAQSection from "@/components/FAQSection";
+import CityDecorationlanding from "./cityDecorationlanding";
+import { CityDecorationlandingPage } from "@/utils/CityDecorationlanding";
 
 // URL ke pehle segment se city slug nikalo, jaise "/hyderabad/balloon-decoration" -> "hyderabad"
 function getCitySlugFromPath(pathname) {
@@ -66,8 +68,12 @@ const [citySlug, setCitySlug] = useState(serverCitySlug || "");
 
   const formattedCatValue = catValue?.toLowerCase();
 
-  const cityDecorationFAQ = decorationCityFAQData(city);
-  const cityDescription = decorationCityDescription(city);
+  const cityFaqs =
+    CityDecorationlandingPage[city?.toLowerCase()]?.faqs || [];
+  const generalFaqs = decorationCityFAQData();
+  const cityDecorationFAQ = [...cityFaqs, ...generalFaqs];
+
+  const cityDescriptionSections = decorationCityDescription;
 
   const decorationCategory = decCat.map((item) => ({
     name: `${item.catValue} in ${city}`,
@@ -76,8 +82,7 @@ const [citySlug, setCitySlug] = useState(serverCitySlug || "");
     imgAlt: item.imgAlt,
   }));
 
-  const localities =
-    cityData[city?.toLowerCase()]?.cityLocalitiesList || [];
+  const localities = cityData[city?.toLowerCase()]?.cityLocalitiesList || [];
 
   const localityHandleClick = (localityName) => {
     const formattedLocalityName = localityName
@@ -109,11 +114,9 @@ const [citySlug, setCitySlug] = useState(serverCitySlug || "");
         handleClick={localityHandleClick}
       />
 
-      <div className="tab-section-details-productpage">
-        <FAQSection faqData={cityDecorationFAQ} />
-      </div>
+      <CityDecorationlanding data={CityDecorationlandingPage[city?.toLowerCase()]} />
 
-      <SectionDescription paragraphs={cityDescription} />
+      <SectionDescription sections={cityDescriptionSections} />
 
       <LocalitiesSection
         key={`cat-${city}`}
@@ -122,9 +125,8 @@ const [citySlug, setCitySlug] = useState(serverCitySlug || "");
         city={city}
         handleClick={handleCategoryClick}
       />
-
-      <div className="my-4 container">
-        <DecorationSEOKeywords city={city} />
+      <div className="tab-section-details-productpage">
+        <FAQSection faqData={cityDecorationFAQ} />
       </div>
     </>
   );

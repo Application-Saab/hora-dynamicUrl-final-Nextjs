@@ -28,7 +28,7 @@
       align-items: flex-start;
     justify-content: flex-start;
 
-  padding: clamp(10px, 3vw, 16px);
+    padding: clamp(20px, 6.36vw, 30px) clamp(10px, 4.07vw, 20px) clamp(10px, 4.07vw, 20px) 0;
   box-sizing: border-box;
   overflow: hidden; /* agar shrink ke baad bhi barely overflow ho to safety net */
 }
@@ -42,9 +42,5 @@
 
   font-size: clamp(16px, 5.09vw, 20px);
   line-height: 1.25;
-  letter-spacing: 0;
   color: #ffffff;
-
-  word-break: break-word;
-  overflow-wrap: break-word;
 }
