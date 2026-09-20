@@ -148,8 +148,8 @@ function MyApp({ Component, pageProps }) {
   };
 
   useEffect(() => {
+    const accessToken = safeGetItem("token");
     const checkAuthentication = async () => {
-      const accessToken = safeGetItem("token");
       try {
         const response = await fetch(
           `${BASE_URL}${CHECK_TOKEN_HEALTH}`,
@@ -174,7 +174,9 @@ function MyApp({ Component, pageProps }) {
       }
     };
 
-    checkAuthentication();
+    if(accessToken){
+      checkAuthentication();
+    }
   }, []);
 
   const appContent = (
