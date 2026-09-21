@@ -670,7 +670,7 @@ const contactUsRedirection = (productName) => {
         </div>
         <div className='rightsecdecinner photography'>
           <h3 style={{ fontSize: "22px", fontWeight: "600", color: "rgb(157, 74, 147)", margin: "33px 0 11px 0", lineHeight: "35px", width: "100%", textAlign: "center" }}>Product Details</h3>
-          <div className='d-flex flex-column flex-lg-row'>
+          <div className='card-container'>
 
             <div >
              

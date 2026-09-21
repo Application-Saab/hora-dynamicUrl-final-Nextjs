@@ -27,6 +27,8 @@ export const contactUsRedirect = ({
       "maternity-photography": "maternity photography",
       "new-born-baby-photography": "new born baby photography",
       "intimate-gathering": "intimate gathering photography",
+      "corporate-photography":"Corporate-Photography",
+      "welcome-baby-photography":"Welcome-Baby-Photography"
     },
     decoration: {
       "kids-birthday-decoration": "kids birthday decoration",
