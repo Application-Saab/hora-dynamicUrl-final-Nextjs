@@ -29,7 +29,7 @@ import Head from "next/head";
 
 const WHATSAPP_NUMBER = "917338584828";
 
-const PhotoGallery = ({ folderName: folderNameProp, customerId: customerIdProp, embedded = false }) => {
+const PhotoGallery = ({ folderName: folderNameProp, customerId: customerIdProp, city: cityProp, embedded = false }) => {
   const router = useRouter();
   const [urlParams, setUrlParams] = useState({ folderName: null, customerId: null });
   useEffect(() => {
@@ -38,12 +38,13 @@ const PhotoGallery = ({ folderName: folderNameProp, customerId: customerIdProp, 
       setUrlParams({
         folderName: params.get('folderName'),
         customerId: params.get('customerId'),
+         city: params.get("city"),
       });
     }
   }, []);
 const folderName = folderNameProp ?? urlParams.folderName;
   const customerId = customerIdProp ?? urlParams.customerId;
-
+const city = (cityProp ?? urlParams.city)?.trim() || null;
   const bannerConfig     = getBannerConfig(folderName);
   const planningCardData = getPlanningCardData(folderName);
   const trustedData      = getTrustedCardData(folderName);
@@ -174,16 +175,18 @@ const categoryName =
     };
   }, [folderName, customerId]);
 
-  const openWhatsApp = () => {
-    const message = categoryName
-      ? `Hi, I'm interested in your ${categoryName} photography services. Please share your packages, pricing, and availability.`
-      : "Hi, I'm interested in your photography services. Please share your packages, pricing, and availability.";
+const openWhatsApp = () => {
+  const cityText = city ? ` for ${city}` : "";
 
-    window.open(
-      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
-      "_blank"
-    );
-  };
+  const message = categoryName
+    ? `Hi, I'm interested in your ${categoryName} photography services. Please share your packages, pricing, and availability${cityText}.`
+    : `Hi, I'm interested in your photography services. Please share your packages, pricing, and availability${cityText}.`;
+
+  window.open(
+    `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
+    "_blank"
+  );
+};
 
   const redirectToCategoryOrWhatsApp = () => {
     if (embedded) {

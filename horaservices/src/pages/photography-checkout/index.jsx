@@ -28,7 +28,9 @@ import {contactUsRedirect} from '@/components/CheckoutWhatsAppSummary';
 import { formatDate } from "../../utils/formateDate";
 import axiosApi from '@/utils/axiosApi';
 import { safeGetItem } from '@/utils/safeStorage';
-
+import {  parseFromPath,
+  formatPhotographyCategory,
+  photographyContactMessage,} from "@/utils/whatsappMessages"
 const Checkout = () => {
   const router = useRouter();
    const schemaOrg = getPhotographyOrganizationSchema();
@@ -446,15 +448,21 @@ const getPhotographyImageUrl = (item) => {
   return `https://horaservices.com/api/uploads/compressed_webp/${cleanFileName}.webp`;
 };
 const contactUsRedirection = (productName) => {
-  // productName example: "Candid Anniversary Photography Package"
+  const { city: fromCity, category: fromCategory } = parseFromPath(from);
 
-  const msg = `Hi, I want to book ${productName} & need more info`;
+  const waCategory =
+    fromCategory || formatPhotographyCategory(router.query.catValue);
+  const waCity = city || fromCity;
+
+  const msg = photographyContactMessage(waCategory, waCity, productName);
 
   // ✅ GTM push
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     event: "photography_checkout_contact_us_click",
     product_name: productName,
+    city: waCity || "unknown",
+    category: waCategory || "unknown",
   });
 
   // ✅ Open WhatsApp
