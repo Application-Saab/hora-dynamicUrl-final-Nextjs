@@ -196,12 +196,12 @@ export const photographyCheckOutMessage = (category, city) => {
   return `Hi, I need help completing my ${catText}photography booking${cityText}.`;
 };
 export const photographyContactMessage = (category, city, productName) => {
-  const what = category
+  const bookingfor = category
     ? `${category} photography`
     : productName || "photography";
   const cityText = city ? ` for ${city}` : "";
 
-  return `Hi, I want to book ${what} & need more info${cityText}!`;
+  return `Hi, I want to book ${bookingfor} & need more info${cityText}!`;
 };
 export const youtubeDecorationMessage =
   "Hi, Found your decoration on Youtube. Need details.";
