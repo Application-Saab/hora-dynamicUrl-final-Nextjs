@@ -37,6 +37,8 @@ import {
   foodSelectDateMessage,
   photographyMainMessage,
   photographyMessagesByCategory,
+  formatPhotographyCategory,
+   parseFromPath,
 } from "@/utils/whatsappMessages";
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 
@@ -284,16 +286,18 @@ const getPathFromWindow = () => {
         break;
       }
  
-      case '/[city]/photography-page/[catValue]/product/[productName]':
-        eventName = 'photography_productcitypage_whatsapp_click';
-        productNameEvent = `photography_productcitypage_whatsapp_click_${productName}`;
-        message = addCityToMessage(photographyProductMessage || defaultMessage, formattedCity);
-        break;
-      case '/photography-checkout':
-        eventName = 'photography_checkout_whatsappclick';
-        productNameEvent = 'photography_checkout_whatsappclick';
-        message = photographyCheckOutMessage;
-        break;
+  case '/[city]/photography-page/[catValue]/product/[productName]':
+  eventName = 'photography_productcitypage_whatsapp_click';
+  productNameEvent = `photography_productcitypage_whatsapp_click_${productName}`;
+  message = photographyProductMessage(formatPhotographyCategory(catValue), formattedCity);
+  break;
+   case '/photography-checkout': {
+  const { city: checkoutCity, category: checkoutCategory } = parseFromPath(router.query.from);
+  eventName = 'photography_checkout_whatsappclick';
+  productNameEvent = 'photography_checkout_whatsappclick';
+  message = photographyCheckOutMessage(checkoutCategory, checkoutCity);   // ✅
+  break;
+}
 
       case '/balloon-decoration-youtube':
         eventName = 'balloon_decoration_youtube_whatsapp_click';
