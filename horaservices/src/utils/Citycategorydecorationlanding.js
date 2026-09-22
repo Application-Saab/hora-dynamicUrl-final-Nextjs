@@ -1,9 +1,3 @@
-// Category + City wise landing content
-// Structure bilkul CityDecorationlandingPage jaisa hi rakha hai, taaki
-// wahi <CityDecorationlanding /> component bina change ke reuse ho jaye.
-//
-// Shape: CityCategoryDecorationlandingPage[catSlug][citySlug]
-
 export const CityCategoryDecorationlandingPage = {
   
   "birthday-decoration": {
