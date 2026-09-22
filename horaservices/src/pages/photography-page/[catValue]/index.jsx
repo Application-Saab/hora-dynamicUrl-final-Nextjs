@@ -320,7 +320,13 @@ export default function CatValuePage({
           MOMENT_NAME_FILTERS[activeMoment](item.name || ""),
         )
       : products;
-
+const formatCity = (c) =>
+  c
+    ? String(c)
+        .replace(/-/g, " ")
+        .replace(/\b\w/g, (m) => m.toUpperCase())
+        .trim()
+    : null;
   return (
     <div className="featured-photo-works">
       <SeoCategory
@@ -478,6 +484,7 @@ export default function CatValuePage({
                 folderName={galleryData.folderName}
                 customerId={galleryData.customerId}
                 embedded={true}
+                  city={formatCity(city)}
               />
             </div>
           )}

@@ -37,39 +37,6 @@ const CITY_API_DONE_FLAG = "cityApiCallDone";
 
 // City URL/pill/modal logic SIRF venue-list ke liye active hai.
 // Tracking API is se koi lena dena nahi rakhti — wo har page par apna kaam karti hai.
-// const CITY_ALLOWED_ROUTES = [
-//   "/",                     // home page
-//   "/venue-list",
-//   "/balloon-decoration",
-//   "/photography-page",
-//   "/chef-near-me",
-//   "/book-chef-cook-for-party",
-//   // "/party-food-delivery-live-catering-buffet/party-food-delivery",
-//   // "/party-food-delivery-live-catering-buffet/party-live-buffet-catering",
-//   // "/photo-gallery",
-// ];
-
-// const slugToCityName = {
-//   delhi: "Delhi",
-//   mumbai: "Mumbai",
-//   bangalore: "Bangalore",
-//   noida: "Noida",
-//   ghaziabad: "Ghaziabad",
-//   gurugram: "Gurgaon",
-//   faridabad: "Faridabad",
-//   hyderabad: "Hyderabad",
-//   chennai: "Chennai",
-//   kolkata: "Kolkata",
-//   lucknow: "Lucknow",
-//   kanpur: "Kanpur",
-//   indore: "Indore",
-//   surat: "Surat",
-//   bhopal: "Bhopal",
-//   goa: "Goa",
-//   pune: "Pune",
-//   others: "Others",
-// };
-
 const CITY_OPTIONAL_CHILD_ROUTES = [
   "/book-chef-cook-for-party",
   // "/another-route",

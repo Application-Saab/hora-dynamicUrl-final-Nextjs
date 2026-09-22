@@ -26,25 +26,32 @@ import { getWeblinkPhotosUrl } from "@/utils/Getphotocategoryurl.js";
 import { reviewsData } from "@/utils/poselinkreviews";
 import Head from "next/head";
 
-const PhotoGallery = ({ folderName: folderNameProp, customerId: customerIdProp, embedded = false }) => {
+const WHATSAPP_NUMBER = "917338584828";
+
+const PhotoGallery = ({ folderName: folderNameProp, customerId: customerIdProp, city: cityProp, embedded = false }) => {
   const router = useRouter();
-const [urlParams, setUrlParams] = useState({ folderName: null, customerId: null });
+  const [urlParams, setUrlParams] = useState({ folderName: null, customerId: null, city: null });
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       setUrlParams({
         folderName: params.get('folderName'),
         customerId: params.get('customerId'),
+        city: params.get("city"),
       });
     }
   }, []);
-const folderName = folderNameProp ?? urlParams.folderName;
+
+  const folderName = folderNameProp ?? urlParams.folderName;
   const customerId = customerIdProp ?? urlParams.customerId;
+  const city = (cityProp ?? urlParams.city)?.trim() || null;
 
   const bannerConfig     = getBannerConfig(folderName);
   const planningCardData = getPlanningCardData(folderName);
   const trustedData      = getTrustedCardData(folderName);
   const categoryUrl      = getWeblinkPhotosUrl(folderName);
+  const categoryName     = bannerConfig.title || folderName;
 
   // ==============================
   // REFS
@@ -166,6 +173,22 @@ const folderName = folderNameProp ?? urlParams.folderName;
   }, [folderName, customerId]);
 
   // ==============================
+  // WHATSAPP HELPERS
+  // ==============================
+  const openWhatsApp = () => {
+    const cityText = city ? ` for ${city}` : "";
+
+    const message = categoryName
+      ? `Hi, I'm interested in your ${categoryName} photography services. Please share your packages, pricing, and availability${cityText}.`
+      : `Hi, I'm interested in your photography services. Please share your packages, pricing, and availability${cityText}.`;
+
+    window.open(
+      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
+      "_blank"
+    );
+  };
+
+  // ==============================
   // BUTTON HANDLERS WITH GTM EVENTS
   // ==============================
 
@@ -180,50 +203,44 @@ const folderName = folderNameProp ?? urlParams.folderName;
       scroll_position_pct: lastScrollPercent.current,
     });
 
-    window.open(
-      `https://wa.me/7338584828?text=${encodeURIComponent(
-        "Hi, I'm interested in your photography services. Please share your packages, pricing, and availability."
-      )}`,
-      "_blank"
-    );
+    openWhatsApp();
   };
 
-const handleViewPackages = () => {
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: "view_packages_click",
-    eventLabel: bannerConfig.title || folderName || "unknown",
-    folder_name: folderName || "unknown",
-    customer_id: customerId || "guest",
-    last_component_seen: lastViewedComponent.current,
-    scroll_position_pct: lastScrollPercent.current,
-  });
+  const handleViewPackages = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "view_packages_click",
+      eventLabel: bannerConfig.title || folderName || "unknown",
+      folder_name: folderName || "unknown",
+      customer_id: customerId || "guest",
+      last_component_seen: lastViewedComponent.current,
+      scroll_position_pct: lastScrollPercent.current,
+    });
 
-  if (embedded) {
-    // CatValuePage pe already isi category ka page hai — navigate nahi, sirf top pe scroll
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  } else {
-    router.push(categoryUrl);
-  }
-};
+    if (embedded) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      router.push(categoryUrl);
+    }
+  };
 
-const handleBookNow = () => {
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: "book_now_click",
-    eventLabel: bannerConfig.title || folderName || "unknown",
-    folder_name: folderName || "unknown",
-    customer_id: customerId || "guest",
-    last_component_seen: lastViewedComponent.current,
-    scroll_position_pct: lastScrollPercent.current,
-  });
+  const handleBookNow = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "book_now_click",
+      eventLabel: bannerConfig.title || folderName || "unknown",
+      folder_name: folderName || "unknown",
+      customer_id: customerId || "guest",
+      last_component_seen: lastViewedComponent.current,
+      scroll_position_pct: lastScrollPercent.current,
+    });
 
-  if (embedded) {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  } else {
-    router.push(categoryUrl);
-  }
-};
+    if (embedded) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      router.push(categoryUrl);
+    }
+  };
 
   // ==============================
   // SHARE ICON
@@ -304,7 +321,7 @@ const handleBookNow = () => {
       className="photo-container"
       style={{ padding: "8px", maxWidth: "480px", margin: "auto", paddingBottom: "10px" }}
     >
-     {!embedded && (
+      {!embedded && (
         <Head>
           <title>
             {bannerConfig.title
@@ -383,7 +400,7 @@ const handleBookNow = () => {
         </Head>
       )}
 
-    {!embedded && (
+      {!embedded && (
         <div ref={topBannerRef}>
           <TopBanner
             backgroundImage={bannerConfig.backgroundImage}
@@ -419,28 +436,28 @@ const handleBookNow = () => {
       </div>
 
       {/* Sticky Bottom CTA */}
- {!embedded && (
-  <div
-    ref={bottomCTARef}
-    style={{
-      position: "fixed",
-      bottom: 0,
-      left: "50%",
-      transform: "translateX(-50%)",
-      width: "100%",
-      maxWidth: "480px",
-      zIndex: 99,
-      backgroundColor: "#fff",
-      boxShadow: "0 -2px 10px rgba(0,0,0,0.1)",
-    }}
-  >
-    <PhotogalleryCTA
-      image1={image1}
-      image2={image2}
-      onBookNow={handleBookNow}
-    />
-  </div>
-)}
+      {!embedded && (
+        <div
+          ref={bottomCTARef}
+          style={{
+            position: "fixed",
+            bottom: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "100%",
+            maxWidth: "480px",
+            zIndex: 99,
+            backgroundColor: "#fff",
+            boxShadow: "0 -2px 10px rgba(0,0,0,0.1)",
+          }}
+        >
+          <PhotogalleryCTA
+            image1={image1}
+            image2={image2}
+            onBookNow={handleBookNow}
+          />
+        </div>
+      )}
     </div>
   );
 };

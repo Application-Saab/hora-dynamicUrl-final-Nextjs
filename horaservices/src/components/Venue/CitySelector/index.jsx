@@ -2,8 +2,8 @@ import React from "react";
 import "./cityselector.css";
 import mumbai from "@/assets/city/mumbai.webp";
 import delhi from "@/assets/city/delhi.webp";
-import bengaluru from "@/assets/city/bengluru.webp";
-import gurgaon from "@/assets/city/gurgaon.webp";
+import bangalore from "@/assets/city/bengluru.webp";
+import Gurugram from "@/assets/city/gurgaon.webp";
 import hydrabad from "@/assets/city/hyderabad.webp";
 import faridabad from "@/assets/city/faridabad.webp";
 import noida from "@/assets/city/noida.webp";
@@ -15,8 +15,8 @@ import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 const cities = [
   { name: "Mumbai", image: mumbai },
   { name: "Delhi", image: delhi },
-  { name: "Bangalore", image: bengaluru },
-  { name: "Gurgaon", image: gurgaon },
+  { name: "Bangalore", image: bangalore },
+  { name: "Gurugram", image: Gurugram },
   { name: "Ghaziabad", image: ghaziabad },
   { name: "Hyderabad", image: hydrabad },
   { name: "Faridabad", image: faridabad },

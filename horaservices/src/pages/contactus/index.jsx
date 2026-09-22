@@ -218,12 +218,6 @@ const ContactUs = () => {
                   },
                   { href: "/delhi", src: delhi, alt: "Delhi", label: "Delhi" },
                   {
-                    href: "/bengaluru",
-                    src: banglore,
-                    alt: "Bengaluru",
-                    label: "Bengaluru",
-                  },
-                  {
                     href: "/bangalore",
                     src: banglore,
                     alt: "Bangalore",

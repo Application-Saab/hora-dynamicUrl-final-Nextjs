@@ -10,7 +10,12 @@ export const formatCategoryName = (slug = "") => {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 };
-
+export const formatPhotographyCategory = (slug = "") =>
+  String(slug || "")
+    .replace(/-?photography-?/i, "")
+    .replace(/-/g, " ")
+    .trim()
+    .toLowerCase();
 // Add city to message dynamically
 export const addCityToMessage = (message, city) => {
   if (!city) return message;
@@ -18,7 +23,34 @@ export const addCityToMessage = (message, city) => {
     city.charAt(0).toUpperCase() + city.slice(1).toLowerCase();
   return `${message} in ${formattedCity}.`;
 };
+export const parseFromPath = (from) => {
+  if (!from) return { city: "", category: "" };
 
+  let path = String(from);
+  try {
+    path = decodeURIComponent(path);
+  } catch (e) {}
+
+  const parts = path.split("?")[0].split("/").filter(Boolean);
+  const idx = parts.findIndex((p) => p === "photography-page");
+  if (idx === -1) return { city: "", category: "" };
+
+  const citySlug = idx > 0 ? parts[0] : "";
+  const catSlug = parts[idx + 1] || "";
+
+  const city = citySlug
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (m) => m.toUpperCase())
+    .trim();
+
+  const category = catSlug
+    .replace(/-?photography-?/i, "")
+    .replace(/-/g, " ")
+    .trim()
+    .toLowerCase();
+
+  return { city, category };
+};
 /* ======================================================
    Category Page Messages
 ========================================================= */
@@ -150,12 +182,27 @@ export const chefMessage =
 export const photographyMessage =
   "Hi,I saw your website and want to know more about the Photography services";
 
-export const photographyProductMessage=
-"Hi,I saw your website and want to know more about the Photography services";
+export const photographyProductMessage = (category, city) => {
+  const cityText = city ? ` in ${city}` : "";
 
-export const photographyCheckOutMessage =
-"Hi, I need help completing my photography booking.";
+  return category
+    ? `Hi, I liked your ${category} photography package, can you help me in booking process${cityText}.`
+    : `Hi, I saw your website and want to know more about the Photography services${cityText}.`;
+};
+export const photographyCheckOutMessage = (category, city) => {
+  const cityText = city ? ` in ${city}` : "";
+  const catText = category ? `${category} ` : "";
 
+  return `Hi, I need help completing my ${catText}photography booking${cityText}.`;
+};
+export const photographyContactMessage = (category, city, productName) => {
+  const bookingfor = category
+    ? `${category} photography`
+    : productName || "photography";
+  const cityText = city ? ` for ${city}` : "";
+
+  return `Hi, I want to book ${bookingfor} & need more info${cityText}!`;
+};
 export const youtubeDecorationMessage =
   "Hi, Found your decoration on Youtube. Need details.";
 // Google Ads Messages

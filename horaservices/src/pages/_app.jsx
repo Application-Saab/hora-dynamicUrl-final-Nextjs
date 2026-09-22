@@ -19,6 +19,9 @@ import {
   startMemoryMonitoring,
 } from "@/utils/errorReporter";
 import { useScrollRestoration } from "@/hooks/useScrollRestoration";
+import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
+import { fetchWithError } from "@/utils/fetchWithError";
+import { BASE_URL, CHECK_TOKEN_HEALTH, REFRESH_ACCESS_TOKEN } from "@/utils/apiconstants";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -104,6 +107,76 @@ function MyApp({ Component, pageProps }) {
       f.parentNode.insertBefore(j, f);
       console.log("GTM Script Loaded");
     })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
+  }, []);
+
+  const logout = () => {
+    localStorage.clear();
+    router.push("/");
+  }
+
+  const refreshAccessToken = async () => {
+    const refreshToken = safeGetItem("refreshToken");
+
+    if (!refreshToken) {
+      logout();
+      return null;
+    }
+
+    try {
+      const response = await fetchWithError(`${BASE_URL}${REFRESH_ACCESS_TOKEN}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          refreshToken,
+        }),
+      });
+      
+      if (!response.ok) {
+        logout();
+        return null;
+      }
+      const data = await response.json();
+      safeSetItem("token", data.token);
+
+      return data.token;
+    } catch (error) {
+      logout();
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const accessToken = safeGetItem("token");
+    const checkAuthentication = async () => {
+      try {
+        const response = await fetch(
+          `${BASE_URL}${CHECK_TOKEN_HEALTH}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `${accessToken}`,
+            },
+          },
+        );
+        // Access token valid
+        if (response.ok) {
+          return;
+        }
+
+        // Access token expired
+        if (response.status === 401) {
+          await refreshAccessToken();
+        }
+      } catch (error) {
+        console.error("Authentication check failed", error);
+      }
+    };
+
+    if(accessToken){
+      checkAuthentication();
+    }
   }, []);
 
   const appContent = (

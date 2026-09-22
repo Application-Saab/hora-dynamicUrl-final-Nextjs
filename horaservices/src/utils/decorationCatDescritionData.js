@@ -195,7 +195,7 @@ const DecorationCatDescriptionData = {
     },
     {
         "title": "What All Areas Do You Service for Kids Birthday Party Decoration Delivery?",
-        "htmlContent": `<p>We cover ALL areas in India - Jaipur, Delhi, Mumbai, Kolkata, Chennai, Bengaluru, Hyderabad, Ahmedabad, Pune, Surat, Kanpur, Nagpur, Visakhapatnam, Bhopal, Patna, Vadodara, and more.</p>`
+        "htmlContent": `<p>We cover ALL areas in India - Jaipur, Delhi, Mumbai, Kolkata, Chennai, Bangalore, Hyderabad, Ahmedabad, Pune, Surat, Kanpur, Nagpur, Visakhapatnam, Bhopal, Patna, Vadodara, and more.</p>`
       }
 ,        
     {
@@ -217,9 +217,6 @@ const DecorationCatDescriptionData = {
           </li>
           <li style="margin-right: 15px;">
             <a href='https://horaservices.com/Noida/balloon-decoration/kids-birthday-decoration' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Noida</a>
-          </li>
-          <li style="margin-right: 15px;">
-            <a href='https://horaservices.com/Bengaluru/balloon-decoration/kids-birthday-decoration' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Bengaluru</a>
           </li>
           <li style="margin-right: 15px;">
             <a href='https://horaservices.com/Bangalore/balloon-decoration/kids-birthday-decoration' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Bangalore</a>
@@ -431,7 +428,7 @@ const DecorationCatDescriptionData = {
               <li style="margin-right: 15px;"><a href="https://horaservices.com/ghaziabad/balloon-decoration/baby-shower-decoration" style="color: rgb(150, 82, 141); font-weight: 400; text-decoration: underline;">Ghaziabad</a></li>
               <li style="margin-right: 15px;"><a href="https://horaservices.com/faridabad/balloon-decoration/baby-shower-decoration" style="color: rgb(150, 82, 141); font-weight: 400; text-decoration: underline;">Faridabad</a></li>
               <li style="margin-right: 15px;"><a href="https://horaservices.com/noida/balloon-decoration/baby-shower-decoration" style="color: rgb(150, 82, 141); font-weight: 400; text-decoration: underline;">Noida</a></li>
-              <li style="margin-right: 15px;"><a href="https://horaservices.com/bengaluru/balloon-decoration/baby-shower-decoration" style="color: rgb(150, 82, 141); font-weight: 400; text-decoration: underline;">Bengaluru</a></li>
+              <li style="margin-right: 15px;"><a href="https://horaservices.com/bangalore/balloon-decoration/baby-shower-decoration" style="color: rgb(150, 82, 141); font-weight: 400; text-decoration: underline;">Bangalore</a></li>
               <li style="margin-right: 15px;"><a href="https://horaservices.com/hyderabad/balloon-decoration/baby-shower-decoration" style="color: rgb(150, 82, 141); font-weight: 400; text-decoration: underline;">Hyderabad</a></li>
               <li style="margin-right: 15px;"><a href="https://horaservices.com/mumbai/balloon-decoration/baby-shower-decoration" style="color: rgb(150, 82, 141); font-weight: 400; text-decoration: underline;">Mumbai</a></li>
           </ul>`
@@ -641,7 +638,7 @@ const DecorationCatDescriptionData = {
         },
         {
           title: "What Areas Do you Service for Balloon Bouquets or Boxes?",
-        "htmlContent": `<p>We cover ALL areas in India - Jaipur, Delhi, Mumbai, Kolkata, Chennai, Bengaluru, Hyderabad, Ahmedabad, Pune, Surat, Kanpur, Nagpur, Visakhapatnam, Bhopal, Patna, Vadodara, and more.</p>`
+        "htmlContent": `<p>We cover ALL areas in India - Jaipur, Delhi, Mumbai, Kolkata, Chennai, Bangalore, Hyderabad, Ahmedabad, Pune, Surat, Kanpur, Nagpur, Visakhapatnam, Bhopal, Patna, Vadodara, and more.</p>`
         },
         {
           title: "What are the Major Cities where you provide Balloon Bouquet Gifts?",
