@@ -161,7 +161,12 @@ export default function CatValuePage({
 }) {
   const router = useRouter();
   const { userId } = useSelector((state) => state.auth || {});
-
+const [visitorId, setVisitorId] = useState(null);
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    setVisitorId(localStorage.getItem("VISITOR_ID") || null);
+  }
+}, []);
   // Prefer SSR props; fallback to router for client navigations
   const catValue = router.query.catValue || initialCatValue;
   const city = ssrCity || router.query.city || null;
@@ -447,7 +452,7 @@ const formatCity = (c) =>
             </div>
           </div>
 
-          <EventDateBanner userId={userId} />
+         <EventDateBanner userId={userId} visitorId={visitorId} />
 
           {displayedProducts.length > 0 ? (
             <PhotoPackageGrid
