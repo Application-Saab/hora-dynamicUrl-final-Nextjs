@@ -12,7 +12,7 @@ import { categoryToWeblinkFolderName } from "@/utils/photoCategories";
 const MOMENT_SLUG_TO_KEY = {
   "pre-wedding": "pre-wedding",
   "haldi-mehndi": "haldi-mahandi",
-  wedding: "wedding",
+  "wedding": "wedding",
 };
 
 const getDiscountedPrice = (price = 0) => {

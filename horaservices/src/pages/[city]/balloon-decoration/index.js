@@ -50,11 +50,6 @@ export default function BalloonDecorationCityPage({
           content="index, follow"
         />
 
-        <link
-          rel="canonical"
-          href={`https://horaservices.com/${citySlug}/balloon-decoration`}
-        />
-
         <meta
           property="og:url"
           content={`https://horaservices.com/${citySlug}/balloon-decoration`}

@@ -27,43 +27,49 @@ export async function getServerSideProps(context) {
     context.query?.venueId ||
     null;
 
-  console.log("[GSSP city venue]", { citySlug, venueId, query: context.query });
-
   let initialEventDetails = null;
   let initialPackages = [];
   let initialCategories = [];
 
   if (venueId) {
+    // Details
     try {
       const res = await fetch(
         `${BASE_URL}${GET_VENUE_DETAILS_BY_ID}/${venueId}`,
         { headers: { Accept: "application/json" } }
       );
-      const json = await res.json();
-      console.log("[GSSP] details status", res.status, pickVenue(json)?.venueName);
-      initialEventDetails = pickVenue(json);
+      if (res.ok) {
+        const json = await res.json();
+        initialEventDetails = pickVenue(json);
+      }
     } catch (e) {
       console.error("[GSSP] details", e.message);
     }
 
+    // Packages
     try {
       const res = await fetch(
         `${BASE_URL}${GET_VENUE_PACKAGES_BY_VENUE_ID}/${venueId}`,
         { headers: { Accept: "application/json" } }
       );
-      const json = await res.json();
-      initialPackages = Array.isArray(json?.data) ? json.data : [];
+      if (res.ok) {
+        const json = await res.json();
+        initialPackages = Array.isArray(json?.data) ? json.data : [];
+      }
     } catch (e) {
       console.error("[GSSP] packages", e.message);
     }
   }
 
+  // Categories (always)
   try {
     const res = await fetch(`${BASE_URL}${GET_VENUE_CATEGORIES_LIST}`, {
       headers: { Accept: "application/json" },
     });
-    const json = await res.json();
-    initialCategories = json?.data || [];
+    if (res.ok) {
+      const json = await res.json();
+      initialCategories = json?.data || [];
+    }
   } catch (_) {}
 
   return {

@@ -18,7 +18,7 @@ import NewBornBanner from "../assets/photographyCategories/Photography12.webp";
 import CorporateBanner from "../assets/photographyCategories/photography13.webp"
 import welcomebabyBanner from "../assets/photographyCategories/photography14.webp"
 export const photoCat = [
-  {
+{
     id: "1",
     image: birthday,
     name: "Birthday-Photography",
@@ -124,8 +124,38 @@ export const photoCat = [
     slug: "intimate-gathering",
     imgAlt: "Intimate-Gathering",
   },
-    {
+  {
     id: "12",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/Wedding-Photography.webp",
+    name: "Pre Wedding Photography",
+    subCategory: "Wedding-Photography",
+    catValue: "Wedding-Photography",
+    slug: "pre-wedding",
+    imgAlt: "Wedding photography with cinematic shots",
+  },
+  {
+    id: "13",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/Wedding-Photography.webp",
+    name: "Haldi Mehandi Photography",
+    subCategory: "Wedding-Photography",
+    catValue: "Wedding-Photography",
+    slug: "haldi-mehndi",
+    imgAlt: "Wedding photography with cinematic shots",
+  },
+  {
+    id: "14",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/Wedding-Photography.webp",
+    name: "Wedding Photography",
+    subCategory: "Wedding-Photography",
+    catValue: "Wedding-Photography",
+    slug: "wedding",
+    imgAlt: "Wedding photography with cinematic shots",
+  },
+  {
+    id: "15",
     image:
       "https://horaservices.com/api/uploads/compressed_webp/New-Born-Baby-Photography.webp",
     name: "Corporate Photography",
@@ -134,8 +164,8 @@ export const photoCat = [
     slug: "corporate-photography",
     imgAlt: "Corporate-Photography",
   },
-   {
-    id: "13",
+  {
+    id: "16",
     image:
       "https://horaservices.com/api/uploads/compressed_webp/New-Born-Baby-Photography.webp",
     name: "Welcome Baby Photography",

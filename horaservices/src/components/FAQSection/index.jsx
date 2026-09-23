@@ -1,27 +1,29 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import cancellation from "../../assets/Cancellation.svg"; // Adjust path if needed
-import Arrow from "../../assets/arrow.png"
-const FAQSection = ({ faqData, heading = "FAQ" }) => {
+import cancellation from "../../assets/Cancellation.svg";
+import Arrow from "../../assets/arrow.png";
+
+const FAQSection = ({ faqData = [], heading = "FAQ" }) => {
   const [openIndex, setOpenIndex] = useState(null);
 
   const handleToggle = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  const getQuestion = (item) => item?.question || item?.name || "Untitled Question";
-  const getAnswer = (item) => item?.answer || item?.acceptedAnswer?.text || "No answer available.";
+  const getQuestion = (item) =>
+    item?.question || item?.name || "Untitled Question";
+  const getAnswer = (item) =>
+    item?.answer || item?.acceptedAnswer?.text || "No answer available.";
 
   return (
-    //  style={{ marginTop: "40px", padding: "0 16px" }}
-    <div style={{ margin: "auto", maxWidth:"480px"}}>
+    <div style={{ margin: "auto", maxWidth: "480px" }}>
       <div
         style={{
           display: "flex",
           alignItems: "center",
           gap: "10px",
-          marginTop:"10px",
+          marginTop: "10px",
           marginBottom: "10px",
           marginLeft: "10px",
         }}
@@ -42,75 +44,81 @@ const FAQSection = ({ faqData, heading = "FAQ" }) => {
         </h2>
       </div>
 
-      {faqData.map((item, index) => (
-        <div
-          key={index}
-          style={{
-            background: "#fff",
-            borderRadius: "10px",
-            padding: "12px 14px",
-            marginBottom: "12px",
-            border:
-              openIndex === index ? "1.5px solid #97538c" : "2px solid #ddd",
-            transition: "border 0.3s ease",
-          }}
-        >
+      {faqData.map((item, index) => {
+        const isOpen = openIndex === index;
+
+        return (
           <div
-            onClick={() => handleToggle(index)}
+            key={index}
             style={{
-              cursor: "pointer",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              fontWeight: 600,
-              fontSize: "15px",
-              color: "#3b3b3b",
+              background: "#fff",
+              borderRadius: "10px",
+              padding: "12px 14px",
+              marginBottom: "12px",
+              border: isOpen ? "1.5px solid #97538c" : "2px solid #ddd",
+              transition: "border 0.3s ease",
             }}
           >
-            <span>{getQuestion(item)}</span>
-
+            {/* Question - always visible */}
             <div
+              onClick={() => handleToggle(index)}
               style={{
-                width: "20px",
-                height: "20px",
-                minWidth: "20px",
-                borderRadius: "50%",
-                backgroundColor: "#97538c",
+                cursor: "pointer",
                 display: "flex",
+                justifyContent: "space-between",
                 alignItems: "center",
-                justifyContent: "center",
-                marginLeft: "10px",
+                fontWeight: 600,
+                fontSize: "15px",
+                color: "#3b3b3b",
               }}
             >
-              <span
+              <span>{getQuestion(item)}</span>
+
+              <div
                 style={{
-                  color: "#fff",
-                  fontSize: "10px",
-                  transform:
-                    openIndex === index ? "rotate(180deg)" : "rotate(0deg)",
-                  transition: "transform 0.3s ease",
-                  display: "inline-block",
+                  width: "20px",
+                  height: "20px",
+                  minWidth: "20px",
+                  borderRadius: "50%",
+                  backgroundColor: "#97538c",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginLeft: "10px",
                 }}
               >
-                <Image src={Arrow} width={10} height={13}/>
-              </span>
+                <span
+                  style={{
+                    color: "#fff",
+                    fontSize: "10px",
+                    transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "transform 0.3s ease",
+                    display: "inline-block",
+                  }}
+                >
+                  <Image src={Arrow} width={10} height={13} alt="toggle" />
+                </span>
+              </div>
             </div>
-          </div>
 
-          {openIndex === index && (
+            {/* Answer - ALWAYS in DOM for SEO, CSS se hide/show */}
             <div
               style={{
-                marginTop: "10px",
+                marginTop: isOpen ? "10px" : "0",
                 color: "#555",
                 fontSize: "14px",
                 lineHeight: "1.5",
+                maxHeight: isOpen ? "500px" : "0",
+                overflow: "hidden",
+                opacity: isOpen ? 1 : 0,
+                transition: "max-height 0.3s ease, opacity 0.25s ease, margin-top 0.3s ease",
               }}
             >
               {getAnswer(item)}
             </div>
-          )}
-        </div>
-      ))}
+          </div>
+        );
+      })}
     </div>
   );
 };

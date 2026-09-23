@@ -1,4 +1,3 @@
-// components/VenueCommon/VenuePage.jsx
 import React, { useEffect, useLayoutEffect, useState, useRef } from "react";
 import "../../pages/venue-list/venue/venue.css";
 import VenueWallSection from "@/components/wonderland/event-wall/VenueWallSection";
@@ -36,21 +35,23 @@ const VenuePage = ({
   const { venueid: queryVenueId, city: queryCity } = router.query;
   const venueId = queryVenueId || propVenueId;
 
+  // SSR data ko seedha state mein daalo
   const [eventDetails, setEventDetails] = useState(initialEventDetails);
+  const [venuePackages, setVenuePackages] = useState(initialPackages || []);
+  const [venueCategories, setVenueCategories] = useState(
+    initialCategories || [],
+  );
   const [userData, setUserData] = useState({});
-  const [fullPageLoader, setFullPageLoader] = useState(!initialEventDetails);
+  const [fullPageLoader, setFullPageLoader] = useState(
+    !initialEventDetails && !(initialPackages?.length > 0),
+  );
   const [showGuestLoginModal, setShowGuestLoginModal] = useState(false);
   const [showHostActionSection, setShowHostActionSection] = useState(false);
-  // Hydration-safe — localStorage sirf client pe
   const [loggedinUserId, setLoggedinUserId] = useState("");
   const [authReady, setAuthReady] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [pushRsvpClick, setPushRsvpClick] = useState(false);
   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
-  const [venuePackages, setVenuePackages] = useState(initialPackages || []);
-  const [venueCategories, setVenueCategories] = useState(
-    initialCategories || [],
-  );
 
   const {} = useRsvpStatus(venueId, skipRsvpCheck);
   const { data } = useApi(`${GET_VENUE_CATEGORIES_LIST}`, "get");
@@ -102,30 +103,26 @@ const VenuePage = ({
       .toLowerCase()
       .replace(/\s+/g, "-");
 
-  // city for path
   const citySlug = propCity
     ? slugify(propCity)
     : queryCity
       ? slugify(queryCity)
       : "";
 
-  // venue id (content key)
   const idForCanonical =
     (typeof venueId === "string" && venueId) ||
     (Array.isArray(venueId) ? venueId[0] : "") ||
     "";
 
-  // ✅ Canonical = path + only venueid (no guests/parking/rooms/utm)
   const canonicalUrl = (() => {
     const path = citySlug
       ? `${SITE}/${citySlug}/venue-list/venue`
       : `${SITE}/venue-list/venue`;
-
     if (!idForCanonical) return path;
     return `${path}?venueid=${encodeURIComponent(idForCanonical)}`;
   })();
 
-  // ----- Auth -----
+  // ----- Auth (client only) -----
   useEffect(() => {
     const id = safeGetItem("userID") || "";
     setLoggedinUserId(id);
@@ -146,15 +143,14 @@ const VenuePage = ({
     };
   }, []);
 
-  // Modal sirf auth check ke baad
   useEffect(() => {
     if (!router.isReady || !authReady) return;
-
     if (venueId && !loggedinUserId) {
       setShowGuestLoginModal(true);
     } else {
       setShowGuestLoginModal(false);
     }
+    // Loader hamesha band kar do jab tak SSR data hai
     setFullPageLoader(false);
   }, [router.isReady, authReady, venueId, loggedinUserId]);
 
@@ -172,21 +168,14 @@ const VenuePage = ({
     }
   }, [data]);
 
-  // ----- Details / packages / user -----
+  // ----- Client-side refresh (logged-in users) -----
   useLayoutEffect(() => {
-    if (!venueId) return;
-    // Guest + SSR data → skip client fetch
-    if (initialEventDetails && !loggedinUserId) {
-      setFullPageLoader(false);
-      return;
-    }
-    if (!loggedinUserId) return;
+    if (!venueId || !loggedinUserId) return;
 
     const cacheKey = `venue-details-${venueId}`;
     const cached = getPageCache(cacheKey);
     if (cached) {
       setEventDetails(cached.data);
-      setFullPageLoader(false);
       if (!cached.isStale) return;
     }
 
@@ -214,9 +203,8 @@ const VenuePage = ({
   }, [venueId, loggedinUserId]);
 
   useLayoutEffect(() => {
-    if (!venueId) return;
-    if (initialPackages?.length && !loggedinUserId) return;
-    if (!loggedinUserId) return;
+    if (!venueId || !loggedinUserId) return;
+    if (initialPackages?.length) return; // already have SSR data
 
     const cacheKey = `venue-packages-${venueId}`;
     const cached = getPageCache(cacheKey);
@@ -258,11 +246,9 @@ const VenuePage = ({
     return () => clearTimeout(t);
   }, [eventDetails, loggedinUserId]);
 
-  // Back: sirf close, pushState mat
-  // Back button handling — modal open/close ke history state ko sahi se manage karo
+  // Modal history handling
   const modalHistoryPushedRef = useRef(false);
 
-  // Modal open hone par ek hi baar pushState
   useEffect(() => {
     const anyModalOpen = !!(selectedPackage || showGuestLoginModal);
     if (anyModalOpen && !modalHistoryPushedRef.current) {
@@ -271,7 +257,6 @@ const VenuePage = ({
     }
   }, [selectedPackage, showGuestLoginModal]);
 
-  // Sirf ek jagah se state clear hoga — popstate ke through
   useEffect(() => {
     const handlePopState = () => {
       if (modalHistoryPushedRef.current) {
@@ -284,32 +269,14 @@ const VenuePage = ({
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
-  // Cross/outside click bhi isi function se close karega
   const closeModal = () => {
     if (modalHistoryPushedRef.current) {
-      window.history.back(); // yahi se popstate fire hoga, state khud-ba-khud clear hoga
+      window.history.back();
     } else {
       setSelectedPackage(null);
       setShowGuestLoginModal(false);
     }
   };
-  useEffect(() => {
-    const handleBack = () => {
-      if (selectedPackage) {
-        modalHistoryPushedRef.current = false;
-        setSelectedPackage(null);
-        return;
-      }
-      if (showGuestLoginModal) {
-        modalHistoryPushedRef.current = false;
-        setShowGuestLoginModal(false);
-        return;
-      }
-    };
-
-    window.addEventListener("popstate", handleBack);
-    return () => window.removeEventListener("popstate", handleBack);
-  }, [selectedPackage, showGuestLoginModal]);
 
   const PHONE = "7338584828";
 
@@ -333,7 +300,10 @@ Please share more details and availability.`;
     );
   };
 
-  if (fullPageLoader && !eventDetails) return <InvitePageFlashLoader />;
+  // Sirf tab full loader jab kuch bhi data na ho
+  if (fullPageLoader && !eventDetails && venuePackages.length === 0) {
+    return <InvitePageFlashLoader />;
+  }
 
   return (
     <>
@@ -360,29 +330,32 @@ Please share more details and availability.`;
 
       <div className="invite-page">
         <div className="invite-page-container">
+          {/* Template / Banner */}
           <div
             className="invite-template-shell"
             style={{ position: "relative", marginTop: "12px" }}
           >
-            {fetchEventLoading ? (
+            {fetchEventLoading && !eventDetails ? (
               <TemplatecardSkeleton
                 width="100%"
                 height="200px"
                 borderRadius="10px"
               />
             ) : (
-              
-                <TemplateRenderer
-                  fetchEventLoading={fetchEventLoading}
-                  eventDetails={eventDetails}
-                  orderDetails={eventDetails}
-                  isHost={true}
-                  isVenue={true}
-                  topBannerOverlayContent={<VenueNameOverlay venueName={eventDetails?.venueName} />}
-                  />
+              <TemplateRenderer
+                fetchEventLoading={fetchEventLoading}
+                eventDetails={eventDetails}
+                orderDetails={eventDetails}
+                isHost={true}
+                isVenue={true}
+                topBannerOverlayContent={
+                  <VenueNameOverlay venueName={eventDetails?.venueName} />
+                }
+              />
             )}
           </div>
 
+          {/* Address - SSR se aayega agar data hai */}
           {(eventDetails?.location || eventDetails?.googleMapLink) && (
             <div className="invite-address-section">
               <VenueAddressSection
@@ -392,6 +365,7 @@ Please share more details and availability.`;
             </div>
           )}
 
+          {/* PACKAGES - yeh ab page source mein full HTML ke saath aayega */}
           {venuePackages.length > 0 && (
             <div
               className="whos-joining-container"
@@ -409,9 +383,9 @@ Please share more details and availability.`;
                   gap: "10px",
                 }}
               >
-                {venuePackages.map((item, index) => (
+                {venuePackages.map((item) => (
                   <VenueFoodCard
-                    key={index}
+                    key={item._id || item.title}
                     item={item}
                     onView={() => setSelectedPackage(item)}
                   />
@@ -426,6 +400,7 @@ Please share more details and availability.`;
             <span className="venue-tax-line" />
           </div>
 
+          {/* Highlights + Categories */}
           <div className="enquire-card">
             <VenueHighlights
               venue={venueForHighlights}

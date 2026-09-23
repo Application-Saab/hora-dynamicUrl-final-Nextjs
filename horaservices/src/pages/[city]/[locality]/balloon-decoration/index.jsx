@@ -1,6 +1,6 @@
 import SectionDescription from "@/components/Description";
 import FAQSection from "@/components/FAQSection";
-import LocalitiesSection from "@/components/LocalitiesSection";
+import { OtherDecorationCategorySection } from "@/components/LocalitiesSection";
 import Decoration from "@/components/Decoration/Decoration";
 
 import { decorationCityFAQData } from "@/utils/DecorationCityFAQ";
@@ -49,11 +49,13 @@ function DecorationLocalityPage({ city, citySlug, localitySlug }) {
 
   const cityDecorationFAQ = decorationCityFAQData(city);
 
-  const cityDescription = decorationCityDescription(city);
+  const cityDescription = decorationCityDescription;
 
   const decorationCategory = decCat.map((item) => ({
-    name: `${item.name} in ${city}`,
-    slug: item.slug || item.name.toLowerCase().replace(/\s+/g, "-"),
+    name: `${item.name} Decoration in ${city}`,
+    slug: item.slug || item.catValue.toLowerCase().replace(/\s+/g, "-"),
+    image: item.image,
+    imgAlt: item.imgAlt,
   }));
 
   const handleCategoryClick = (slug) => {
@@ -70,11 +72,14 @@ function DecorationLocalityPage({ city, citySlug, localitySlug }) {
 
       <SectionDescription paragraphs={cityDescription} />
 
-      <LocalitiesSection
+      <OtherDecorationCategorySection
         title={`Explore Other Decoration Category In ${city}`}
         localities={decorationCategory}
         city={city}
         handleClick={handleCategoryClick}
+        citySlug={citySlug}
+        href="/balloon-decoration"
+        localityFromPage={localitySlug}
       />
 
       <div className="my-4 container">
