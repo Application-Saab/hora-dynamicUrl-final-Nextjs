@@ -11,19 +11,12 @@ const folderToSubCategory = {
   "anniversary poses web link": "anniversary-photography",
   "House warming weblink":      "house-warming-photography",
   "bacherrolerate":             "bachelorette-photography",
+  "corporatePoselink":          "corporate-photography",
+  "welcomeBaby_poseLink":       "welcome-baby-photography"
 };
-
-const getSubCategory = (folderName) => {
-  if (!folderName || typeof folderName !== "string") return null;
-  return folderToSubCategory[folderName.trim()] || null;
-};
-
-// true  -> is folder ka apna category page hai
-// false -> nahi hai (Welcome Baby, Corporate etc.) -> WhatsApp par bhejna hai
-export const hasWeblinkCategory = (folderName) => !!getSubCategory(folderName);
 
 export const getWeblinkPhotosUrl = (folderName) => {
-  const subCategory = getSubCategory(folderName);
-  if (!subCategory) return "/photography-page"; // fallback (baaki jagah ke liye as it is)
+  const subCategory = folderToSubCategory[folderName];
+  if (!subCategory) return "/photography"; // fallback
   return `/photography-page/${subCategory}`;
 };

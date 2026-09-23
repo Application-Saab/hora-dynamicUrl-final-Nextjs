@@ -29,7 +29,9 @@ export const contactUsRedirect = ({
       "intimate-gathering": "intimate gathering photography",
       "pre-wedding" : "pre wedding photography",
       "wedding"  : "wedding photography",
-      "haldi-mehndi" : "haldi / mehandi photography"
+      "haldi-mehndi" : "haldi / mehandi photography",
+      "corporate-photography":"Corporate-Photography",
+      "welcome-baby-photography":"Welcome-Baby-Photography"
     },
     decoration: {
       "kids-birthday-decoration": "kids birthday decoration",

@@ -35,6 +35,7 @@ import { IoIosCloudDone } from "react-icons/io";
 import Lock from '../../assets/Lock.svg'
 import lockerBannerimage from '../../assets/lockerBanner.svg'
 import LockerPopup from "@/components/image-galleries/LockerPopup";
+import Router from "next/router";
 
 import {
   deleteFromOPFS,
@@ -422,72 +423,82 @@ useEffect(() => {
   }, [selectedIndex]);
 
 
-  useEffect(() => {
-    const pushTrap = () => {
-      if (!window.history.state?.exitTrap) {
-        window.history.pushState({ exitTrap: true }, "", window.location.href);
-      }
-    };
+  const exitStageRef = useRef(0);
+  const trapInstalledRef = useRef(false);
 
-    pushTrap();
-
-    const handlePopState = () => {
-      if (selectedIndex !== null) {
-        setSelectedIndex(null);
-        pushTrap();
-        return;
-      }
-
-      if (showCameraPopup) {
-        setShowCameraPopup(false);
-        pushTrap();
-        return;
-      }
-
-      if (showCreateFolderPopup) {
-        setShowCreateFolderPopup(false);
-        pushTrap();
-        return;
-      }
-
-      if (showGuestModal) {
-        setShowGuestModal(false);
-        pushTrap();
-        return;
-      }
-
-      const exitPopupShown =
-        safeGetSessionItem("exitPopupShown") === "true";
-
-      if (exitPopupShown) {
-        window.history.back();
-        return;
-      }
-
-      if (!showExitPopup) {
-        setShowExitPopup(true);
-        pushTrap();
-      } else {
-        window.history.back();
-      }
-    };
-
-    window.addEventListener("popstate", handlePopState);
-
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, [
+  const uiRef = useRef({});
+  uiRef.current = {
     selectedIndex,
     showCameraPopup,
     showCreateFolderPopup,
     showGuestModal,
-    showExitPopup,
-  ]);
+    showAddToFolderPopup,
+    showLockerPopup,
+  };
+
+  useEffect(() => {
+    const pushTrap = () =>
+      window.history.pushState(
+        { ...(window.history.state || {}), exitTrap: true },
+        "",
+        window.location.href
+      );
+
+    if (!trapInstalledRef.current) {
+      trapInstalledRef.current = true;
+      pushTrap();
+    }
+
+    const gestureEvents = ["pointerup", "touchend", "click", "keydown"];
+    let gestureDone = false;
+    const onGesture = () => {
+      if (gestureDone) return;
+      gestureDone = true;
+      gestureEvents.forEach((e) => window.removeEventListener(e, onGesture));
+      if (exitStageRef.current === 0) pushTrap();
+    };
+    gestureEvents.forEach((e) =>
+      window.addEventListener(e, onGesture, { passive: true })
+    );
+
+    Router.beforePopState(() => false);
+
+    const onPopState = () => {
+      const ui = uiRef.current;
+
+      if (ui.selectedIndex !== null) { setSelectedIndex(null); pushTrap(); return; }
+      if (ui.showCameraPopup) { setShowCameraPopup(false); pushTrap(); return; }
+      if (ui.showCreateFolderPopup) { setShowCreateFolderPopup(false); pushTrap(); return; }
+      if (ui.showGuestModal) { setShowGuestModal(false); pushTrap(); return; }
+      if (ui.showAddToFolderPopup) { setShowAddToFolderPopup(false); pushTrap(); return; }
+      if (ui.showLockerPopup) {
+        setShowLockerPopup(false);
+        setPendingLockerImage(null);
+        pushTrap();
+        return;
+      }
+
+      if (exitStageRef.current === 0) {
+        exitStageRef.current = 1;
+        setShowExitPopup(true);
+        pushTrap();
+        return;
+      }
+
+      Router.replace("/");
+    };
+
+    window.addEventListener("popstate", onPopState);
+
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+      gestureEvents.forEach((e) => window.removeEventListener(e, onGesture));
+      Router.beforePopState(() => true); 
+    };
+  }, []); 
 
   const closeExitPopup = () => {
-    setShowExitPopup(false);
-    safeSetSessionItem("exitPopupShown", "true");
+    setShowExitPopup(false); 
   };
 
 

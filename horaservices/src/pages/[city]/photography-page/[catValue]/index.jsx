@@ -74,6 +74,8 @@ export async function getServerSideProps(context) {
     "pre-wedding": "Wedding-Photography",
     "haldi-mehndi": "Wedding-Photography",
     "wedding": "Wedding-Photography",
+    "corporate-photography":"Corporate-Photography",
+    "welcome-baby-photography":"Welcome-Baby-Photography"
   };
 
   function capitalizeHyphenatedString(str) {
