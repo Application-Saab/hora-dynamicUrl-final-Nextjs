@@ -123,6 +123,36 @@ export const photoCat = [
     slug: "intimate-gathering",
     imgAlt: "Intimate-Gathering",
   },
+  {
+    id: "11",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/Wedding-Photography.webp",
+    name: "Pre Wedding Photography",
+    subCategory: "Wedding-Photography",
+    catValue: "Wedding-Photography",
+    slug: "pre-wedding",
+    imgAlt: "Wedding photography with cinematic shots",
+  },
+  {
+    id: "12",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/Wedding-Photography.webp",
+    name: "Haldi Mehandi Photography",
+    subCategory: "Wedding-Photography",
+    catValue: "Wedding-Photography",
+    slug: "haldi-mehndi",
+    imgAlt: "Wedding photography with cinematic shots",
+  },
+  {
+    id: "13",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/Wedding-Photography.webp",
+    name: "Wedding Photography",
+    subCategory: "Wedding-Photography",
+    catValue: "Wedding-Photography",
+    slug: "wedding",
+    imgAlt: "Wedding photography with cinematic shots",
+  },
 ];
 
 export const seoData = {

@@ -19,12 +19,14 @@ const PhotoGraphyCard = ({
     );
 
     const finalSubCategory = categoryItem?.subCategory || subCategory;
+    const slug = categoryItem?.slug;
+
     if (!finalSubCategory) return;
 
     const citySlug = city?.toLowerCase();
     const localitySlug = locality?.toLowerCase();
 
-    let path = `/photography-page/${finalSubCategory}`;
+    let path = `/photography-page/${slug}`;
 
     if (citySlug && localitySlug) {
       path = `/${citySlug}/${localitySlug}${path}`;

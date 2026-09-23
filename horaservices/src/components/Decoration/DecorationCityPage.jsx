@@ -1,5 +1,5 @@
 import SectionDescription from "@/components/Description";
-import LocalitiesSection from "@/components/LocalitiesSection";
+import LocalitiesSection, { OtherDecorationCategorySection } from "@/components/LocalitiesSection";
 import Decoration from "@/components/Decoration/Decoration";
 import { decorationCityFAQData } from "@/utils/DecorationCityFAQ";
 import { decorationCityDescription } from "@/utils/DecorationDescription";
@@ -76,7 +76,7 @@ const [citySlug, setCitySlug] = useState(serverCitySlug || "");
   const cityDescriptionSections = decorationCityDescription;
 
   const decorationCategory = decCat.map((item) => ({
-    name: `${item.catValue} in ${city}`,
+    name: `${item.name} Decoration in ${city}`,
     slug: item.slug || item.catValue.toLowerCase().replace(/\s+/g, "-"),
     image: item.image,
     imgAlt: item.imgAlt,
@@ -112,18 +112,22 @@ const [citySlug, setCitySlug] = useState(serverCitySlug || "");
         title={`${city} localities`}
         localities={localities}
         handleClick={localityHandleClick}
+        citySlug={citySlug}
+        href="/balloon-decoration"
       />
 
       <CityDecorationlanding data={CityDecorationlandingPage[city?.toLowerCase()]} />
 
       <SectionDescription sections={cityDescriptionSections} />
 
-      <LocalitiesSection
+      <OtherDecorationCategorySection
         key={`cat-${city}`}
         title={`Explore Other Decoration Category In ${city}`}
         localities={decorationCategory}
         city={city}
         handleClick={handleCategoryClick}
+        citySlug={citySlug}
+        href="/balloon-decoration"
       />
       <div className="tab-section-details-productpage">
         <FAQSection faqData={cityDecorationFAQ} />

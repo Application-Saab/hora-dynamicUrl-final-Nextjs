@@ -156,6 +156,8 @@ const PhotographyCityPage = ({
         title={`${city} localities`}
         localities={cityLocalitiesList}
         handleClick={localityHandleClick}
+        href="/photography-page"
+        citySlug={citySlug}
       />
 
       <div className="tab-section-details-productpage">

@@ -17,7 +17,7 @@ import { categoryToWeblinkFolderName } from "@/utils/photoCategories";
 const MOMENT_SLUG_TO_KEY = {
   "pre-wedding": "pre-wedding",
   "haldi-mehndi": "haldi-mahandi",
-  wedding: "wedding",
+  "wedding": "wedding",
 };
 
 const getDiscountedPrice = (price = 0) => {
@@ -71,6 +71,9 @@ export async function getServerSideProps(context) {
     "bachelorette-photography": "Bachelorette-Photography",
     "maternity-photography": "Maternity-Photography",
     "new-born-baby-photography": "New-Born-Baby-Photography",
+    "pre-wedding": "Wedding-Photography",
+    "haldi-mehndi": "Wedding-Photography",
+    "wedding": "Wedding-Photography",
   };
 
   function capitalizeHyphenatedString(str) {

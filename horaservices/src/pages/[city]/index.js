@@ -2,10 +2,7 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 
 import cityData from "@/utils/cityData";
-import {
-  isValidCitySlug,
-  getCityNameFromSlug,
-} from "@/utils/validCities";
+import { isValidCitySlug, getCityNameFromSlug } from "@/utils/validCities";
 
 import LocalitiesSection from "@/components/LocalitiesSection";
 import HomeContent from "@/components/HomeContent";
@@ -34,9 +31,7 @@ export default function CityPage({ citySlug, cityName }) {
   const localities = cityData[citySlug]?.cityLocalitiesList || [];
 
   const localityHandleClick = (localityName) => {
-    const formattedLocality = localityName
-      .replace(/\s+/g, "-")
-      .toLowerCase();
+    const formattedLocality = localityName.replace(/\s+/g, "-").toLowerCase();
 
     router.push(`/${citySlug}/${formattedLocality}`);
   };
@@ -55,10 +50,7 @@ export default function CityPage({ citySlug, cityName }) {
 
         <meta name="robots" content="index,follow" />
 
-        <link
-          rel="canonical"
-          href={`https://horaservices.com/${citySlug}`}
-        />
+        <link rel="canonical" href={`https://horaservices.com/${citySlug}`} />
 
         <meta
           property="og:title"
@@ -101,7 +93,7 @@ export default function CityPage({ citySlug, cityName }) {
         key={citySlug}
         title={`${cityName} Localities`}
         localities={localities}
-        handleClick={localityHandleClick}
+        citySlug={citySlug}
       />
     </>
   );
