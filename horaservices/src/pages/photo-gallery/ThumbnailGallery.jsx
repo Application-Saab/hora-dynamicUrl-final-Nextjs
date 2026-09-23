@@ -460,7 +460,7 @@ const ThumbnailGallery = ({
                     w: dimensions.w,
                     h: dimensions.h,
                   }
-                : item
+                : item 
             )
           );
         }
@@ -954,6 +954,7 @@ allRows.forEach(
                     >
                       <img
                         src={
+                          t.thumbnailImageUrl ||
                           t.originalUrl ||
                           t.url
                         }
