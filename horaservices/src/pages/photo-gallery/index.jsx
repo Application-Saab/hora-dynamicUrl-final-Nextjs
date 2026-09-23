@@ -19,7 +19,6 @@ import Gift from "@/assets/poselink/Gift.svg";
 import Planingbanner from "@/assets/poselink/planingbanner.webp";
 import image1 from "@/assets/poselink/image1.jpeg";
 import image2 from "@/assets/poselink/image2.jpeg";
-import collageImage from "@/assets/poselink/collageImage.webp";
 import trustimage from "@/assets/poselink/trustedimage.webp";
 import { getBannerConfig, getPlanningCardData, getTrustedCardData } from "@/utils/bannerConfig";
 import { getWeblinkPhotosUrl } from "@/utils/Getphotocategoryurl.js";
@@ -296,7 +295,7 @@ const PhotoGallery = ({ folderName: folderNameProp, customerId: customerIdProp, 
     </div>,
     <div ref={trustedRef} key="trusted">
       <TrustedPeopleCard
-        collageImage={collageImage}
+          collageImage={trustedData.collageImage}
         title={trustedData.title}
         onClick={handleViewPackages}
       />

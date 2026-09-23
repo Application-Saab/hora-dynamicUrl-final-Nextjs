@@ -26,7 +26,9 @@ import engagementCollage from "@/assets/poselink/engagement-collage.webp";
 import anniversaryCollage from "@/assets/poselink/anniversary-collage.webp";
 import houseWarmingCollage from "@/assets/poselink/housewarming-collage.webp";
 import bacholerateCollage from "@/assets/poselink/bachelorette-collage.webp";
-import trustimage from "@/assets/poselink/trustedimage.webp"; 
+import welcomeBabyBg from "@/assets/poselink/welcomeBabyBg.webp";
+import corporateBg from "@/assets/poselink/corporateBg.webp";
+import trustimage from "@/assets/poselink/collageImage.webp";
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=1200&q=80";
 
 // ✅ Sabke liye same fixed values
@@ -51,6 +53,8 @@ const folderMap = {
   "anniversary poses web link": { image: anniversaryBg,  eventName: "Anniversary",      planningTitle: "Planning Anniversary?",     planningDesc: "See anniversary packages to relive your beautiful love story.",chatTitle: "Free Anniversary Planning Chat" ,collageImage: anniversaryCollage  },
   "House warming weblink":      { image: houseWarmingBg, eventName: "House Warming",    planningTitle: "Planning House Warming?",   planningDesc: "See house warming packages to capture your new beginning.",chatTitle: "Free House Warming Planning Chat",collageImage: houseWarmingCollage },
   "bacherrolerate":             { image: bachelorateBg,  eventName: "Bachelorette",     planningTitle: "Planning Bachelorette?",    planningDesc: "See bachelorette packages for a fun celebration photoshoot.",chatTitle: "Free Bachelorette Planning Chat", collageImage: bacholerateCollage  },
+  "welcomeBaby_poseLink":       { image: welcomeBabyBg,  eventName: "Welcome Baby",     planningTitle: "Planning Welcome Baby?",    planningDesc: "See welcome baby photography packages to capture every precious moment.",chatTitle: "Free Welcome Baby Planning Chat",},
+  "corporatePoselink":          { image: corporateBg,    eventName: "Corporate",        planningTitle: "Planning Corporate Event?", planningDesc: "See corporate photography packages to capture your important business moments.",chatTitle: "Free Corporate Planning Chat",},
 };
 export const getBannerConfig = (folderName) => {
   const matched = folderMap[folderName];
