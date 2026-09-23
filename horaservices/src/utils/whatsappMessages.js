@@ -277,4 +277,4 @@ export const foodSelectDateMessage =
   "Hi, I need help selecting the date for party food delivery or live catering.";
 
 export const photographyMainMessage =
-  "Hi, I saw your website and want to know more about the photography services.";
+  "Hi, I saw your website and want to know more about the photography services";
