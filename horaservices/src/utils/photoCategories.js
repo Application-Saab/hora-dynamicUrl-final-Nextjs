@@ -15,7 +15,8 @@ import BabyShowerBanner from "../assets/photographyCategories/Photography8.webp"
 import BacheloretteBanner from "../assets/photographyCategories/Photography7.webp";
 import MaternityBanner from "../assets/photographyCategories/Photography11.webp";
 import NewBornBanner from "../assets/photographyCategories/Photography12.webp";
-
+import CorporateBanner from "../assets/photographyCategories/photography13.webp"
+import welcomebabyBanner from "../assets/photographyCategories/photography14.webp"
 export const photoCat = [
   {
     id: "1",
@@ -114,7 +115,7 @@ export const photoCat = [
     imgAlt: "Cute newborn photoshoot ideas",
   },
   {
-    id: "10",
+    id: "11",
     image:
       "https://horaservices.com/api/uploads/compressed_webp/New-Born-Baby-Photography.webp",
     name: "Intimate-Gathering",
@@ -122,6 +123,26 @@ export const photoCat = [
     catValue: "Intimate-Gathering",
     slug: "intimate-gathering",
     imgAlt: "Intimate-Gathering",
+  },
+    {
+    id: "12",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/New-Born-Baby-Photography.webp",
+    name: "Corporate Photography",
+    subCategory: "Corporate-Photography",
+    catValue: "Corporate-Photography",
+    slug: "corporate-photography",
+    imgAlt: "Corporate-Photography",
+  },
+   {
+    id: "13",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/New-Born-Baby-Photography.webp",
+    name: "Welcome Baby Photography",
+    subCategory: "Welcome-Baby-Photography",
+    catValue: "Welcome-Baby-Photography",
+    slug: "welcome-baby-photography",
+    imgAlt: "Welcome-Baby-Photography",
   },
 ];
 
@@ -213,6 +234,22 @@ export const seoData = {
     h1: "Intimate & Private Event Photoshoot",
     color: "#97538C",
   },
+
+    "corporate-photography": {
+    title: "Corporate Photography | Professional Corporate Photographer | HORA",
+    description:
+      "Book professional corporate photography for office events, conferences, team celebrations, corporate parties and business occasions. Capture your corporate moments with HORA.",
+    h1: "Professional Corporate Photography",
+    color: "#4f5d75",
+  },
+
+  "welcome-baby-photography": {
+    title: "Welcome Baby Photography | Newborn Baby Photoshoot | HORA",
+    description:
+      "Book a professional welcome baby photography session to capture your little one's first precious moments. Beautiful newborn baby photoshoots at home or venue with HORA.",
+    h1: "Welcome Baby Photography",
+    color: "#d98fa8",
+  },
 };
 
 export const categoryToWeblinkFolderName = {
@@ -256,6 +293,14 @@ export const categoryToWeblinkFolderName = {
     folderName: "new born ",
     customerId: "64137625549b58e3dc39a685",
   },
+  "corporate-photography":{
+    folderName: "corporatePoselink",
+    customerId:"6a7f09a01144665025c88d8e"
+  },
+   "welcome-baby-photography":{
+    folderName:"welcomeBaby_poseLink",
+    customerId:"6a7f09a01144665025c88d8e"
+   }
 };
 
 
@@ -270,4 +315,6 @@ export const photographyCategoryPageTopBannerHeading = {
   "bachelorette-photography": BacheloretteBanner,
   "maternity-photography": MaternityBanner,
   "new-born-baby-photography": NewBornBanner,
+  "corporate-photography":CorporateBanner,
+  "welcome-baby-photography":welcomebabyBanner
 };

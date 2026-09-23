@@ -489,9 +489,9 @@ select.formcontrol {
     border: 0.95px solid #929292B2;
     border-radius: 37.91px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 24px 20px;
-    width: 90%;
-    margin: 30px auto;
+    padding: clamp(16px, 6.11vw, 24px) clamp(14px, 5.09vw, 20px);
+    width: clamp(90%, 90%, 90%);
+    margin: clamp(20px, 7.63vw, 30px) auto;
     max-width: 450px;
 }
 
@@ -609,7 +609,10 @@ font-family: 'Inter', sans-serif;
     color: black;
 }
 
-
+.card-container{
+   display: flex;
+  flex-direction: column;
+}
 .productTitle{
  margin: 0 !important;
    color:black;
@@ -630,7 +633,7 @@ font-family: 'Inter', sans-serif;
 .floating-center-image {
     position: absolute;
     top: 0%;
-    bottom: 89%;
+    bottom: 85%;
     transform: translate(-50%, -50%);
     z-index: 10;
     pointer-events: none;
@@ -651,8 +654,8 @@ font-family: 'Inter', sans-serif;
 }
 
 .floating-image {
-  width: 120.16px; /* Adjust size */
-  height: 127.58px;
+  width: clamp(103px, 30.57vw, 120.16px);
+height: clamp(109px, 32.46vw, 127.58px);
   
 }
 

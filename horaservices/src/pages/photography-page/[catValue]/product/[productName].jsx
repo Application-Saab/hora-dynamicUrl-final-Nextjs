@@ -58,6 +58,8 @@ const getMappedCatValue = (slug) => {
     "bachelorette-photography": "Bachelorette-Photography",
     "maternity-photography": "Maternity-Photography",
     "new-born-baby-photography": "New-Born-Baby-Photography",
+    "corporate-photography":"Corporate-Photography",
+    "welcome-baby-photography":"Welcome-Baby-Photography"
   };
   return map[slug] || slug;
 };
