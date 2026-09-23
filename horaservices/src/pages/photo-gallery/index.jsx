@@ -22,7 +22,10 @@ import image2 from "@/assets/poselink/image2.jpeg";
 import trustimage from "@/assets/poselink/trustedimage.webp";
 import { getBannerConfig, getPlanningCardData, getTrustedCardData } from "@/utils/bannerConfig";
 import { getWeblinkPhotosUrl } from "@/utils/Getphotocategoryurl.js";
+import { poseGridData } from "@/utils/poseGridData";
 import { reviewsData } from "@/utils/poselinkreviews";
+import { BASE_URL } from "@/utils/apiconstants";
+import { fetchWithError } from "@/utils/fetchWithError";
 import Head from "next/head";
 
 const WHATSAPP_NUMBER = "917338584828";
@@ -30,7 +33,7 @@ const WHATSAPP_NUMBER = "917338584828";
 const PhotoGallery = ({ folderName: folderNameProp, customerId: customerIdProp, city: cityProp, embedded = false }) => {
   const router = useRouter();
   const [urlParams, setUrlParams] = useState({ folderName: null, customerId: null, city: null });
-
+  
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -44,13 +47,46 @@ const PhotoGallery = ({ folderName: folderNameProp, customerId: customerIdProp, 
 
   const folderName = folderNameProp ?? urlParams.folderName;
   const customerId = customerIdProp ?? urlParams.customerId;
-  const city = (cityProp ?? urlParams.city)?.trim() || null;
+  const cityFromPropOrUrl = (cityProp ?? urlParams.city)?.trim() || null;
+
+  // ==============================
+  // CITY FROM USER-DETAILS API (fallback jab prop/URL me city na ho)
+  // ==============================
+  const [fetchedCity, setFetchedCity] = useState(null);
+  const city = cityFromPropOrUrl || fetchedCity;
+
+  useEffect(() => {
+    if (cityFromPropOrUrl) return; // already mil chuki hai, API call ki zaroorat nahi
+    if (typeof window === "undefined") return;
+
+    const userId = customerId || null;
+    const visitorId = localStorage.getItem("VISITOR_ID") || null;
+
+    if (!userId && !visitorId) return;
+
+    const params = new URLSearchParams();
+    if (userId) params.append("userId", userId);
+    if (visitorId) params.append("visitorId", visitorId);
+
+    fetchWithError(`${BASE_URL}/api/event-dates/my-events?${params.toString()}`)
+      .then((res) => res.json())
+      .then((json) => {
+        const userCity = json?.data?.cityName?.trim() || null;
+        if (userCity) setFetchedCity(userCity);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch city from user-details API:", err);
+      });
+  }, [cityFromPropOrUrl, customerId]);
 
   const bannerConfig     = getBannerConfig(folderName);
   const planningCardData = getPlanningCardData(folderName);
   const trustedData      = getTrustedCardData(folderName);
   const categoryUrl      = getWeblinkPhotosUrl(folderName);
-  const categoryName     = bannerConfig.title || folderName;
+  const categoryName =
+    poseGridData.find((p) => p.folder?.trim() === folderName?.trim())?.title ||
+    bannerConfig?.title ||
+    "";
 
   // ==============================
   // REFS
@@ -171,15 +207,10 @@ const PhotoGallery = ({ folderName: folderNameProp, customerId: customerIdProp, 
     };
   }, [folderName, customerId]);
 
-  // ==============================
-  // WHATSAPP HELPERS
-  // ==============================
   const openWhatsApp = () => {
     const cityText = city ? ` for ${city}` : "";
-
-    const message = categoryName
-      ? `Hi, I'm interested in your ${categoryName} photography services. Please share your packages, pricing, and availability${cityText}.`
-      : `Hi, I'm interested in your photography services. Please share your packages, pricing, and availability${cityText}.`;
+    const categoryNameLower = categoryName?.toLowerCase() || "photography";
+    const message = `Hi, I'm interested in your ${categoryNameLower} photography services. Please share your packages, pricing, and availability${cityText}.`;
 
     window.open(
       `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
