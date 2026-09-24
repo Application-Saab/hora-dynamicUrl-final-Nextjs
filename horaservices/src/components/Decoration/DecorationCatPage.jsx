@@ -869,7 +869,7 @@ const openCatItems = (item) => {
               <CardSkeleton />
             </div>
           )}
-          <div className="category-content">
+          {/* <div className="category-content">
             {Array.isArray(currentCategoryContent) &&
               currentCategoryContent.length > 0 && (
                 <>
@@ -891,7 +891,34 @@ const openCatItems = (item) => {
                   )}
                 </>
               )}
+          </div> */}
+          <div className="category-content">
+  {Array.isArray(currentCategoryContent) &&
+    currentCategoryContent.length > 0 && (
+      <>
+        {currentCategoryContent.map((item, index) => (
+          <div
+            key={index}
+            className={`category-item ${
+              !showAll && index >= 2 ? "category-item--hidden" : ""
+            }`}
+          >
+            <h1>{item.title}</h1>
+            <div
+              className="item-content"
+              dangerouslySetInnerHTML={{ __html: item.htmlContent }}
+            />
           </div>
+        ))}
+
+        {currentCategoryContent.length > 2 && (
+          <button onClick={toggleShowAll} className="toggle-btn">
+            {showAll ? "See Less" : "See More"}
+          </button>
+        )}
+      </>
+    )}
+</div>
         </>
       )}
     </div>
