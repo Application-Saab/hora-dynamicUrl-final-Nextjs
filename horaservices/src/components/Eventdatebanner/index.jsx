@@ -43,15 +43,22 @@ export default function EventDateBanner({
   const [reminderOpen, setReminderOpen] = useState(false);
   const [reminderVariant, setReminderVariant] = useState("planner");
 
-  const getIds = () => {
-    if (typeof window === "undefined") {
-      return { userId: userIdProp, visitorId: visitorIdProp };
-    }
-    const userId = userIdProp || null;
-    const visitorId =
-      visitorIdProp || localStorage.getItem("VISITOR_ID") || null;
-    return { userId, visitorId };
-  };
+const getIds = () => {
+  const userId = userIdProp || null;
+
+  if (userId) {
+    // Logged in — sirf userId se query karo, purana guest visitorId ignore karo
+    return { userId, visitorId: null };
+  }
+
+  if (typeof window === "undefined") {
+    return { userId: null, visitorId: visitorIdProp };
+  }
+
+  const visitorId =
+    visitorIdProp || localStorage.getItem("VISITOR_ID") || null;
+  return { userId: null, visitorId };
+};
 
   const fetchEventDate = () => {
     const { userId, visitorId } = getIds();

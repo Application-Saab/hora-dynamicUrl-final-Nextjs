@@ -16,7 +16,7 @@ import { DateGateProvider, useDateGate } from "@/utils/dateGateContext";
 import { fetchWithError } from "@/utils/fetchWithError";
 
 const DATE_SHEET_DELAY_MS = 30 * 1000;
-const DATE_SHEET_REASK_BUFFER_DAYS = 3;
+const DATE_SHEET_REASK_BUFFER_DAYS = 1;
 
 // Safari-safe UUID generator (crypto.randomUUID needs Safari 15.4+)
 const generateUUID = () => {
@@ -118,6 +118,7 @@ const LayoutInner = ({ children }) => {
 
   const checkStarted = useRef(false);
   const dateSheetTimerRef = useRef(null);
+  const futureRecheckTimerRef = useRef(null);
 
   // Date-sheet flow city ke wait mein nahi rukta — tracking city-resolve
   // ab background me chalta hai aur date-sheet flow se independent hai.
@@ -165,10 +166,8 @@ const LayoutInner = ({ children }) => {
         const eventsWithDays = events
           .map((ev) => ({
             ...ev,
-            daysLeft: daysBetween(ev.date),
+            daysLeft: daysBetween(ev.date)
           }))
-          // Drop anything Safari (or the API) gave us a bad date for,
-          // instead of letting NaN silently break the sort/filter logic below.
           .filter((ev) => !Number.isNaN(ev.daysLeft));
 
         const futureEvents = eventsWithDays
@@ -177,6 +176,20 @@ const LayoutInner = ({ children }) => {
 
         if (futureEvents.length > 0) {
           setDateResolved(true);
+         setShowDateSheet(false);
+
+        // 👇 FIX 1: future event ke expire hone ka exact time nikaal ke
+        // us waqt dobara checkAndSchedule() khud ko call karega —
+        // taaki expire hote hi popup-logic fir se evaluate ho, page
+        // reload ka wait na karna pade.
+        const nearestEvent = futureEvents[0];
+        const msUntilExpiry = (nearestEvent.daysLeft + 1) * 24 * 60 * 60 * 1000;
+
+        if (futureRecheckTimerRef.current) clearTimeout(futureRecheckTimerRef.current);
+        futureRecheckTimerRef.current = setTimeout(() => {
+          checkAndSchedule();
+        }, msUntilExpiry);
+
           return;
         }
 
@@ -187,12 +200,13 @@ const LayoutInner = ({ children }) => {
         if (pastEvents.length > 0) {
           const daysSinceExpiry = -pastEvents[0].daysLeft;
 
-          if (daysSinceExpiry < DATE_SHEET_REASK_BUFFER_DAYS) {
-            if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
-            setDateResolved(true);
-            return;
-          }
+        // 👇 FIX 2: buffer ab sirf "expiry wale din" tak — 3 din nahi
+        if (daysSinceExpiry <= DATE_SHEET_REASK_BUFFER_DAYS) {
+          if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
+          setDateResolved(true);
+          return;
         }
+      }
 
         if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
         setDateResolved(false);
@@ -211,25 +225,25 @@ const LayoutInner = ({ children }) => {
     [userId, visitorId, idsReady, setDateResolved]
   );
 
-  useEffect(() => {
-    if (!isDateSheetAllowedPath) {
-      setDateResolved(true);
-      return;
-    }
+useEffect(() => {
+  if (!isDateSheetAllowedPath) {
+    setDateResolved(true);
+    return;
+  }
 
-    if (!idsReady) return;
-    if (!userId && !visitorId) return;
-    if (!cityResolved) return;
-    if (checkStarted.current) return;
-    checkStarted.current = true;
+  if (!idsReady) return;
+  if (!userId && !visitorId) return;
+  if (!cityResolved) return;
+  if (checkStarted.current) return;
+  checkStarted.current = true;
 
-    checkAndSchedule();
+  checkAndSchedule();
 
-    return () => {
-      if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
-    };
-  }, [userId, visitorId, idsReady, checkAndSchedule, isDateSheetAllowedPath, setDateResolved, cityResolved]);
-
+  return () => {
+    if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
+    if (futureRecheckTimerRef.current) clearTimeout(futureRecheckTimerRef.current); // 👈 add
+  };
+}, [userId, visitorId, idsReady, checkAndSchedule, isDateSheetAllowedPath, setDateResolved, cityResolved]);
   const showBottomNav =
     pathname === "/wonderland" ||
     pathname === "/wonderlandinternational" ||
