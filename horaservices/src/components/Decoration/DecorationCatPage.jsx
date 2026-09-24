@@ -224,7 +224,12 @@ const buildProcessedContent = (catVal, citySlug) => {
   const subCategory = getSubCategory(catValue) || stateSubCategory;
 
   const { userId } = useSelector((state) => state.auth || {});
-
+const [visitorId, setVisitorId] = useState(null);
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    setVisitorId(localStorage.getItem("VISITOR_ID") || null);
+  }
+}, []);
   useEffect(() => {
     // Price-range segmentation (Budget/Value/Photogenic/Stage) aur
     // CategoryTabs theme (jaise Cocomelon) ek saath active nahi ho sakte.
@@ -641,7 +646,8 @@ const openCatItems = (item) => {
                     />
                   </div>
                 )}
-              <EventDateBanner userId={userId} />
+              <EventDateBanner userId={userId} visitorId={visitorId} />
+             
               {isPriceThemeActive || isSearchActive ? (
                 <>
                   {loading ? (
