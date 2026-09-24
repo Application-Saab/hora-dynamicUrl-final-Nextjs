@@ -16,7 +16,6 @@ import {
   getRandomNumber,
   getRandomRating,
 } from "@/utils/decorationCatHelpers";
-import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";
 import { NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
 import "./catvaluedecor.css";
 import ProductGrid from "@/components/productGrid";
@@ -36,7 +35,10 @@ import SeoHead from "@/utils/SeoHead";
 import ThemeSelector from "@/components/Themeselector";
 import SearchSortBar from "@/components/SearchSortBar";
 import DecorationBanner from "@/components/CategoryDecorationBanner";
-
+import DecorationCatDescriptionData, {
+  buildCityLinksHtml,
+  buildThemeLinksHtml,
+} from "@/utils/decorationCatDescritionData";
 import EventDateBanner from "@/components/Eventdatebanner";
 import axiosApi from "@/utils/axiosApi";
 import MakeItYoursBanner from "@/components/MakeItYoursBanner";
@@ -68,14 +70,29 @@ const DecorationCatPage = ({
       setCity(String(router.query.city));
     }
   }, [router.isReady, router.query, catValueProp, cityProp]);
-
+const buildProcessedContent = (catVal, citySlug) => {
+  const content = DecorationCatDescriptionData[catVal] || [];
+  return content.map((item) => {
+    let html = item.htmlContent;
+    if (html?.includes("{{CITY_LINKS}}")) {
+      html = html.replace("{{CITY_LINKS}}", buildCityLinksHtml(catVal, citySlug));
+    }
+    if (html?.includes("{{THEME_LINKS}}")) {
+      html = html.replace("{{THEME_LINKS}}", buildThemeLinksHtml(catVal, citySlug));
+    }
+    return html === item.htmlContent ? item : { ...item, htmlContent: html };
+  });
+};
   const hasCityPageParam = !!city;
   const [selCat, setSelCat] = useState("");
   const [catId, setCatId] = useState(initialCatId || "");
   const [showAll, setShowAll] = useState(false);
-  const [currentCategoryContent, setCurrentCategoryContent] = useState(
-    DecorationCatDescriptionData[catValueProp || catValue] || [],
-  );
+ const [currentCategoryContent, setCurrentCategoryContent] = useState(
+  buildProcessedContent(
+    catValueProp || catValue,
+    (cityProp || "").toLowerCase()
+  )
+);
   const { theme } = router.query;
   const hasInitialData = initialCatalogueData.length > 0;
   const [loading, setLoading] = useState(!hasInitialData);
@@ -298,12 +315,13 @@ const DecorationCatPage = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
-  useEffect(() => {
-    if (catValue) {
-      const content = DecorationCatDescriptionData[catValue] || [];
-      setCurrentCategoryContent(content);
-    }
-  }, [catValue]);
+useEffect(() => {
+  if (catValue) {
+    setCurrentCategoryContent(
+      buildProcessedContent(catValue, (city || "").toLowerCase())
+    );
+  }
+}, [catValue, city]);
 
   // Reset the price-range theme filter whenever the category GENUINELY
   // changes (user browsed from one category to another). Yeh effect

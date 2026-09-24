@@ -1,3 +1,43 @@
+import cityNameToSlug from "@/utils/Citynametoslug.json";
+import { themeFilters } from "@/utils/themeFilters";
+
+const CITY_ENTRIES = Object.entries(cityNameToSlug).filter(
+  ([name]) => name.toLowerCase() !== "others"
+);
+
+export const buildCityLinksHtml = (catValue, currentCitySlug = "") => {
+  const cities = CITY_ENTRIES.filter(
+    ([, slug]) => slug.toLowerCase() !== (currentCitySlug || "").toLowerCase()
+  );
+
+  const items = cities
+    .map(
+      ([name, slug]) =>
+        `<li style="margin-right: 15px; margin-bottom: 10px;"><a href="https://horaservices.com/${slug}/balloon-decoration/${catValue}" style="color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;">${name}</a></li>`
+    )
+    .join("");
+
+  return `<ul style="list-style-type: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap;">${items}</ul>`;
+};
+
+// ================= Theme links helper (kids-birthday-decoration ke liye) =================
+// Apni alag list nahi banayi — themeFilters.js hi source of truth hai
+// (CategoryTabs, ThemeSelector wahi use karte hain), naya theme add hone
+// par yahan bhi automatically aa jaayega.
+export const buildThemeLinksHtml = (catValue, currentCitySlug = "") => {
+  const basePath = currentCitySlug
+    ? `/${currentCitySlug}/balloon-decoration/${catValue}`
+    : `/balloon-decoration/${catValue}`;
+
+  const items = themeFilters
+    .map(
+      ({ value, label }) =>
+        `<li style="margin-right: 15px;"><a href='https://horaservices.com${basePath}/${value}' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>${label.trim()} theme</a></li>`
+    )
+    .join("");
+
+  return `<ul class="theme-list" style="list-style-type: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap;">${items}</ul>`;
+};
 const DecorationCatDescriptionData = {
   "birthday-decoration": [
     {
@@ -83,94 +123,12 @@ const DecorationCatDescriptionData = {
       <p>When you think of a kids' birthday party, a plethora of ideas, vibrant colors, exciting themes, and character-infused decorations likely come to mind. It's no secret that children adore games and activities, making party entertainers a crucial element for a successful celebration. However, staying within a budget while planning such an event can be quite challenging. Enter our Kids Birthday Party Decorations Activities, designed to make the process seamless. Featuring gender-based decoration themes and a range of styles, you can explore various options. Personalize your party with engaging activities, delectable cakes, and even thoughtful return gifts – it's the ultimate package for an unforgettable celebration!</p>
       <p>We recognize that you may have additional questions, and simply presenting our perspective might not cover all your inquiries. To bridge this gap, we've conducted thorough research and assembled a comprehensive list of frequently asked questions. This compilation serves as a valuable resource to provide answers to common queries, offering clarity and making it easier for you to navigate and understand our services.</p>`
     },
-    {
-      "title": "What are Some Birthday Theme Suggestions?",
-      "htmlContent": `<p>
-   <ul class="theme-list" style="list-style-type: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap;">
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Astronaut-space' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Astronaut space theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Avengers' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Avengers theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Boss' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Boss baby theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=shark' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Baby shark theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Barbie' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Barbie theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Cocomelon' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Cocomelon theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=car' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Car theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Circus' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Circus theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Dinosaur' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Dinosaur theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Elsa' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Elsa theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Flamingo' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Flamingo theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Jungle' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Jungle theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Kitty' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Kitty theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Lion' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Lion King theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Mickey-Mouse' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Mickey Mouse theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Mickey-Minnie' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Mickey and Minnie theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Minecraft' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Minecraft theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Mermaid' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Mermaid theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Pikachu-Pokemon' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Pokemon and Pikachu theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Princess' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Princess theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Panda' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Panda theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Traffic' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Traffic theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=dogs' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Super dogs theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Hero' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Super Hero theme</a>
-  </li>
-  <li style="margin-right: 15px;">
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Football' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Sport Football theme</a>
-  </li>
-  <li>
-      <a href='https://horaservices.com/balloon-decoration/kids-birthday-decoration?theme=Unicorn' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Unicorn theme</a>
-  </li>
-</ul>
-
-
-
+  {
+  "title": "What are Some Birthday Theme Suggestions?",
+  "htmlContent": `<p>
+   {{THEME_LINKS}}
       </p>`
-    },
+},
     {
       "title": "How can I plan kids birthday party under budget near me?",
       "htmlContent": `<p>Organizing kids birthday party can be quite a challenge, especially when considering various factors, with budget being the foremost concern. Our Kids Birthday Party Decorations offer a thoughtfully planned and budget-friendly package, encompassing all essential elements for hosting a remarkable celebration for your little one. With a diverse range of options, from decorations to activities and even return gifts, we present a comprehensive selection at your fingertips with just one click.</p>
@@ -202,29 +160,7 @@ const DecorationCatDescriptionData = {
       "title": "What are the Major Cities where you provide the Kids Birthday Party Decoration Delivery Service?",
       "htmlContent": `
         <p>What are the Major Cities where you provide the Kids Birthday Party Decoration Delivery Service?</p>
-        <ul style="list-style-type: none; padding: 0; margin: 0; display: flex;">
-          <li style="margin-right: 15px;">
-            <a href='https://horaservices.com/Delhi/balloon-decoration/kids-birthday-decoration' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Delhi</a>
-          </li>
-          <li style="margin-right: 15px;">
-            <a href='https://horaservices.com/Gurugram/balloon-decoration/kids-birthday-decoration' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Gurugram</a>
-          </li>
-          <li style="margin-right: 15px;">
-            <a href='https://horaservices.com/Ghaziabad/balloon-decoration/kids-birthday-decoration' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Ghaziabad</a>
-          </li>
-          <li style="margin-right: 15px;">
-            <a href='https://horaservices.com/Faridabad/balloon-decoration/kids-birthday-decoration' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Faridabad</a>
-          </li>
-          <li style="margin-right: 15px;">
-            <a href='https://horaservices.com/Noida/balloon-decoration/kids-birthday-decoration' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Noida</a>
-          </li>
-          <li style="margin-right: 15px;">
-            <a href='https://horaservices.com/Bangalore/balloon-decoration/kids-birthday-decoration' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Bangalore</a>
-          </li>
-          <li>
-            <a href='https://horaservices.com/Hyderabad/balloon-decoration/kids-birthday-decoration' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Hyderabad</a>
-          </li>
-        </ul>
+        {{CITY_LINKS}}
       `
     }
 ,      
@@ -422,16 +358,7 @@ const DecorationCatDescriptionData = {
         {
           "title": "What are the Major Cities where you provide Baby Shower Decoration Services?",
           "htmlContent": `<p>Well, we provide our services in many cities. Over the years, we have expanded our reach to new areas and cities. At present, we are offering our services to the following cities-</p>
-          <ul style="display: flex; flex-wrap: wrap; list-style-type: none; padding: 0; margin: 0;">
-              <li style="margin-right: 15px;"><a href="https://horaservices.com/Delhi/balloon-decoration/baby-shower-decoration" style="color: rgb(150, 82, 141); font-weight: 400; text-decoration: underline;">Delhi</a></li>
-              <li style="margin-right: 15px;"><a href="https://horaservices.com/gurugram/balloon-decoration/baby-shower-decoration" style="color: rgb(150, 82, 141); font-weight: 400; text-decoration: underline;">Gurugram</a></li>
-              <li style="margin-right: 15px;"><a href="https://horaservices.com/ghaziabad/balloon-decoration/baby-shower-decoration" style="color: rgb(150, 82, 141); font-weight: 400; text-decoration: underline;">Ghaziabad</a></li>
-              <li style="margin-right: 15px;"><a href="https://horaservices.com/faridabad/balloon-decoration/baby-shower-decoration" style="color: rgb(150, 82, 141); font-weight: 400; text-decoration: underline;">Faridabad</a></li>
-              <li style="margin-right: 15px;"><a href="https://horaservices.com/noida/balloon-decoration/baby-shower-decoration" style="color: rgb(150, 82, 141); font-weight: 400; text-decoration: underline;">Noida</a></li>
-              <li style="margin-right: 15px;"><a href="https://horaservices.com/bangalore/balloon-decoration/baby-shower-decoration" style="color: rgb(150, 82, 141); font-weight: 400; text-decoration: underline;">Bangalore</a></li>
-              <li style="margin-right: 15px;"><a href="https://horaservices.com/hyderabad/balloon-decoration/baby-shower-decoration" style="color: rgb(150, 82, 141); font-weight: 400; text-decoration: underline;">Hyderabad</a></li>
-              <li style="margin-right: 15px;"><a href="https://horaservices.com/mumbai/balloon-decoration/baby-shower-decoration" style="color: rgb(150, 82, 141); font-weight: 400; text-decoration: underline;">Mumbai</a></li>
-          </ul>`
+          {{CITY_LINKS}}`
       }
 ,        
         {
@@ -642,12 +569,7 @@ const DecorationCatDescriptionData = {
         },
         {
           title: "What are the Major Cities where you provide Balloon Bouquet Gifts?",
-          htmlContent: `<ul style="display: flex; flex-wrap: wrap; list-style-type: none; padding: 0; margin: 0;">
-              <li style="margin-right: 15px;"><a href="https://horaservices.com/Delhi/balloon-decoration/balloon-bouquets-decoration" style="color: rgb(150, 82, 141); text-decoration: underline;">Delhi NCR</a></li>
-              <li style="margin-right: 15px;"><a href="https://horaservices.com/jaipur/balloon-decoration/balloon-bouquets-decoration" style="color: rgb(150, 82, 141); text-decoration: underline;">Jaipur</a></li>
-              <li style="margin-right: 15px;"><a href="https://horaservices.com/bangalore/balloon-decoration/balloon-bouquets-decoration" style="color: rgb(150, 82, 141); text-decoration: underline;">Bangalore</a></li>
-              <li style="margin-right: 15px;"><a href="https://horaservices.com/kolkata/balloon-decoration/balloon-bouquets-decoration" style="color: rgb(150, 82, 141); text-decoration: underline;">Kolkata</a></li>
-          </ul>`
+          htmlContent: `{{CITY_LINKS}}`
       }
 ,        
         {
