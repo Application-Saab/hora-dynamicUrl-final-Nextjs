@@ -17,7 +17,11 @@ import {
 } from "@/utils/apiconstants.js";
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
 import { SeoCategory } from "@/utils/photoGraphyHead";
-import { categoryToWeblinkFolderName, photographyCategoryPageTopBannerHeading, seoData } from "@/utils/photoCategories";
+import {
+  categoryToWeblinkFolderName,
+  photographyCategoryPageTopBannerHeading,
+  seoData,
+} from "@/utils/photoCategories";
 import axiosApi from "@/utils/axiosApi";
 
 import EventDateBanner from "@/components/Eventdatebanner";
@@ -25,8 +29,8 @@ import PhotoPackageGrid from "@/components/PhotoPackageGrid";
 import ChooseYourMoment from "@/components/Chooseyourmoment";
 import DecorationBanner from "@/components/CategoryDecorationBanner";
 import PhotographyCardSkeleton from "@/components/PhotographyCardSkeleton";
-import PhotoGallery from "@/pages/photo-gallery";
 import { isValidPhotographyCategorySlug } from "@/utils/routeConfig";
+import PhotoGalleryEmbed from "@/components/Photography/PhotoGalleryEmbed";
 
 // ---------- constants / helpers (same as before) ----------
 const isWeddingCategory = (category) => {
@@ -130,7 +134,8 @@ export async function getServerSideProps(context) {
     }
   }
 
-  const galleryData = categoryToWeblinkFolderName[effectiveCatValue] || null;
+  const galleryData = categoryToWeblinkFolderName[finalCatValue] || null;
+  console.log('%c [ galleryData ]', 'font-size:13px; background:pink; color:#bf2c9f;', galleryData)
 
   return {
     props: {
@@ -161,12 +166,12 @@ export default function CatValuePage({
 }) {
   const router = useRouter();
   const { userId } = useSelector((state) => state.auth || {});
-const [visitorId, setVisitorId] = useState(null);
-useEffect(() => {
-  if (typeof window !== "undefined") {
-    setVisitorId(localStorage.getItem("VISITOR_ID") || null);
-  }
-}, []);
+  const [visitorId, setVisitorId] = useState(null);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setVisitorId(localStorage.getItem("VISITOR_ID") || null);
+    }
+  }, []);
   // Prefer SSR props; fallback to router for client navigations
   const catValue = router.query.catValue || initialCatValue;
   const city = ssrCity || router.query.city || null;
@@ -316,7 +321,8 @@ useEffect(() => {
 
   const normalizedCat = normalizeCatValue(effectiveCatValue);
   const bannerToShow =
-    photographyCategoryPageTopBannerHeading[normalizedCat] || photographyCategoryPageTopBannerHeading["default"];
+    photographyCategoryPageTopBannerHeading[normalizedCat] ||
+    photographyCategoryPageTopBannerHeading["default"];
   const showMomentPicker = isWeddingCategory(normalizedCat);
 
   const displayedProducts =
@@ -325,13 +331,14 @@ useEffect(() => {
           MOMENT_NAME_FILTERS[activeMoment](item.name || ""),
         )
       : products;
-const formatCity = (c) =>
-  c
-    ? String(c)
-        .replace(/-/g, " ")
-        .replace(/\b\w/g, (m) => m.toUpperCase())
-        .trim()
-    : null;
+  const formatCity = (c) =>
+    c
+      ? String(c)
+          .replace(/-/g, " ")
+          .replace(/\b\w/g, (m) => m.toUpperCase())
+          .trim()
+      : null;
+
   return (
     <div className="featured-photo-works">
       <SeoCategory
@@ -452,7 +459,7 @@ const formatCity = (c) =>
             </div>
           </div>
 
-         <EventDateBanner userId={userId} visitorId={visitorId} />
+          <EventDateBanner userId={userId} visitorId={visitorId} />
 
           {displayedProducts.length > 0 ? (
             <PhotoPackageGrid
@@ -483,17 +490,28 @@ const formatCity = (c) =>
             </div>
           </div>
 
-          {galleryData?.folderName && galleryData?.customerId && (
+          {/* {galleryData?.folderName && galleryData?.customerId && (
             <div className="photo-gallery-wrapper">
-              <PhotoGallery
+              <PhotoGalleryEmbed
                 folderName={galleryData.folderName}
                 customerId={galleryData.customerId}
                 embedded={true}
-                  city={formatCity(city)}
+                city={formatCity(city)}
               />
             </div>
-          )}
+          )} */}
         </>
+      )}
+
+      {/* ✅ hamesha SSR — loading se independent */}
+      {galleryData?.folderName && galleryData?.customerId && (
+        <div className="photo-gallery-wrapper">
+          <PhotoGalleryEmbed
+            folderName={galleryData.folderName}
+            customerId={galleryData.customerId}
+            city={formatCity(city)}
+          />
+        </div>
       )}
     </div>
   );

@@ -42,9 +42,24 @@ import PhotographyPackageGridSlider from "@/components/PhotographyPackageGridSli
 const STANDARD_PACKAGE_TAG_ID = "66c96b4e22ed47b72117e09a";
 
 const brandItems = [
-  { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
-  { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
-  { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
+  {
+    img: HappyCustomerIMG,
+    alt: "Happy Customers",
+    bold: "1L+ HAPPY",
+    sub: "CUSTOMERS",
+  },
+  {
+    img: GoogleRatingIMG,
+    alt: "Google Rating",
+    bold: "4.8+ GOOGLE",
+    sub: "RATING",
+  },
+  {
+    img: SocialMediaIMG,
+    alt: "Social Media",
+    bold: "OUR",
+    sub: "SOCIAL MEDIA",
+  },
   { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
 ];
 
@@ -75,13 +90,13 @@ export async function getServerSideProps(context) {
 
   try {
     const res = await axiosApi.get(
-      `${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}${STANDARD_PACKAGE_TAG_ID}`
+      `${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}${STANDARD_PACKAGE_TAG_ID}`,
     );
 
     standardPackages =
       res.data?.data?.map((item) => {
         const { discountedPrice, discountDifference } = getDiscountedPrice(
-          item.price || 0
+          item.price || 0,
         );
         return { ...item, discountedPrice, discountDifference };
       }) || [];
@@ -222,7 +237,8 @@ const PhotographyIndexPage = ({
             <p>
               Looking for a photographer near you?{" "}
               <span className="hora-brand">HORA</span> covers birthdays,
-              anniversaries, weddings, maternity shoots, baby showers &amp; more.
+              anniversaries, weddings, maternity shoots, baby showers &amp;
+              more.
             </p>
 
             <div className="hora-price-box">
@@ -252,7 +268,7 @@ const PhotographyIndexPage = ({
               <a
                 key={index}
                 href={`https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(
-                  pose.folder
+                  pose.folder,
                 )}&customerId=${pose.customerId}`}
                 className="pose-card"
                 target="_blank"
@@ -271,13 +287,13 @@ const PhotographyIndexPage = ({
           </div>
         </div>
 
-       <EventCapsuleBannerImage
-  image={BannerImg}
-  onExploreClick={() => {
-    window.location.href =
-      "https://horaservices.com/weblink-gallery?folderName=32468_6a7f09a01144665025c88d8e_9406754372&customerId=6a7f09a01144665025c88d8e&fromPanel=true";
-  }}
-/>
+        <EventCapsuleBannerImage
+          image={BannerImg}
+          onExploreClick={() => {
+            window.location.href =
+              "https://horaservices.com/weblink-gallery?folderName=32468_6a7f09a01144665025c88d8e_9406754372&customerId=6a7f09a01144665025c88d8e&fromPanel=true";
+          }}
+        />
 
         <BrandBanner
           title="Excellence Backed by Happy Customers"

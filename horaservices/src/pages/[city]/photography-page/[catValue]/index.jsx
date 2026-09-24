@@ -130,7 +130,9 @@ export async function getServerSideProps(context) {
     products = [];
   }
 
-  const galleryData = categoryToWeblinkFolderName[effectiveCatValue] || null;
+  const galleryData = categoryToWeblinkFolderName[finalCatValue] || null;
+  console.log('%c [ effectiveCatValue ]', 'font-size:13px; background:pink; color:#bf2c9f;', effectiveCatValue)
+  console.log('%c [ galleryData ]', 'font-size:13px; background:pink; color:#bf2c9f;', galleryData)
 
   return {
     props: {
@@ -152,6 +154,7 @@ export async function getServerSideProps(context) {
 
 // ---------- Page ----------
 const PhotographyCityCatPage = (ssrProps) => {
+  console.log('%c [ ssrProps ]', 'font-size:13px; background:pink; color:#bf2c9f;', ssrProps)
   const router = useRouter();
   const {
     city: ssrCity,
