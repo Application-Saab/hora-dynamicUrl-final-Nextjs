@@ -265,12 +265,12 @@ const getPathFromWindow = () => {
       case '/photography-page/[catValue]':
         eventName = 'photography_productlistedpage_whatsapp_click';
         productNameEvent = `photography_productlist_categorypage_whatsapp_click_${catValue}`;
-        message = photographyMessagesByCategory[formattedCatValue] || defaultMessage;
+        message = photographyMessagesByCategory[formattedCatValue];
         break;
  case '/photography-page/[catValue]/product/[productName]':
         eventName = 'photography_productpage_whatsapp_click';
         productNameEvent = `photography_productpage_whatsapp_click_${productName}`;
-        message = photographyProductMessage || defaultMessage;
+        message = photographyProductMessage;
         break;
             case '/[city]/photography-page':
         eventName = 'photography_citypage_whatsappclick';
@@ -281,7 +281,7 @@ const getPathFromWindow = () => {
       case '/[city]/photography-page/[catValue]': {
         eventName = 'photography_productlistedcitypage_whatsapp_click';
         productNameEvent = `photography_productlist_categorycitypage_whatsapp_click_${catValue}`;
-        const photoBase = photographyMessagesByCategory[formattedCatValue] || defaultMessage;
+        const photoBase = photographyMessagesByCategory[formattedCatValue];
         message = addCityToMessage(photoBase, formattedCity);
         break;
       }
@@ -291,6 +291,26 @@ const getPathFromWindow = () => {
   productNameEvent = `photography_productcitypage_whatsapp_click_${productName}`;
   message = photographyProductMessage(formatPhotographyCategory(catValue), formattedCity);
   break;
+  
+        case '/[city]/[locality]/photography-page':
+        eventName = 'photography_localitypage_whatsappclick';
+        productNameEvent = 'photography_localitypage_whatsappclick';
+        message = addCityToMessage(photographyMainMessage, formattedCity);
+        break;
+
+            case '/[city]/[locality]/photography-page/[catValue]': {
+        eventName = 'photography_productlistedlocalitypage_whatsapp_click';
+        productNameEvent = `photography_productlistedlocalitypage_whatsapp_click_${catValue}`;
+        const photoLocalityBase = photographyMessagesByCategory[formattedCatValue];
+        message = addCityToMessage(photoLocalityBase, formattedCity);
+        break;
+      }
+
+      case '/[city]/[locality]/photography-page/[catValue]/product/[productName]':
+        eventName = 'photography_productlocalitypage_whatsapp_click';
+        productNameEvent = `photography_productlocalitypage_whatsapp_click_${productName}`;
+        message = photographyProductMessage(formatPhotographyCategory(catValue), formattedCity);
+        break;
    case '/photography-checkout': {
   const { city: checkoutCity, category: checkoutCategory } = parseFromPath(router.query.from);
   eventName = 'photography_checkout_whatsappclick';
@@ -431,14 +451,8 @@ const getPathFromWindow = () => {
         message = liveBuffetMessage;
         break;
 
-      default:
-        if (pathnameOnly.startsWith('/photography-page/product/')) {
-          eventName = 'photographyProduct_page_whatsappclick';
-          productNameEvent = 'photography_page_whatsappclick';
-          message = photographyMessage;
-        } else {
-          message = defaultMessage;
-        }
+          default:
+        message = defaultMessage;
         break;
     }
 
