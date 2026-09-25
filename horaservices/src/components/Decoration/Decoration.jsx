@@ -45,7 +45,7 @@ import decorationWedding from "@/assets/decorationwedding.webp";
 import decorationBridetobe from "@/assets/decorationBride-tobe.webp";
 import decorationhaldi from "@/assets/decorationhaldi-Mhendi.webp";
 import Engagementdecoration from "@/assets/engament.webp";
-import { citySeoData, defaultSeo } from "@/utils/Decorationseodata.json";
+import Decorationseodata from "@/utils/Decorationseodata.json";
 const BannerSlider = dynamic(() => import("@/components/BannerSlider"));
 const DecorSlider = dynamic(() => import("@/components/DecorSlider"));
 const ProductSliderSection = dynamic(
@@ -174,7 +174,7 @@ const Decoration = ({ city, locality }) => {
     () => getCategorySlugFromPath(pathname, city, locality),
     [pathname, city, locality],
   );
-
+const { citySeoData, defaultSeo } = Decorationseodata;
   const cardsData = [
     {
       image: Kidsbirthday,
