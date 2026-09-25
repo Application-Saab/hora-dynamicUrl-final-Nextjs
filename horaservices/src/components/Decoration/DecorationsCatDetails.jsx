@@ -750,53 +750,7 @@ function DecorationsCatDetails({
             </div>
 
             <MakeItYoursBanner />
-
-            {/* SEO: available addons always in HTML */}
-            {addonData.length > 0 && (
-              <section
-                className="seo-addons-section"
-                style={{ padding: "12px 10px" }}
-              >
-                <h2
-                  style={{
-                    fontSize: "18px",
-                    color: "#97538c",
-                    marginBottom: "10px",
-                  }}
-                >
-                  Available Add-ons
-                </h2>
-                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                  {addonData.map((item, i) => (
-                    <li
-                      key={item._id || i}
-                      style={{
-                        padding: "8px 0",
-                        borderBottom: "1px solid #eee",
-                        fontSize: "14px",
-                      }}
-                    >
-                      <strong>{item.title}</strong>
-                      {typeof item.price === "number" && (
-                        <span> — ₹{item.price}</span>
-                      )}
-                      {item.description && (
-                        <p
-                          style={{
-                            margin: "4px 0 0",
-                            color: "#555",
-                            fontSize: "13px",
-                          }}
-                        >
-                          {item.description}
-                        </p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
-
+            
             <div ref={addonRef}>
               <AddonModal
                 isOpen={isModalOpen}
