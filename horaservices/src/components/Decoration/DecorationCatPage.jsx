@@ -42,6 +42,7 @@ import DecorationCatDescriptionData, {
 import EventDateBanner from "@/components/Eventdatebanner";
 import axiosApi from "@/utils/axiosApi";
 import MakeItYoursBanner from "@/components/MakeItYoursBanner";
+import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
 const DecorationCatPage = ({
   city: cityProp = "",
   locality = null,
@@ -107,7 +108,7 @@ const buildProcessedContent = (catVal, citySlug) => {
   );
   const [themeFilter, setThemeFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const selectedTheme = router.query.themes;
+  const selectedTheme = router.query.theme;
   const isThemePage = !!selectedTheme;
 
   // ---- Price-range theme selector state (Budget / Value / Photogenic / Stage) ----
@@ -129,18 +130,9 @@ const buildProcessedContent = (catVal, citySlug) => {
   const handleSelectPriceTheme = (theme) => {
     setSelectedPriceTheme(theme); // theme = null clears the filter, otherwise the full theme object
 
-    // Ek time par sirf EK filter active rahega: ya toh CategoryTabs wala
-    // theme (jaise Cocomelon) ya phir ye price-range segmentation
-    // (Budget Friendly / Value For Money / Photogenic / Stage).
     if (theme) {
       setThemeFilter("all");
 
-      // `theme` yahan URL ka ek query-string value nahi, balki dynamic
-      // route ka path SEGMENT hai (…/[catValue]/[theme]). Isliye query
-      // object se hataya nahi ja sakta (router.replace with the same
-      // bracketed pathname throws an interpolation error). Agar hum
-      // abhi kisi themed URL par khade hain, to seedha non-themed base
-      // listing URL par navigate kar dete hain.
       if (router.query?.theme && catValue) {
         const categorySlug = getCategorySlugFromPath(pathname, city, locality);
 
@@ -154,34 +146,24 @@ const buildProcessedContent = (catVal, citySlug) => {
     }
   };
 
-  // Only show the price-range theme selector on these two category pages
   const isPriceThemeSelectorPage =
     catValue?.toLowerCase() === "kids-birthday-decoration" ||
     catValue?.toLowerCase() === "birthday-decoration";
 
   const isPriceThemeActive = !!selectedPriceTheme;
 
-  // ---- Sort state (New Arrival / Popularity / Price Low-High / Price High-Low) ----
   const [sortOption, setSortOption] = useState("popularity");
 
   const handleSortChange = (id) => {
-    // User ne khud filter badla — ab yeh ek GENUINE fresh query hai,
-    // cache-hydration skip-guard ko force-clear kar dete hain taaki
-    // niche wala effect zaroor fresh-fetch kare.
     hasHydratedFromCache.current = false;
     setSortOption(id);
   };
 
-  // ---- Search: whether a free-text search is currently active ----
   const isSearchActive = !!searchQuery.trim();
 
-  // Search box (e.g. "barbie") -> forwarded to the API as `search`.
-  // Jab search active ho jaye, baaki filters (theme tabs, price-range theme,
-  // sort) ko reset kar dete hain taaki search sirf naam/tag se match kare,
-  // kisi pehle se lage filtered subset ke upar nahi.
   const handleSearchChange = (query) => {
     const trimmed = query?.trim() || "";
-    hasHydratedFromCache.current = false; // genuine user action
+    hasHydratedFromCache.current = false;
     setSearchQuery(trimmed);
 
     if (trimmed) {
@@ -191,9 +173,6 @@ const buildProcessedContent = (catVal, citySlug) => {
     }
   };
 
-  // ---- Search: "Matching Categories" source ----
-  // Theme-category suggestions only exist for these two category pages
-  // (they're the only ones with a defined set of theme filters).
   const searchCategoryList = useMemo(() => {
     const lowerCatValue = catValue?.toLowerCase();
 
@@ -231,10 +210,6 @@ useEffect(() => {
   }
 }, []);
   useEffect(() => {
-    // Price-range segmentation (Budget/Value/Photogenic/Stage) aur
-    // CategoryTabs theme (jaise Cocomelon) ek saath active nahi ho sakte.
-    // Agar price-range theme already selected hai, to URL ke ?theme= ko
-    // ignore kar dete hain taaki dono filter combine na ho jayein.
     if (selectedPriceTheme) return;
 
     if (theme) {
@@ -243,14 +218,57 @@ useEffect(() => {
       setThemeFilter("all");
     }
   }, [theme, selectedPriceTheme]);
+  const prevInitialCatIdRef = useRef(initialCatId);
+  useEffect(() => {
+    if (initialCatId && initialCatId !== prevInitialCatIdRef.current) {
+      prevInitialCatIdRef.current = initialCatId;
 
-  // ================= CACHE-FIRST: subCategory resolve hote hi check karo =================
+      setCatId(initialCatId);
+      setCatalogueData(initialCatalogueData);
+      setDefaultCatalogueData(initialCatalogueData);
+      setHasMore(initialCatalogueData.length > 0 ? initialHasMore : true);
+
+      const hasFreshData = initialCatalogueData.length > 0;
+      skipInitialFetch.current = hasFreshData;
+      setLoading(!hasFreshData);
+      setIsInitialLoad(!hasFreshData);
+
+      setCurrentPage(1);
+      hasHydratedFromCache.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialCatId, initialCatalogueData, initialHasMore]);
+
   useEffect(() => {
     addSpaces(subCategory);
+    if (!subCategory) return;
+
+    const cacheKey = `decorcat:${router.asPath}`;
+    const cached = getPageCache(cacheKey);
+
+    if (cached) {
+      setCatId(cached.data.catId);
+      setCatalogueData(cached.data.catalogueData);
+      setDefaultCatalogueData(cached.data.defaultCatalogueData);
+      setCurrentPage(cached.data.currentPage);
+      setHasMore(cached.data.hasMore);
+      setSortOption(cached.data.sortOption || "popularity");
+      setSearchQuery(cached.data.searchQuery || "");
+      setSelectedPriceTheme(cached.data.selectedPriceTheme || null);
+      setLoading(false);
+      setIsInitialLoad(false);
+      hasHydratedFromCache.current = true;
+      skipInitialFetch.current = false; // cache mil gaya, SSR-skip branch ab irrelevant
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("page-content-ready"));
+      }
+      return; // getSubCatId API call bhi skip
+    }
+
     if (!initialCatId) {
       getSubCatId(subCategory);
     }
-  }, [subCategory, initialCatId]);
+  }, [subCategory, router.asPath, initialCatId]);
 
   useEffect(() => {
     const handleStickyScroll = () => {
@@ -274,44 +292,32 @@ useEffect(() => {
     return () => clearTimeout(timer);
   }, [loading, isPaginating, hasMore]);
 
+  // ================= Filter / theme / sort / search change => refetch page 1 =================
   useEffect(() => {
-  if (!catId) return;
+    if (!catId) return;
 
-  // SSR se data aa chuka hai aur abhi koi filter change nahi hua
-  if (skipInitialFetch.current) {
-    skipInitialFetch.current = false;
-    setLoading(false);
-    setIsInitialLoad(false);
-    return;
-  }
+    if (hasHydratedFromCache.current) {
+      // Is pass mein skip — data cache se aaya hai. Flag ek alag "reset"
+      // effect (sabse niche) clear karega.
+      return;
+    }
 
-  setCurrentPage(1);
-  getSubCatItems(1);
-}, [catId, themeFilter, sortOption, selectedPriceTheme, searchQuery]);
+    if (skipInitialFetch.current) {
+      // SSR se data aa chuka hai aur abhi koi filter change nahi hua
+      skipInitialFetch.current = false;
+      setLoading(false);
+      setIsInitialLoad(false);
+      return;
+    }
 
-  useEffect(() => {
-    if (loading || isPaginating || !hasMore) return;
-
-    const timer = setTimeout(() => {
-      setCurrentPage((prev) => prev + 1);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [loading, isPaginating, hasMore]);
-
+    setCurrentPage(1);
+    getSubCatItems(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [catId, themeFilter, sortOption, selectedPriceTheme, searchQuery]);
 
   // ================= currentPage change => fetch that page =================
-  // Guard: agar yeh currentPage abhi-abhi CACHE se hydrate hua tha (page 1
-  // nahi tha), to iska fetch mat karo — data already cache mein tha.
-  // Yeh flag "consume-once" hai: pehli baar check karke turant clear kar
-  // dete hain, taaki agla genuine auto-pagination increment normally chale.
   useEffect(() => {
     if (hasHydratedFromCache.current) {
-      // Is pass mein skip — lekin flag ko yahin se clear NAHI karte,
-      // kyunki neeche wala catId-effect bhi isी pass mein isi flag ko
-      // check karta hai. Flag ek alag "reset" effect (sabse niche
-      // declare kiya gaya, dono ke BAAD) clear karega — taaki dono
-      // effects isi ek hydration-pass mein sahi se skip ho jayein.
       return;
     }
     if (catValue && currentPage !== 1) {
@@ -320,32 +326,29 @@ useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
-useEffect(() => {
-  if (catValue) {
-    setCurrentCategoryContent(
-      buildProcessedContent(catValue, (city || "").toLowerCase())
-    );
-  }
-}, [catValue, city]);
+  useEffect(() => {
+    if (catValue) {
+      setCurrentCategoryContent(buildProcessedContent(catValue, (city || "").toLowerCase()));
+    }
+  }, [catValue, city]);
 
-  // Reset the price-range theme filter whenever the category GENUINELY
-  // changes (user browsed from one category to another). Yeh effect
-  // catValue ke pehli baar populate hone par (mount, "" -> actual value)
-  // fire NAHI hona chahiye — warna cache se hydrate kiya hua
-  // selectedPriceTheme turant wipe ho jaata hai aur user ko lagta hai
-  // "filter hat gaya".
   const prevCatValueRef = useRef("");
   useEffect(() => {
     const prevCatValue = prevCatValueRef.current;
     prevCatValueRef.current = catValue;
 
-    const isGenuineCategorySwitch =
-      prevCatValue && catValue && prevCatValue !== catValue;
+    const isGenuineCategorySwitch = prevCatValue && catValue && prevCatValue !== catValue;
 
     if (isGenuineCategorySwitch) {
       setSelectedPriceTheme(null);
     }
   }, [catValue]);
+
+  useEffect(() => {
+    if (hasHydratedFromCache.current) {
+      hasHydratedFromCache.current = false;
+    }
+  });
 
   function addSpaces(subCategory) {
     let result = "";
@@ -361,16 +364,18 @@ useEffect(() => {
 
   const getSubCatId = async (subCategory) => {
     try {
-      const response = await axiosApi.get(
-        BASE_URL + GET_DECORATION_CAT_ID + subCategory,
-      );
+      const response = await axiosApi.get(BASE_URL + GET_DECORATION_CAT_ID + subCategory);
 
       const categoryId = response.data.data?._id;
 
       if (categoryId) {
         setCatId(categoryId);
+      } else {
+        console.error("getSubCatId: no _id in response for", subCategory, response?.data);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error("getSubCatId failed for", subCategory, error?.response?.status, error?.message);
+    }
   };
 
   const getDiscountedPriceLocal = getDiscountedPrice;
@@ -435,20 +440,33 @@ useEffect(() => {
           };
         });
 
-        setCatalogueData((prevData) =>
-          page === 1 ? decoratedData : [...prevData, ...decoratedData],
-        );
+        setCatalogueData((prevData) => {
+          const updated = page === 1 ? decoratedData : [...prevData, ...decoratedData];
+
+          // Jo bhi CURRENT state hai (filter/sort/search laga ho ya na
+          // ho) usko cache karte hain — taaki product-detail se back
+          // aane par bilkul WAHI view (filter + data + scroll-matching
+          // height) turant restore ho jaaye.
+          setPageCache(`decorcat:${router.asPath}`, {
+            catId,
+            catalogueData: updated,
+            defaultCatalogueData: searchQuery ? defaultCatalogueData : updated,
+            currentPage: page,
+            hasMore: page < response.data.pagination.totalPages,
+            sortOption,
+            searchQuery,
+            selectedPriceTheme,
+          });
+
+          return updated;
+        });
+
         if (!searchQuery) {
-          setDefaultCatalogueData((prevData) =>
-            page === 1 ? decoratedData : [...prevData, ...decoratedData],
-          );
+          setDefaultCatalogueData((prevData) => (page === 1 ? decoratedData : [...prevData, ...decoratedData]));
         }
         setHasMore(page < response.data.pagination.totalPages);
       }
     } catch (error) {
-      // 👇 NAYA: error ho jaaye tab bhi page-1 ke case mein event fire karo,
-      // warna page hamesha ke liye hidden reh jaayega (sirf safety-net
-      // timer se hi reveal hoga, jo 1500ms baad hai)
       if (page === 1 && typeof window !== "undefined") {
         window.dispatchEvent(new Event("page-content-ready"));
       }
@@ -456,8 +474,6 @@ useEffect(() => {
       if (page === 1) {
         setLoading(false);
 
-        // 👇 NAYA: page-1 ka data successfully aa gaya, ab _app.tsx ko
-        // batao reveal karne ke liye
         if (typeof window !== "undefined") {
           window.dispatchEvent(new Event("page-content-ready"));
         }
@@ -477,75 +493,55 @@ useEffect(() => {
 
   const shouldHideBanner = (name) => {
     const hideFor = ["wedding", "haldi-mehendi-decoration"];
-    return (
-      hideFor.includes(normalizedCat) &&
-      ["makeItMemorable", "DidyouKnow", "makeitmemorablebanner"].includes(name)
-    );
+    return hideFor.includes(normalizedCat) && ["makeItMemorable", "DidyouKnow", "makeitmemorablebanner"].includes(name);
   };
 
   const buildBasePath = () => {
-  let base = "";
-  if (city) base += `/${city.toLowerCase()}`;
-  if (locality) base += `/${locality.toLowerCase()}`;
-  return base;
-};
+    let base = "";
+    if (city) base += `/${city.toLowerCase()}`;
+    if (locality) base += `/${locality.toLowerCase()}`;
+    return base;
+  };
 
-// Real product URL for <a href>
-const getProductHref = (item) => {
-  if (!item) return "#";
-  const productSlug =
-    item.slug ||
-    item.product_slug ||
-    (item.name ? item.name.toLowerCase().replace(/\s+/g, "-") : "");
-  if (!productSlug || !catValue) return "#";
-  const categorySlug = getCategorySlugFromPath(pathname, city, locality);
-  if (!categorySlug) return "#";
-  return `${buildBasePath()}/${categorySlug}/${catValue}/product/${productSlug}`;
-};
+  const getProductHref = (item) => {
+    if (!item) return "#";
+    const productSlug = item.slug || item.product_slug || (item.name ? item.name.toLowerCase().replace(/\s+/g, "-") : "");
+    if (!productSlug || !catValue) return "#";
+    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+    if (!categorySlug) return "#";
+    return `${buildBasePath()}/${categorySlug}/${catValue}/product/${productSlug}`;
+  };
 
-const getCategoryHref = (item) => {
-  if (!item?.value || !catValue) return "#";
-  const categorySlug = getCategorySlugFromPath(pathname, city, locality);
-  return `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}`;
-};
+  const getCategoryHref = (item) => {
+    if (!item?.value || !catValue) return "#";
+    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+    return `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}`;
+  };
 
-// Tracking only — navigation <a href> se hogi
-const handleViewDetails = (item) => {
-  if (!item) return;
-  // optional GTM yahan
-};
+  const handleViewDetails = (item) => {
+    if (!item) return;
+  };
 
-const openCatItems = (item) => {
-  if (!item?.value || !catValue) return;
+  const openCatItems = (item) => {
+    if (!item?.value || !catValue) return;
 
-  hasHydratedFromCache.current = false;
-  setSelectedPriceTheme(null);
+    hasHydratedFromCache.current = false;
+    setSelectedPriceTheme(null);
 
-  // CategoryTabs ab khud <a href> se navigate karega.
-  // SearchSortBar abhi bhi onCategorySelect pe depend karta hai:
-  const categorySlug = getCategorySlugFromPath(pathname, city, locality);
-  const finalPath = `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}`;
-  router.push(finalPath);
-};
+    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+    const finalPath = `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}`;
+    router.push(finalPath);
+  };
 
   const toggleShowAll = () => {
     setShowAll((prev) => !prev);
   };
 
-  // Sorting and price-range filtering now happen server-side (sortBy /
-  // minPrice / maxPrice query params in getSubCatItems), so `catalogueData`
-  // arriving from the API is already in the right order and already
-  // restricted to the selected price range.
   const sortedCatalogueData = catalogueData;
   const priceThemeFilteredData = catalogueData;
 
-  const highPriceProducts = sortedCatalogueData.filter(
-    (item) => Number(item.price) > 11000,
-  );
+  const highPriceProducts = sortedCatalogueData.filter((item) => Number(item.price) > 11000);
 
-  // Small reusable skeleton block used whenever we're (re)fetching after a
-  // filter/theme/sort/search change, so the UI never has to guess "empty" vs
-  // "still loading" — it always knows which one it is.
   const FilterLoadingSkeleton = () => (
     <div className="skeleton-wrapper">
       {Array.from({ length: 6 }).map((_, index) => (
@@ -553,24 +549,17 @@ const openCatItems = (item) => {
       ))}
     </div>
   );
+
   const handleWhatsAppClick = () => {
     const PHONE = "7338584828";
     const message = `Looking for a Custom Decoration? Our support team is ready to help!`;
 
-    window.open(
-      `https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`,
-      "_blank",
-    );
+    window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`, "_blank");
   };
 
   return (
     <div className="decCatPage">
-      <SeoHead
-        catValue={normalizedCat}
-        city={city}
-        locality={locality}
-        theme={theme}
-      />
+      <SeoHead catValue={normalizedCat} city={city} locality={locality} theme={theme} />
 
       {isInitialLoad && loading ? (
         <div className="skeleton-wrapper">
@@ -586,6 +575,7 @@ const openCatItems = (item) => {
                 <DecorationBanner category={normalizedCat} />
               </section>
               <SearchSortBar
+                sortOption={sortOption}
                 onSortChange={handleSortChange}
                 searchCategoryList={searchCategoryList}
                 products={sortedCatalogueData}
@@ -597,77 +587,59 @@ const openCatItems = (item) => {
                 userId={userId}
               />
 
-              {/* Price-range theme cards — SIRF birthday & kids-birthday-decoration pe,
-                  aur search active hote hi hide ho jate hain */}
               {isPriceThemeSelectorPage && !isSearchActive && (
-                <ThemeSelector
-                  onSelectTheme={handleSelectPriceTheme}
-                  selectedThemeId={selectedPriceTheme?.id || null}
-                />
+                <ThemeSelector onSelectTheme={handleSelectPriceTheme} selectedThemeId={selectedPriceTheme?.id || null} />
               )}
-              {catValue?.toLowerCase() === "kids-birthday-decoration" &&
-                !isSearchActive && (
-                  <div className="category-tabs-container">
-                    <CategoryTabs
-                      data={themeFilters.map((item) => ({
-                        id: item.value,
-                        name: item.label,
-                        image: item.image,
-                        value: item.value,
-                        catValue: "kids-birthday-decoration",
-                      }))}
-                      onSelect={(item) => openCatItems(item, themeFilter)}
-                      city={city}
-                      hasCityPageParam={hasCityPageParam}
-                      locality={locality}
-                      variant="grid"
-                      catValue="kids-birthday-decoration"
-                    />
-                  </div>
-                )}
+              {catValue?.toLowerCase() === "kids-birthday-decoration" && !isSearchActive && (
+                <div className="category-tabs-container">
+                  <CategoryTabs
+                    data={themeFilters.map((item) => ({
+                      id: item.value,
+                      name: item.label,
+                      image: item.image,
+                      value: item.value,
+                      catValue: "kids-birthday-decoration",
+                    }))}
+                    onSelect={(item) => openCatItems(item, themeFilter)}
+                    city={city}
+                    hasCityPageParam={hasCityPageParam}
+                    locality={locality}
+                    variant="grid"
+                    catValue="kids-birthday-decoration"
+                  />
+                </div>
+              )}
 
-              {catValue?.toLowerCase() === "naming-ceremony-decoration" &&
-                !isSearchActive && (
-                  <div className="category-tabs-outer">
-                    <CategoryTabs
-                      data={NamingCeremonyThemes.map((item) => ({
-                        id: item.value,
-                        name: item.label,
-                        image: item.image,
-                        value: item.value,
-                        catValue: "naming-ceremony-decoration",
-                      }))}
-                      onSelect={(item) => openCatItems(item, themeFilter)}
-                      city={city}
-                      hasCityPageParam={hasCityPageParam}
-                      locality={locality}
-                      variant="grid"
-                      catValue="naming-ceremony-decoration"
-                    />
-                  </div>
-                )}
+              {catValue?.toLowerCase() === "naming-ceremony-decoration" && !isSearchActive && (
+                <div className="category-tabs-outer">
+                  <CategoryTabs
+                    data={NamingCeremonyThemes.map((item) => ({
+                      id: item.value,
+                      name: item.label,
+                      image: item.image,
+                      value: item.value,
+                      catValue: "naming-ceremony-decoration",
+                    }))}
+                    onSelect={(item) => openCatItems(item, themeFilter)}
+                    city={city}
+                    hasCityPageParam={hasCityPageParam}
+                    locality={locality}
+                    variant="grid"
+                    catValue="naming-ceremony-decoration"
+                  />
+                </div>
+              )}
               <EventDateBanner userId={userId} visitorId={visitorId} />
-             
+
               {isPriceThemeActive || isSearchActive ? (
                 <>
                   {loading ? (
                     <FilterLoadingSkeleton />
                   ) : priceThemeFilteredData.length > 0 ? (
-                    <ProductGrid
-                      data={priceThemeFilteredData}
-                      onCardClick={handleViewDetails}
-                      getHref={getProductHref}
-                      catValue={catValue}
-                    />
+                    <ProductGrid data={priceThemeFilteredData} onCardClick={handleViewDetails} getHref={getProductHref} catValue={catValue} />
                   ) : isSearchActive ? (
-                    // Koi search result nahi mila — piche default list dikhayenge, blank nahi
                     defaultCatalogueData.length > 0 ? (
-                      <ProductGrid
-                        data={defaultCatalogueData}
-                        onCardClick={handleViewDetails}
-                        getHref={getProductHref}
-                        catValue={catValue}
-                      />
+                      <ProductGrid data={defaultCatalogueData} onCardClick={handleViewDetails} getHref={getProductHref} catValue={catValue} />
                     ) : null
                   ) : (
                     <div className="noProductsWrapper">
@@ -676,167 +648,63 @@ const openCatItems = (item) => {
                   )}
                 </>
               ) : loading ? (
-                // ---- No filter/search active, but a re-fetch is in flight
-                // (e.g. theme tab switch, sort change) — show skeleton
-                // instead of flashing "No products found" for an instant. ----
                 <FilterLoadingSkeleton />
               ) : sortedCatalogueData.length === 0 ? (
-                // ---- Category ke paas abhi koi product nahi (filter/search ki wajah se nahi) ----
                 <div className="noProductsWrapper">
                   <h2>No products found</h2>
                 </div>
               ) : (
-                // ---- DEFAULT LAYOUT: banners interspersed with product grids ----
                 <>
-                  <ProductGrid
-                    data={sortedCatalogueData.slice(0, 4)}
-                    onCardClick={handleViewDetails}
-                    getHref={getProductHref}
-                    catValue={catValue}
-                  />
+                  <ProductGrid data={sortedCatalogueData.slice(0, 4)} onCardClick={handleViewDetails} getHref={getProductHref} catValue={catValue} />
 
-                  <HighPriceProduct
-                    data={highPriceProducts.slice(0, 1)}
-                    onCardClick={handleViewDetails}
-                    getHref={getProductHref}
-                  />
+                  <HighPriceProduct data={highPriceProducts.slice(0, 1)} onCardClick={handleViewDetails} getHref={getProductHref} />
                   <MakeItYoursBanner />
-                  <ProductGrid
-                    data={sortedCatalogueData.slice(4, 10)}
-                    onCardClick={handleViewDetails}
-                    getHref={getProductHref}
-                    catValue={catValue}
-                  />
+                  <ProductGrid data={sortedCatalogueData.slice(4, 10)} onCardClick={handleViewDetails} getHref={getProductHref} catValue={catValue} />
 
-                  <HighPriceProduct
-                    data={highPriceProducts.slice(1, 2)}
-                    onCardClick={handleViewDetails}
-                    getHref={getProductHref}
-                  />
+                  <HighPriceProduct data={highPriceProducts.slice(1, 2)} onCardClick={handleViewDetails} getHref={getProductHref} />
                   {!shouldHideBanner("DidyouKnow") && (
                     <section className="decorationBanner">
-                      <Image
-                        src={DidyouKnow}
-                        alt="Decoration-Banner"
-                        width={1200}
-                        height={400}
-                        className="decorationBanner-image"
-                        priority
-                      />
+                      <Image src={DidyouKnow} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
                     </section>
                   )}
 
-                  <ProductGrid
-                    data={sortedCatalogueData.slice(10, 14)}
-                    onCardClick={handleViewDetails}
-                    catValue={catValue}
-                    getHref={getProductHref}
-                  />
-                  <HighPriceProduct
-                    data={highPriceProducts.slice(2, 3)}
-                    onCardClick={handleViewDetails}
-                    getHref={getProductHref}
-                  />
+                  <ProductGrid data={sortedCatalogueData.slice(10, 14)} onCardClick={handleViewDetails} catValue={catValue} getHref={getProductHref} />
+                  <HighPriceProduct data={highPriceProducts.slice(2, 3)} onCardClick={handleViewDetails} getHref={getProductHref} />
                   {!shouldHideBanner("makeItMemorable") && (
                     <section className="decorationBanner">
-                      <Image
-                        src={makeItMemorable}
-                        alt="Decoration-Banner"
-                        width={1200}
-                        height={400}
-                        className="decorationBanner-image"
-                        priority
-                      />
+                      <Image src={makeItMemorable} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
                     </section>
                   )}
 
-                  <ProductGrid
-                    data={sortedCatalogueData.slice(14, 20)}
-                    onCardClick={handleViewDetails}
-                    catValue={catValue}
-                    getHref={getProductHref}
-                  />
-                  <HighPriceProduct
-                    data={highPriceProducts.slice(3, 4)}
-                    onCardClick={handleViewDetails}
-                    getHref={getProductHref}
-                  />
+                  <ProductGrid data={sortedCatalogueData.slice(14, 20)} onCardClick={handleViewDetails} catValue={catValue} getHref={getProductHref} />
+                  <HighPriceProduct data={highPriceProducts.slice(3, 4)} onCardClick={handleViewDetails} getHref={getProductHref} />
                   <section className="decorationBanner">
-                    <Image
-                      src={steps}
-                      alt="Decoration-Banner"
-                      width={1200}
-                      height={400}
-                      className="decorationBanner-image"
-                      priority
-                    />
+                    <Image src={steps} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
                   </section>
 
-                  <ProductGrid
-                    data={sortedCatalogueData.slice(20, 26)}
-                    onCardClick={handleViewDetails}
-                    catValue={catValue}
-                    getHref={getProductHref}
-                  />
-                  <HighPriceProduct
-                    data={highPriceProducts.slice(4, 5)}
-                    onCardClick={handleViewDetails}
-                    getHref={getProductHref}
-                  />
+                  <ProductGrid data={sortedCatalogueData.slice(20, 26)} onCardClick={handleViewDetails} catValue={catValue} getHref={getProductHref} />
+                  <HighPriceProduct data={highPriceProducts.slice(4, 5)} onCardClick={handleViewDetails} getHref={getProductHref} />
                   {!shouldHideBanner("makeitmemorablebanner") && (
                     <section className="decorationBanner">
-                      <Image
-                        src={makeitmemorablebanner}
-                        alt="Decoration-Banner"
-                        width={1200}
-                        height={400}
-                        className="decorationBanner-image"
-                        priority
-                      />
+                      <Image src={makeitmemorablebanner} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
                     </section>
                   )}
 
-                  <ProductGrid
-                    data={sortedCatalogueData.slice(26, 32)}
-                    onCardClick={handleViewDetails}
-                    catValue={catValue}
-                    getHref={getProductHref}
-                  />
-                  <HighPriceProduct
-                    data={highPriceProducts.slice(5, 6)}
-                    onCardClick={handleViewDetails}
-                    getHref={getProductHref}
-                  />
+                  <ProductGrid data={sortedCatalogueData.slice(26, 32)} onCardClick={handleViewDetails} catValue={catValue} getHref={getProductHref} />
+                  <HighPriceProduct data={highPriceProducts.slice(5, 6)} onCardClick={handleViewDetails} getHref={getProductHref} />
                   <div className="highlight-wrapper">
-                    <h3 className="highlight-title">
-                      Excellence Backed by Happy Customers
-                    </h3>
+                    <h3 className="highlight-title">Excellence Backed by Happy Customers</h3>
                     <div className="highlight-cards">
                       <div className="highlight-card">
-                        <Image
-                          src={googleRating}
-                          alt="Google Rating"
-                          width={60}
-                          height={60}
-                        />
+                        <Image src={googleRating} alt="Google Rating" width={60} height={60} />
                         <p>4.7+ GOOGLE RATING</p>
                       </div>
                       <div className="highlight-card">
-                        <Image
-                          src={ontime}
-                          alt="On Time Completion"
-                          width={60}
-                          height={60}
-                        />
+                        <Image src={ontime} alt="On Time Completion" width={60} height={60} />
                         <p>ON TIME COMPLETION</p>
                       </div>
                       <div className="highlight-card">
-                        <Image
-                          src={Gurantee}
-                          alt="100% Full Fill Guarantee"
-                          width={60}
-                          height={60}
-                        />
+                        <Image src={Gurantee} alt="100% Full Fill Guarantee" width={60} height={60} />
                         <p>100% FULL FILL GUARANTEE</p>
                       </div>
                     </div>
@@ -846,16 +714,11 @@ const openCatItems = (item) => {
             </>
           )}
 
-          {/* Grouped "load more" section — skipped while a price-range filter
-              OR a search is active, to avoid showing the full catalogue
-              underneath the filtered/search results */}
           {!isPriceThemeActive &&
             !isSearchActive &&
             Array.from(
               {
-                length: Math.ceil(
-                  sortedCatalogueData.slice(isThemePage ? 0 : 32).length / 6,
-                ),
+                length: Math.ceil(sortedCatalogueData.slice(isThemePage ? 0 : 32).length / 6),
               },
               (_, groupIndex) => {
                 const start = (isThemePage ? 0 : 32) + groupIndex * 6;
@@ -866,26 +729,14 @@ const openCatItems = (item) => {
 
                 return (
                   <React.Fragment key={groupIndex}>
-                    <ProductGrid
-                      data={groupProducts}
-                      onCardClick={handleViewDetails}
-                      catValue={catValue}
-                      getHref={getProductHref}
-                    />
+                    <ProductGrid data={groupProducts} onCardClick={handleViewDetails} catValue={catValue} getHref={getProductHref} />
 
                     {!isThemePage && highPriceProducts[highPriceIndex] && (
-                      <HighPriceProduct
-                        data={highPriceProducts.slice(
-                          highPriceIndex,
-                          highPriceIndex + 1,
-                        )}
-                        onCardClick={handleViewDetails}
-                        getHref={getProductHref}
-                      />
+                      <HighPriceProduct data={highPriceProducts.slice(highPriceIndex, highPriceIndex + 1)} onCardClick={handleViewDetails} getHref={getProductHref} />
                     )}
                   </React.Fragment>
                 );
-              },
+              }
             )}
           {isPaginating && (
             <div className="skeleton-wrapper" style={{ marginTop: "12px" }}>
@@ -893,21 +744,18 @@ const openCatItems = (item) => {
               <CardSkeleton />
             </div>
           )}
-          {/* <div className="category-content">
+
+          <div className="category-content">
             {Array.isArray(currentCategoryContent) &&
               currentCategoryContent.length > 0 && (
                 <>
-                  {currentCategoryContent
-                    .slice(0, showAll ? currentCategoryContent.length : 2)
-                    .map((item, index) => (
-                      <div key={index} className="category-item">
-                        <h1>{item.title}</h1>
-                        <div
-                          className="item-content"
-                          dangerouslySetInnerHTML={{ __html: item.htmlContent }}
-                        />
-                      </div>
-                    ))}
+                  {currentCategoryContent.map((item, index) => (
+                    <div key={index} className={`category-item ${!showAll && index >= 2 ? "category-item--hidden" : ""}`}>
+                      <h1>{item.title}</h1>
+                      <div className="item-content" dangerouslySetInnerHTML={{ __html: item.htmlContent }} />
+                    </div>
+                  ))}
+
                   {currentCategoryContent.length > 2 && (
                     <button onClick={toggleShowAll} className="toggle-btn">
                       {showAll ? "See Less" : "See More"}
@@ -915,34 +763,7 @@ const openCatItems = (item) => {
                   )}
                 </>
               )}
-          </div> */}
-          <div className="category-content">
-  {Array.isArray(currentCategoryContent) &&
-    currentCategoryContent.length > 0 && (
-      <>
-        {currentCategoryContent.map((item, index) => (
-          <div
-            key={index}
-            className={`category-item ${
-              !showAll && index >= 2 ? "category-item--hidden" : ""
-            }`}
-          >
-            <h1>{item.title}</h1>
-            <div
-              className="item-content"
-              dangerouslySetInnerHTML={{ __html: item.htmlContent }}
-            />
           </div>
-        ))}
-
-        {currentCategoryContent.length > 2 && (
-          <button onClick={toggleShowAll} className="toggle-btn">
-            {showAll ? "See Less" : "See More"}
-          </button>
-        )}
-      </>
-    )}
-</div>
         </>
       )}
     </div>
