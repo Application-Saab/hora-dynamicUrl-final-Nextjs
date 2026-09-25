@@ -172,7 +172,7 @@ margin:0px;
 font-weight: 400;
 font-style: normal;
 font-size: clamp(7px, calc((8.17 / 393) * 100vw), 10px);
-
+color:#000000;
 
   margin: 0;
 }
