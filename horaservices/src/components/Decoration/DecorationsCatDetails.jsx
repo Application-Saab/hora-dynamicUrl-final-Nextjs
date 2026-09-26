@@ -53,7 +53,7 @@ import { fetchWithError } from "@/utils/fetchWithError";
 import axiosApi from "@/utils/axiosApi";
 import MakeItYoursBanner from "@/components/MakeItYoursBanner";
 import GoogleReviewsCard from "@/components/PhotoGalleryPose/GoogleReviewsCard";
-import { reviewsData } from "@/utils/poselinkreviews";
+import { balloonreviewsproduct } from "@/utils/balloonReviews";
 import ActionButtons from "@/components/Actionbuttons";
 import WhyHoraSection from "@/components/WhyHoraSection";
 
@@ -791,7 +791,7 @@ function DecorationsCatDetails({
                   hasCityPageParam={!!city}
                   locality={locality}
                   variant="grid"
-                  catValue="KidsBirthday"
+                  catValue="kids-birthday-decoration"
                   heading="Other Popular Themes"
                   hasBg={true}
                   icon={StarIcon}
@@ -826,7 +826,7 @@ function DecorationsCatDetails({
             <WhyHoraSection />
 
             <div ref={reviewsRef}>
-              <GoogleReviewsCard reviews={reviewsData} />
+              <GoogleReviewsCard reviews={balloonreviewsproduct} />
             </div>
 
             <BrandBanner
