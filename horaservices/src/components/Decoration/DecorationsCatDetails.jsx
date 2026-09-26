@@ -791,7 +791,7 @@ function DecorationsCatDetails({
                   hasCityPageParam={!!city}
                   locality={locality}
                   variant="grid"
-                  catValue="KidsBirthday"
+                  catValue="kids-birthday-decoration"
                   heading="Other Popular Themes"
                   hasBg={true}
                   icon={StarIcon}
