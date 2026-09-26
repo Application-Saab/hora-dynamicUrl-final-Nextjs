@@ -622,6 +622,7 @@ const openCatItems = (item) => {
                       locality={locality}
                       variant="grid"
                       catValue="kids-birthday-decoration"
+                      activeValue={themeFilter} 
                     />
                   </div>
                 )}
@@ -643,6 +644,7 @@ const openCatItems = (item) => {
                       locality={locality}
                       variant="grid"
                       catValue="naming-ceremony-decoration"
+                      activeValue={themeFilter} 
                     />
                   </div>
                 )}
