@@ -10,6 +10,7 @@ export default function PhotographyPackageGridSlider({
   tagId,
   cityProps = {},
   initialProducts = null,
+  isDirectProductPage = false
 }) {
   const router = useRouter();
 
@@ -79,18 +80,23 @@ export default function PhotographyPackageGridSlider({
     const city = cityProps?.city || router.query?.city;
     const locality = cityProps?.locality || router.query?.locality;
 
-    let basePath = `/photography-page/${categorySlug}/product/${slug}`;
+    let basePath;
 
-    if (city && locality) {
+    if(!isDirectProductPage){
+      basePath = `/photography/${categorySlug}/product/${slug}`;
+    }else {
+      basePath = `/photography/product/${slug?.toLowerCase()}`;
+    }
+
+    if (city && locality && !isDirectProductPage) {
       basePath = `/${String(city).toLowerCase()}/${String(
         locality
       ).toLowerCase()}${basePath}`;
-    } else if (city) {
+    } else if (city && !isDirectProductPage) {
       basePath = `/${String(city).toLowerCase()}${basePath}`;
     }
 
-    // pehle query: { id: work._id } tha
-    if (work._id) {
+    if (work._id && !isDirectProductPage) {
       return `${basePath}?id=${work._id}`;
     }
     return basePath;

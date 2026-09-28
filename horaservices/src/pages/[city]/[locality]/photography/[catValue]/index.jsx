@@ -1,4 +1,4 @@
-import CatValuePage from "@/pages/photography-page/[catValue]";
+import CatValuePage from "@/pages/photography/[catValue]";
 import {
   BASE_URL,
   GET_DECORATION_CAT_ID,

@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
 
-import Index from "@/pages/photography-page";
+import Index from "@/pages/photography";
 import cityData from "@/utils/cityData";
 import { faqData } from "@/utils/photographyFAQData";
 import { BASE_URL, GET_PHOTOGRAPHY_BY_TAG } from "@/utils/apiconstants.js";
@@ -135,7 +135,7 @@ const PhotographyCityPage = ({
       .replace(/\s+/g, "-")
       .toLowerCase();
     router.push({
-      pathname: `/${city.toLowerCase()}/${formattedLocalityName}/photography-page`,
+      pathname: `/${city.toLowerCase()}/${formattedLocalityName}/photography`,
     });
   };
 
@@ -144,7 +144,7 @@ const PhotographyCityPage = ({
 
   return (
     <div>
-      {/* Index = photography-page main component — city + packages props */}
+      {/* Index = photography main component — city + packages props */}
       <Index
         city={city}
         locality={null}
@@ -156,7 +156,7 @@ const PhotographyCityPage = ({
         title={`${city} localities`}
         localities={cityLocalitiesList}
         handleClick={localityHandleClick}
-        href="/photography-page"
+        href="/photography"
         citySlug={citySlug}
       />
 

@@ -1,7 +1,14 @@
-import ProductDetails from "@/pages/photography-page/[catValue]/product/[productName]";
+// pages/[city]/photography/[catValue]/product/[productName]/index.jsx
+// (ya jo bhi exact path hai)
+
+import { useRouter } from "next/router";
+import { useEffect, useState, useCallback } from "react";
+
+import ProductDetails from "@/pages/photography/[catValue]/product/[productName]";
 import { BASE_URL, GET_ADDON_BY_ID } from "@/utils/apiconstants";
 import axiosApi from "@/utils/axiosApi";
-import "../../../../../../app/homepage.css";
+
+import "../../../../../app/homepage.css";
 
 const getDiscountedPrice = (price = 0) => {
   const discountedPrice = price / 0.78;
@@ -19,12 +26,10 @@ function formatCityDisplay(slug) {
   return slug.charAt(0).toUpperCase() + slug.slice(1).toLowerCase();
 }
 
-function formatLocalityDisplay(slug) {
-  if (!slug) return "";
-  return slug
-    .split("-")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-    .join(" ");
+function getCitySlugFromPath(pathname) {
+  if (!pathname) return "";
+  const parts = pathname.split("/").filter(Boolean);
+  return parts[0] || "";
 }
 
 // ---------- SSR ----------
@@ -32,33 +37,35 @@ export async function getServerSideProps(context) {
   const { city, locality, catValue, productName } = context.params || {};
   const query = context.query || {};
 
-  const citySlug = (city || "").toLowerCase();
-  const localitySlug = (locality || "").toLowerCase();
-  const finalCatValue = catValue || null;
-  const productId = query.id || null;
+  const citySlug = (city || query.city || "").toLowerCase();
+  const finalCity = formatCityDisplay(citySlug) || null;
+  const finalLocality = locality || query.locality || null;
+  const finalCatValue = catValue || query.catValue || null;
+  let productId = null;
 
-  if (!citySlug || !localitySlug) {
+
+  if (!citySlug) {
     return { notFound: true };
   }
-
-  const finalCity = formatCityDisplay(citySlug);
-  const finalLocality = formatLocalityDisplay(localitySlug);
 
   let work = null;
   let similarProducts = [];
   let addonData = [];
   let error = null;
 
-  if (productId) {
+  if (productName) {
     try {
       const res = await axiosApi.get(
-        `${BASE_URL}/api/photography/details/${productId}`
+        `${BASE_URL}/api/photography/detailsByName/${productName?.toLowerCase()}`
       );
       const data = res.data?.data;
 
       if (data) {
         const { discount, discountedPrice, discountDifference } =
           getDiscountedPrice(Number(data.price));
+
+      productId = data?._id 
+      console.log('%c [ data?._id ]', 'font-size:13px; background:pink; color:#bf2c9f;', data?._id)
 
         work = {
           ...data,
@@ -68,6 +75,7 @@ export async function getServerSideProps(context) {
           advance_amount: Number(data.advance_amount || 0),
         };
 
+        // Similar
         const tagId = data?.tag?.[0]?._id;
         if (tagId) {
           try {
@@ -75,13 +83,14 @@ export async function getServerSideProps(context) {
               `${BASE_URL}/api/photography/searchByTag/${tagId}`
             );
             similarProducts = (similarRes.data?.data || []).filter(
-              (p) => p._id !== productId
+              (p) => p._id !== data?._id
             );
           } catch (e) {
             console.error("SSR similar fetch error:", e.message);
           }
         }
 
+        // Addons
         const addonIds = data?.addons || [];
         if (addonIds.length > 0) {
           try {
@@ -101,7 +110,7 @@ export async function getServerSideProps(context) {
         error = "No product found";
       }
     } catch (err) {
-      console.error("SSR city+locality product error:", err.message);
+      console.error("SSR city product details error:", err.message);
       error = err.message;
     }
   }
@@ -116,13 +125,57 @@ export async function getServerSideProps(context) {
       locality: finalLocality,
       catValue: finalCatValue,
       ssrError: error,
+      citySlug,
       productName: productName || null,
     },
   };
 }
 
 // ---------- Page ----------
-const PhotographyLocalityProductPage = (ssrProps) => {
+const PhotographyCityProductPage = (ssrProps) => {
+  const router = useRouter();
+  const {
+    city: ssrCity,
+    locality: ssrLocality,
+    citySlug: ssrCitySlug,
+    ...productProps
+  } = ssrProps;
+
+  const [citySlug, setCitySlug] = useState(ssrCitySlug || "");
+
+  const syncCityFromUrl = useCallback(() => {
+    if (typeof window === "undefined") return;
+    setCitySlug(getCitySlugFromPath(window.location.pathname));
+  }, []);
+
+  useEffect(() => {
+    syncCityFromUrl();
+  }, [syncCityFromUrl]);
+
+  useEffect(() => {
+    router.events.on("routeChangeComplete", syncCityFromUrl);
+    return () => router.events.off("routeChangeComplete", syncCityFromUrl);
+  }, [router.events, syncCityFromUrl]);
+
+  useEffect(() => {
+    window.addEventListener("city:changed", syncCityFromUrl);
+    return () => window.removeEventListener("city:changed", syncCityFromUrl);
+  }, [syncCityFromUrl]);
+
+  useEffect(() => {
+    window.addEventListener("popstate", syncCityFromUrl);
+    return () => window.removeEventListener("popstate", syncCityFromUrl);
+  }, [syncCityFromUrl]);
+
+  const city = citySlug
+    ? formatCityDisplay(citySlug)
+    : ssrCity || "";
+
+  const locality = ssrLocality || router.query.locality || null;
+
+  // SSR pe city aati hai — pehle paint pe null mat dikhao
+  if (!city) return null;
+
   return (
     <div>
       <ProductDetails
@@ -130,8 +183,8 @@ const PhotographyLocalityProductPage = (ssrProps) => {
         initialSimilar={ssrProps.initialSimilar}
         initialAddons={ssrProps.initialAddons}
         productId={ssrProps.productId}
-        city={ssrProps.city}
-        locality={ssrProps.locality}
+        city={city}
+        locality={locality}
         catValue={ssrProps.catValue}
         ssrError={ssrProps.ssrError}
       />
@@ -139,4 +192,4 @@ const PhotographyLocalityProductPage = (ssrProps) => {
   );
 };
 
-export default PhotographyLocalityProductPage;
+export default PhotographyCityProductPage;

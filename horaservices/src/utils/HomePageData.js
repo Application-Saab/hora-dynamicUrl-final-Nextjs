@@ -23,7 +23,7 @@ export const planningCategories = [
     title: "Photography",
     subtitle: "Capture moments, cherish forever",
     image: photographyImg,
-    path: "/photography-page",
+    path: "/photography",
   },
   {
     title: "Food Delivery",

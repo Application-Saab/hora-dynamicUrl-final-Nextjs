@@ -271,7 +271,7 @@ export default function CatValuePage({
   ]);
 
   const slugify = (text) =>
-    text?.replace(/[^a-zA-Z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "";
+    text?.replace(/[^a-zA-Z0-9]+/g, "-").replace(/(^-|-$)/g, "").toLowerCase() || "";
 
   const getProductHref = (work) => {
     if (!work?.name) return "#";
@@ -283,24 +283,25 @@ export default function CatValuePage({
       .split("?")[0]
       .split("/")
       .filter(Boolean);
-    const photoIndex = pathParts.findIndex((p) => p === "photography-page");
+    const photoIndex = pathParts.findIndex((p) => p === "photography");
 
     const cityFromPath =
       photoIndex > 0 ? pathParts[0] : city || router.query.city || null;
     const localityFromPath =
       photoIndex > 1 ? pathParts[1] : locality || router.query.locality || null;
 
-    let basePath = `/photography-page/${categorySlug}/product/${slug}`;
+    let basePath = `/photography/product/${slug}`;
 
-    if (cityFromPath && localityFromPath) {
-      basePath = `/${String(cityFromPath).toLowerCase()}/${String(
-        localityFromPath,
-      ).toLowerCase()}${basePath}`;
-    } else if (cityFromPath) {
-      basePath = `/${String(cityFromPath).toLowerCase()}${basePath}`;
-    }
+    // if (cityFromPath && localityFromPath) {
+    //   basePath = `/${String(cityFromPath).toLowerCase()}/${String(
+    //     localityFromPath,
+    //   ).toLowerCase()}${basePath}`;
+    // } else if (cityFromPath) {
+    //   basePath = `/${String(cityFromPath).toLowerCase()}${basePath}`;
+    // }
 
-    if (work._id) return `${basePath}?id=${work._id}`;
+    // if (work._id) return `${basePath}?id=${work._id}`;
+    if (work._id) return `${basePath}`;
     return basePath;
   };
 
@@ -312,7 +313,7 @@ export default function CatValuePage({
   const handleSelectMoment = (key) => {
     const slug = MOMENT_KEY_TO_SLUG[key] || "wedding-photography";
     const pathParts = router.asPath.split("?")[0].split("/").filter(Boolean);
-    const photoIndex = pathParts.findIndex((p) => p === "photography-page");
+    const photoIndex = pathParts.findIndex((p) => p === "photography");
     if (photoIndex === -1) return;
 
     pathParts[photoIndex + 1] = slug;
@@ -489,21 +490,9 @@ export default function CatValuePage({
               />
             </div>
           </div>
-
-          {/* {galleryData?.folderName && galleryData?.customerId && (
-            <div className="photo-gallery-wrapper">
-              <PhotoGalleryEmbed
-                folderName={galleryData.folderName}
-                customerId={galleryData.customerId}
-                embedded={true}
-                city={formatCity(city)}
-              />
-            </div>
-          )} */}
         </>
       )}
 
-      {/* ✅ hamesha SSR — loading se independent */}
       {galleryData?.folderName && galleryData?.customerId && (
         <div className="photo-gallery-wrapper">
           <PhotoGalleryEmbed

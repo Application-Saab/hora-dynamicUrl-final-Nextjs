@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
 
-import CatValuePage from "@/pages/photography-page/[catValue]";
+import CatValuePage from "@/pages/photography/[catValue]";
 import {
   BASE_URL,
   GET_DECORATION_CAT_ID,
@@ -131,8 +131,6 @@ export async function getServerSideProps(context) {
   }
 
   const galleryData = categoryToWeblinkFolderName[finalCatValue] || null;
-  console.log('%c [ effectiveCatValue ]', 'font-size:13px; background:pink; color:#bf2c9f;', effectiveCatValue)
-  console.log('%c [ galleryData ]', 'font-size:13px; background:pink; color:#bf2c9f;', galleryData)
 
   return {
     props: {
