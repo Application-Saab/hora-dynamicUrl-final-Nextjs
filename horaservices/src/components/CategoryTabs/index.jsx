@@ -16,9 +16,11 @@ const CategoryTabs = ({
   hasBg = false,
   icon,
   fireIcon,
+  activeValue,
 }) => {
   const pathname = usePathname();
   const scrollRef = useRef(null);
+  const itemRefs = useRef({}); 
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
@@ -105,6 +107,18 @@ const CategoryTabs = ({
     };
   }, [variant, data, updateArrowVisibility]);
 
+  useEffect(() => {
+    if (variant !== "grid" || !activeValue) return;
+    const el = itemRefs.current[activeValue];
+    if (el) {
+      el.scrollIntoView({
+        behavior: "auto",
+        inline: "center",
+        block: "nearest",
+      });
+    }
+  }, [activeValue, variant, data]);
+
   return variant === "grid" ? (
     <div className={`category-tabs-outer ${hasBg ? "has-bg" : ""}`}>
       {heading && (
@@ -156,24 +170,31 @@ const CategoryTabs = ({
         <div className="category-tabs-grid" ref={scrollRef}>
           {data
             .filter((cat) => cat.image)
-            .map((cat) => (
-              <a
-                key={cat.id}
-                type="button"
-                href={getGridHref(cat)}
-                className="category-tabs-card"
-                onClick={() => GridhandleClick(cat)}
-              >
-                <Image
-                  className="category-tabs-circle"
-                  src={cat.image}
-                  alt={cat.name}
-                  width={80}
-                  height={80}
-                />
-                <span className="category-tabs-title">{cat.name}</span>
-              </a>
-            ))}
+            .map((cat) => {
+              const isActive = !!activeValue && cat.value === activeValue;
+              return (
+                <a
+                  key={cat.id}
+                  ref={(el) => {
+                    itemRefs.current[cat.value] = el;
+                  }}
+                  type="button"
+                  href={getGridHref(cat)}
+                  className={`category-tabs-card${isActive ? " is-active" : ""}`}
+                  aria-current={isActive ? "true" : undefined}
+                  onClick={() => GridhandleClick(cat)}
+                >
+                  <Image
+                    className="category-tabs-circle"
+                    src={cat.image}
+                    alt={cat.name}
+                    width={80}
+                    height={80}
+                  />
+                  <span className="category-tabs-title">{cat.name}</span>
+                </a>
+              );
+            })}
         </div>
 
         {canScrollRight && (
@@ -201,22 +222,29 @@ const CategoryTabs = ({
       {data
         .filter((cat) => cat.image)
         .slice(0, 14)
-        .map((cat) => (
-          <a
-            key={cat.id}
-            type="button"
-            href={getCircleHref(cat)}
-            className="ctabs-btn"
-            role="listitem"
-            onClick={() => handleClick(cat)}
-          >
-            <div
-              className="ctabs-circle"
-              style={{ backgroundImage: `url(${cat.image})` }}
-            />
-            <span className="ctabs-label">{cat.name}</span>
-          </a>
-        ))}
+        .map((cat) => {
+          const isActive = !!activeValue && cat.value === activeValue;
+          return (
+            <a
+              key={cat.id}
+              ref={(el) => {
+                itemRefs.current[cat.value] = el;
+              }}
+              type="button"
+              href={getCircleHref(cat)}
+              className={`ctabs-btn${isActive ? " is-active" : ""}`}
+              role="listitem"
+              aria-current={isActive ? "true" : undefined}
+              onClick={() => handleClick(cat)}
+            >
+              <div
+                className="ctabs-circle"
+                style={{ backgroundImage: `url(${cat.image})` }}
+              />
+              <span className="ctabs-label">{cat.name}</span>
+            </a>
+          );
+        })}
     </div>
   );
 };

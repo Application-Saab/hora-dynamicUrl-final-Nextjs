@@ -2,143 +2,59 @@ import Pooja from "@/assets/photographyReview/Pooja.webp";
 import Priya from "@/assets/photographyReview/Priya.webp";
 import Krutika from "@/assets/photographyReview/Krutika.webp";
 import Pragya from "@/assets/photographyReview/Pragya.webp";
-import Chitra  from "@/assets/photographyReview/Chitra.webp";
+import Chitra from "@/assets/photographyReview/Chitra.webp";
 import jyoti from "@/assets/photographyReview/jyoti.webp";
 import Bhanupriya from "@/assets/photographyReview/Bhanupriya.webp";
-import Vibpri from "@/assets/photographyReview/Vibpri.webp"
+import Vibpri from "@/assets/photographyReview/Vibpri.webp";
+
+/* Short reviews for product / service cards (image + name + review) */
 export const photographyreviews = [
   {
+    image: Pooja,
     name: "Pooja Purohit",
-    booking: "Booked Maternity Photoshoot Service",
-    date: "14 Aug 2026",
-    rating: 5,
-    avatar: Pooja,
-    indicators: {
-      Creativity: true,
-      Professionalism: true,
-      Quality: true,
-      Punctuality: true,
-      Behaviour: true,
-      Communication: true,
-    },
-    text: "We had our maternity photoshoot at the 1,000-year-old Adinarayana Temple in Hyderabad, and it was truly a wonderful experience. Our photographer, Satya, was incredibly cooperative, hardworking. Even when we got tired during the shoot, he kept motivating us and made us feel comfortable throughout the session. He captured every moment beautifully with great attention to detail. His patience, dedication, and passion for his work were evident in every shot. We are truly happy with the photos. If I ever get another opportunity for a photoshoot, I would definitely choose Satya again. Highly recommended!",
+    review:
+      "Our maternity shoot was wonderful! The photographer was cooperative, kept us motivated and captured every moment well.",
   },
-{
+  {
+    image: Vibpri,
     name: "vibpri",
-    booking: "Booked Photography Service",
-    date: "14 Aug 2026",
-    rating: 5,
-    avatar: Vibpri,
-    indicators: {
-      Creativity: true,
-      Professionalism: true,
-      Quality: true,
-      Punctuality: true,
-      Behaviour: true,
-      Communication: true,
-    },
-    text: "Thanks so much, Ashwini — the shoot turned out AMAZING! You've got such an eye for detail and made everything feel effortless. Can't wait to work with you again — you're a magician behind the lens! ✨📷",
+    review:
+      "The shoot turned out amazing! Such an eye for detail, and everything felt effortless. Can't wait to work with them again.",
   },
   {
+    image: Bhanupriya,
     name: "Bhanupriya Sharma",
-    booking: "Booked Photography Service",
-    date: "14 Aug 2026",
-    rating: 5,
-    avatar: Bhanupriya, // no photo — UI shows pink circle with initial "B"
-    initial: "B",
-    indicators: {
-      Creativity: true,
-      Professionalism: true,
-      Quality: true,
-      Punctuality: true,
-      Behaviour: true,
-      Communication: true,
-    },
-    text: "It was great experience having Abhishek as photographer. He was covering it all actively and photos quality are also very good. He did extended help with couple of additional minutes.",
+    review:
+      "Great experience! The photographer was active throughout, photo quality is very good, and he stayed a few extra minutes.",
   },
-{
+  {
+    image: jyoti,
     name: "Jyoti Singh",
-    booking: "Booked Birthday Photography Service",
-    date: "14 Aug 2026",
-    rating: 5,
-    avatar: jyoti ,
-    title: "Reasonable price",
-    indicators: {
-      Creativity: true,
-      Professionalism: true,
-      Quality: true,
-      Punctuality: true,
-      Behaviour: true,
-      Communication: true,
-    },
-    text: "Thank you so much for all our amazing photos. We love them !! The photographer is good nd polite . Mr Chandan thank u for the best pictures",
-},
-   {
+    review:
+      "We love all our amazing photos ! The photographer was very good and polite, and gave us the best pictures at a fair price.",
+  },
+  {
+    image: Chitra,
     name: "Chitra Karkera",
-    booking: "Booked Photography Service",
-    date: "14 Aug 2026",
-    rating: 5,
-    avatar: Chitra ,
-    isLocalGuide: true,
-    indicators: {
-      Creativity: true,
-      Professionalism: true,
-      Quality: true,
-      Punctuality: true,
-      Behaviour: true,
-      Communication: true,
-    },
-    text: "The photography is amazing, and the price is reasonable.",
+    review:
+      "The photography is amazing, and the price is very reasonable. A really great experience with our photographer overall.",
   },
   {
+    image: Pragya,
     name: "Pragya Choudhary",
-    booking: "Booked Maternity Photoshoot Service",
-    date: "14 Aug 2026",
-    rating: 5,
-    avatar: Pragya,
-    indicators: {
-      Creativity: true,
-      Professionalism: true,
-      Quality: true,
-      Punctuality: true,
-      Behaviour: true,
-      Communication: true,
-    },
-    text: "Thanking Devendra S. For capturing awesome fotos which is lifetime memory for me and my husband. We were not sure how to pose, and Devendra guided us with so much love and positivity. His passion towards his work is seen in each photos done in maternity photoshoot",
-  },
-   {
-    name: "Krutika Nikhar Barapatre",
-    booking: "Booked Photography Service",
-    date: "14 Aug 2026",
-    rating: 5,
-    avatar: Krutika,
-    initial: "K",
-    isLocalGuide: true,
-    indicators: {
-      Creativity: true,
-      Professionalism: true,
-      Quality: true,
-      Punctuality: true,
-      Behaviour: true,
-      Communication: true,
-    },
-    text: "A fantastic photography experience for our uncle's retirement function! The photographer was extremely cooperative, highly professional, and had a wonderful, friendly demeanor that made everyone feel at ease. His attention to detail and positive energy truly captured the warmth and joy of our family's special milestone.",
+    review:
+      "Awesome photos that are a lifetime memory for us. The photographer guided our poses with so much love and positivity.",
   },
   {
-    name: "Priya Pakhare",
-    booking: "Booked Engagement Photography Service",
-    date: "14 Aug 2026",
-    rating: 5,
-    avatar: Priya,
-    initial: "P",
-    indicators: {
-      Creativity: true,
-      Professionalism: true,
-      Quality: true,
-      Punctuality: true,
-      Behaviour: true,
-      Communication: true,
-    },
-    text: "Absolute perfection! Meet captured our engagement party so beautifully. Every single shot felt authentic, warm, and stunning. We couldn't have asked for a better experience! Meet made us feel so relaxed in front of the camera, and the final shots are beyond breathtaking. 10/10 recommend!",
+    image: Krutika,
+    name: "Krutika Nikhar Barapatre",
+    review:
+      "Fantastic photography for our uncle's retirement function! Very cooperative and  professional and friendly photographer.",
   },
- ];
+  {
+    image: Priya,
+    name: "Priya Pakhare",
+    review:
+     "Absolute perfection! Our engagement party was captured so beautifully. Every shot felt authentic, warm and stunning, so naturally.",
+  },
+];
