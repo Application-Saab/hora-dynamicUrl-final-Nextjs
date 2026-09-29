@@ -32,7 +32,7 @@ export const parseFromPath = (from) => {
   } catch (e) {}
 
   const parts = path.split("?")[0].split("/").filter(Boolean);
-  const idx = parts.findIndex((p) => p === "photography-page");
+  const idx = parts.findIndex((p) => p === "photography");
   if (idx === -1) return { city: "", category: "" };
 
   const citySlug = idx > 0 ? parts[0] : "";

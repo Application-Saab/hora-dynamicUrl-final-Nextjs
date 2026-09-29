@@ -576,7 +576,7 @@ export default function Home({
               <button
                 className="book-now2"
                 onClick={() =>
-                  (window.location.href = `${displayCity}/photography-page`)
+                  (window.location.href = `${displayCity}/photography`)
                 }
               >
                 Book Now

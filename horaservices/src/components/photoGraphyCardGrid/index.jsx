@@ -26,7 +26,7 @@ const PhotoGraphyCard = ({
     const citySlug = city?.toLowerCase();
     const localitySlug = locality?.toLowerCase();
 
-    let path = `/photography-page/${slug}`;
+    let path = `/photography/${slug}`;
 
     if (citySlug && localitySlug) {
       path = `/${citySlug}/${localitySlug}${path}`;

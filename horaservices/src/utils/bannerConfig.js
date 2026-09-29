@@ -36,7 +36,7 @@ const FIXED_CONFIG = {
   highlightText: "2500+",
   description: "Get inspired with trending poses and book the best photographer for your Event.",
   ctaText: "Book Photographer",
-  ctaUrl: "/photography-page",
+  ctaUrl: "/photography",
 };
 
 // ✅ Har folder ke liye — background image + dynamic title ka event name

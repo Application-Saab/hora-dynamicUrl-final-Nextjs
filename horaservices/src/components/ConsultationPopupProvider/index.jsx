@@ -35,7 +35,7 @@ const CATEGORY_POPUP_DATA = {
     whatsappMessage: "Hi! I need help finding the decoration I'm looking for. Can you assist me?",
   },
 
-  "/photography-page": {
+  "/photography": {
     title: "Confused About ",
     highlightText: "Photography Packages?",
     subtitle: "Not Sure What’s Included Or Which Package To Choose?",

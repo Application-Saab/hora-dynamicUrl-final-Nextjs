@@ -8,7 +8,7 @@ export const CATEGORIES_CONFIG = [
   },
   {
     label: "Photography",
-    href: "/photography-page",
+    href: "/photography",
     type: "link"
   },
    {
