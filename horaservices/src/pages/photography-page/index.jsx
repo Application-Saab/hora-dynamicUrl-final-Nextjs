@@ -34,10 +34,8 @@ import PhotoGraphyCardgrid from "@/components/photoGraphyCardGrid";
 
 // Heavy client-only pieces
 const BrandBanner = dynamic(() => import("@/components/BrandBanner"));
-const ReviewSlider = dynamic(() => import("@/components/ReviewSection"), {
-  loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded" />,
-});
 import PhotographyPackageGridSlider from "@/components/PhotographyPackageGridSlider";
+import GoogleReviewsCard from "@/components/PhotoGalleryPose/GoogleReviewsCard";
 
 const STANDARD_PACKAGE_TAG_ID = "66c96b4e22ed47b72117e09a";
 
@@ -300,7 +298,7 @@ const PhotographyIndexPage = ({
           items={brandItems}
         />
 
-        <ReviewSlider reviews={photographyreviews} title="Customer Reviews" />
+        <GoogleReviewsCard reviews={photographyreviews} title="Customer Reviews" />
 
         <div className="keywords-box">
           <p className="keyword-text">{keywordsList.join(", ")}</p>
