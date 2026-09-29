@@ -11,7 +11,7 @@ export const MOBILE_DRAWER_MENU = [
   },
   {
     label: "Photography",
-    href: "/photography-page",
+    href: "/photography",
     type: "link"
   },
    {

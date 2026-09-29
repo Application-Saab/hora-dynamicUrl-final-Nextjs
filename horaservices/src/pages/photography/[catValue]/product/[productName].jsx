@@ -1,4 +1,4 @@
-// pages/photography-page/[catValue]/product/[productName].jsx
+// pages/photography/[catValue]/product/[productName].jsx
 // (city / locality wrappers me bhi same props pass karo)
 
 import { useRouter } from "next/router";
@@ -19,7 +19,7 @@ import TopBrandIMg from "@/assets/TpBrandsIMG.png";
 import checkImage from "@/assets/tick.svg";
 import logo from "@/assets/new_logo_light.png";
 import "./productDetails.css";
-import { BASE_URL, GET_ADDON_BY_ID } from "@/utils/apiconstants";
+import { BASE_URL, GET_ADDON_BY_ID, GET_PHOTOGRAPHY_PRODUCT_DETAILS_BY_NAME } from "@/utils/apiconstants";
 import FAQSection from "@/components/FAQSection";
 import BrandBanner from "@/components/BrandBanner";
 import AdditionalServices from "@/components/AdditionalServices";
@@ -89,7 +89,7 @@ export async function getServerSideProps(context) {
   const { catValue, city, locality, productName } = context.params || {};
   const query = context.query || {};
 
-  const productId = query.id || null;
+  let productId = null;
   const finalCity = city || query.city || null;
   const finalLocality = locality || query.locality || null;
   const finalCatValue = catValue || query.catValue || null;
@@ -100,16 +100,17 @@ export async function getServerSideProps(context) {
   let themeData = [];
   let error = null;
 
-  if (productId) {
+  if (productName) {
     try {
       const res = await axiosApi.get(
-        `${BASE_URL}/api/photography/details/${productId}`
+        `${BASE_URL}${GET_PHOTOGRAPHY_PRODUCT_DETAILS_BY_NAME}/${productName?.toLowerCase()}`
       );
       const data = res.data?.data;
 
       if (data) {
         const { discount, discountedPrice, discountDifference } =
           getDiscountedPrice(Number(data.price));
+        productId = data?._id;
 
         work = {
           ...data,
@@ -126,7 +127,7 @@ export async function getServerSideProps(context) {
               `${BASE_URL}/api/photography/searchByTag/${tagId}`
             );
             similarProducts = (similarRes.data?.data || []).filter(
-              (p) => p._id !== productId
+              (p) => p._id !== data?._id
             );
           } catch (e) {
             console.error("SSR similar:", e.message);
@@ -227,7 +228,7 @@ const ProductDetails = ({
   catValue: ssrCatValue = null,
 }) => {
   const router = useRouter();
-  const productId = router.query.id || ssrProductId;
+  const productId = ssrProductId;
   const city = ssrCity || router.query.city || null;
   const locality = ssrLocality || router.query.locality || null;
   const catValue = ssrCatValue || router.query.catValue || "";
@@ -627,14 +628,14 @@ const ProductDetails = ({
                       textDecoration: "none",
                       fontSize: "13px",
                     }}
-                    href="/photography-page"
+                    href="/photography"
                   >
                     Home
                   </a>
                   {" > "}
                   <a
                     className="breadcrumb-link"
-                    href={`/photography-page/${catValue}`}
+                    href={`/photography/${catValue}`}
                   >
                     {(catValue || "")
                       .replace(/-/g, " ")

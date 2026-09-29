@@ -12,7 +12,7 @@ const services = [
     description: "CAPTURE EVERY SPECIAL MOMENT.",
     color: "#F4629A",
     img: PHOTOGRAPHY,
-    link: "/photography-page"
+    link: "/photography"
   },
   {
     title: "FOOD&CATERING",

@@ -1,4 +1,4 @@
-import Index from "@/pages/photography-page";
+import Index from "@/pages/photography";
 import { BASE_URL, GET_PHOTOGRAPHY_BY_TAG } from "@/utils/apiconstants.js";
 import axiosApi from "@/utils/axiosApi";
 import "../../../../app/homepage.css";

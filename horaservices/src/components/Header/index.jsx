@@ -37,7 +37,7 @@ const Header = () => {
    ------------------------ */
   const homeLikeRoutes = [
     "/",
-    "/photography-page",
+    "/photography",
     "/photo-gallery",
     "/wonderland",
     "/templates",

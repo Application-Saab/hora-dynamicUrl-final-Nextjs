@@ -27,7 +27,7 @@ const footerColumns = [
     links: [
       { text: 'Chef for Party and Occasions', href: '/book-chef-cook-for-party' },
       { text: 'Decorations for Party and Occasions', href: '/balloon-decoration' },
-      { text: 'Photography for Party and Occasions', href: '/photography-page' },
+      { text: 'Photography for Party and Occasions', href: '/photography' },
       { text: 'Food Delivery for Party and Occasions', href: 'party-food-delivery-live-catering-buffet/party-food-delivery' },
       { text: 'Catering Service for Party and Occasions', href: '/party-food-delivery-live-catering-buffet/party-live-buffet-catering' },
     ],
@@ -74,14 +74,14 @@ const footerColumns = [
   {
     title: 'Photographer',
     links: [
-      { text: 'Delhi', to: '/delhi/photography-page', city: 'Delhi' },
-      { text: 'Gurugram', to: '/gurugram/photography-page', city: 'Gurugram' },
-      { text: 'Ghaziabad', to: '/ghaziabad/photography-page', city: 'Ghaziabad' },
-      { text: 'Faridabad', to: '/faridabad/photography-page', city: 'Faridabad' },
-      { text: 'Noida', to: '/noida/photography-page', city: 'Noida' },
-      { text: 'Bangalore', to: '/bangalore/photography-page', city: 'Bangalore' },
-      { text: 'Hyderabad', to: '/hyderabad/photography-page', city: 'Hyderabad' },
-      { text: 'Mumbai', to: '/mumbai/photography-page', city: 'Mumbai' },
+      { text: 'Delhi', to: '/delhi/photography', city: 'Delhi' },
+      { text: 'Gurugram', to: '/gurugram/photography', city: 'Gurugram' },
+      { text: 'Ghaziabad', to: '/ghaziabad/photography', city: 'Ghaziabad' },
+      { text: 'Faridabad', to: '/faridabad/photography', city: 'Faridabad' },
+      { text: 'Noida', to: '/noida/photography', city: 'Noida' },
+      { text: 'Bangalore', to: '/bangalore/photography', city: 'Bangalore' },
+      { text: 'Hyderabad', to: '/hyderabad/photography', city: 'Hyderabad' },
+      { text: 'Mumbai', to: '/mumbai/photography', city: 'Mumbai' },
     ],
   },
   {

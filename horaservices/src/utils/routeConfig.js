@@ -9,7 +9,7 @@ export const DIRECT_ROUTES = [
   "/balloon-decoration-youtube",
   "/book-chef-cook-for-party",
   "/party-food-delivery-live-catering-buffet",
-  "/photography-page",
+  "/photography",
   "/venue-list",
 ];
 
@@ -17,7 +17,7 @@ export const CITY_ROUTES = [
   "/",
   "/venue-list",
   "/balloon-decoration",
-  "/photography-page",
+  "/photography",
   "/book-chef-cook-for-party",
   "/balloon-decoration-google-ads",
   "/balloon-decoration-instagram",
@@ -28,7 +28,7 @@ export const CITY_LOCALITY_ROUTES = [
   "/",
   "/balloon-decoration",
   "/book-chef-cook-for-party",
-  "/photography-page",
+  "/photography",
 ];
 
 export const normalizeRoutePath = (pathname = "") => {

@@ -78,8 +78,8 @@ const getDiscountedPrice = (price = 0) => {
 
 // ---------- SSR ----------
 export async function getServerSideProps(context) {
-  // City pages: /[city]/photography-page  ya  /[city]/[locality]/photography-page
-  // Non-city: /photography-page
+  // City pages: /[city]/photography  ya  /[city]/[locality]/photography
+  // Non-city: /photography
   const { city, locality } = context.params || {};
   const query = context.query || {};
 
@@ -208,12 +208,12 @@ const PhotographyIndexPage = ({
           ))}
         </div>
 
-        {/* Packages – SSR data pass karo */}
         <PhotographyPackageGridSlider
           title="Standard Packages"
           tagId={STANDARD_PACKAGE_TAG_ID}
           cityProps={cityProps}
           initialProducts={initialPackages}
+          isDirectProductPage = {true}
         />
 
         {/* HORA info card */}

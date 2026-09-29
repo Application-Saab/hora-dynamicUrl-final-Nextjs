@@ -124,7 +124,7 @@ const LayoutInner = ({ children }) => {
   // ab background me chalta hai aur date-sheet flow se independent hai.
   const [cityResolved] = useState(true);
 
-  const isDateSheetAllowedPath = /(^|\/)(balloon-decoration|photography-page)(\/|$)/.test(pathname || "");
+  const isDateSheetAllowedPath = /(^|\/)(balloon-decoration|photography)(\/|$)/.test(pathname || "");
 
   useEffect(() => {
     const storedId = safeGetItem("userID");

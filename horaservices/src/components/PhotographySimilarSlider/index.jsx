@@ -23,6 +23,7 @@ const PhotographySimilarSlider = ({
   hasCityPageParam = false,
   locality = "",
   catValue = "",
+  isDirectProductPage = false
 }) => {
   const slugify = (text) =>
     String(text || "")
@@ -35,9 +36,14 @@ const PhotographySimilarSlider = ({
     const slug = slugify(work.name);
     const categorySlug = slugify(catValue || "photography");
 
-    let path = `/photography-page/${categorySlug}/product/${slug}`;
+    let path;
+    if(!isDirectProductPage) {
+      path = `/photography/${categorySlug}/product/${slug}`;
+    } else {
+      path = `/photography/product/${slug?.toLowerCase()}`;
+    }
 
-    if (hasCityPageParam && city) {
+    if (hasCityPageParam && city && !isDirectProductPage) {
       const citySlug = slugify(city);
       if (locality) {
         path = `/${citySlug}/${slugify(locality)}${path}`;
@@ -46,7 +52,8 @@ const PhotographySimilarSlider = ({
       }
     }
 
-    if (work._id) return `${path}?id=${work._id}`;
+    if (work._id && !isDirectProductPage) return `${path}?id=${work._id}`;
+    
     return path;
   };
 

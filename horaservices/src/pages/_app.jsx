@@ -21,7 +21,11 @@ import {
 import { useScrollRestoration } from "@/hooks/useScrollRestoration";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 import { fetchWithError } from "@/utils/fetchWithError";
-import { BASE_URL, CHECK_TOKEN_HEALTH, REFRESH_ACCESS_TOKEN } from "@/utils/apiconstants";
+import {
+  BASE_URL,
+  CHECK_TOKEN_HEALTH,
+  REFRESH_ACCESS_TOKEN,
+} from "@/utils/apiconstants";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -112,7 +116,7 @@ function MyApp({ Component, pageProps }) {
   const logout = () => {
     localStorage.clear();
     router.push("/");
-  }
+  };
 
   const refreshAccessToken = async () => {
     const refreshToken = safeGetItem("refreshToken");
@@ -123,16 +127,19 @@ function MyApp({ Component, pageProps }) {
     }
 
     try {
-      const response = await fetchWithError(`${BASE_URL}${REFRESH_ACCESS_TOKEN}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetchWithError(
+        `${BASE_URL}${REFRESH_ACCESS_TOKEN}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            refreshToken,
+          }),
         },
-        body: JSON.stringify({
-          refreshToken,
-        }),
-      });
-      
+      );
+
       if (!response.ok) {
         logout();
         return null;
@@ -151,15 +158,12 @@ function MyApp({ Component, pageProps }) {
     const accessToken = safeGetItem("token");
     const checkAuthentication = async () => {
       try {
-        const response = await fetch(
-          `${BASE_URL}${CHECK_TOKEN_HEALTH}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `${accessToken}`,
-            },
+        const response = await fetch(`${BASE_URL}${CHECK_TOKEN_HEALTH}`, {
+          method: "GET",
+          headers: {
+            Authorization: `${accessToken}`,
           },
-        );
+        });
         // Access token valid
         if (response.ok) {
           return;
@@ -174,7 +178,7 @@ function MyApp({ Component, pageProps }) {
       }
     };
 
-    if(accessToken){
+    if (accessToken) {
       checkAuthentication();
     }
   }, []);
@@ -197,7 +201,7 @@ function MyApp({ Component, pageProps }) {
           </noscript>
 
           {/* Server + first client paint: kuch mat dikhao → hydration match */}
-          {waReady && !hideWhatsApp && (
+          {waReady && !hideWhatsApp && !pathOnly?.includes("/photography/product") && (
             <div className="whatsapp-container">
               <WhatsAppIcon router={router} />
             </div>

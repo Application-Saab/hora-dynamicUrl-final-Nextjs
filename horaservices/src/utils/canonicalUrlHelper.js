@@ -23,7 +23,7 @@ export function buildPhotographyCanonical({
   if (citySlug) parts.push(citySlug);
   if (localitySlug) parts.push(localitySlug);
 
-  parts.push("photography-page");
+  parts.push("photography");
 
   if (catValue) parts.push(catValue); // keep original casing if routes use it
   if (productName) {

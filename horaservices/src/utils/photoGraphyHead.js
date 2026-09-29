@@ -1,7 +1,7 @@
 import Head from "next/head";
 import {
   normalizeCatValue,
-} from "@/pages/photography-page/[catValue]/index.jsx";
+} from "@/pages/photography/[catValue]/index.jsx";
 import { photographyCategoryPageTopBannerHeading } from "./photoCategories";
 
 const SITE = "https://horaservices.com";
@@ -28,7 +28,7 @@ export function buildPhotographyCanonical({
   if (citySlug) parts.push(citySlug);
   if (localitySlug) parts.push(localitySlug);
 
-  parts.push("photography-page");
+  parts.push("photography");
 
   if (catValue) parts.push(catValue);
 
@@ -46,7 +46,7 @@ export function buildPhotographyCanonical({
   return `${SITE}${path}`;
 }
 
-// ---------- MAIN ( /photography-page ) ----------
+// ---------- MAIN ( /photography ) ----------
 export function SeoMain({ city, locality, scriptTag }) {
   const canonical = buildPhotographyCanonical({ city, locality });
 
@@ -133,7 +133,7 @@ export function SeoMain({ city, locality, scriptTag }) {
   );
 }
 
-// ---------- CATEGORY ( /photography-page/[catValue] ) ----------
+// ---------- CATEGORY ( /photography/[catValue] ) ----------
 export function SeoCategory({ city, locality, catValue, seoData, scriptTag }) {
   const seo = seoData?.[catValue] || {};
   const safeCat = catValue ? catValue.replace(/-/g, " ") : "";
