@@ -191,6 +191,14 @@ const getPathFromWindow = () => {
         break;
       }
 
+      case '/balloon-decoration/product/[productName]': {
+        eventName = 'decoration_productcitypage_whatsapp_click';
+        productNameEvent = `decoration_productcitypage_whatsapp_click_${productName}`;
+        const base1 = productMessagesByCategoryCity[categorySlug] || defaultMessage;
+        message = addCityToMessage(base1, formattedCity || citySlugProduct);
+        break;
+      }
+
       case '/checkout': {
         eventName = 'decoration_checkoutpage_whatsapp_click';
         productNameEvent = 'decoration_checkoutpage_whatsapp_click';

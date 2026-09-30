@@ -23,6 +23,7 @@ function DecorationCatCityPage({
   initialCatalogueData,
   initialCatId,
   initialHasMore,
+  isDirectProductPage = false
 }) {
   const router = useRouter();
 
@@ -99,6 +100,7 @@ function DecorationCatCityPage({
         initialCatalogueData={initialCatalogueData}
         initialCatId={initialCatId}
         initialHasMore={initialHasMore}
+        isDirectProductPage = {isDirectProductPage}
       />
 
       {/* key lagane se city ya category change hote hi section remount hoga,

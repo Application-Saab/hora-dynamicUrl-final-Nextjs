@@ -47,13 +47,12 @@ const ProductSliderSection = ({
 
   const getProductHref = (item) => {
     if (!item?.slug || !catValue) return "#";
-    return formatPath(`/${categorySlug}/${catValue}/product/${item.slug}`);
+        return `/balloon-decoration/product/${item?.slug?.toLowerCase().replace(/\s+/g, "-")}`
   };
 
   // Only tracking (navigation ab <a href> se hogi)
   const handleClick = (item) => {
     if (!item?.slug || !catValue) {
-      console.warn("Missing slug or catValue", { item, catValue });
       return;
     }
 

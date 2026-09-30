@@ -25,6 +25,7 @@ const SimilarDecorationSlider = ({
   catValue = "",
   icon,
   sparkleIcon,
+  isDirectProductPage = false
 }) => {
   // Build product href (same logic as pehle handleCardClick)
   const getCardHref = (item) => {
@@ -58,6 +59,10 @@ const SimilarDecorationSlider = ({
 
       if (!citySeg && balloonIndex > 0) citySeg = parts[0];
       if (!localitySeg && balloonIndex > 1) localitySeg = parts[1];
+    }
+
+    if(isDirectProductPage) {
+      return `/${balloonSegment}/product/${productSlug}`
     }
 
     if (citySeg && localitySeg) {

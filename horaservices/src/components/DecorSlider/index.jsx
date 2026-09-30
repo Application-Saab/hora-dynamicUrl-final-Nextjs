@@ -35,7 +35,7 @@ const DecorSlider = ({
 
   const getItemHref = (item) => {
     if (!item?.slug || !catValue) return "#";
-    return formatPath(`/${categorySlug}/${catValue}/product/${item.slug}`);
+    return `/balloon-decoration/product/${item?.slug?.toLowerCase().replace(/\s+/g, "-")}`
   };
 
   return (

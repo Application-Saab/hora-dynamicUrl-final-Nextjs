@@ -7,22 +7,6 @@ const LocalitiesSection = ({
   citySlug,
   localityFromPage,
 }) => {
-  const getHref = (localitySlug) => {
-    if (!href || href === "" || href === undefined) {
-      if (localityFromPage) {
-        return `/${citySlug}/${localityFromPage}/${localitySlug}`;
-      } else {
-        return `/${citySlug}/${localitySlug}`;
-      }
-    }
-    if (href) {
-      if (localityFromPage) {
-        return `/${citySlug}/${localityFromPage}${href}/${localitySlug}`;
-      } else {
-        return `/${citySlug}/${localitySlug}${href}`;
-      }
-    }
-  };
   return (
     <div className="containerBox">
       <div className="localities-card">
@@ -41,7 +25,7 @@ const LocalitiesSection = ({
 
               return (
                 <li key={index}>
-                  <a href={getHref(slug)}>{name}</a>
+                  {name},
                 </li>
               );
             })}

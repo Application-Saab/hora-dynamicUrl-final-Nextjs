@@ -38,7 +38,10 @@ function MyApp({ Component, pageProps }) {
 
   const pathOnly = (router.asPath || "").split("?")[0];
   const hideWhatsApp =
-    pathOnly === "/weblink-gallery" || pathOnly.startsWith("/weblink-gallery/");
+    pathOnly === "/weblink-gallery" ||
+    pathOnly.startsWith("/weblink-gallery/") ||
+    pathOnly?.includes("/photography/product") ||
+    pathOnly?.includes("/balloon-decoration/product");
 
   // ================= SCROLL RESTORATION (moved to hooks/useScrollRestoration.js) =================
   useScrollRestoration(router);
@@ -201,7 +204,7 @@ function MyApp({ Component, pageProps }) {
           </noscript>
 
           {/* Server + first client paint: kuch mat dikhao → hydration match */}
-          {waReady && !hideWhatsApp && !pathOnly?.includes("/photography/product") && (
+          {waReady && !hideWhatsApp && (
             <div className="whatsapp-container">
               <WhatsAppIcon router={router} />
             </div>

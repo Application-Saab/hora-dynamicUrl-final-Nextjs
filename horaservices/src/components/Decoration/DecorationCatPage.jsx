@@ -49,6 +49,7 @@ const DecorationCatPage = ({
   initialCatalogueData = [],
   initialCatId = "",
   initialHasMore = false,
+  isDirectProductPage = false,
 }) => {
   const router = useRouter();
   const pathname = router.asPath.split("?")[0];
@@ -70,29 +71,35 @@ const DecorationCatPage = ({
       setCity(String(router.query.city));
     }
   }, [router.isReady, router.query, catValueProp, cityProp]);
-const buildProcessedContent = (catVal, citySlug) => {
-  const content = DecorationCatDescriptionData[catVal] || [];
-  return content.map((item) => {
-    let html = item.htmlContent;
-    if (html?.includes("{{CITY_LINKS}}")) {
-      html = html.replace("{{CITY_LINKS}}", buildCityLinksHtml(catVal, citySlug));
-    }
-    if (html?.includes("{{THEME_LINKS}}")) {
-      html = html.replace("{{THEME_LINKS}}", buildThemeLinksHtml(catVal, citySlug));
-    }
-    return html === item.htmlContent ? item : { ...item, htmlContent: html };
-  });
-};
+  const buildProcessedContent = (catVal, citySlug) => {
+    const content = DecorationCatDescriptionData[catVal] || [];
+    return content.map((item) => {
+      let html = item.htmlContent;
+      if (html?.includes("{{CITY_LINKS}}")) {
+        html = html.replace(
+          "{{CITY_LINKS}}",
+          buildCityLinksHtml(catVal, citySlug),
+        );
+      }
+      if (html?.includes("{{THEME_LINKS}}")) {
+        html = html.replace(
+          "{{THEME_LINKS}}",
+          buildThemeLinksHtml(catVal, citySlug),
+        );
+      }
+      return html === item.htmlContent ? item : { ...item, htmlContent: html };
+    });
+  };
   const hasCityPageParam = !!city;
   const [selCat, setSelCat] = useState("");
   const [catId, setCatId] = useState(initialCatId || "");
   const [showAll, setShowAll] = useState(false);
- const [currentCategoryContent, setCurrentCategoryContent] = useState(
-  buildProcessedContent(
-    catValueProp || catValue,
-    (cityProp || "").toLowerCase()
-  )
-);
+  const [currentCategoryContent, setCurrentCategoryContent] = useState(
+    buildProcessedContent(
+      catValueProp || catValue,
+      (cityProp || "").toLowerCase(),
+    ),
+  );
   const { theme } = router.query;
   const hasInitialData = initialCatalogueData.length > 0;
   const [loading, setLoading] = useState(!hasInitialData);
@@ -224,12 +231,12 @@ const buildProcessedContent = (catVal, citySlug) => {
   const subCategory = getSubCategory(catValue) || stateSubCategory;
 
   const { userId } = useSelector((state) => state.auth || {});
-const [visitorId, setVisitorId] = useState(null);
-useEffect(() => {
-  if (typeof window !== "undefined") {
-    setVisitorId(localStorage.getItem("VISITOR_ID") || null);
-  }
-}, []);
+  const [visitorId, setVisitorId] = useState(null);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setVisitorId(localStorage.getItem("VISITOR_ID") || null);
+    }
+  }, []);
   useEffect(() => {
     // Price-range segmentation (Budget/Value/Photogenic/Stage) aur
     // CategoryTabs theme (jaise Cocomelon) ek saath active nahi ho sakte.
@@ -275,19 +282,19 @@ useEffect(() => {
   }, [loading, isPaginating, hasMore]);
 
   useEffect(() => {
-  if (!catId) return;
+    if (!catId) return;
 
-  // SSR se data aa chuka hai aur abhi koi filter change nahi hua
-  if (skipInitialFetch.current) {
-    skipInitialFetch.current = false;
-    setLoading(false);
-    setIsInitialLoad(false);
-    return;
-  }
+    // SSR se data aa chuka hai aur abhi koi filter change nahi hua
+    if (skipInitialFetch.current) {
+      skipInitialFetch.current = false;
+      setLoading(false);
+      setIsInitialLoad(false);
+      return;
+    }
 
-  setCurrentPage(1);
-  getSubCatItems(1);
-}, [catId, themeFilter, sortOption, selectedPriceTheme, searchQuery]);
+    setCurrentPage(1);
+    getSubCatItems(1);
+  }, [catId, themeFilter, sortOption, selectedPriceTheme, searchQuery]);
 
   useEffect(() => {
     if (loading || isPaginating || !hasMore) return;
@@ -298,7 +305,6 @@ useEffect(() => {
 
     return () => clearTimeout(timer);
   }, [loading, isPaginating, hasMore]);
-
 
   // ================= currentPage change => fetch that page =================
   // Guard: agar yeh currentPage abhi-abhi CACHE se hydrate hua tha (page 1
@@ -320,13 +326,13 @@ useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
-useEffect(() => {
-  if (catValue) {
-    setCurrentCategoryContent(
-      buildProcessedContent(catValue, (city || "").toLowerCase())
-    );
-  }
-}, [catValue, city]);
+  useEffect(() => {
+    if (catValue) {
+      setCurrentCategoryContent(
+        buildProcessedContent(catValue, (city || "").toLowerCase()),
+      );
+    }
+  }, [catValue, city]);
 
   // Reset the price-range theme filter whenever the category GENUINELY
   // changes (user browsed from one category to another). Yeh effect
@@ -484,49 +490,56 @@ useEffect(() => {
   };
 
   const buildBasePath = () => {
-  let base = "";
-  if (city) base += `/${city.toLowerCase()}`;
-  if (locality) base += `/${locality.toLowerCase()}`;
-  return base;
-};
+    let base = "";
+    if (city) base += `/${city.toLowerCase()}`;
+    if (locality) base += `/${locality.toLowerCase()}`;
+    return base;
+  };
 
-// Real product URL for <a href>
-const getProductHref = (item) => {
-  if (!item) return "#";
-  const productSlug =
-    item.slug ||
-    item.product_slug ||
-    (item.name ? item.name.toLowerCase().replace(/\s+/g, "-") : "");
-  if (!productSlug || !catValue) return "#";
-  const categorySlug = getCategorySlugFromPath(pathname, city, locality);
-  if (!categorySlug) return "#";
-  return `${buildBasePath()}/${categorySlug}/${catValue}/product/${productSlug}`;
-};
+  // Real product URL for <a href>
+  const getProductHref = (item) => {
+    if (!item) return "#";
+    const productSlug =
+      item.slug ||
+      item.product_slug ||
+      (item.name ? item.name.toLowerCase().replace(/\s+/g, "-") : "");
 
-const getCategoryHref = (item) => {
-  if (!item?.value || !catValue) return "#";
-  const categorySlug = getCategorySlugFromPath(pathname, city, locality);
-  return `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}`;
-};
+    if (!productSlug || !catValue) return "#";
 
-// Tracking only — navigation <a href> se hogi
-const handleViewDetails = (item) => {
-  if (!item) return;
-  // optional GTM yahan
-};
+    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
 
-const openCatItems = (item) => {
-  if (!item?.value || !catValue) return;
+    if (!categorySlug) return "#";
+    if(isDirectProductPage){
+      return `/${categorySlug}/product/${productSlug}`
+    }else {
+      return `${buildBasePath()}/${categorySlug}/${catValue}/product/${productSlug}`;
+    }
+  };
 
-  hasHydratedFromCache.current = false;
-  setSelectedPriceTheme(null);
+  const getCategoryHref = (item) => {
+    if (!item?.value || !catValue) return "#";
+    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+    return `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}`;
+  };
 
-  // CategoryTabs ab khud <a href> se navigate karega.
-  // SearchSortBar abhi bhi onCategorySelect pe depend karta hai:
-  const categorySlug = getCategorySlugFromPath(pathname, city, locality);
-  const finalPath = `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}`;
-  router.push(finalPath);
-};
+  // Tracking only — navigation <a href> se hogi
+  const handleViewDetails = (item) => {
+    if (!item) return;
+    // optional GTM yahan
+  };
+
+  const openCatItems = (item) => {
+    if (!item?.value || !catValue) return;
+
+    hasHydratedFromCache.current = false;
+    setSelectedPriceTheme(null);
+
+    // CategoryTabs ab khud <a href> se navigate karega.
+    // SearchSortBar abhi bhi onCategorySelect pe depend karta hai:
+    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+    const finalPath = `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}`;
+    router.push(finalPath);
+  };
 
   const toggleShowAll = () => {
     setShowAll((prev) => !prev);
@@ -647,7 +660,7 @@ const openCatItems = (item) => {
                   </div>
                 )}
               <EventDateBanner userId={userId} visitorId={visitorId} />
-             
+
               {isPriceThemeActive || isSearchActive ? (
                 <>
                   {loading ? (
@@ -658,6 +671,7 @@ const openCatItems = (item) => {
                       onCardClick={handleViewDetails}
                       getHref={getProductHref}
                       catValue={catValue}
+                      isDirectProductPage={isDirectProductPage}
                     />
                   ) : isSearchActive ? (
                     // Koi search result nahi mila — piche default list dikhayenge, blank nahi
@@ -667,6 +681,7 @@ const openCatItems = (item) => {
                         onCardClick={handleViewDetails}
                         getHref={getProductHref}
                         catValue={catValue}
+                        isDirectProductPage={isDirectProductPage}
                       />
                     ) : null
                   ) : (
@@ -693,6 +708,7 @@ const openCatItems = (item) => {
                     onCardClick={handleViewDetails}
                     getHref={getProductHref}
                     catValue={catValue}
+                    isDirectProductPage={isDirectProductPage}
                   />
 
                   <HighPriceProduct
@@ -706,6 +722,7 @@ const openCatItems = (item) => {
                     onCardClick={handleViewDetails}
                     getHref={getProductHref}
                     catValue={catValue}
+                    isDirectProductPage={isDirectProductPage}
                   />
 
                   <HighPriceProduct
@@ -731,6 +748,7 @@ const openCatItems = (item) => {
                     onCardClick={handleViewDetails}
                     catValue={catValue}
                     getHref={getProductHref}
+                    isDirectProductPage={isDirectProductPage}
                   />
                   <HighPriceProduct
                     data={highPriceProducts.slice(2, 3)}
@@ -755,6 +773,7 @@ const openCatItems = (item) => {
                     onCardClick={handleViewDetails}
                     catValue={catValue}
                     getHref={getProductHref}
+                    isDirectProductPage={isDirectProductPage}
                   />
                   <HighPriceProduct
                     data={highPriceProducts.slice(3, 4)}
@@ -777,6 +796,7 @@ const openCatItems = (item) => {
                     onCardClick={handleViewDetails}
                     catValue={catValue}
                     getHref={getProductHref}
+                    isDirectProductPage={isDirectProductPage}
                   />
                   <HighPriceProduct
                     data={highPriceProducts.slice(4, 5)}
@@ -801,6 +821,7 @@ const openCatItems = (item) => {
                     onCardClick={handleViewDetails}
                     catValue={catValue}
                     getHref={getProductHref}
+                    isDirectProductPage={isDirectProductPage}
                   />
                   <HighPriceProduct
                     data={highPriceProducts.slice(5, 6)}
@@ -871,6 +892,7 @@ const openCatItems = (item) => {
                       onCardClick={handleViewDetails}
                       catValue={catValue}
                       getHref={getProductHref}
+                      isDirectProductPage={isDirectProductPage}
                     />
 
                     {!isThemePage && highPriceProducts[highPriceIndex] && (
@@ -917,32 +939,32 @@ const openCatItems = (item) => {
               )}
           </div> */}
           <div className="category-content">
-  {Array.isArray(currentCategoryContent) &&
-    currentCategoryContent.length > 0 && (
-      <>
-        {currentCategoryContent.map((item, index) => (
-          <div
-            key={index}
-            className={`category-item ${
-              !showAll && index >= 2 ? "category-item--hidden" : ""
-            }`}
-          >
-            <h1>{item.title}</h1>
-            <div
-              className="item-content"
-              dangerouslySetInnerHTML={{ __html: item.htmlContent }}
-            />
-          </div>
-        ))}
+            {Array.isArray(currentCategoryContent) &&
+              currentCategoryContent.length > 0 && (
+                <>
+                  {currentCategoryContent.map((item, index) => (
+                    <div
+                      key={index}
+                      className={`category-item ${
+                        !showAll && index >= 2 ? "category-item--hidden" : ""
+                      }`}
+                    >
+                      <h1>{item.title}</h1>
+                      <div
+                        className="item-content"
+                        dangerouslySetInnerHTML={{ __html: item.htmlContent }}
+                      />
+                    </div>
+                  ))}
 
-        {currentCategoryContent.length > 2 && (
-          <button onClick={toggleShowAll} className="toggle-btn">
-            {showAll ? "See Less" : "See More"}
-          </button>
-        )}
-      </>
-    )}
-</div>
+                  {currentCategoryContent.length > 2 && (
+                    <button onClick={toggleShowAll} className="toggle-btn">
+                      {showAll ? "See Less" : "See More"}
+                    </button>
+                  )}
+                </>
+              )}
+          </div>
         </>
       )}
     </div>

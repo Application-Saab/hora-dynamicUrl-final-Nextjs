@@ -16,6 +16,7 @@ const CategoryTabs = ({
   hasBg = false,
   icon,
   fireIcon,
+  isDirectProductPage = false,
 }) => {
   const pathname = usePathname();
   const scrollRef = useRef(null);
@@ -63,8 +64,19 @@ const CategoryTabs = ({
 
   const getGridHref = (cat) => {
     if (!cat || !catValue) return "#";
-    const baseRoute = getCategorySlugFromPath(pathname, city, locality);
-    return formatPath(`/${baseRoute}/${catValue}/${cat.value}`);
+    let path;
+
+    if (isDirectProductPage) {
+      if (city) {
+        path = `/${city}/balloon-decoration/${cat.catValue}/${cat.value}`;
+      }else {
+        path = `/balloon-decoration/${cat.catValue}/${cat.value}`
+      }
+    } else {
+      const baseRoute = getCategorySlugFromPath(pathname, city, locality);
+      path = formatPath(`/${baseRoute}/${catValue}/${cat.value}`);
+    }
+    return path;
   };
 
   // Helper to get href for Circle tabs variant
