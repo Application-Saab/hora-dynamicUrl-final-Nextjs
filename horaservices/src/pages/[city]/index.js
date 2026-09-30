@@ -1,4 +1,3 @@
-import { useRouter } from "next/router";
 import Head from "next/head";
 
 import cityData from "@/utils/cityData";
@@ -9,8 +8,6 @@ import HomeContent from "@/components/HomeContent";
 
 export async function getServerSideProps({ params }) {
   const citySlug = params?.city?.toLowerCase();
-
-  // Invalid city => 404
   if (!isValidCitySlug(citySlug)) {
     return {
       notFound: true,
@@ -26,15 +23,7 @@ export async function getServerSideProps({ params }) {
 }
 
 export default function CityPage({ citySlug, cityName }) {
-  const router = useRouter();
-
   const localities = cityData[citySlug]?.cityLocalitiesList || [];
-
-  const localityHandleClick = (localityName) => {
-    const formattedLocality = localityName.replace(/\s+/g, "-").toLowerCase();
-
-    router.push(`/${citySlug}/${formattedLocality}`);
-  };
 
   return (
     <>

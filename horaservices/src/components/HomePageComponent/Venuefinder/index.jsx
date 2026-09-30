@@ -4,13 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 import "./VenueFinder.css";
-import { venueData } from "@/utils/venueCircleData"; // apna actual path daal dena
+import { venueData } from "@/utils/venueCircleData";
 import arrowIcon from "@/assets/arrowicon.svg";
-import celebrationBanner from "@/assets/Homepageimages/celebration-banner.svg"; // apna actual path daal dena
+import celebrationBanner from "@/assets/Homepageimages/celebration-banner.svg";
 
 const venues = venueData.filter((v) => v.id !== "all");
 
-export default function VenueFinder({ onSelectVenue }) {
+export default function VenueFinder({ onSelectVenue, isNotFound = false }) {
   const pathname = usePathname();
 
   const { city, locality } = useMemo(() => {
@@ -22,6 +22,7 @@ export default function VenueFinder({ onSelectVenue }) {
   }, [pathname]);
 
   const buildHref = (path) => {
+    if(isNotFound) return path
     if (city && locality) return `/${city}/${locality}${path}`;
     if (city) return `/${city}${path}`;
     return path;
@@ -66,15 +67,19 @@ export default function VenueFinder({ onSelectVenue }) {
           alt="Every Celebration Brings People Closer. Create Memories And Live After"
           className="celebration-banner-img"
         />
-       <Link href={buildHref("/venue-list")} className="venue-cta-overlay">
-  <div className="venue-cta">
-    <span>View All Venues</span>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-      <path d="M9 6l6 6-6 6" />
-    </svg>
-  </div>
-  
-</Link>
+        <Link href={buildHref("/venue-list")} className="venue-cta-overlay">
+          <div className="venue-cta">
+            <span>View All Venues</span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+            >
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+          </div>
+        </Link>
       </div>
     </div>
   );
