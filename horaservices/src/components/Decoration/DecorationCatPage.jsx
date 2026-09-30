@@ -635,6 +635,7 @@ const DecorationCatPage = ({
                       locality={locality}
                       variant="grid"
                       catValue="kids-birthday-decoration"
+                      activeValue={themeFilter} 
                     />
                   </div>
                 )}
@@ -656,6 +657,7 @@ const DecorationCatPage = ({
                       locality={locality}
                       variant="grid"
                       catValue="naming-ceremony-decoration"
+                      activeValue={themeFilter} 
                     />
                   </div>
                 )}

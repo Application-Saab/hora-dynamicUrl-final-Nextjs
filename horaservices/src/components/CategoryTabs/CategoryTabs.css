@@ -258,3 +258,22 @@ height: clamp(15px, 4.83vw, 19px);
   align-items: center;
   justify-content: center;
 }
+
+.category-tabs-card.is-active .category-tabs-circle {
+  border: 3px solid #97538C;
+  border-radius: 50%;
+}
+
+.category-tabs-card.is-active .category-tabs-title {
+  color: #97538C;
+  font-weight: 700;
+}
+
+.ctabs-btn.is-active .ctabs-circle {
+  border: 3px solid #97538C;
+}
+
+.ctabs-btn.is-active .ctabs-label {
+  color: #97538C;
+  font-weight: 700;
+}

@@ -251,7 +251,7 @@ max-width: 480px;
 }
 .search-dropdown {
   position: absolute;
-  top: 68px;
+  top: calc(100% + 6px);
   left: 10px;
   right: 10px;
   background: #fff;
@@ -261,6 +261,7 @@ max-width: 480px;
   z-index: 999;
   max-height: 70vh;
   overflow-y: auto;
+  padding: 0;
 }
 
 .search-no-results {
@@ -271,17 +272,21 @@ max-width: 480px;
   color: #9a9a9a;
 }
 
+.search-section {
+  padding-bottom: clamp(2px, 0.8vw, 4px);
+}
+
 .search-section + .search-section {
   border-top: 1px solid #f0ecec;
-  margin-top: clamp(4px, 1.2vw, 6px);
-  padding-top: clamp(4px, 1.2vw, 6px);
+  margin-top: 0;
+  padding-top: 0;
 }
 
 .search-section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: clamp(6px, 2vw, 10px) clamp(14px, 4vw, 18px) clamp(4px, 1.5vw, 6px);
+  padding: clamp(10px, 3vw, 14px) clamp(14px, 4vw, 18px) clamp(2px, 0.8vw, 4px);
   font-family: "Poppins", sans-serif;
   font-weight: 600;
   font-size: clamp(13px, 3.8vw, 15px);
@@ -306,8 +311,8 @@ max-width: 480px;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: clamp(10px, 3vw, 14px);
-  margin-top: clamp(2px, 1vw, 4px);
+  padding: clamp(6px, 2vw, 8px);
+  margin-top: 0;
 }
 
 .search-category-row,
@@ -315,7 +320,7 @@ max-width: 480px;
   display: flex;
   align-items: center;
   gap: clamp(10px, 3vw, 14px);
-  padding: clamp(8px, 2.5vw, 12px) clamp(14px, 4vw, 18px);
+  padding: clamp(5px, 1.6vw, 8px) clamp(14px, 4vw, 18px);
   cursor: pointer;
   transition: background 0.15s ease;
 }
