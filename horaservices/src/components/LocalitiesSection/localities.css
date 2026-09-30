@@ -29,20 +29,20 @@
   margin: 0;
 }
 
-.localities-list li a {
+.localities-list li {
   font-size: 0.7rem;
   font-weight: 600;
   color: rgb(151, 83, 140);
-  text-decoration: underline;
+  /* text-decoration: underline; */
   background: none;
   border: none;
   padding: 0;
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
-.localities-list li a:hover {
+/* .localities-list li p:hover {
   color: rgb(120, 60, 110);
-}
+} */
 
 .no-localities {
   color: #777;

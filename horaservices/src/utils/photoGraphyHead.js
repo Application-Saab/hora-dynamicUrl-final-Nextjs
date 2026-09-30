@@ -39,9 +39,9 @@ export function buildPhotographyCanonical({
 
   let path = "/" + parts.filter(Boolean).join("/");
 
-  if (includeId && productId) {
-    path += `?id=${encodeURIComponent(productId)}`;
-  }
+  // if (includeId && productId) {
+  //   path += `?id=${encodeURIComponent(productId)}`;
+  // }
 
   return `${SITE}${path}`;
 }

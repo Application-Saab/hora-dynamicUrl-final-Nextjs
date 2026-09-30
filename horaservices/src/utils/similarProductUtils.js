@@ -4,16 +4,14 @@
 export const filterSimilarProducts = (
   product,
   productsArray = [],
-  themeFilters = []
+  themeFilters = [],
 ) => {
-
   if (!product || !productsArray.length) return [];
 
   const name = product.name.toLowerCase();
 
   // ⭐ theme detect
   const matchedTheme = themeFilters.find((t) => {
-
     if (t.value === "all") return false;
 
     const keywords = t.value.toLowerCase().split("-");
@@ -23,18 +21,15 @@ export const filterSimilarProducts = (
 
   // ⭐ Same Theme Products
   if (matchedTheme) {
-
     const keywords = matchedTheme.value.toLowerCase().split("-");
 
     const filtered = productsArray.filter((item) => {
-
       const itemName = item.name.toLowerCase();
 
       return (
         item._id !== product._id &&
         keywords.some((word) => itemName.includes(word))
       );
-
     });
 
     if (filtered.length > 0) {
@@ -50,30 +45,17 @@ export const filterSimilarProducts = (
   const max = price + 500;
 
   const filtered = productsArray.filter((item) => {
-
     const itemPrice = Number(item.price);
 
-    return (
-      item._id !== product._id &&
-      itemPrice >= min &&
-      itemPrice <= max
-    );
-
+    return item._id !== product._id && itemPrice >= min && itemPrice <= max;
   });
 
   return filtered;
 };
 
-
-
 // ⭐ Level Up Products
 
-export const filterLevelUpProducts = (
-  price,
-  productsArray = [],
-  excludeId
-) => {
-
+export const filterLevelUpProducts = (price, productsArray = [], excludeId) => {
   if (!price || !productsArray.length) {
     return { level1: [], level2: [] };
   }
@@ -87,38 +69,27 @@ export const filterLevelUpProducts = (
   const level2Max = basePrice + 3500;
 
   const level1 = productsArray.filter((item) => {
-
     const itemPrice = Number(item?.price);
 
     return (
-      item._id !== excludeId &&
-      itemPrice >= level1Min &&
-      itemPrice <= level1Max
+      item._id !== excludeId && itemPrice >= level1Min && itemPrice <= level1Max
     );
-
   });
 
   const level2 = productsArray.filter((item) => {
-
     const itemPrice = Number(item?.price);
 
     return (
-      item._id !== excludeId &&
-      itemPrice >= level2Min &&
-      itemPrice <= level2Max
+      item._id !== excludeId && itemPrice >= level2Min && itemPrice <= level2Max
     );
-
   });
 
   return { level1, level2 };
 };
 
-
-
 // ⭐ Category Slug Mapping
 
 export const getMappedCatValue = (slug) => {
-
   const map = {
     "birthday-decoration": "Birthday",
     "anniversary-decoration": "Anniversary",
@@ -129,17 +100,41 @@ export const getMappedCatValue = (slug) => {
     "premium-decoration": "PremiumDecoration",
     "bachelorette-decoration": "bachelorette",
     "kids-birthday-decoration": "KidsBirthday",
-    "naming-ceremony-decoration":"NamingCeremony",
-    "house-warming-decoration":"HouseWarming",
-    "coorporate-showrooms-decoration":"Coorporateshowrooms",
-    "car-decoration":"CarDecoration",
-    "pet-animals-decoration":"PetAnimalsDecoration",
-    "festivals-decoration":"Festivals",
-    "engagement-decoration":"Engagementdecoration",
-    "Nation-Pride-decoration":"NationPride",
-    "Wedding":"Wedding",
+    "naming-ceremony-decoration": "NamingCeremony",
+    "house-warming-decoration": "HouseWarming",
+    "coorporate-showrooms-decoration": "Coorporateshowrooms",
+    "car-decoration": "CarDecoration",
+    "pet-animals-decoration": "PetAnimalsDecoration",
+    "festivals-decoration": "Festivals",
+    "engagement-decoration": "Engagementdecoration",
+    "Nation-Pride-decoration": "NationPride",
+    Wedding: "Wedding",
   };
 
   return map[slug] || slug;
+};
 
+export const getCategoryNameToSlug = (slug) => {
+  const map = {
+    Birthday: "birthday-decoration",
+    Anniversary: "anniversary-decoration",
+    "Haldi-Mehandi": "haldi-mehendi-decoration",
+    FirstNight: "first-night-decoration",
+    BabyShower: "baby-shower-decoration",
+    WelcomeBaby: "welcome-baby-decoration",
+    PremiumDecoration: "premium-decoration",
+    bachelorette: "bachelorette-decoration",
+    KidsBirthday: "kids-birthday-decoration",
+    NamingCeremony: "naming-ceremony-decoration",
+    HouseWarming: "house-warming-decoration",
+    Coorporateshowrooms: "coorporate-showrooms-decoration",
+    CarDecoration: "car-decoration",
+    PetAnimalsDecoration: "pet-animals-decoration",
+    Festivals: "festivals-decoration",
+    Festivals: "engagement-decoration",
+    NationPride: "Nation-Pride-decoration",
+    Wedding: "Wedding",
+  };
+
+  return map[slug] || slug;
 };

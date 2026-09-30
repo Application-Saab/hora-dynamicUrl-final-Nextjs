@@ -1,75 +1,23 @@
 import cityData from "@/utils/cityData";
-import { useRouter } from "next/router";
 import React from "react";
+import LocalitiesSection from "../LocalitiesSection";
 
 export const ChefLocalitiesSection = ({ city }) => {
-  const router = useRouter();
+  function capitalizeCity(city) {
+    if (!city) return "";
 
-  const localityHandleClick = (localityName) => {
-    const formattedLocality = localityName.replace(/\s+/g, "-").toLowerCase();
-
-    router.push(`/${city}/${formattedLocality}/book-chef-cook-for-party`);
-  };
+    return city
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
   return (
-    <>
-      <p
-        id="city-area-title"
-        style={{
-          fontSize: "70px",
-          textTransform: "uppercase",
-          fontWeight: "bold",
-          color: "#E6756B",
-          margin: "35px 0 2px",
-          textAlign: "center",
-        }}
-      >
-        Serving all Areas in {city}
-      </p>
-      <p
-        style={{
-          fontSize: "10px",
-          fontWeight: "bold",
-          color: "#E6756B",
-          margin: "2px 0 2px",
-          textAlign: "center",
-        }}
-      >
-        All localities are here
-      </p>
-      <div
-        id="city-area-list"
-        style={{ width: "150px", alignItems: "center", margin: "auto" }}
-      >
-        <ul
-          style={{
-            listStyle: "none",
-            padding: "20px 0",
-            textAlign: "center",
-          }}
-        >
-          {cityData[city]?.cityLocalitiesList?.length > 0 ? (
-            cityData[city].cityLocalitiesList.map((item, index) => (
-              <li
-                key={index}
-                style={{
-                  padding: "0 10px",
-                  display: "inline-block",
-                }}
-              >
-                <a href="#" onClick={(e) => {
-                  e.preventDefault();
-                  localityHandleClick(item.name);
-                }}>
-                  {item.name}
-                </a>
-              </li>
-            ))
-          ) : (
-            <li>No localities found for {city}</li>
-          )}
-        </ul>
-      </div>
-    </>
+    <LocalitiesSection
+      key={city}
+      title={`${capitalizeCity(city)} Localities`}
+      localities={cityData[city]?.cityLocalitiesList}
+      citySlug={city}
+    />
   );
 };
 

@@ -583,6 +583,7 @@ const ProductDetails = ({
         advanceAmount,
         balanceAmount,
         duration: work?.duration,
+        catValue: categoryNameToSlug[categoryData?.name]
       },
     });
   };
@@ -590,7 +591,7 @@ const ProductDetails = ({
   const handleShare = async () => {
     if (!work?._id || typeof window === "undefined") return;
     const cleanPath = router.asPath.split("?")[0];
-    const shareUrl = `${window.location.origin}${cleanPath}?id=${work._id}`;
+    const shareUrl = `${window.location.origin}${cleanPath}`;
     try {
       if (navigator.share) {
         await navigator.share({

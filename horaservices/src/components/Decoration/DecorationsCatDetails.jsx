@@ -31,6 +31,7 @@ import {
   filterSimilarProducts,
   filterLevelUpProducts,
   getMappedCatValue,
+  getCategoryNameToSlug,
 } from "@/utils/similarProductUtils";
 import {
   BASE_URL,
@@ -56,6 +57,8 @@ import GoogleReviewsCard from "@/components/PhotoGalleryPose/GoogleReviewsCard";
 import { balloonreviewsproduct } from "@/utils/balloonReviews";
 import ActionButtons from "@/components/Actionbuttons";
 import WhyHoraSection from "@/components/WhyHoraSection";
+import { useCity } from "@/utils/cityContext";
+import WhatsAppIcon from "@/app/WhatsAppIconGtm";
 
 // ---------- helpers ----------
 const getDiscountedPrice = (price) => {
@@ -94,9 +97,11 @@ function DecorationsCatDetails({
   initialAddonData = [],
   city = null,
   locality = null,
+  initialCategoryDetaiils: ssrCategoryDetails = null,
+  isDirectProductPage = false
 }) {
+  const {selectedCitySlug, selectedCityName} = useCity();
   const router = useRouter();
-
   const [product, setProduct] = useState(initialProduct || null);
   const [loading, setLoading] = useState(!initialProduct);
   const [catValue, setCatValue] = useState(initialCatValue || "");
@@ -114,7 +119,7 @@ function DecorationsCatDetails({
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [isArrowDown, setIsArrowDown] = useState(true);
   const [sendCategoryId, setSendCategoryId] = useState(initialCatValue || "");
-  const [passCategoryId, setPassCategoryId] = useState("");
+  const [passCategoryId, setPassCategoryId] = useState(ssrCategoryDetails);
   const [allProducts, setAllProducts] = useState(initialAllProducts || []);
   const [addonIds, setAddonIds] = useState(initialProduct?.addons || []);
   const [addonData, setAddonData] = useState(initialAddonData || []);
@@ -197,7 +202,7 @@ function DecorationsCatDetails({
     const { catValue: urlCat, subCategory: urlSub, productName } = router.query;
 
     if (urlCat) {
-      setCatValue(urlCat);
+      // setCatValue(urlCat);
       setSendCategoryId(getMappedCatValue(urlCat));
     }
     if (urlSub) setSubCategory(urlSub);
@@ -232,6 +237,18 @@ function DecorationsCatDetails({
         if (!fetched && /\bAnd\b/i.test(apiProduct)) {
           fetched = await tryFetch(apiProduct.replace(/\bAnd\b/gi, "&"));
         }
+        const tagId = fetched?.tag?.[0];
+        if (tagId) {
+          try {
+            const categoryResp = await axiosApi.get(
+              `${BASE_URL}/api/photography/categoryNameByTagId/${tagId}`,
+            );
+            setPassCategoryId(categoryResp.data?.data || []);
+            setCatValue(getCategoryNameToSlug(categoryResp?.data?.data?.name))
+          } catch (e) {
+            console.error("SSR categoryResp:", e.message);
+          }
+        }
 
         if (!fetched) {
           setProduct(null);
@@ -256,16 +273,16 @@ function DecorationsCatDetails({
   useEffect(() => {
     if (initialAllProducts?.length) return;
     if (product?.categoryId) getCategoryProducts(product.categoryId);
-    else if (catValue) getSubCatId(catValue);
+    // else if (catValue) getSubCatId(catValue);
   }, [product, catValue]);
 
   useEffect(() => {
-    if (passCategoryId) getCategoryProducts(passCategoryId);
+    if (passCategoryId) getCategoryProducts(passCategoryId?._id);
   }, [passCategoryId]);
 
-  useEffect(() => {
-    if (sendCategoryId) getSubCatId(sendCategoryId);
-  }, [sendCategoryId]);
+  // useEffect(() => {
+  //   if (sendCategoryId) getSubCatId(sendCategoryId);
+  // }, [sendCategoryId]);
 
   const getCategoryProducts = async (categoryId) => {
     try {
@@ -278,16 +295,16 @@ function DecorationsCatDetails({
     }
   };
 
-  const getSubCatId = async (catSlug) => {
-    try {
-      const res = await axiosApi.get(
-        `${BASE_URL}${GET_DECORATION_CAT_ID}${catSlug}`,
-      );
-      if (res.data?.data) setPassCategoryId(res.data.data._id);
-    } catch (e) {
-      console.error(e.message);
-    }
-  };
+  // const getSubCatId = async (catSlug) => {
+  //   try {
+  //     const res = await axiosApi.get(
+  //       `${BASE_URL}${GET_DECORATION_CAT_ID}${catSlug}`,
+  //     );
+  //     if (res.data?.data) setPassCategoryId(res.data.data._id);
+  //   } catch (e) {
+  //     console.error(e.message);
+  //   }
+  // };
 
   useEffect(() => {
     if (product && allProducts.length > 0) {
@@ -592,7 +609,7 @@ function DecorationsCatDetails({
     if (cityFromUrl) parts.push(slugify(cityFromUrl));
     if (localityFromUrl) parts.push(slugify(localityFromUrl));
     parts.push("balloon-decoration");
-    if (catValue) parts.push(catValue);
+    // if (catValue) parts.push(catValue);
     parts.push("product");
     if (productSlug) parts.push(productSlug);
     return `${SITE}/${parts.filter(Boolean).join("/")}`;
@@ -601,6 +618,7 @@ function DecorationsCatDetails({
   const canonicalUrl = buildProductCanonical();
 
   return (
+    <>
     <div className="App" style={{ backgroundColor: "white" }}>
       <Head>
         <title>{`${product?.name || ""} | ${catValue.replace(/-/g, " ")}`}</title>
@@ -726,7 +744,7 @@ function DecorationsCatDetails({
               <ActionButtons
                 product={product}
                 catValue={catValue}
-                cityName={city}
+                cityName={selectedCitySlug}
                 similarRef={similarRef}
                 handleCustomise={handleCustomise}
               />
@@ -750,7 +768,7 @@ function DecorationsCatDetails({
             </div>
 
             <MakeItYoursBanner />
-            
+
             <div ref={addonRef}>
               <AddonModal
                 isOpen={isModalOpen}
@@ -768,11 +786,12 @@ function DecorationsCatDetails({
                 data={similarByTheme}
                 showDiscount={true}
                 imageSize={{ width: 120, height: 120 }}
-                city={city}
+                city={selectedCitySlug}
                 locality={locality}
                 catValue={catValue}
                 icon={StarIcon}
                 sparkleIcon={SimiliarThemes}
+                isDirectProductPage={isDirectProductPage}
               />
             </div>
 
@@ -787,8 +806,8 @@ function DecorationsCatDetails({
                     catValue: "kids-birthday-decoration",
                   }))}
                   onSelect={openCatItems}
-                  city={city}
-                  hasCityPageParam={!!city}
+                  city={selectedCitySlug}
+                  hasCityPageParam={!!selectedCitySlug}
                   locality={locality}
                   variant="grid"
                   catValue="kids-birthday-decoration"
@@ -796,6 +815,7 @@ function DecorationsCatDetails({
                   hasBg={true}
                   icon={StarIcon}
                   fireIcon={fireIcon}
+                  isDirectProductPage={isDirectProductPage}
                 />
               </div>
             )}
@@ -805,11 +825,12 @@ function DecorationsCatDetails({
                 title="You May Also Like This"
                 data={levelUp1000}
                 showDiscount={true}
-                city={city}
+                city={selectedCitySlug}
                 locality={locality}
                 catValue={catValue}
                 icon={StarIcon}
                 sparkleIcon={hearticon}
+                isDirectProductPage={isDirectProductPage}
               />
             )}
 
@@ -817,9 +838,10 @@ function DecorationsCatDetails({
               <SimilarDecorationSlider
                 data={levelUp2000}
                 showDiscount={true}
-                city={city}
+                city={selectedCitySlug}
                 locality={locality}
                 catValue={catValue}
+                isDirectProductPage={isDirectProductPage}
               />
             )}
 
@@ -861,6 +883,14 @@ function DecorationsCatDetails({
         </div>
       </div>
     </div>
+          <div className="whatsapp-container">
+            <WhatsAppIcon
+              router={router}
+              categorySlug={getCategoryNameToSlug(passCategoryId?.name) || ""}
+              citySlugProduct = {selectedCityName}
+            />
+          </div>
+    </>
   );
 }
 

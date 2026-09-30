@@ -6,5 +6,5 @@ export async function getServerSideProps(context) {
 }
 
 export default function BalloonDecorationCityCatPage(props) {
-  return <DecorationCatCityPage {...props} />;
+  return <DecorationCatCityPage {...props} isDirectProductPage={true} />;
 }

@@ -39,7 +39,8 @@ const CITY_API_DONE_FLAG = "cityApiCallDone";
 // Tracking API is se koi lena dena nahi rakhti — wo har page par apna kaam karti hai.
 const CITY_OPTIONAL_CHILD_ROUTES = [
   "/book-chef-cook-for-party",
-  "/photography/product"
+  "/photography/product",
+  "/balloon-decoration/product"
   // "/another-route",
   // "/some-other-route",
 ];
