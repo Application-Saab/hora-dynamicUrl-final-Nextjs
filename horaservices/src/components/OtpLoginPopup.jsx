@@ -12,11 +12,13 @@ import {
 import "./login.css";
 import { useTimer } from "../utils/useTimer";
 import Image from "next/image";
-import loginImage from "../assets/sucesslogin.svg";
+import loginImage from "../assets/newlogo.svg";
 import loginBgImage from "../assets/bgimage.webp";
-import ArrowImg from "../assets/arrow.svg";
+import ArrowImg from "@/assets/arrowicon.svg";
+import ArrowImgback from "@/assets/arrow.svg";
 import axiosApi from "@/utils/axiosApi";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
+import loginLine from "@/assets/loginline.svg";
 
 /* WhatsApp booking number (country code ke sath, bina + ke) */
 const WHATSAPP_BOOKING_NUMBER = "917338584828";
@@ -62,6 +64,7 @@ const OtpLogin = ({
   const [otp, setOtp] = useState(["", "", "", ""]);
   const pathname = usePathname();
   const visitorid = safeGetItem("VISITOR_ID");
+
   const isWonderland =
     pathname === "/wonderland" ||
     pathname === "/wonderland/create-invite-template" ||
@@ -73,6 +76,10 @@ const OtpLogin = ({
     pathname === "/wonderland/invite";
 
   const isWonderlandPath = pathname?.startsWith("/wonderland") || isWonderland;
+
+  /* WhatsApp button sirf checkout page par dikhega */
+  const isCheckoutPage = pathname?.includes("checkout") || fromCheckout;
+
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const [error, setError] = useState("");
@@ -92,9 +99,10 @@ const OtpLogin = ({
   };
 
   /* ---------------- WHATSAPP WELCOME MESSAGE ----------------
-     NOTE: API key ko frontend me mat rakho. Best: is call ko apne
-     backend me move karo. Tab tak key .env se aa rahi hai
-     (NEXT_PUBLIC_DOUBLETICK_KEY) aur purani hardcoded key rotate kar do.
+     NOTE: API key frontend me nahi honi chahiye. Best: is call ko
+     backend me move karo. Tab tak key .env.local se aayegi:
+     NEXT_PUBLIC_DOUBLETICK_KEY=your_new_key
+     (purani key rotate kar do, wo code me expose ho chuki hai)
   ------------------------------------------------------------ */
   const sendWelcomeMessage = async (mobile) => {
     const formatted = mobile.startsWith("+91") ? mobile : "+91" + mobile;
@@ -132,7 +140,7 @@ const OtpLogin = ({
           headers: {
             accept: "application/json",
             "content-type": "application/json",
-            Authorization: "key_fHOm5tEzbfSWRbC29LoZkYd0vpqaU7B22Q2iSL2vgawcN3k0D75iXNSPRen3ie7Qj3L7C6r5EhH4lLYeL1dCtPj9WyQ9wPm2abK1wltW8bYXVR5xvjLfPeQgfRld3ws1lkkRduX6tfrHbmYnbhbYnau3HSfJAylSmBso4m5qjO7vm4YjbhtqMbdkNK2EoNPXqM5SdxThyeGvSlvoA8JCVhGvL98yrocJJ7JfhBasgsEnN7qArGvPdsswdhys",
+            Authorization: process.env.NEXT_PUBLIC_DOUBLETICK_KEY,
           },
         },
       );
@@ -312,6 +320,12 @@ const OtpLogin = ({
 
   /* ---------------- BACK BUTTON ---------------- */
   const handleBack = () => {
+    // Success screen: sirf modal band karo (user login ho chuka hai)
+    if (isUserLoggedIn) {
+      setIsModalOpen(false);
+      return;
+    }
+
     if (isOtpSent) {
       setIsOtpSent(false);
       setOtp(["", "", "", ""]);
@@ -359,187 +373,251 @@ const OtpLogin = ({
 
     return () => controller.abort();
   }, [isOtpSent]);
-
+const maskedNumber =
+  mobileNumber.length === 10
+    ? `${mobileNumber.slice(0, 2)}*****${mobileNumber.slice(-3)}`
+    : mobileNumber;
   /* ---------------- UI ---------------- */
   return (
     <div className="login-popup-overlay">
-      <div className="login-card">
+      <div
+        className={`login-card ${isUserLoggedIn ? "login-card--success" : ""}`}
+      >
         <Image src={loginBgImage} alt="" className="login-bg-img" priority />
 
+        {/* BACK BUTTON (login, OTP aur success, teeno screens par) */}
+        {!backIconHidden && (
+          <button
+            type="button"
+            className="login-back-btn"
+            onClick={handleBack}
+            aria-label="Go back"
+          >
+            <Image src={ArrowImgback} alt="" width={16} height={16} />
+          </button>
+        )}
+
         {!isUserLoggedIn ? (
-          <>
-            {/* BACK BUTTON */}
-            {!backIconHidden && (
-              <button
-                type="button"
-                className="login-back-btn"
-                onClick={handleBack}
-                aria-label="Go back"
-              >
-                <Image src={ArrowImg} alt="" width={16} height={16} />
-              </button>
+          <div className="login-content">
+            {/* HEADER */}
+            <div className="login-header">
+              <p className="login-welcome">Welcome to HORA</p>
+
+              <h1 className="login-title">
+                {isOtpSent ? (
+                  <span
+                    className="title-highlight"
+                    style={{ "--login-line": `url(${loginLine.src})` }}
+                  >
+                    Verification
+                  </span>
+                ) : (
+                  <>
+                    Get{" "}
+                    <span
+                      className="title-highlight"
+                      style={{ "--login-line": `url(${loginLine.src})` }}
+                    >
+                      Started
+                    </span>
+                  </>
+                )}
+              </h1>
+
+              <p className="login-subtitle">
+                {isOtpSent
+                  ? "Check your phone we have sent you an OTP"
+                  : isCheckoutPage
+                    ? "Login with your mobile number or choose WhatsApp booking for quick support."
+                    : "Login with your mobile number"}
+              </p>
+            </div>
+
+            {/* MOBILE SCREEN */}
+            {!isOtpSent && (
+              <>
+                <div className="login-mobile-input">
+                  <div className="login-country-code">+91</div>
+
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    value={mobileNumber}
+                    onChange={handleMobileNumberChange}
+                    onKeyDown={(e) => e.key === "Enter" && sendOtp()}
+                    placeholder="Enter Number"
+                    className={`login-input ${error ? "input-error" : ""}`}
+                  />
+                </div>
+
+                {error && <p className="input-error-text">{error}</p>}
+
+                <button
+                  type="button"
+                  className="login-primary-btn"
+                  onClick={sendOtp}
+                >
+                  Get OTP
+                  <Image
+                    src={ArrowImg}
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="btn-arrow-img"
+                  />
+                </button>
+
+                {/* WhatsApp: sirf checkout page par */}
+                {isCheckoutPage && (
+                  <>
+                    <div className="login-or">
+                      <span>OR</span>
+                    </div>
+
+                    <a
+                      className="login-whatsapp-btn"
+                      href={WHATSAPP_BOOKING_LINK}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <WhatsAppIcon />
+                      <span className="whatsapp-text">
+                        <strong>Book On WhatsApp</strong>
+                        <small>Quick booking . Instant support</small>
+                      </span>
+
+                      <Image
+                        src={ArrowImg}
+                        alt=""
+                        width={22}
+                        height={22}
+                        className="btn-arrow-img whatsapp-arrow"
+                      />
+                    </a>
+                  </>
+                )}
+              </>
             )}
 
-            <div className="login-content">
-              {/* HEADER */}
-              <div className="login-header">
-                <p className="login-welcome">Welcome to HORA</p>
-
-                <h1 className="login-title">
-                  {isOtpSent ? (
-                    <span className="title-highlight">Verification</span>
-                  ) : (
-                    <>
-                      Get <span className="title-highlight">Started</span>
-                    </>
-                  )}
-                </h1>
-
-                <p className="login-subtitle">
-                  {isOtpSent
-                    ? "Check your phone we have sent you an OTP"
-                    : "Login with your mobile number or choose WhatsApp booking for quick support."}
+            {/* OTP SCREEN */}
+            {isOtpSent && (
+              <>
+                <p className="verify-text">
+                  <span>(+91) {maskedNumber}</span>
                 </p>
-              </div>
 
-              {/* MOBILE SCREEN */}
-              {!isOtpSent && (
-                <>
-                  <div className="login-mobile-input">
-                    <div className="login-country-code">+91</div>
-
+                <div
+                  className={`otp-box-wrapper ${otpError ? "otp-error" : ""}`}
+                >
+                  {[0, 1, 2, 3].map((i) => (
                     <input
-                      type="tel"
+                      key={i}
+                      ref={(el) => (inputsRef.current[i] = el)}
+                      className="otp-box"
+                      value={otp[i]}
+                      type="text"
                       inputMode="numeric"
-                      value={mobileNumber}
-                      onChange={handleMobileNumberChange}
-                      onKeyDown={(e) => e.key === "Enter" && sendOtp()}
-                      placeholder="Enter Number"
-                      className={`login-input ${error ? "input-error" : ""}`}
+                      pattern="[0-9]*"
+                      maxLength={1}
+                      autoComplete={i === 0 ? "one-time-code" : "off"}
+                      onChange={(e) => handleOtpChange(e, i)}
+                      onKeyDown={(e) => handleKeyDown(e, i)}
+                      onPaste={handleOtpPaste}
                     />
-                  </div>
+                  ))}
+                </div>
 
-                  {error && <p className="input-error-text">{error}</p>}
+                <div
+                  className={`otp-bottom-row ${
+                    otpError ? "space-between" : "center-align"
+                  }`}
+                >
+                  {otpError && (
+                    <span className="otp-error-text">{otpError}</span>
+                  )}
 
-                  <button
-                    type="button"
-                    className="login-primary-btn"
-                    onClick={sendOtp}
-                  >
-                    Get OTP <span className="btn-arrow">&rarr;</span>
-                  </button>
-
-                  <div className="login-or">
-                    <span>OR</span>
-                  </div>
-
-                  <a
-                    className="login-whatsapp-btn"
-                    href={WHATSAPP_BOOKING_LINK}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <WhatsAppIcon />
-                    <span className="whatsapp-text">
-                      <strong>Book On WhatsApp</strong>
-                      <small>Quick booking. Instant support.</small>
+                  {isTimeUp ? (
+                    <span
+                      className="resend-link"
+                      role="button"
+                      tabIndex={0}
+                      onClick={resendOtp}
+                      onKeyDown={(e) => e.key === "Enter" && resendOtp()}
+                    >
+                      Resend Code
                     </span>
-                  </a>
-                </>
-              )}
+                  ) : (
+                    <span className="login-timer">
+                      Resend Code in {time} Seconds
+                    </span>
+                  )}
+                </div>
 
-              {/* OTP SCREEN */}
-              {isOtpSent && (
-                <>
-                  <p className="verify-text">
-                    OTP sent to <span>(+91) {mobileNumber}</span>
-                  </p>
+                <button
+                  type="button"
+                  className="login-primary-btn"
+                  onClick={verifyOtp}
+                  disabled={otp.join("").length !== 4}
+                >
+                  CONTINUE
+                  <Image
+                    src={ArrowImg}
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="btn-arrow-img"
+                  />
+                </button>
+              </>
+            )}
 
-                  <div
-                    className={`otp-box-wrapper ${otpError ? "otp-error" : ""}`}
-                  >
-                    {[0, 1, 2, 3].map((i) => (
-                      <input
-                        key={i}
-                        ref={(el) => (inputsRef.current[i] = el)}
-                        className="otp-box"
-                        value={otp[i]}
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        maxLength={1}
-                        autoComplete={i === 0 ? "one-time-code" : "off"}
-                        onChange={(e) => handleOtpChange(e, i)}
-                        onKeyDown={(e) => handleKeyDown(e, i)}
-                        onPaste={handleOtpPaste}
-                      />
-                    ))}
-                  </div>
-
-                  <div
-                    className={`otp-bottom-row ${
-                      otpError ? "space-between" : "center-align"
-                    }`}
-                  >
-                    {otpError && (
-                      <span className="otp-error-text">{otpError}</span>
-                    )}
-
-                    {isTimeUp ? (
-                      <span
-                        className="resend-link"
-                        role="button"
-                        tabIndex={0}
-                        onClick={resendOtp}
-                        onKeyDown={(e) => e.key === "Enter" && resendOtp()}
-                      >
-                        Resend Code
-                      </span>
-                    ) : (
-                      <span className="login-timer">
-                        Resend Code in {time} Seconds
-                      </span>
-                    )}
-                  </div>
-
-                  <button
-                    type="button"
-                    className="login-primary-btn"
-                    onClick={verifyOtp}
-                    disabled={otp.join("").length !== 4}
-                  >
-                    CONTINUE <span className="btn-arrow">&rarr;</span>
-                  </button>
-                </>
-              )}
-
-              {/* FOOTER TRUST ROW */}
-              <div className="login-footer">
-                <span>
-                  <ShieldIcon /> Secure Login
-                </span>
-                <span>
-                  <BoltIcon /> Fast &amp; Easy
-                </span>
-                <span>
-                  <HeadsetIcon /> OTP Support
-                </span>
-              </div>
+            {/* FOOTER TRUST ROW */}
+            <div className="login-footer">
+              <span>
+                <ShieldIcon /> Secure Login
+              </span>
+              <i className="footer-divider" />
+              <span>
+                <BoltIcon /> Fast &amp; Easy
+              </span>
+              <i className="footer-divider" />
+              <span>
+                <HeadsetIcon /> 24/7 Support
+              </span>
             </div>
-          </>
+          </div>
         ) : (
           /* SUCCESS SCREEN */
           <div className="login-content">
             <div className="success-message">
-              <Image src={loginImage} alt="Logged in" className="success-image" />
-              <p>Welcome to Hora</p>
+              <Image
+                src={loginImage}
+                alt="Logged in"
+                className="success-image"
+              />
+
+              <h2
+                className="success-title"
+                style={{ "--login-line": `url(${loginLine.src})` }}
+              >
+                Welcome to Hora
+              </h2>
+
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
                 className="login-primary-btn"
               >
-                CONTINUE <span className="btn-arrow">&rarr;</span>
+                CONTINUE
+                <Image
+                  src={ArrowImg}
+                  alt=""
+                  width={20}
+                  height={20}
+                  className="btn-arrow-img"
+                />
               </button>
+
             </div>
           </div>
         )}

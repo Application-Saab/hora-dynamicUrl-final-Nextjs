@@ -1,102 +1,202 @@
-/* LogoutModal.css */
-.logout-overlay  {
+/* =========================================================
+   LOGOUT MODAL (self-contained, login.css ki zarurat nahi)
+   ========================================================= */
+
+.logout-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(20, 8, 40, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
+  z-index: 999999;
+  padding: 16px;
 }
 
+/* ---------------- CARD ---------------- */
+
 .logout-card {
-  position: relative; 
-   width: clamp(300px, 84vw, 360px);
-  height: clamp(350px, 97vw, 420px);
-  
-  border-radius: clamp(18px, 4vw, 22px);
-  padding: clamp(20px, 5vw, 26px) clamp(16px, 4vw, 20px);
+  position: relative;
+
+  width: clamp(280px, 84vw, 360px);
+  height: auto;
+
+  padding: clamp(20px, 6vw, 28px) clamp(16px, 5vw, 24px)
+    clamp(18px, 5.5vw, 26px);
+
+  border-radius: clamp(18px, 5.6vw, 27px);
   overflow: hidden;
+
+  background: linear-gradient(180deg, #ffffff 0%, #f3e8fb 100%);
+  box-shadow: 0 clamp(11px, 3.5vw, 17px) clamp(32px, 10vw, 49px)
+    rgba(90, 40, 140, 0.3);
+
+  font-family: "Inter", "Roboto", system-ui, sans-serif;
 }
+
 .logout-bg-img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;     /* background-size: cover */
+  object-fit: cover;
   z-index: 0;
+  pointer-events: none;
 }
+
 .logout-content {
   position: relative;
-  z-index: 2;
-  padding: 32px 22px;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
+
+  padding-top: clamp(6px, 2vw, 10px);
 }
 
+/* ---------------- BACK BUTTON ---------------- */
 
-.logout-icon {
-  width: clamp(60px, 20vw, 80px);
-  height: clamp(60px, 20vw, 80px);
+.logout-back-btn {
+  position: absolute;
+  top: clamp(11px, 3.5vw, 17px);
+  left: clamp(11px, 3.5vw, 17px);
+  z-index: 3;
 
-  border-radius: clamp(44px, 14vw, 58.18px);
-  opacity: 1;
+  width: clamp(26px, 7.6vw, 36px);
+  height: clamp(26px, 7.6vw, 36px);
+  padding: 0;
 
-  margin-bottom: 15px;
+  display: flex;
   align-items: center;
   justify-content: center;
-}
-.logout-success-img{
-  width: clamp(120px, 35vw, 140px);
-  height: clamp(120px, 35vw, 140px);
-   align-items: center;
-  justify-content: center;
-  padding:15px
 
-}
-/* Logout success icon */
-.logout-success-icon {
-  font-size: 32px;
-  color: green;
-  margin-bottom: 16px;
-}
-
-.logout-back-icon {
-  position: absolute;
-  left: 10px;
-  font-size: 20px;
+  border: none;
+  border-radius: 50%;
+  background: #97538c;
+  box-shadow: 0 3px 9px rgba(125, 74, 156, 0.4);
   cursor: pointer;
-  color: white;
 }
-.logout-primary-btn {
-    width: clamp(190px, 54vw, 240px);
-  height: clamp(38px, 11vw, 48px);
 
-  margin: 10px auto 0;
+.logout-back-btn img {
   display: block;
+  width: clamp(10px, 3vw, 14.6px);
+  height: clamp(10px, 3vw, 14.6px);
+}
+
+.logout-back-btn:focus-visible,
+.logout-primary-btn:focus-visible {
+  outline: 2px solid #2b1b5e;
+  outline-offset: 2px;
+}
+
+/* ---------------- LOGO / ICON ---------------- */
+
+.logout-icon {
+  width: clamp(64px, 21vw, 100px);
+  height: auto;
+  margin: 0;
+}
+
+/* ---------------- TITLE ---------------- */
+
+.logout-title {
+  margin: clamp(10px, 3vw, 15px) 0 0;
+
+  font-family: Inter, sans-serif;
+  font-weight: 800;
+  font-size: clamp(22px, 7vw, 33px);
+  line-height: 1.2;
+
+  color: #1f2058;
+}
+
+.logout-title-highlight {
+  position: relative;
+  display: inline-block;
+  padding-bottom: clamp(6px, 1.9vw, 9px);
+}
+
+.logout-title-highlight::after {
+  content: "";
+  position: absolute;
+
+  left: -35%;
+  right: 10%;
+  bottom: 0;
+
+  height: clamp(6px, 2vw, 10px);
+
+  background: var(--login-line) no-repeat center / 100% 100%;
+}
+
+.logout-subtitle {
+  margin: clamp(3px, 1vw, 5px) 0 0;
+
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  font-size: clamp(11px, 3.4vw, 16px);
+
+  color: #767ab1;
+}
+
+/* ---------------- BUTTON ---------------- */
+
+.logout-primary-btn {
+  width: 100%;
+  height: clamp(38px, 11.2vw, 52px);
+
+  margin: clamp(14px, 4.2vw, 20px) 0 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(5px, 1.5vw, 7px);
+
   background: #97538c;
   color: #fff;
-  border: none;
-   font-weight: 700;
-  cursor: pointer;
-  border-radius: clamp(14px, 4vw, 16px);
-  font-size: clamp(16px, 4.5vw, 18px);
-}
 
-.login-primary-btn:disabled {
-  opacity: 0.5;
-}
-
-.logout-btn.cancel {
-  background-color: #ccc;
-  color: #333;
-  margin-top: 10px;
-}
-.logout-success-title {
   font-family: Inter, sans-serif;
-  font-weight: 600;
-  font-size: clamp(20px, 6vw, 24px);
-  line-height: 100%;
-  letter-spacing: 0;
+  font-weight: 800;
+  font-size: clamp(14px, 4.4vw, 21px);
+
+  border: none;
+  border-radius: clamp(8px, 2.4vw, 11.5px);
+  cursor: pointer;
+
+  box-shadow: 0 clamp(3px, 1vw, 5px) clamp(10px, 3vw, 15px)
+    rgba(125, 74, 156, 0.35);
+
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.logout-primary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(125, 74, 156, 0.45);
+}
+
+.logout-btn-arrow {
+  display: block;
+  width: clamp(14px, 4.4vw, 17.5px);
+  height: clamp(14px, 4.4vw, 17.5px);
+}
+
+/* ---------------- SUCCESS STEP ---------------- */
+
+.logout-success-img {
+  width: clamp(64px, 21vw, 100px);
+  height: auto;
+}
+
+.logout-success-title {
+  margin: clamp(10px, 3vw, 15px) 0 0;
+
+  font-family: Inter, sans-serif;
+  font-weight: 800;
+  font-size: clamp(20px, 6.4vw, 28px);
+  line-height: 1.2;
   text-align: center;
-  color: #2A2626;
+
+  color: #1f2058;
 }
