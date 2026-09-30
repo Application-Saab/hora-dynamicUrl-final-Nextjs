@@ -9,13 +9,12 @@ import { useMemo } from "react";
 import arrowIcon from "@/assets/arrowicon.svg";
 import { planningCategories } from "@/utils/HomePageData";
 
-// In path-prefixes ke liye city/locality NAHI lagana
 const NO_CITY_PATH_PREFIXES = [
   "/party-food-delivery-live-catering-buffet",
   "/celebration-booster",
 ];
 
-export default function PlanningCategories({ onSelect }) {
+export default function PlanningCategories({ onSelect, isNotFound = false }) {
   const pathname = usePathname();
 
   const { city, locality } = useMemo(() => {
@@ -30,12 +29,16 @@ export default function PlanningCategories({ onSelect }) {
  const buildHref = (path) => {
   const basePath = path.split("?")[0];
 
+  if(isNotFound){
+    return path
+  }
+
   const shouldSkipCity = NO_CITY_PATH_PREFIXES.some((prefix) =>
     basePath.startsWith(prefix)
   );
 
   if (shouldSkipCity) {
-    return path; // City/locality bilkul ignore — chahe URL mein city ho ya na ho
+    return path;
   }
 
   if (city && locality) {
