@@ -36,6 +36,10 @@ import PhotoGraphyCardgrid from "@/components/photoGraphyCardGrid";
 const BrandBanner = dynamic(() => import("@/components/BrandBanner"));
 import PhotographyPackageGridSlider from "@/components/PhotographyPackageGridSlider";
 import GoogleReviewsCard from "@/components/PhotoGalleryPose/GoogleReviewsCard";
+import SectionDescription from "@/components/Description";
+import FAQSection from "@/components/FAQSection";
+import { photographyFAQData } from "@/utils/Photographyfaqdatalanding";
+import { photographyDescription } from "@/utils/Photographydescriptionlanding";
 
 const STANDARD_PACKAGE_TAG_ID = "66c96b4e22ed47b72117e09a";
 
@@ -303,6 +307,11 @@ const PhotographyIndexPage = ({
         <div className="keywords-box">
           <p className="keyword-text">{keywordsList.join(", ")}</p>
         </div>
+          <SectionDescription sections={photographyDescription} />
+
+      <div className="tab-section-details-productpage">
+        <FAQSection  faqData={photographyFAQData()} heading="FAQ" />  
+      </div>
       </div>
     </>
   );

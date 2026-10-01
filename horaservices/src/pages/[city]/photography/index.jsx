@@ -150,7 +150,7 @@ const PhotographyCityPage = ({
         locality={null}
         initialPackages={initialPackages}
       />
-
+{/* 
       <LocalitiesSection
         key={`main-${city}`}
         title={`${city} localities`}
@@ -158,14 +158,8 @@ const PhotographyCityPage = ({
         handleClick={localityHandleClick}
         href="/photography"
         citySlug={citySlug}
-      />
+      /> */}
 
-      <div className="tab-section-details-productpage">
-        <FAQSection faqData={faqData} />
-      </div>
-
-      <PhotographyDescription city={city} />
-      <PhotographySEOKeywords city={city} />
     </div>
   );
 };
