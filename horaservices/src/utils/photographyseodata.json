@@ -1,0 +1,40 @@
+{
+  "citySeoData": {
+    "mumbai": {
+      "title": "Photographers in Mumbai, Hire by the Hour or Event | HORA",
+      "description": "Looking for a photographer in Mumbai? Book verified photographers by the hour or for the whole event. Small events, weddings, studio shoots and more."
+    },
+    "bangalore": {
+      "title": "Photographers in Bangalore, Verified Freelancers | HORA",
+      "description": "Book verified photographers in Bangalore from just one hour. Freelance talent without the risk, studio or home shoots, female photographers available."
+    },
+    "hyderabad": {
+      "title": "Photographers in Hyderabad, Book from 2 Hours | HORA",
+      "description": "Hire verified photographers in Hyderabad for two hours or your whole event. Small functions, weddings, studio shoots, female photographers on request."
+    },
+    "delhi": {
+      "title": "Photographers in Delhi, Hourly or Event Packages | HORA",
+      "description": "Book a verified photographer in Delhi for an hour or a full wedding, with clear packages. Studio shoots, camera man and female photographers too."
+    },
+    "noida": {
+      "title": "Photographer in Noida, Female Photographers Available | HORA",
+      "description": "Book verified photographers in Noida by the hour, often same-day. Newborn, maternity, birthdays and small events, female photographers on request."
+    },
+    "gurugram": {
+      "title": "Photographer in Gurgaon for Small Events & Offices | HORA",
+      "description": "Hire a verified photographer in Gurgaon (Gurugram) for small events, office shoots or weddings, from one hour. Camera man and female photographers too."
+    },
+    "ghaziabad": {
+      "title": "Photographer in Ghaziabad, with Camera Man for Video | HORA",
+      "description": "Hire verified photographers in Ghaziabad, or a camera man near you, by the hour. Small functions, newborn, birthdays, female photographers on request."
+    },
+    "faridabad": {
+      "title": "Photographers in Faridabad for Birthdays & Parties | HORA",
+      "description": "Hire a verified photographer in Faridabad for birthdays, parties and small events on a budget. Book by the hour, camera man and female photographers too."
+    }
+  },
+  "defaultSeo": {
+    "title": "Book a Professional Photographer Online, by the Hour | HORA",
+    "description": "Book a professional photographer online with HORA, from one hour to a full wedding. Clear packages, verified photographers, studio or on-location shoots. Rated 5.0."
+  }
+}
