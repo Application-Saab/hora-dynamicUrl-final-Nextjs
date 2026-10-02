@@ -12,17 +12,59 @@ import {
 import "./login.css";
 import { useTimer } from "../utils/useTimer";
 import Image from "next/image";
-import loginImage from "../assets/sucesslogin.svg";
-import loginBgImage from "../assets/bgimage.svg";
-import ArrowImg from "../assets/arrow.svg";
+import loginImage from "../assets/newlogo.svg";
+import loginBgImage from "../assets/bgimage.webp";
+import ArrowImg from "@/assets/arrowicon.svg";
+import ArrowImgback from "@/assets/arrow.svg";
 import axiosApi from "@/utils/axiosApi";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
+import loginLine from "@/assets/loginline.svg";
 
-const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false, extraVerifyData = {} }) => {
+/* WhatsApp booking number (country code ke sath, bina + ke) */
+const WHATSAPP_BOOKING_NUMBER = "917338584828";
+const WHATSAPP_BOOKING_LINK = `https://wa.me/${WHATSAPP_BOOKING_NUMBER}?text=${encodeURIComponent(
+  "Hi Hora, I want to book a service.",
+)}`;
+
+/* ---------------- SMALL INLINE ICONS ---------------- */
+const WhatsAppIcon = () => (
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff" aria-hidden="true">
+    <path d="M12.04 2a9.9 9.9 0 0 0-8.5 14.9L2 22l5.25-1.5A9.9 9.9 0 1 0 12.04 2zm0 18.1c-1.5 0-2.95-.4-4.2-1.15l-.3-.18-3.1.88.9-3.02-.2-.31A8.1 8.1 0 1 1 12.04 20.1zm4.45-6.06c-.24-.12-1.44-.71-1.66-.79-.22-.08-.39-.12-.55.12-.16.24-.63.79-.77.95-.14.16-.28.18-.53.06a6.6 6.6 0 0 1-3.3-2.88c-.25-.43.25-.4.72-1.34.08-.16.04-.3-.02-.42-.06-.12-.55-1.32-.75-1.81-.2-.47-.4-.41-.55-.42h-.47c-.16 0-.43.06-.65.3-.22.24-.86.84-.86 2.05s.88 2.38 1 2.55c.12.16 1.73 2.64 4.19 3.7.59.25 1.05.4 1.4.52.59.19 1.12.16 1.55.1.47-.07 1.44-.59 1.64-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.47-.28z" />
+  </svg>
+);
+
+const ShieldIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M12 3l8 3v6c0 4.5-3.2 8.3-8 9-4.8-.7-8-4.5-8-9V6l8-3z" />
+    <path d="M9 12l2 2 4-4" />
+  </svg>
+);
+
+const BoltIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" />
+  </svg>
+);
+
+const HeadsetIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M4 14v-2a8 8 0 0 1 16 0v2" />
+    <rect x="3" y="14" width="4" height="6" rx="1.5" />
+    <rect x="17" y="14" width="4" height="6" rx="1.5" />
+  </svg>
+);
+
+const OtpLogin = ({
+  setIsModalOpen,
+  fromCheckout = false,
+  backIconHidden = false,
+  extraVerifyData = {},
+}) => {
   const [mobileNumber, setMobileNumber] = useState("");
   const [otp, setOtp] = useState(["", "", "", ""]);
   const pathname = usePathname();
-  const visitorid = safeGetItem("VISITOR_ID")
+  const visitorid = safeGetItem("VISITOR_ID");
+
   const isWonderland =
     pathname === "/wonderland" ||
     pathname === "/wonderland/create-invite-template" ||
@@ -34,6 +76,10 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
     pathname === "/wonderland/invite";
 
   const isWonderlandPath = pathname?.startsWith("/wonderland") || isWonderland;
+
+  /* WhatsApp button sirf checkout page par dikhega */
+  const isCheckoutPage = pathname?.includes("checkout") || fromCheckout;
+
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const [error, setError] = useState("");
@@ -42,18 +88,24 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
   const { time, resetTimer, isTimeUp } = useTimer(30);
   const inputsRef = useRef([]);
   const router = useRouter();
+
   /* ---------------- MOBILE INPUT ---------------- */
   const handleMobileNumberChange = (e) => {
     const value = e.target.value;
     if (/^\d{0,10}$/.test(value)) {
       setMobileNumber(value);
-      setError(""); // typing ke time error clear
+      setError("");
     }
   };
 
-  /* ---------------- WHATSAPP MESSAGE (OLD) ---------------- */
+  /* ---------------- WHATSAPP WELCOME MESSAGE ----------------
+     NOTE: API key frontend me nahi honi chahiye. Best: is call ko
+     backend me move karo. Tab tak key .env.local se aayegi:
+     NEXT_PUBLIC_DOUBLETICK_KEY=your_new_key
+     (purani key rotate kar do, wo code me expose ho chuki hai)
+  ------------------------------------------------------------ */
   const sendWelcomeMessage = async (mobile) => {
-    let formatted = mobile.startsWith("+91") ? mobile : "+91" + mobile;
+    const formatted = mobile.startsWith("+91") ? mobile : "+91" + mobile;
 
     try {
       await axiosApi.post(
@@ -76,9 +128,9 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
                   buttons: [
                     {
                       type: "URL",
-                      parameter: "https://horaservices.com/"
-                    }
-                  ]
+                      parameter: "https://horaservices.com/",
+                    },
+                  ],
                 },
               },
             },
@@ -88,7 +140,7 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
           headers: {
             accept: "application/json",
             "content-type": "application/json",
-            Authorization: "key_fHOm5tEzbfSWRbC29LoZkYd0vpqaU7B22Q2iSL2vgawcN3k0D75iXNSPRen3ie7Qj3L7C6r5EhH4lLYeL1dCtPj9WyQ9wPm2abK1wltW8bYXVR5xvjLfPeQgfRld3ws1lkkRduX6tfrHbmYnbhbYnau3HSfJAylSmBso4m5qjO7vm4YjbhtqMbdkNK2EoNPXqM5SdxThyeGvSlvoA8JCVhGvL98yrocJJ7JfhBasgsEnN7qArGvPdsswdhys",
+            Authorization: process.env.NEXT_PUBLIC_DOUBLETICK_KEY,
           },
         },
       );
@@ -97,7 +149,7 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
     }
   };
 
-  /* ---------------- SEND OTP (OLD LOGIC) ---------------- */
+  /* ---------------- SEND OTP ---------------- */
   const sendOtp = async () => {
     if (mobileNumber.length !== 10) {
       setError("Mobile number must be 10 digits");
@@ -105,7 +157,7 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
     }
 
     try {
-      let payload = {
+      const payload = {
         phone: mobileNumber,
         role: "customer",
         fromWonderland: isWonderlandPath ? true : false,
@@ -119,7 +171,6 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
         setIsOtpSent(true);
         setError("");
         setOtp(["", "", "", ""]);
-
         setOtpError("");
         resetTimer();
         setTimeout(() => inputsRef.current[0]?.focus(), 300);
@@ -135,7 +186,7 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
   const handleOtpChange = (e, index) => {
     const value = e.target.value;
 
-    // 🔥 FULL OTP autofill case (Android / iOS)
+    // Full OTP autofill (Android / iOS)
     if (value.length === 4) {
       const splitOtp = value.split("").slice(0, 4);
       setOtp(splitOtp);
@@ -166,10 +217,10 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
         const next = [...prev];
 
         if (next[index]) {
-          // 🔥 digit hai → sirf clear, focus wahi
+          // digit hai -> sirf clear, focus wahi
           next[index] = "";
         } else if (index > 0) {
-          // 🔥 empty hai → previous pe jao
+          // empty hai -> previous pe jao
           next[index - 1] = "";
           setTimeout(() => {
             inputsRef.current[index - 1]?.focus();
@@ -188,19 +239,16 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
     }
 
     try {
-      let payload = {
-        userId,
-        visitorId
-      };
-      const res = await axiosApi.patch(BASE_URL + ASSIGN_USER_TO_TRACKINGS, payload, {
+      const payload = { userId, visitorId };
+      await axiosApi.patch(BASE_URL + ASSIGN_USER_TO_TRACKINGS, payload, {
         headers: { "Content-Type": "application/json" },
       });
-    } catch(error) {
-      console.log('%c [ error ]', 'font-size:13px; background:pink; color:#bf2c9f;', error)
+    } catch (err) {
+      console.log("assignVisitorToUserId error", err);
     }
   };
 
-  /* ---------------- VERIFY OTP (OLD LOGIC) ---------------- */
+  /* ---------------- VERIFY OTP ---------------- */
   const verifyOtp = async () => {
     const finalOtp = otp.join("");
 
@@ -214,7 +262,7 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
         {
           phone: mobileNumber,
           role: "customer",
-          otp: otp.join(""),
+          otp: finalOtp,
         },
         { headers: { "Content-Type": "application/json" } },
       );
@@ -226,7 +274,7 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
         safeSetItem("refreshToken", res.data.refreshToken);
         safeSetItem("userID", res.data.data._id);
         sendWelcomeMessage(mobileNumber);
-        assignVisitorToUserId(res.data.data._id, visitorid)
+        assignVisitorToUserId(res.data.data._id, visitorid);
 
         window.dispatchEvent(new Event("loginStateChange"));
 
@@ -235,17 +283,13 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
         setOtp(["", "", "", ""]);
         setOtpError("");
       } else {
-        // 🔥 WRONG OTP
         setOtpError("Invalid OTP");
         setOtp(["", "", "", ""]);
-
         setTimeout(() => inputsRef.current[0]?.focus(), 200);
       }
     } catch {
-      // 🔥 API FAIL / WRONG OTP
       setOtpError("Invalid OTP");
       setOtp(["", "", "", ""]);
-
       setTimeout(() => inputsRef.current[0]?.focus(), 200);
     }
   };
@@ -253,7 +297,6 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
   /* ---------------- RESEND OTP ---------------- */
   const resendOtp = async () => {
     setOtp(["", "", "", ""]);
-
     setOtpError("");
     await sendOtp();
   };
@@ -268,26 +311,47 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
 
     if (pasted.length < 4) return;
 
-    const newOtp = pasted.split("");
+    setOtp(pasted.split(""));
 
-    setOtp(newOtp);
-
-    // 🔥 last box pe focus
     setTimeout(() => {
       inputsRef.current[3]?.focus();
     }, 0);
   };
 
+  /* ---------------- BACK BUTTON ---------------- */
+  const handleBack = () => {
+    // Success screen: sirf modal band karo (user login ho chuka hai)
+    if (isUserLoggedIn) {
+      setIsModalOpen(false);
+      return;
+    }
+
+    if (isOtpSent) {
+      setIsOtpSent(false);
+      setOtp(["", "", "", ""]);
+      setOtpError("");
+      return;
+    }
+
+    setIsModalOpen(false);
+    if (fromCheckout) {
+      router.back();
+    }
+  };
+
+  /* ---------------- EFFECTS ---------------- */
   useEffect(() => {
     if (isOtpSent) {
-      setTimeout(() => {
+      const t = setTimeout(() => {
         inputsRef.current[0]?.focus();
       }, 500);
+      return () => clearTimeout(t);
     }
   }, [isOtpSent]);
+
+  // Web OTP API (Android Chrome SMS autofill)
   useEffect(() => {
     if (!isOtpSent) return;
-
     if (!("OTPCredential" in window)) return;
 
     const controller = new AbortController();
@@ -299,156 +363,261 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
       })
       .then((cred) => {
         if (cred?.code) {
-          const digits = cred.code.slice(0, 4).split("");
-          setOtp(digits);
-
-          // 🔥 last box focus
+          setOtp(cred.code.slice(0, 4).split(""));
           setTimeout(() => {
             inputsRef.current[3]?.focus();
           }, 0);
         }
       })
-      .catch(() => { });
+      .catch(() => {});
 
     return () => controller.abort();
   }, [isOtpSent]);
-
+const maskedNumber =
+  mobileNumber.length === 10
+    ? `${mobileNumber.slice(0, 2)}*****${mobileNumber.slice(-3)}`
+    : mobileNumber;
   /* ---------------- UI ---------------- */
   return (
     <div className="login-popup-overlay">
-      <div className="login-card">
-        <Image src={loginBgImage} alt="bg" className="login-bg-img" />
+      <div
+        className={`login-card ${isUserLoggedIn ? "login-card--success" : ""}`}
+      >
+        <Image src={loginBgImage} alt="" className="login-bg-img" priority />
+
+        {/* BACK BUTTON (login, OTP aur success, teeno screens par) */}
+        {!backIconHidden && (
+          <button
+            type="button"
+            className="login-back-btn"
+            onClick={handleBack}
+            aria-label="Go back"
+          >
+            <Image src={ArrowImgback} alt="" width={16} height={16} />
+          </button>
+        )}
 
         {!isUserLoggedIn ? (
-          <>
+          <div className="login-content">
             {/* HEADER */}
-            {!backIconHidden &&
-            <Image
-              src={ArrowImg}
-              alt="Back"
-              width={24}
-              height={24}
-              className="login-back-icon"
-             onClick={() => {
-  if (isOtpSent) {
-    setIsOtpSent(false);
-    setOtp(["", "", "", ""]);
-    setOtpError("");
-    return;
-  }
+            <div className="login-header">
+              <p className="login-welcome">Welcome to HORA</p>
 
-  setIsModalOpen(false);
-  if (fromCheckout) {
-    router.back();
-  }
-}}
+              <h1 className="login-title">
+                {isOtpSent ? (
+                  <span
+                    className="title-highlight"
+                    style={{ "--login-line": `url(${loginLine.src})` }}
+                  >
+                    Verification
+                  </span>
+                ) : (
+                  <>
+                    Get{" "}
+                    <span
+                      className="title-highlight"
+                      style={{ "--login-line": `url(${loginLine.src})` }}
+                    >
+                      Started
+                    </span>
+                  </>
+                )}
+              </h1>
 
-            />
-}
-            <div className="login-content">
-              <div className="login-header">
-                <h1 className="login-title">
-                  {isOtpSent ? "Verification" : "Get Started"}
-                </h1>
-                <p className="login-subtitle">
-                  {isOtpSent
-                    ? "Check your phone we have sent you an OTP"
+              <p className="login-subtitle">
+                {isOtpSent
+                  ? "Check your phone we have sent you an OTP"
+                  : isCheckoutPage
+                    ? "Login with your mobile number or choose WhatsApp booking for quick support."
                     : "Login with your mobile number"}
-                </p>
-              </div>
+              </p>
+            </div>
 
-              {/* MOBILE SCREEN */}
-              {!isOtpSent && (
-                <>
-                  <div className="login-mobile-input ">
-                    <div className="login-country-code">+91</div>
+            {/* MOBILE SCREEN */}
+            {!isOtpSent && (
+              <>
+                <div className="login-mobile-input">
+                  <div className="login-country-code">+91</div>
 
-                    <input
-                      type="text"
-                      value={mobileNumber}
-                      onChange={handleMobileNumberChange}
-                      placeholder="Enter your Number"
-                      className="login-input"
-                    />
-                  </div>
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    value={mobileNumber}
+                    onChange={handleMobileNumberChange}
+                    onKeyDown={(e) => e.key === "Enter" && sendOtp()}
+                    placeholder="Enter Number"
+                    className={`login-input ${error ? "input-error" : ""}`}
+                  />
+                </div>
 
-                  {error && <p className="input-error-text">{error}</p>}
+                {error && <p className="input-error-text">{error}</p>}
 
-                  <button className="login-primary-btn" onClick={sendOtp}>
-                    Get OTP
-                  </button>
-                </>
-              )}
+                <button
+                  type="button"
+                  className="login-primary-btn"
+                  onClick={sendOtp}
+                >
+                  Get OTP
+                  <Image
+                    src={ArrowImg}
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="btn-arrow-img"
+                  />
+                </button>
 
-              {isOtpSent && (
-                <>
-                  <p className="verify-text">
-                    OTP sent to <span>(+91) {mobileNumber}</span>
-                  </p>
+                {/* WhatsApp: sirf checkout page par */}
+                {isCheckoutPage && (
+                  <>
+                    <div className="login-or">
+                      <span>OR</span>
+                    </div>
 
-                  <div
-                    className={`otp-box-wrapper ${otpError ? "otp-error" : ""}`}
-                  >
-                    {[0, 1, 2, 3].map((i) => (
-                      <input
-                        key={i}
-                        ref={(el) => (inputsRef.current[i] = el)}
-                        className="otp-box"
-                        value={otp[i]}
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        maxLength={1}
-                        autoComplete={i === 0 ? "one-time-code" : "off"}
-                        onChange={(e) => handleOtpChange(e, i)}
-                        onKeyDown={(e) => handleKeyDown(e, i)}
-                        onPaste={handleOtpPaste}
+                    <a
+                      className="login-whatsapp-btn"
+                      href={WHATSAPP_BOOKING_LINK}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <WhatsAppIcon />
+                      <span className="whatsapp-text">
+                        <strong>Book On WhatsApp</strong>
+                        <small>Quick booking . Instant support</small>
+                      </span>
+
+                      <Image
+                        src={ArrowImg}
+                        alt=""
+                        width={22}
+                        height={22}
+                        className="btn-arrow-img whatsapp-arrow"
                       />
-                    ))}
-                  </div>
-                  <div
-                    className={`otp-bottom-row ${otpError ? "space-between" : "center-align"
-                      }`}
-                  >
-                    {otpError && (
-                      <span className="otp-error-text">{otpError}</span>
-                    )}
+                    </a>
+                  </>
+                )}
+              </>
+            )}
 
-                    {isTimeUp ? (
-                      <span className="resend-link" onClick={resendOtp}>
-                        Resend Code
-                      </span>
-                    ) : (
-                      <span className="login-timer">
-                        Resend Code in {time} Seconds
-                      </span>
-                    )}
-                  </div>
+            {/* OTP SCREEN */}
+            {isOtpSent && (
+              <>
+                <p className="verify-text">
+                  <span>(+91) {maskedNumber}</span>
+                </p>
 
-                  <button
-                    className="login-primary-btn"
-                    onClick={verifyOtp}
-                    disabled={otp.join("").length !== 4}
-                  >
-                    LOGIN
-                  </button>
-                </>
-              )}
-            </div>{" "}
-          </>
+                <div
+                  className={`otp-box-wrapper ${otpError ? "otp-error" : ""}`}
+                >
+                  {[0, 1, 2, 3].map((i) => (
+                    <input
+                      key={i}
+                      ref={(el) => (inputsRef.current[i] = el)}
+                      className="otp-box"
+                      value={otp[i]}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={1}
+                      autoComplete={i === 0 ? "one-time-code" : "off"}
+                      onChange={(e) => handleOtpChange(e, i)}
+                      onKeyDown={(e) => handleKeyDown(e, i)}
+                      onPaste={handleOtpPaste}
+                    />
+                  ))}
+                </div>
+
+                <div
+                  className={`otp-bottom-row ${
+                    otpError ? "space-between" : "center-align"
+                  }`}
+                >
+                  {otpError && (
+                    <span className="otp-error-text">{otpError}</span>
+                  )}
+
+                  {isTimeUp ? (
+                    <span
+                      className="resend-link"
+                      role="button"
+                      tabIndex={0}
+                      onClick={resendOtp}
+                      onKeyDown={(e) => e.key === "Enter" && resendOtp()}
+                    >
+                      Resend Code
+                    </span>
+                  ) : (
+                    <span className="login-timer">
+                      Resend Code in {time} Seconds
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  className="login-primary-btn"
+                  onClick={verifyOtp}
+                  disabled={otp.join("").length !== 4}
+                >
+                  CONTINUE
+                  <Image
+                    src={ArrowImg}
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="btn-arrow-img"
+                  />
+                </button>
+              </>
+            )}
+
+            {/* FOOTER TRUST ROW */}
+            <div className="login-footer">
+              <span>
+                <ShieldIcon /> Secure Login
+              </span>
+              <i className="footer-divider" />
+              <span>
+                <BoltIcon /> Fast &amp; Easy
+              </span>
+              <i className="footer-divider" />
+              <span>
+                <HeadsetIcon /> 24/7 Support
+              </span>
+            </div>
+          </div>
         ) : (
-          /* ✅ SUCCESS SCREEN */
-
+          /* SUCCESS SCREEN */
           <div className="login-content">
             <div className="success-message">
-              <Image src={loginImage} alt="success" className="success-image" />
-              <p>Welcome To Hora </p>
+              <Image
+                src={loginImage}
+                alt="Logged in"
+                className="success-image"
+              />
+
+              <h2
+                className="success-title"
+                style={{ "--login-line": `url(${loginLine.src})` }}
+              >
+                Welcome to Hora
+              </h2>
+
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
                 className="login-primary-btn"
               >
                 CONTINUE
+                <Image
+                  src={ArrowImg}
+                  alt=""
+                  width={20}
+                  height={20}
+                  className="btn-arrow-img"
+                />
               </button>
+
             </div>
           </div>
         )}
