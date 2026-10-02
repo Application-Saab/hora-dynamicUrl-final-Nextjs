@@ -1,21 +1,25 @@
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
 
-import Index from "@/pages/photography";
+import PhotographyLanding, {
+  STANDARD_PACKAGE_TAG_ID,
+} from "@/components/PhotographyLanding";
 import cityData from "@/utils/cityData";
-import { faqData } from "@/utils/photographyFAQData";
 import { BASE_URL, GET_PHOTOGRAPHY_BY_TAG } from "@/utils/apiconstants.js";
 import axiosApi from "@/utils/axiosApi";
+import seoData from "@/utils/photographyseodata.json";
 
-import PhotographyDescription from "@/components/PhotographyDescription";
-import PhotographySEOKeywords from "@/components/PhotographySEOKeywords";
 import FAQSection from "@/components/FAQSection";
+import SectionDescription from "@/components/Description";
 import LocalitiesSection from "@/components/LocalitiesSection";
+import PhotographyCityLanding from "@/components/photographyseoCommon/PhotographyCityLanding";
 
 import "../../../app/homepage.css";
 import { getCityNameFromSlug, isValidCitySlug } from "@/utils/validCities";
-
-const STANDARD_PACKAGE_TAG_ID = "66c96b4e22ed47b72117e09a";
+import { photographyDescription } from "@/utils/Photographydescriptionlanding";
+import { photographyFAQData } from "@/utils/Photographyfaqdatalanding";
+import { CityPhotographyLandingPage } from "@/utils/Cityphotographylandingpage";
 
 const getDiscountedPrice = (price = 0) => {
   const discountedPrice = price / 0.78;
@@ -33,24 +37,23 @@ function formatCityDisplay(slug) {
   return slug.charAt(0).toUpperCase() + slug.slice(1).toLowerCase();
 }
 
+// "/hyderabad/photography" -> "hyderabad"
+function getCitySlugFromPath(pathname) {
+  if (!pathname) return "";
+  const parts = pathname.split("/").filter(Boolean);
+  return (parts[0] || "").toLowerCase();
+}
+
 // ---------- SSR ----------
 export async function getServerSideProps(context) {
-  const citySlug =
-    (context.params?.city || "").toLowerCase();
+  const citySlug = (context.params?.city || "").toLowerCase();
 
-   if (!isValidCitySlug(citySlug)) {
-    return {
-      notFound: true,
-    };
+  if (!isValidCitySlug(citySlug)) {
+    return { notFound: true };
   }
 
-  const city = getCityNameFromSlug(citySlug)
+  const city = getCityNameFromSlug(citySlug);
 
-  // Localities server pe
-  const cityLocalitiesList =
-    cityData[citySlug]?.cityLocalitiesList || [];
-
-  // Packages (same as main photography page)
   let initialPackages = [];
   try {
     const res = await axiosApi.get(
@@ -68,37 +71,31 @@ export async function getServerSideProps(context) {
     initialPackages = [];
   }
 
-  return {
-    props: {
-      city,
-      citySlug,
-      cityLocalitiesList,
-      initialPackages,
-    },
-  };
+  return { props: { city, citySlug, initialPackages } };
 }
 
 // ---------- Page ----------
 const PhotographyCityPage = ({
   city: ssrCity,
   citySlug: ssrCitySlug,
-  cityLocalitiesList: ssrLocalities,
   initialPackages,
 }) => {
   const router = useRouter();
 
-  // SSR city pehle se hai — client silent URL change ke liye sync bhi rakho
   const [citySlug, setCitySlug] = useState(ssrCitySlug || "");
-  const [cityLocalitiesList, setCityLocalitiesList] = useState(
-    ssrLocalities || []
-  );
+  const [city, setCity] = useState(ssrCity || "");
+
+  const seo = seoData.citySeoData[citySlug] || seoData.defaultSeo;
 
   const syncCityFromUrl = useCallback(() => {
     if (typeof window === "undefined") return;
-    const parts = window.location.pathname.split("/").filter(Boolean);
-    const slug = (parts[0] || "").toLowerCase();
-    setCitySlug(slug);
-  }, []);
+    const newSlug = getCitySlugFromPath(window.location.pathname);
+
+    if (newSlug && newSlug !== citySlug) {
+      setCitySlug(newSlug);
+      setCity(formatCityDisplay(newSlug));
+    }
+  }, [citySlug]);
 
   useEffect(() => {
     syncCityFromUrl();
@@ -119,33 +116,41 @@ const PhotographyCityPage = ({
     return () => window.removeEventListener("popstate", syncCityFromUrl);
   }, [syncCityFromUrl]);
 
-  // City change (silent / client nav) → localities update
-  useEffect(() => {
-    if (!citySlug) return;
-    const localities = cityData[citySlug]?.cityLocalitiesList || [];
-    setCityLocalitiesList(localities);
-  }, [citySlug]);
+  // Ek city ka data (ya undefined)
+  const cityLanding = CityPhotographyLandingPage[citySlug];
 
-  const city = citySlug
-    ? formatCityDisplay(citySlug)
-    : ssrCity || "";
+  // City FAQ pehle, phir general FAQ
+  const cityFaqs = cityLanding?.faqs || [];
+  const generalFaqs = photographyFAQData();
+  const cityPhotographyFAQ = [...cityFaqs, ...generalFaqs];
+
+  const localities = cityData[citySlug]?.cityLocalitiesList || [];
 
   const localityHandleClick = (localityName) => {
     const formattedLocalityName = localityName
       .replace(/\s+/g, "-")
       .toLowerCase();
-    router.push({
-      pathname: `/${city.toLowerCase()}/${formattedLocalityName}/photography`,
-    });
+    router.push(`/${citySlug}/${formattedLocalityName}/photography`);
   };
 
-  // SSR pe city hamesha hogi — null return mat karo (SEO + hydration safe)
   if (!city) return null;
 
+  const pageUrl = `https://horaservices.com/${citySlug}/photography`;
+
   return (
-    <div>
-      {/* Index = photography main component — city + packages props */}
-      <Index
+    <>
+      <Head>
+        <title>{seo.title}</title>
+        <meta name="description" content={seo.description} />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={pageUrl} />
+        <meta property="og:title" content={seo.title} />
+        <meta property="og:description" content={seo.description} />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:type" content="website" />
+      </Head>
+
+      <PhotographyLanding
         city={city}
         locality={null}
         initialPackages={initialPackages}
@@ -154,19 +159,23 @@ const PhotographyCityPage = ({
       <LocalitiesSection
         key={`main-${city}`}
         title={`${city} localities`}
-        localities={cityLocalitiesList}
+        localities={localities}
         handleClick={localityHandleClick}
-        href="/photography"
         citySlug={citySlug}
+        href="/photography"
       />
 
-      <div className="tab-section-details-productpage">
-        <FAQSection faqData={faqData} />
-      </div>
+      <PhotographyCityLanding key={`landing-${city}`} data={cityLanding} />
 
-      <PhotographyDescription city={city} />
-      <PhotographySEOKeywords city={city} />
-    </div>
+      <SectionDescription sections={photographyDescription} />
+
+      <div className="tab-section-details-productpage">
+        <FAQSection
+          faqData={cityPhotographyFAQ}
+          heading={cityLanding?.faqHeading || "FAQ"}
+        />
+      </div>
+    </>
   );
 };
 
