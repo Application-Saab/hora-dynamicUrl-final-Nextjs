@@ -10,12 +10,11 @@ const DesktopMenu = () => {
     <ul className="desktop-menu">
       <li className="categories-item">
         <span className="categories-trigger">
-          {/* 🔥 Clickable text */}
-          <Link href="/horaservices/" className="categories-link">
+          <span className="categories-link">
             Categories
-          </Link>
+          </span>
 
-          {/* 🔽 Dropdown arrow */}
+          {/* Dropdown arrow */}
           <Image
             src={arrowImg}
             alt="dropdown"
@@ -25,7 +24,7 @@ const DesktopMenu = () => {
           />
         </span>
 
-        {/* ✅ Dropdown from JSON */}
+        {/* Dropdown from JSON */}
         <ul className="categories-dropdown">
           {CATEGORIES_CONFIG.map((item, index) => {
             // Normal links
@@ -37,28 +36,34 @@ const DesktopMenu = () => {
               );
             }
 
-            // 🔥 Button 3 → WhatsApp Button
-     if (item.type === "whatsapp_button") {
-  return (
-    <li key={index} className="whatsapp-item">
-      <button
-        type="button"
-        className="whats-btn"
-        onClick={openWhatsApp}
-      >
-        {item.label}
-      </button>
-    </li>
-  );
-}
+            // Button 3 - WhatsApp Button
+            if (item.type === "whatsapp_button") {
+              return (
+                <li key={index} className="whatsapp-item">
+                  <button
+                    type="button"
+                    className="whats-btn"
+                    onClick={openWhatsApp}
+                  >
+                    {item.label}
+                  </button>
+                </li>
+              );
+            }
 
             return null;
           })}
         </ul>
       </li>
-      <li><Link href="/contactus">Contact Us</Link></li>
-      <li><Link href="/aboutus">About Us</Link></li>
-      <li><Link href="/reviews">Customer Reviews</Link></li>
+      <li>
+        <Link href="/contactus">Contact Us</Link>
+      </li>
+      <li>
+        <Link href="/aboutus">About Us</Link>
+      </li>
+      <li>
+        <Link href="/reviews">Customer Reviews</Link>
+      </li>
     </ul>
   );
 };
