@@ -27,11 +27,15 @@ const FEATURES = [
   { title: "Share", sub: "Share Instantly", icon: iconShare },
 ];
 
+const DEFAULT_MESSAGE =
+  "Hi! My event is approaching soon, I need help with the arrangements.\nCoupon Code - INVITE500";
+
 export default function InviteSheet({
   open,
   onClose,
-  whatsappNumber = "919999999999", // apna number daalo (country code ke saath)
-  message = "Hi! Mujhe free invite create karna hai.",
+  whatsappNumber = "917338584828", 
+  eventDate = "", 
+  message = "", 
 }) {
   const rootRef = useRef(null);
 
@@ -57,8 +61,11 @@ export default function InviteSheet({
   }, [open]);
 
   const handleWhatsApp = () => {
+    const finalMessage =
+      message || DEFAULT_MESSAGE + (eventDate ? `\nEvent date - ${eventDate}` : "");
+
     window.open(
-      `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`,
+      `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(finalMessage)}`,
       "_blank"
     );
   };
@@ -111,15 +118,15 @@ export default function InviteSheet({
           {/* Expert box */}
           <div className="ivs-expert">
             <span className="ivs-wa-circle">
-                        <Image
-             src={iconWhatsapp}
-             alt=""
-             width={30}
-             height={30}
-             unoptimized
-             className="ivs-wa-img"
-           />
-                       </span>
+              <Image
+                src={iconWhatsapp}
+                alt=""
+                width={30}
+                height={30}
+                unoptimized
+                className="ivs-wa-img"
+              />
+            </span>
             <div>
               <b>Our expert is here to help!</b>
               <p>
@@ -139,14 +146,14 @@ export default function InviteSheet({
 
           {/* CTA */}
           <button className="ivs-cta" onClick={handleWhatsApp}>
-              <Image
-             src={iconWhatsapp}
-             alt=""
-             width={30}
-             height={30}
-             unoptimized
-             className="ivs-wa-img"
-           />
+            <Image
+              src={iconWhatsapp}
+              alt=""
+              width={30}
+              height={30}
+              unoptimized
+              className="ivs-wa-img"
+            />
             Get This Free – Chat Now
           </button>
 
@@ -160,5 +167,3 @@ export default function InviteSheet({
     </div>
   );
 }
-
-// CTA button ke andar white icon (green button par)

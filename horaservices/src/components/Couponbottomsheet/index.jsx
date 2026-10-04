@@ -20,7 +20,9 @@ export default function CouponBottomSheet({
   onClose,
   amount = 150,
   code = "HORA150",
-  whatsappNumber = "919999999999", // apna number daalo (country code ke saath)
+  whatsappNumber = "917338584828",
+  eventDate = "", 
+  message = "", 
 }) {
   const rootRef = useRef(null);
 
@@ -46,10 +48,15 @@ export default function CouponBottomSheet({
   }, [open]);
 
   const handleWhatsApp = () => {
-    const text = encodeURIComponent(
-      `Hi! Mujhe ₹${amount} OFF coupon (${code}) use karna hai.`
+    const finalMessage =
+      message ||
+      `Hi! My event is approaching soon, I need help with the arrangements.\nCoupon Code - ${code}` +
+        (eventDate ? `\nEvent date - ${eventDate}` : "");
+
+    window.open(
+      `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(finalMessage)}`,
+      "_blank"
     );
-    window.open(`https://wa.me/${whatsappNumber}?text=${text}`, "_blank");
   };
 
   return (
@@ -98,36 +105,35 @@ export default function CouponBottomSheet({
           </div>
 
           {/* 3 features */}
-         {/* 3 features */}
-<div className="cbs-features">
-  <div>
-    <Image src={iconPremium} alt="" width={35} height={35} unoptimized className="cbs-ficon-img" />
-    <b>₹{amount} OFF</b>
-    <p>On Order Booking</p>
-  </div>
-  <div>
-    <Image src={iconValid} alt="" width={35} height={35} unoptimized className="cbs-ficon-img" />
-    <b>100% Valid</b>
-    <p>On All Services</p>
-  </div>
-  <div>
-    <Image src={iconFree} alt="" width={35} height={35} unoptimized className="cbs-ficon-img" />
-    <b>Limited Time</b>
-    <p>Grab it now!</p>
-  </div>
-</div>
+          <div className="cbs-features">
+            <div>
+              <Image src={iconPremium} alt="" width={35} height={35} unoptimized className="cbs-ficon-img" />
+              <b>₹{amount} OFF</b>
+              <p>On Order Booking</p>
+            </div>
+            <div>
+              <Image src={iconValid} alt="" width={35} height={35} unoptimized className="cbs-ficon-img" />
+              <b>100% Valid</b>
+              <p>On All Services</p>
+            </div>
+            <div>
+              <Image src={iconFree} alt="" width={35} height={35} unoptimized className="cbs-ficon-img" />
+              <b>Limited Time</b>
+              <p>Grab it now!</p>
+            </div>
+          </div>
 
           {/* Expert box */}
           <div className="cbs-expert">
             <span className="cbs-wa-circle">
-             <Image
-  src={iconWhatsapp}
-  alt=""
-  width={30}
-  height={30}
-  unoptimized
-  className="cbs-wa-img"
-/>
+              <Image
+                src={iconWhatsapp}
+                alt=""
+                width={30}
+                height={30}
+                unoptimized
+                className="cbs-wa-img"
+              />
             </span>
             <div>
               <b>Our expert is here to help!</b>
@@ -136,26 +142,26 @@ export default function CouponBottomSheet({
                 everything.
               </p>
             </div>
-             <Image
-    src={iconSupport}
-    alt=""
-    width={40}
-    height={40}
-    unoptimized
-    className="cbs-support-img"
-  />
+            <Image
+              src={iconSupport}
+              alt=""
+              width={40}
+              height={40}
+              unoptimized
+              className="cbs-support-img"
+            />
           </div>
 
           {/* CTA */}
           <button className="cbs-cta" onClick={handleWhatsApp}>
-                   <Image
-  src={iconWhatsapp}
-  alt=""
-  width={38}
-  height={38}
-  unoptimized
-  className="cbs-wa-img"
-/>
+            <Image
+              src={iconWhatsapp}
+              alt=""
+              width={38}
+              height={38}
+              unoptimized
+              className="cbs-wa-img"
+            />
             Get ₹{amount} OFF – Chat Now
           </button>
 

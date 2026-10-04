@@ -30,18 +30,27 @@
   bottom: 0;
   width: 100%;
   max-width: 440px;
-  transform: translate(-50%, 100%);
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translate(-50%, calc(100% + 60px));
+  visibility: hidden;
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 0.4s;
 }
-.cbs-open .cbs-sheet-wrap { transform: translate(-50%, 0); }
+.cbs-open .cbs-sheet-wrap {
+  transform: translate(-50%, 0);
+  visibility: visible;
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 0s;
+}
 
 /* Sheet — sirf styling + scroll */
 .cbs-sheet {
   position: relative;
   overflow-y: auto;
   background: #fff;
- border-radius: clamp(16px, 5.09vw, 20px) clamp(16px, 5.09vw, 20px) 0 0;
-padding: clamp(8px, 2.54vw, 10px) clamp(13.6px, 4.33vw, 17px) clamp(8px, 2.54vw, 10px);
+  border-radius: clamp(16px, 5.09vw, 20px) clamp(16px, 5.09vw, 20px) 0 0;
+  padding: clamp(8px, 2.54vw, 10px) clamp(13.6px, 4.33vw, 17px) clamp(8px, 2.54vw, 10px);
   color: var(--text);
 }
 
@@ -214,8 +223,8 @@ padding: clamp(8px, 2.54vw, 10px) clamp(13.6px, 4.33vw, 17px) clamp(8px, 2.54vw,
 }
 .cbs-wa-circle {
   flex: none;
- width: clamp(30.4px, 9.67vw, 38px);
-height: clamp(30.4px, 9.67vw, 38px);
+  width: clamp(30.4px, 9.67vw, 38px);
+  height: clamp(30.4px, 9.67vw, 38px);
   display: grid;
   place-items: center;
   border-radius: 50%;
