@@ -111,8 +111,12 @@ const LayoutInner = ({ children }) => {
   const [visitorId, setVisitorId] = useState("");
   const [pincode, setPincode] = useState("");
   const [idsReady, setIdsReady] = useState(false);
-  const { showCityModal, selectCity, dismissCityModal } = useCity();
+  const cityCtx = useCity();
+  const { showCityModal, selectCity, dismissCityModal } = cityCtx;
   const { setDateResolved } = useDateGate();
+
+  const rawCity = cityCtx?.selectedCity ?? cityCtx?.city ?? cityCtx?.cityName ?? "";
+  const city = typeof rawCity === "string" ? rawCity : rawCity?.name || "";
 
   const [showDateSheet, setShowDateSheet] = useState(false);
 
@@ -176,19 +180,19 @@ const LayoutInner = ({ children }) => {
 
         if (futureEvents.length > 0) {
           setDateResolved(true);
-         setShowDateSheet(false);
+          setShowDateSheet(false);
 
-        // 👇 FIX 1: future event ke expire hone ka exact time nikaal ke
-        // us waqt dobara checkAndSchedule() khud ko call karega —
-        // taaki expire hote hi popup-logic fir se evaluate ho, page
-        // reload ka wait na karna pade.
-        const nearestEvent = futureEvents[0];
-        const msUntilExpiry = (nearestEvent.daysLeft + 1) * 24 * 60 * 60 * 1000;
+          // FIX 1: future event ke expire hone ka exact time nikaal ke
+          // us waqt dobara checkAndSchedule() khud ko call karega —
+          // taaki expire hote hi popup-logic fir se evaluate ho, page
+          // reload ka wait na karna pade.
+          const nearestEvent = futureEvents[0];
+          const msUntilExpiry = (nearestEvent.daysLeft + 1) * 24 * 60 * 60 * 1000;
 
-        if (futureRecheckTimerRef.current) clearTimeout(futureRecheckTimerRef.current);
-        futureRecheckTimerRef.current = setTimeout(() => {
-          checkAndSchedule();
-        }, msUntilExpiry);
+          if (futureRecheckTimerRef.current) clearTimeout(futureRecheckTimerRef.current);
+          futureRecheckTimerRef.current = setTimeout(() => {
+            checkAndSchedule();
+          }, msUntilExpiry);
 
           return;
         }
@@ -200,13 +204,13 @@ const LayoutInner = ({ children }) => {
         if (pastEvents.length > 0) {
           const daysSinceExpiry = -pastEvents[0].daysLeft;
 
-        // 👇 FIX 2: buffer ab sirf "expiry wale din" tak — 3 din nahi
-        if (daysSinceExpiry <= DATE_SHEET_REASK_BUFFER_DAYS) {
-          if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
-          setDateResolved(true);
-          return;
+          // FIX 2: buffer ab sirf "expiry wale din" tak — 3 din nahi
+          if (daysSinceExpiry <= DATE_SHEET_REASK_BUFFER_DAYS) {
+            if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
+            setDateResolved(true);
+            return;
+          }
         }
-      }
 
         if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
         setDateResolved(false);
@@ -225,25 +229,26 @@ const LayoutInner = ({ children }) => {
     [userId, visitorId, idsReady, setDateResolved]
   );
 
-useEffect(() => {
-  if (!isDateSheetAllowedPath) {
-    setDateResolved(true);
-    return;
-  }
+  useEffect(() => {
+    if (!isDateSheetAllowedPath) {
+      setDateResolved(true);
+      return;
+    }
 
-  if (!idsReady) return;
-  if (!userId && !visitorId) return;
-  if (!cityResolved) return;
-  if (checkStarted.current) return;
-  checkStarted.current = true;
+    if (!idsReady) return;
+    if (!userId && !visitorId) return;
+    if (!cityResolved) return;
+    if (checkStarted.current) return;
+    checkStarted.current = true;
 
-  checkAndSchedule();
+    checkAndSchedule();
 
-  return () => {
-    if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
-    if (futureRecheckTimerRef.current) clearTimeout(futureRecheckTimerRef.current); // 👈 add
-  };
-}, [userId, visitorId, idsReady, checkAndSchedule, isDateSheetAllowedPath, setDateResolved, cityResolved]);
+    return () => {
+      if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
+      if (futureRecheckTimerRef.current) clearTimeout(futureRecheckTimerRef.current);
+    };
+  }, [userId, visitorId, idsReady, checkAndSchedule, isDateSheetAllowedPath, setDateResolved, cityResolved]);
+
   const showBottomNav =
     pathname === "/wonderland" ||
     pathname === "/wonderlandinternational" ||
@@ -277,7 +282,7 @@ useEffect(() => {
           <CitySelector onSelect={selectCity} onDismiss={dismissCityModal} />
         )}
 
-        {isDateSheetAllowedPath && showDateSheet && (
+        {isDateSheetAllowedPath && (
           <DateSelectionBottomSheet
             isOpen={showDateSheet}
             onClose={() => {
@@ -286,13 +291,14 @@ useEffect(() => {
             }}
             onConfirm={(date, apiData) => {
               setDateResolved(true);
-              // Note: yahan setShowDateSheet(false) jaan-boojh kar nahi
-              // bulaya — DateSelectionBottomSheet khud apna reminder
-              // dikhane ke baad onClose() call karke sheet close karega.
+              // Date sheet band hone ke baad DateSelectionBottomSheet khud
+              // city ke hisaab se coupon (Delhi) ya invite (baaki) sheet kholta hai.
             }}
             userId={userId}
             visitorId={visitorId}
             pincode={pincode}
+            city={city} // 👈 new: Delhi -> ₹150 coupon, baaki -> invite
+            whatsappNumber="917338584828" // 👈 apna number daalo
           />
         )}
 

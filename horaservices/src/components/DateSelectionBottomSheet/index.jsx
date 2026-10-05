@@ -6,12 +6,17 @@ import calendarBgimage from "../../assets/calendarBarBgimage.webp";
 import { BASE_URL } from "@/utils/apiconstants";
 import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 import { fetchWithError } from "@/utils/fetchWithError";
+import { useCity } from "@/utils/cityContext"; // 👈 apna sahi path daalo (CityProvider file ka)
+import InviteSheet from "../CouponInvitesheetbottom";
+import CouponBottomSheet from "../Couponbottomsheet";
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
 ];
 const DAY_NAMES = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+
+const NOT_SELECTED = "NOT_SELECTED";
 
 const toISODateOnly = (date) => {
   return new Date(
@@ -61,6 +66,45 @@ const pickExistingEventDate = (events) => {
   return null;
 };
 
+const COUPON_CITIES = ["delhi", "new delhi"];
+
+const normalizeCity = (city) =>
+  String(city || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[-_]+/g, " ")
+    .replace(/\s+/g, " ");
+
+const getOfferType = (city, pincode, couponCities = COUPON_CITIES) => {
+  const c = normalizeCity(city);
+
+  // 1) City mili -> sirf city se decide
+  if (c) {
+    const isCouponCity = couponCities.some((name) => c.includes(name));
+    return isCouponCity ? "coupon" : "invite";
+  }
+
+  // 2) City nahi mili -> pincode fallback
+  return String(pincode || "").startsWith("110") ? "coupon" : "invite";
+};
+
+/* ============================================================
+ * WHATSAPP MESSAGES
+ * ============================================================ */
+const COUPON_CODE = "HORA150";
+const INVITE_CODE = "INVITE500";
+
+// "15 October 2026"
+const formatEventDate = (date) =>
+  date
+    ? new Date(date).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : "";
+
+
 export default function DateSelectionBottomSheet({
   isOpen,
   onClose,
@@ -68,11 +112,21 @@ export default function DateSelectionBottomSheet({
   userId,
   visitorId,
   pincode,
+  city: cityProp = "", 
+  whatsappNumber = "917338584828", 
   eventTitle = "",
   initialDate = null,
   eventId = null,
 }) {
   useLockBodyScroll(isOpen);
+
+
+  const { selectedCityName, selectedCitySlug } = useCity();
+
+  const resolvedCity =
+    selectedCityName ||
+    (selectedCitySlug && selectedCitySlug !== NOT_SELECTED ? selectedCitySlug : "") ||
+    cityProp;
 
   const today = new Date();
   const [viewMonth, setViewMonth] = useState(today.getMonth());
@@ -83,6 +137,8 @@ export default function DateSelectionBottomSheet({
 
   const [resolvedMode, setResolvedMode] = useState(null);
   const [isCheckingExisting, setIsCheckingExisting] = useState(false);
+  const [offerSheet, setOfferSheet] = useState(null);
+  const [offerDate, setOfferDate] = useState(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -135,7 +191,27 @@ export default function DateSelectionBottomSheet({
     };
   }, [isOpen, userId, visitorId]);
 
-  if (!isOpen) return null;
+ 
+  const offerSheets = (
+    <>
+      <CouponBottomSheet
+        open={offerSheet === "coupon"}
+        onClose={() => setOfferSheet(null)}
+        amount={150}
+        code={COUPON_CODE}
+        whatsappNumber={whatsappNumber}
+        eventDate={formatEventDate(offerDate)}
+      />
+      <InviteSheet
+        open={offerSheet === "invite"}
+        onClose={() => setOfferSheet(null)}
+        whatsappNumber={whatsappNumber}
+        eventDate={formatEventDate(offerDate)}
+      />
+    </>
+  );
+
+  if (!isOpen) return offerSheets;
 
   const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const isPastDate = (day) => {
@@ -217,13 +293,12 @@ export default function DateSelectionBottomSheet({
 
       const data = await res.json();
 
-      // Is component ka kaam sirf date save karna hai. Reminder-popup
-      // dikhana ab poori tarah parent (jaise EventDateBanner ya
-      // PageLayout) ki zimmedari hai — wahi apna isOpen/showDateSheet
-      // state control karte hain, isliye reminder wahin trigger hona
-      // chahiye, taaki kisi bhi entry-point se sheet band ho jaane ka
-      // race condition reminder ko na roke.
-      if (onConfirm) onConfirm(selectedDate, data);
+       if (onConfirm) onConfirm(selectedDate, data);
+
+      // Delhi -> ₹150 coupon sheet, baaki cities -> invite sheet
+      setOfferDate(selectedDate);
+      setOfferSheet(getOfferType(resolvedCity, pincode));
+
       onClose();
     } catch (err) {
       setError(err.message || "Something went wrong saving this date.");
@@ -257,108 +332,105 @@ export default function DateSelectionBottomSheet({
   const displayDate = `${weekdayPart} , ${rest.join(", ")}`;
 
   return (
-    <div className="dsb-device">
-      <div className="dsb-overlay" onClick={onClose} />
+    <>
+      <div className="dsb-device">
+        <div className="dsb-overlay" onClick={onClose} />        <div className="dsb-sheet-wrapper">
+          <button className="dsb-close-btn" onClick={onClose} aria-label="Close">
+            <X size={16} strokeWidth={2.4} color="#1a1a1a" />
+          </button>
 
-      {/* ✅ CHANGE 1: naya wrapper daala jiska overflow visible hai,
-          close button ab isi wrapper ke andar hai — .dsb-sheet ke andar
-          nahi, warna sheet ka apna overflow-y:auto button ko bahar
-          se clip/hide kar deta tha (real device par isiliye X nahi
-          dikh raha tha) */}
-      <div className="dsb-sheet-wrapper">
-        <button className="dsb-close-btn" onClick={onClose} aria-label="Close">
-          <X size={16} strokeWidth={2.4} color="#1a1a1a" />
-        </button>
+          <div className="dsb-sheet">
+            <div className="dsb-header">
+              <Image
+                src={calendarBgimage}
+                alt=""
+                fill
+                sizes="(max-width: 500px) 100vw, 500px"
+                className="dsb-header-bg"
+                style={{ objectFit: "cover" }}
+                priority
+                placeholder="blur"
+              />
+              <div className="dsb-header-text">
+                <h1>Select Event Date</h1>
+                <p className="dsb-subtitle">
+                  Choose the date of your event to check availability.
+                </p>
+              </div>
+            </div>
 
-        <div className="dsb-sheet">
-        <div className="dsb-header">
-          <Image
-            src={calendarBgimage}
-            alt=""
-            fill
-            sizes="(max-width: 500px) 100vw, 500px"
-            className="dsb-header-bg"
-            style={{ objectFit: "cover" }}
-            priority
-            placeholder="blur"
-          />
-          <div className="dsb-header-text">
-            <h1>Select Event Date</h1>
-            <p className="dsb-subtitle">
-              Choose the date of your event to check availability.
-            </p>
-          </div>
-        </div>
-
-        <div className="dsb-calendar-card">
-          <div className="dsb-month-nav">
-            <button
-              className="dsb-nav-btn"
-              onClick={handlePrevMonth}
-              aria-label="Previous month"
-              disabled={isPrevMonthDisabled}
-              style={isPrevMonthDisabled ? { opacity: 0.3, cursor: "not-allowed" } : undefined}
-            >
-              <ChevronLeft size={20} strokeWidth={2.4} />
-            </button>
-            <span className="dsb-month-label">{MONTH_NAMES[viewMonth].toUpperCase()}</span>
-            <button className="dsb-nav-btn" onClick={handleNextMonth} aria-label="Next month">
-              <ChevronRight size={20} strokeWidth={2.4} />
-            </button>
-          </div>
-
-          <div className="dsb-day-names">
-            {DAY_NAMES.map((d) => (
-              <span key={d} className="dsb-day-name">{d}</span>
-            ))}
-          </div>
-
-          <div className="dsb-days-grid" style={{ "--total-rows": totalRows }}>
-            {calendarCells.map((day, idx) =>
-              day === null ? (
-                <span key={`empty-${idx}`} className="dsb-day-cell dsb-day-empty" />
-              ) : (
+            <div className="dsb-calendar-card">
+              <div className="dsb-month-nav">
                 <button
-                  key={day}
-                  className={`dsb-day-cell ${isSelected(day) ? "dsb-day-selected" : ""} ${
-                    isPastDate(day) ? "dsb-day-disabled" : ""
-                  }`}
-                  onClick={() => handleDateClick(day)}
-                  disabled={isPastDate(day)}
+                  className="dsb-nav-btn"
+                  onClick={handlePrevMonth}
+                  aria-label="Previous month"
+                  disabled={isPrevMonthDisabled}
+                  style={isPrevMonthDisabled ? { opacity: 0.3, cursor: "not-allowed" } : undefined}
                 >
-                  {day}
+                  <ChevronLeft size={20} strokeWidth={2.4} />
                 </button>
-              )
+                <span className="dsb-month-label">{MONTH_NAMES[viewMonth].toUpperCase()}</span>
+                <button className="dsb-nav-btn" onClick={handleNextMonth} aria-label="Next month">
+                  <ChevronRight size={20} strokeWidth={2.4} />
+                </button>
+              </div>
+
+              <div className="dsb-day-names">
+                {DAY_NAMES.map((d) => (
+                  <span key={d} className="dsb-day-name">{d}</span>
+                ))}
+              </div>
+
+              <div className="dsb-days-grid" style={{ "--total-rows": totalRows }}>
+                {calendarCells.map((day, idx) =>
+                  day === null ? (
+                    <span key={`empty-${idx}`} className="dsb-day-cell dsb-day-empty" />
+                  ) : (
+                    <button
+                      key={day}
+                      className={`dsb-day-cell ${isSelected(day) ? "dsb-day-selected" : ""} ${
+                        isPastDate(day) ? "dsb-day-disabled" : ""
+                      }`}
+                      onClick={() => handleDateClick(day)}
+                      disabled={isPastDate(day)}
+                    >
+                      {day}
+                    </button>
+                  )
+                )}
+              </div>
+            </div>
+
+            {error && <p className="dsb-error">{error}</p>}
+          </div>
+        </div>
+
+        <div className="dsb-footer">
+          <div className="dsb-footer-left">
+            <div className="dsb-footer-icon">
+              <CalendarIcon size={18} strokeWidth={2} color="#7c3aad" />
+            </div>
+            <div>
+              <p className="dsb-footer-label">Selected Date</p>
+              <p className="dsb-footer-date">{displayDate}</p>
+            </div>
+          </div>
+          <button
+            className="dsb-confirm-btn"
+            onClick={handleConfirm}
+            disabled={isSubmitting || isCheckingExisting}
+          >
+            {isSubmitting || isCheckingExisting ? (
+              <Loader2 size={16} className="dsb-spinner" />
+            ) : (
+              "Confirm Date"
             )}
-          </div>
-        </div>
-
-        {error && <p className="dsb-error">{error}</p>}
+          </button>
         </div>
       </div>
 
-      <div className="dsb-footer">
-        <div className="dsb-footer-left">
-          <div className="dsb-footer-icon">
-            <CalendarIcon size={18} strokeWidth={2} color="#7c3aad" />
-          </div>
-          <div>
-            <p className="dsb-footer-label">Selected Date</p>
-            <p className="dsb-footer-date">{displayDate}</p>
-          </div>
-        </div>
-        <button
-          className="dsb-confirm-btn"
-          onClick={handleConfirm}
-          disabled={isSubmitting || isCheckingExisting}
-        >
-          {isSubmitting || isCheckingExisting ? (
-            <Loader2 size={16} className="dsb-spinner" />
-          ) : (
-            "Confirm Date"
-          )}
-        </button>
-      </div>
-    </div>
+      {offerSheets}
+    </>
   );
 }
