@@ -1,5 +1,5 @@
 // import "@/components/Decoration/cityDecorationlanding/cityDecorationlanding.css";
-import '../Decoration/cityDecorationlanding/CityDecorationlanding.css';
+// import '../Decoration/cityDecorationlanding/CityDecorationlanding.css';
 
 
 const PhotographyCityLanding = ({ data }) => {
