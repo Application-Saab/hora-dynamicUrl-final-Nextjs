@@ -11,6 +11,7 @@ import SearchSortBar from "@/components/SearchSortBar";
 import SeoHead from "@/utils/SeoHead";
 import boosterBanner from "@/assets/celebrationboosters.webp";
 import "./celebrationbooster.css";
+import Head from "next/head";
 
 // Ideally move this to utils/apiconstants.js alongside your other endpoints
 // (BASE_URL, GET_DECORATION_CAT_ITEM, etc.) instead of hardcoding it here.
