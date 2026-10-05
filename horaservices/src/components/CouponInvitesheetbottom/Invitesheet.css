@@ -47,11 +47,12 @@
 /* Sheet */
 .ivs-sheet {
   position: relative;
-  max-height: 90vh;
   overflow-y: auto;
   background: #fff;
   border-radius: 22px 22px 0 0;
-  padding: 16px 16px 20px;
+  padding: clamp(12px, 4.07vw, 16px)
+         clamp(12px, 4.07vw, 16px)
+         clamp(15px, 5.09vw, 20px);
   color: var(--ivs-text);
 }
 
@@ -89,7 +90,7 @@
 .ivs-features {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  padding: 8px 4px;
+  padding: clamp(6px, 2.04vw, 8px) 0;
   margin-bottom: 14px;
   background: var(--ivs-purple-soft);
   border-radius: 12px;
@@ -100,7 +101,7 @@
   align-items: center;
   text-align: center;
   gap: 2px;
-  padding: 12px 4px;
+  padding: clamp(9px, 3.05vw, 12px) clamp(1.5px, 0.51vw, 2px);
 }
 /* vertical lines */
 .ivs-feature:not(:nth-child(3n + 1)) { border-left: 0.84px solid var(--ivs-purple); }
@@ -131,7 +132,7 @@
 }
 .ivs-feature b {
   font-weight: 600;
-  font-size: clamp(9.76px, 3.1vw, 12.2px);
+ font-size: clamp(9px, 2.96vw, 11.65px);
   line-height: 1.15;
   color: var(--ivs-purple);
 }

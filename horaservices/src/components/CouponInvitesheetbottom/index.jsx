@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import "./Invitesheet.css";
 import Image from "next/image";
+import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 
 // Banner (Your Celebration Our Priority + invite cards + ₹500)
 import bannerImage from "@/assets/invitebanner.webp";
@@ -33,23 +34,25 @@ const DEFAULT_MESSAGE =
 export default function InviteSheet({
   open,
   onClose,
-  whatsappNumber = "917338584828", 
-  eventDate = "", 
-  message = "", 
+  whatsappNumber = "917338584828",
+  eventDate = "",
+  message = "",
 }) {
   const rootRef = useRef(null);
 
-  // ESC se band + background scroll lock
+  useLockBodyScroll(open);
+
+  useEffect(() => {
+    if (!open) return;
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: "invite_popup_view" });
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => e.key === "Escape" && onClose?.();
     document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
-    };
+    return () => document.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
   // Band hone par Tab focus na jaye
@@ -63,6 +66,10 @@ export default function InviteSheet({
   const handleWhatsApp = () => {
     const finalMessage =
       message || DEFAULT_MESSAGE + (eventDate ? `\nEvent date - ${eventDate}` : "");
+
+    // GTM: WhatsApp click
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: "invite_popup_whatsapp_click" });
 
     window.open(
       `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(finalMessage)}`,

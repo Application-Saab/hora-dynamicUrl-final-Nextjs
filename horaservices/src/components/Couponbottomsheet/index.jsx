@@ -1,12 +1,14 @@
 import { useEffect, useRef } from "react";
 import "./Couponbottomsheet.css";
 import Image from "next/image";
+import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 import couponImage from "@/assets/couponimg.webp";
 import iconFree from "@/assets/Absolutely_Free.svg";
 import iconValid from "@/assets/100_Vaild.svg";
 import iconPremium from "@/assets/Premimum_Quality.svg";
 import iconSupport from "@/assets/Support.svg";
-import iconWhatsapp from "@/assets/whatsapp-icon.png"
+import iconWhatsapp from "@/assets/whatsapp-icon.png";
+
 /**
  * Bottom se open hone wala coupon sheet.
  *
@@ -21,22 +23,25 @@ export default function CouponBottomSheet({
   amount = 150,
   code = "HORA150",
   whatsappNumber = "917338584828",
-  eventDate = "", 
-  message = "", 
+  eventDate = "",
+  message = "",
 }) {
   const rootRef = useRef(null);
 
-  // ESC se band + background scroll lock
+  useLockBodyScroll(open);
+
+  // GTM: popup khulne par
+  useEffect(() => {
+    if (!open) return;
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: "coupon_150_popup_view" });
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => e.key === "Escape" && onClose?.();
     document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
-    };
+    return () => document.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
   // Band hone par andar ke buttons Tab se focus na ho (inert)
@@ -52,6 +57,10 @@ export default function CouponBottomSheet({
       message ||
       `Hi! My event is approaching soon, I need help with the arrangements.\nCoupon Code - ${code}` +
         (eventDate ? `\nEvent date - ${eventDate}` : "");
+
+    // GTM: WhatsApp click
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: "coupon_150_whatsapp_click" });
 
     window.open(
       `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(finalMessage)}`,
