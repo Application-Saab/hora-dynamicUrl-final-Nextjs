@@ -1,4 +1,4 @@
-import "@/components/Decoration/cityDecorationlanding/cityDecorationlanding.css";
+import "../Decoration/cityDecorationlanding.css";
 
 const PhotographyCityLanding = ({ data }) => {
   if (!data) return null;
