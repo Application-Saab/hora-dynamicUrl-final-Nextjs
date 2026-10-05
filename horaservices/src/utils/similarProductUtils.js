@@ -102,13 +102,13 @@ export const getMappedCatValue = (slug) => {
     "kids-birthday-decoration": "KidsBirthday",
     "naming-ceremony-decoration": "NamingCeremony",
     "house-warming-decoration": "HouseWarming",
-    "coorporate-showrooms-decoration": "Coorporateshowrooms",
+    "corporate-showrooms-decoration": "Coorporateshowrooms",
     "car-decoration": "CarDecoration",
     "pet-animals-decoration": "PetAnimalsDecoration",
     "festivals-decoration": "Festivals",
     "engagement-decoration": "Engagementdecoration",
-    "Nation-Pride-decoration": "NationPride",
-    Wedding: "Wedding",
+    "nation-pride-decoration": "NationPride",
+    "wedding": "Wedding",
   };
 
   return map[slug] || slug;
@@ -127,13 +127,13 @@ export const getCategoryNameToSlug = (slug) => {
     KidsBirthday: "kids-birthday-decoration",
     NamingCeremony: "naming-ceremony-decoration",
     HouseWarming: "house-warming-decoration",
-    Coorporateshowrooms: "coorporate-showrooms-decoration",
+    Coorporateshowrooms: "corporate-showrooms-decoration",
     CarDecoration: "car-decoration",
     PetAnimalsDecoration: "pet-animals-decoration",
     Festivals: "festivals-decoration",
     Festivals: "engagement-decoration",
-    NationPride: "Nation-Pride-decoration",
-    Wedding: "Wedding",
+    NationPride: "nation-pride-decoration",
+    Wedding: "wedding",
   };
 
   return map[slug] || slug;

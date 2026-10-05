@@ -93,7 +93,7 @@ export const decCat = [
     "https://horaservices.com/api/uploads/compressed_webp/ShowroomCoorporate.webp",
   name: "Corporate Showroom",
   subCategory: "Coorporateshowrooms",
-  catValue: "coorporate-showrooms-decoration",
+  catValue: "corporate-showrooms-decoration",
   imgAlt:
     "Professional corporate showroom decoration services for product launches, exhibitions, and brand promotions",
 },
@@ -133,7 +133,7 @@ export const decCat = [
       "https://horaservices.com/api/uploads/compressed_webp/NationsPride.webp",
     name: "NationPride",
     subCategory: "NationPride",
-    catValue: "Nation-Pride-decoration",
+    catValue: "nation-pride-decoration",
   imgAlt: "Nation Pride patriotic theme decoration"
   },
 
@@ -150,7 +150,7 @@ export const decCat = [
     image: "",
     name: "Wedding",
     subCategory: "Wedding",
-    catValue: "Wedding", // ✅ must match
+    catValue: "Wedding",
     imgAlt: "Wedding Decor",
   },
 
@@ -183,7 +183,7 @@ export const decCat = [
     Image: "",
     name: "House warming Decoration",
     subCategory: "HouseWarming",
-    catValue: "House-warming-decoration",
+    catValue: "house-warming-decoration",
     imgAlt: "House Warming Decoration",
   },
    {
