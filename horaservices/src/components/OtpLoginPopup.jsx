@@ -20,6 +20,7 @@ import axiosApi from "@/utils/axiosApi";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 import loginLine from "@/assets/loginline.svg";
 import { useCity } from "@/utils/cityContext";
+import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 import { resolveWhatsAppLink, sendWelcomeMessage } from "@/utils/loginWhatsapplogic";
 
 /* ---------------- SMALL INLINE ICONS ---------------- */
@@ -58,6 +59,9 @@ const OtpLogin = ({
   serviceName = "",
   cityName = "",
 }) => {
+  /* Popup khula hai to background page scroll nahi hoga */
+  useLockBodyScroll(true);
+
   const [mobileNumber, setMobileNumber] = useState("");
   const [otp, setOtp] = useState(["", "", "", ""]);
   const pathname = usePathname();
