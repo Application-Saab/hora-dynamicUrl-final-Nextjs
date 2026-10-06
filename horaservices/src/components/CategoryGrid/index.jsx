@@ -4,6 +4,9 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 import "./CategoryGrid.css";
+import Dashes from "@/assets/Decordashes.svg";
+import Heart from "@/assets/Decorheart.svg";
+import DashesSmall from "@/assets/Decordashessmall.svg";
 
 const CategoryGrid = ({ cardsData = [], city = "", locality = "" }) => {
   const pathname = usePathname();
@@ -23,7 +26,7 @@ const CategoryGrid = ({ cardsData = [], city = "", locality = "" }) => {
     return path;
   };
 
-  // Only tracking (navigation ab <a href> se hogi)
+  // Only tracking (navigation <a href> se hogi)
   const handleSliderViewMore = (card) => {
     if (!card?.catValue) return;
 
@@ -42,40 +45,65 @@ const CategoryGrid = ({ cardsData = [], city = "", locality = "" }) => {
   return (
     <div className="CategoryGrid-outer">
       <div className="page-width">
-        <div className="category-grid">
-          {cardsData.map((card, index) => {
-            const href = buildCardPath(card);
+        {/* wrapper = container-type (cqw units isi se bante hain) */}
+        <div className="category-grid-wrap">
+          <div className="category-grid">
+            {cardsData.map((card, index) => {
+              const href = buildCardPath(card);
 
-            return (
-              <a
-                key={index}
-                type="button"
-                href={href}
-                className={`category-grid__card ${card.sizeClass} ${card.extraClass || ""}`}
-                onClick={() => handleSliderViewMore(card)}
-                style={{ cursor: card.catValue ? "pointer" : "default" }}
-              >
-                <div className="category-grid__image-wrapper">
-                  <Image
-                    src={card.image}
-                    alt={card.title}
-                    width={300}
-                    height={200}
-                    style={{ objectFit: "cover", width: "100%", height: "auto" }}
-                  />
-                </div>
+              return (
+                <a
+                  key={index}
+                  href={href}
+                  className={`category-grid__card ${card.sizeClass || ""} ${card.extraClass || ""}`}
+                  onClick={() => handleSliderViewMore(card)}
+                  style={{ cursor: card.catValue ? "pointer" : "default" }}
+                >
+                  <div className="category-grid__image-wrapper">
+                    <Image
+                      src={card.image}
+                      alt={card.title}
+                      fill
+                      sizes="(max-width: 768px) 60vw, 400px"
+                      style={{ objectFit: "cover" }}
+                    />
+                  </div>
 
-                <div className="category-grid__content">
-                  <h3>{card.title}</h3>
-                  {card.subtitle && <p>{card.subtitle}</p>}
+                  <div className="category-grid__content">
+                    {/* decorations */}
+                    <Image
+                      src={Dashes}
+                      alt=""
+                      aria-hidden="true"
+                      unoptimized
+                      className="category-grid__decor category-grid__decor--dash"
+                    />
+                    <Image
+                      src={Heart}
+                      alt=""
+                      aria-hidden="true"
+                      unoptimized
+                      className="category-grid__decor category-grid__decor--heart"
+                    />
+                    <Image
+                      src={DashesSmall}
+                      alt=""
+                      aria-hidden="true"
+                      unoptimized
+                      className="category-grid__decor category-grid__decor--dash-small"
+                    />
 
-                  {card.catValue && (
-                    <span className="category-grid__button">View More</span>
-                  )}
-                </div>
-              </a>
-            );
-          })}
+                    <h3>{card.title}</h3>
+                    {card.subtitle && <p>{card.subtitle}</p>}
+
+                    {card.catValue && (
+                      <span className="category-grid__button">View more →</span>
+                    )}
+                  </div>
+                </a>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

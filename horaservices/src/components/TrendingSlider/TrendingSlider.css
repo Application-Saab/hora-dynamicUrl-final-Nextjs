@@ -1,0 +1,158 @@
+@import url("https://fonts.googleapis.com/css2?family=Lora:wght@600&family=Inter:wght@600&display=swap");
+
+.trend-outer {
+  background: #fdf8ec;
+  padding: 2px 0 10px;
+}
+
+/* container: 1cqw = slider ki width ka 1% */
+.trend-container {
+  container-type: inline-size;
+}
+
+/* --u = 1cqw, bade screen par 6.5px par ruk jaata hai */
+.trend-viewport {
+  --u: min(1cqw, 6.5px);
+  --card-w: calc(var(--u) * 26.2);
+  --img-h: calc(var(--u) * 27);
+  --foot-h: calc(var(--u) * 9);
+  --row-gap: calc(var(--u) * 4.2);
+  --pad: calc(var(--u) * 2.2);
+  --arrow: calc(var(--u) * 8.2);
+
+  position: relative;
+}
+
+/* ---------- Title ---------- */
+.trend-title {
+  margin: 0;
+  padding: calc(var(--u) * 3.2) 0 calc(var(--u) * 1.4);
+  text-align: center;
+  font-family: "Lora", serif;
+  font-weight: 600;
+  font-size: calc(var(--u) * 4.4);
+  line-height: 1.2;
+  color: #5b1a55;
+}
+
+.trend-slider {
+  position: relative;
+}
+
+/* ---------- 2-row horizontal slider ---------- */
+.trend-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(2, auto);
+  grid-auto-columns: var(--card-w);
+  gap: var(--row-gap) calc(var(--u) * 2.7);
+
+  padding: var(--pad) calc(var(--u) * 2.3);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scroll-padding-left: calc(var(--u) * 2.3);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.trend-grid::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------- Card ---------- */
+.trend-card {
+  display: flex;
+  flex-direction: column;
+  width: var(--card-w);
+  border-radius: calc(var(--u) * 2.6);
+  overflow: hidden;
+  background: #fff;
+  text-decoration: none;
+  scroll-snap-align: start;
+  box-shadow: 0 calc(var(--u) * 0.5) calc(var(--u) * 1.8) rgba(0, 0, 0, 0.14);
+}
+
+.trend-card__img {
+  position: relative;
+  width: 100%;
+  height: var(--img-h);
+  overflow: hidden;
+}
+
+.trend-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--u) * 1);
+  height: var(--foot-h);
+  padding: 0 calc(var(--u) * 2) 0 calc(var(--u) * 2.2);
+}
+
+.trend-card__name {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: calc(var(--u) * 2.6);
+  line-height: 1.2;
+  color: #222;
+  text-align: left;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.trend-card__go {
+  flex: none;
+  width: calc(var(--u) * 5);
+  height: calc(var(--u) * 5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #e3c8e0;
+  color: #7a3a73;
+  border: calc(var(--u) * 0.25) solid #c49ac0;
+}
+
+/* ---------- Scroll arrows ---------- */
+.trend-arrow {
+  position: absolute;
+  z-index: 3;
+  width: var(--arrow);
+  height: var(--arrow);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #fff;
+  color: #8b4c84;
+  border: calc(var(--u) * 0.4) solid #8b4c84;
+  box-shadow: 0 calc(var(--u) * 0.4) calc(var(--u) * 1.2) rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.trend-arrow--next {
+  right: calc(var(--u) * 2);
+}
+
+.trend-arrow--prev {
+  left: calc(var(--u) * 2);
+}
+
+.trend-arrow--prev svg {
+  transform: rotate(180deg);
+}
+
+/* arrow ka centre = us row ki image ka centre */
+.trend-arrow--row1 {
+  top: calc(var(--pad) + var(--img-h) / 2 - var(--arrow) / 2);
+}
+
+.trend-arrow--row2 {
+  top: calc(
+    var(--pad) + var(--img-h) + var(--foot-h) + var(--row-gap) + var(--img-h) /
+      2 - var(--arrow) / 2
+  );
+}

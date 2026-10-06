@@ -1,50 +1,124 @@
-/* .small-card-grid-outer {
-  margin-bottom: 10px;
+/* container: andar ka 1cqw = slider ki width ka 1% */
+.small-card-slider {
+  container-type: inline-size;
 }
 
-/* GRID LAYOUT */
+/* --u = 1cqw, lekin bade screen par 6.5px par ruk jaata hai */
+.small-card-viewport {
+  --u: min(1cqw, 6.5px);
+  --card: calc(var(--u) * 26);
+  --name: calc(var(--u) * 5.2);
+  --rg: calc(var(--u) * 2.6);
+  --pad: var(--u);
+  --arrow: calc(var(--u) * 8);
+
+  position: relative;
+}
+
+/* ---------- Slider (2 rows, horizontal scroll) ---------- */
 .small-card-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-auto-flow: column;
+  grid-template-rows: repeat(2, auto);
+  grid-auto-columns: var(--card);
+  gap: var(--rg) calc(var(--u) * 2.4);
 
-  justify-items: center;
+  padding: var(--pad) 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
 
-/* Wrapper */
+.small-card-grid::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------- Item ---------- */
 .small-card-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: var(--card);
+  text-decoration: none;
+  scroll-snap-align: start;
 }
 
-/* Card */
 .small-card {
-  border-radius: 16px;
+  width: var(--card);
+  height: var(--card);
+  border-radius: calc(var(--u) * 4);
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-
-  width: clamp(95px, 28vw, 120px);
-  height: clamp(95px, 28vw, 120px);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 calc(var(--u) * 0.4) calc(var(--u) * 1.2) rgba(0, 0, 0, 0.1);
 
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Image */
-.small-card img {
-  border-radius: 12px;
-  object-fit: cover;
-  width: 85%;
-  height: 85%;
+.small-card__img {
+  position: relative;
+  width: 84%;
+  aspect-ratio: 1;
+  border-radius: calc(var(--u) * 2.6);
+  overflow: hidden;
 }
 
-/* Name */
+/* ---------- Name ---------- */
 .small-card-name {
-  margin-top: 6px;
+  margin: var(--u) 0 0;
+  height: calc(var(--name) - var(--u));
+  line-height: calc(var(--name) - var(--u));
+  font-family: "Inter", sans-serif;
   font-weight: 800;
-  font-size: clamp(11px, 3vw, 13px);
+  font-size: calc(var(--u) * 2.9);
   color: #000;
   text-align: center;
-  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+}
+
+/* ---------- Arrow buttons ---------- */
+.small-card-arrow {
+  position: absolute;
+  z-index: 3;
+  width: var(--arrow);
+  height: var(--arrow);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #fff;
+  color: #8b4c84;
+  border: calc(var(--u) * 0.4) solid #8b4c84;
+  box-shadow: 0 calc(var(--u) * 0.4) calc(var(--u) * 1.2) rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.small-card-arrow--next {
+  right: calc(var(--u) * 1.2);
+}
+
+.small-card-arrow--prev {
+  left: calc(var(--u) * 1.2);
+}
+
+.small-card-arrow--prev svg {
+  transform: rotate(180deg);
+}
+
+/* arrow ka centre = card ka centre */
+.small-card-arrow--row1 {
+  top: calc(var(--pad) + var(--card) / 2 - var(--arrow) / 2);
+}
+
+.small-card-arrow--row2 {
+  top: calc(
+    var(--pad) + var(--card) + var(--name) + var(--rg) + var(--card) / 2 -
+      var(--arrow) / 2
+  );
 }
