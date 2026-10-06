@@ -19,87 +19,8 @@ import ArrowImgback from "@/assets/arrow.svg";
 import axiosApi from "@/utils/axiosApi";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 import loginLine from "@/assets/loginline.svg";
-import cityNameToSlug from "../utils/Citynametoslug.json";
 import { useCity } from "@/utils/cityContext";
-
-/* WhatsApp booking number (country code ke sath, bina + ke) */
-const WHATSAPP_BOOKING_NUMBER = "917338584828";
-const getWhatsAppBookingLink = (serviceName, cityName) => {
-  const service = serviceName ? ` for ${serviceName}` : "";
-  const city = cityName ? ` in ${cityName}` : "";
-  const text = `Hi, give me offline booking support${service}${city}.`;
-
-  return `https://wa.me/${WHATSAPP_BOOKING_NUMBER}?text=${encodeURIComponent(text)}`;
-};
-
-/* "kids-birthday-decoration" -> "kids birthday decoration" */
-const slugToText = (slug = "") =>
-  decodeURIComponent(slug).replace(/[-_+]+/g, " ").trim();
-
-/* "bangalore" -> "Bangalore" (JSON se naam, nahi mila to capitalize) */
-const slugToCityName = (slug = "") => {
-  if (!slug) return "";
-  const found = Object.entries(cityNameToSlug).find(
-    ([, value]) => String(value).toLowerCase() === slug.toLowerCase(),
-  );
-  const name = found ? found[0] : slug;
-  return name.charAt(0).toUpperCase() + name.slice(1);
-};
-
-/* Checkout route ke hisaab se readable naam (agar URL me category na ho)
-   key = pathname se "-checkout" hataya hua, e.g. /book-chef-checkout -> "book-chef" */
-const CHECKOUT_SERVICE_LABELS = {
-  "book-chef": "chef booking",
-  "party-food-delivery-live-catering-buffet": "party food delivery",
-  photography: "photography",
-};
-
-/* Checkout URL se service + city nikalta hai
-   Decoration:  from=/bangalore/balloon-decoration/kids-birthday-decoration/product/...  (catValue bhi aata hai)
-   Photography: from=/bangalore/photography-page/baby-shower-photography/product/...     (catValue nahi aata)
-   Food:        selectedDeliveryOption=party-food-delivery
-   Chef:        sirf pathname (/book-chef-checkout) */
-const getBookingContext = (searchParams, pathname = "") => {
-  const from = searchParams?.get("from") || "";
-  const pathParts = from.split("/").filter(Boolean);
-
-  const citySlug = pathParts[0] || "";
-  const isKnownCity = Object.values(cityNameToSlug)
-    .map((v) => String(v).toLowerCase())
-    .includes(citySlug.toLowerCase());
-
-  /* from path: /city/section/category/product/name -> category 3rd segment hai */
-  const categoryFromPath =
-    pathParts[2] && pathParts[2].toLowerCase() !== "product" ? pathParts[2] : "";
-
-  /* Pathname se: /book-chef-checkout -> "book-chef" -> label */
-  const routeKey = (pathname || "")
-    .replace(/^\/+|\/+$/g, "")
-    .replace(/-checkout$/i, "")
-    .toLowerCase();
-  const routeLabel =
-    CHECKOUT_SERVICE_LABELS[routeKey] ||
-    (routeKey && routeKey !== "checkout" ? routeKey : "");
-
-  /* Pehla meaningful (non-empty, sirf number nahi) value lo.
-     orderType me kabhi "2" jaisa number aata hai, isliye wo skip hota hai. */
-  const candidates = [
-    searchParams?.get("catValue"),
-    categoryFromPath,
-    searchParams?.get("subCategory"),
-    searchParams?.get("selectedDeliveryOption"),
-    searchParams?.get("selectedOption"),
-    routeLabel,
-    searchParams?.get("orderType"),
-  ];
-  const service =
-    candidates.find((v) => v && !/^\d+$/.test(String(v).trim())) || "";
-
-  return {
-    service: slugToText(service),
-    city: isKnownCity ? slugToCityName(citySlug) : "",
-  };
-};
+import { resolveWhatsAppLink, sendWelcomeMessage } from "@/utils/loginWhatsapplogic";
 
 /* ---------------- SMALL INLINE ICONS ---------------- */
 const WhatsAppIcon = () => (
@@ -157,15 +78,17 @@ const OtpLogin = ({
   /* WhatsApp button sirf checkout page par dikhega */
   const isCheckoutPage = pathname?.includes("checkout") || fromCheckout;
 
-  /* Dynamic WhatsApp link (service + city ke saath) */
+  /* Dynamic WhatsApp link (service + city ke saath)
+     City: prop -> URL -> header me selected city (food checkout me URL me city nahi hoti) */
   const searchParams = useSearchParams();
-  const bookingContext = getBookingContext(searchParams, pathname);
-  /* City: prop -> URL -> header me selected city (food checkout me URL me city nahi hoti) */
   const cityCtx = useCity();
-  const whatsappLink = getWhatsAppBookingLink(
-    serviceName || bookingContext.service,
-    cityName || bookingContext.city || cityCtx?.selectedCityName || "",
-  );
+  const whatsappLink = resolveWhatsAppLink({
+    serviceName,
+    cityName,
+    searchParams,
+    pathname,
+    selectedCityName: cityCtx?.selectedCityName,
+  });
 
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
@@ -182,57 +105,6 @@ const OtpLogin = ({
     if (/^\d{0,10}$/.test(value)) {
       setMobileNumber(value);
       setError("");
-    }
-  };
-
-  /* ---------------- WHATSAPP WELCOME MESSAGE ----------------
-     NOTE: API key frontend me nahi honi chahiye. Best: is call ko
-     backend me move karo. Tab tak key .env.local se aayegi:
-     NEXT_PUBLIC_DOUBLETICK_KEY=your_new_key
-     (purani key rotate kar do, wo code me expose ho chuki hai)
-  ------------------------------------------------------------ */
-  const sendWelcomeMessage = async (mobile) => {
-    const formatted = mobile.startsWith("+91") ? mobile : "+91" + mobile;
-
-    try {
-      await axiosApi.post(
-        "https://public.doubletick.io/whatsapp/message/template",
-        {
-          messages: [
-            {
-              from: "+917338584828",
-              to: formatted,
-              content: {
-                templateName: "happy_to_help_v4",
-                language: "en",
-                templateData: {
-                  header: {
-                    type: "IMAGE",
-                    mediaUrl:
-                      "https://quickscale-template-media.s3.ap-south-1.amazonaws.com/org_FGdNfMoTi9/2a2f1b0c-63e0-4c3e-a0fb-7ba269f23014.jpeg",
-                  },
-                  body: { placeholders: ["Hora Services"] },
-                  buttons: [
-                    {
-                      type: "URL",
-                      parameter: "https://horaservices.com/",
-                    },
-                  ],
-                },
-              },
-            },
-          ],
-        },
-        {
-          headers: {
-            accept: "application/json",
-            "content-type": "application/json",
-            Authorization: process.env.NEXT_PUBLIC_DOUBLETICK_KEY,
-          },
-        },
-      );
-    } catch (err) {
-      console.error("WhatsApp error", err);
     }
   };
 
@@ -514,11 +386,18 @@ const OtpLogin = ({
               </h1>
 
               <p className="login-subtitle">
-                {isOtpSent
-                  ? "Check your phone we have sent you an OTP"
-                  : isCheckoutPage
-                    ? "Login with your mobile number or choose WhatsApp booking for quick support."
-                    : "Login with your mobile number"}
+                {isOtpSent ? (
+                  <>
+                    Check your phone we have sent you an OTP to{" "}
+                    <span className="login-subtitle__number">
+                      (+91) {maskedNumber}
+                    </span>
+                  </>
+                ) : isCheckoutPage ? (
+                  "Login with your mobile number or choose WhatsApp booking for quick support."
+                ) : (
+                  "Login with your mobile number"
+                )}
               </p>
             </div>
 
@@ -591,10 +470,6 @@ const OtpLogin = ({
             {/* OTP SCREEN */}
             {isOtpSent && (
               <>
-                <p className="verify-text">
-                  <span>(+91) {maskedNumber}</span>
-                </p>
-
                 <div
                   className={`otp-box-wrapper ${otpError ? "otp-error" : ""}`}
                 >
@@ -706,7 +581,6 @@ const OtpLogin = ({
                   className="btn-arrow-img"
                 />
               </button>
-
             </div>
           </div>
         )}
