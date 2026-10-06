@@ -18,7 +18,7 @@ export const CATEGORIES_CONFIG = [
   },
   {
     label: "Chef for Party",
-    href: "/book-chef-cook-for-party",
+    href: "/chef-near-me",
     type: "link"
   },
   {

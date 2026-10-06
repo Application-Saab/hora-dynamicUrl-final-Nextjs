@@ -14,6 +14,7 @@ const categoryTitleMap = {
   "anniversary-decoration": "Anniversary Decoration",
   "first-night-decoration": "First Night Decoration",
   "haldi-mehendi-decoration": "Haldi Mehendi Decoration",
+  "wedding-decoration": "Wedding Decoration",
   "wedding": "Wedding Decoration",
   "bachelorette-decoration": "Bachelorette Decoration",
   "naming-ceremony-decoration": "Naming Ceremony Decoration",
@@ -24,6 +25,9 @@ const categoryTitleMap = {
   "car-decoration": "Car Decoration",
   "pet-animals-decoration": "Pet & Animal Decoration",
   "engagement-decoration": "Engagement Decoration",
+  "reception-decoration": "Reception Decoration",
+  "sangeet-decoration": "Sangeet Decoration",
+  "mandap-decoration": "Mandap Decoration",
 };
 
 

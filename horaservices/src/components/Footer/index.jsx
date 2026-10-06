@@ -25,7 +25,7 @@ const footerColumns = [
   {
     title: 'Services',
     links: [
-      { text: 'Chef for Party and Occasions', href: '/book-chef-cook-for-party' },
+      { text: 'Chef for Party and Occasions', href: '/chef-near-me' },
       { text: 'Decorations for Party and Occasions', href: '/balloon-decoration' },
       { text: 'Photography for Party and Occasions', href: '/photography' },
       { text: 'Food Delivery for Party and Occasions', href: '/party-food-delivery-live-catering-buffet/party-food-delivery' },
@@ -48,14 +48,14 @@ const footerColumns = [
   {
     title: 'Chef',
     links: [
-      { text: 'Delhi', to: '/delhi/book-chef-cook-for-party', city: 'Delhi' },
-      { text: 'Gurugram', to: '/gurugram/book-chef-cook-for-party', city: 'Gurugram' },
-      { text: 'Ghaziabad', to: '/ghaziabad/book-chef-cook-for-party', city: 'Ghaziabad' },
-      { text: 'Faridabad', to: '/faridabad/book-chef-cook-for-party', city: 'Faridabad' },
-      { text: 'Noida', to: '/noida/book-chef-cook-for-party', city: 'Noida' },
-      { text: 'Bangalore', to: '/bangalore/book-chef-cook-for-party', city: 'Bangalore' },
-      { text: 'Hyderabad', to: '/hyderabad/book-chef-cook-for-party', city: 'Hyderabad' },
-      { text: 'Mumbai', to: '/mumbai/book-chef-cook-for-party', city: 'Mumbai' },
+      { text: 'Delhi', to: '/delhi/chef-near-me', city: 'Delhi' },
+      { text: 'Gurugram', to: '/gurugram/chef-near-me', city: 'Gurugram' },
+      { text: 'Ghaziabad', to: '/ghaziabad/chef-near-me', city: 'Ghaziabad' },
+      { text: 'Faridabad', to: '/faridabad/chef-near-me', city: 'Faridabad' },
+      { text: 'Noida', to: '/noida/chef-near-me', city: 'Noida' },
+      { text: 'Bangalore', to: '/bangalore/chef-near-me', city: 'Bangalore' },
+      { text: 'Hyderabad', to: '/hyderabad/chef-near-me', city: 'Hyderabad' },
+      { text: 'Mumbai', to: '/mumbai/chef-near-me', city: 'Mumbai' },
     ],
   },
   {

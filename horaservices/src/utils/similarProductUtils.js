@@ -107,8 +107,11 @@ export const getMappedCatValue = (slug) => {
     "pet-animals-decoration": "PetAnimalsDecoration",
     "festivals-decoration": "Festivals",
     "engagement-decoration": "Engagementdecoration",
+    "reception-decoration": "ReceptionDecoration",
+    "sangeet-decoration": "SangeetDecoration",
+    "mandap-decoration": "MandapDecoration",
     "nation-pride-decoration": "NationPride",
-    "wedding": "Wedding",
+    "wedding-decoration": "Wedding",
   };
 
   return map[slug] || slug;
@@ -131,9 +134,13 @@ export const getCategoryNameToSlug = (slug) => {
     CarDecoration: "car-decoration",
     PetAnimalsDecoration: "pet-animals-decoration",
     Festivals: "festivals-decoration",
-    Festivals: "engagement-decoration",
+    Engagementdecoration: "engagement-decoration",
     NationPride: "nation-pride-decoration",
-    Wedding: "wedding",
+    Wedding: "wedding-decoration",
+    // Wedding: "wedding",
+    ReceptionDecoration: "reception-decoration",
+    SangeetDecoration: "sangeet-decoration",
+    MandapDecoration: "mandap-decoration",
   };
 
   return map[slug] || slug;

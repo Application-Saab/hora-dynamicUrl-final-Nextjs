@@ -36,6 +36,10 @@ faqData:anniversaryDecorationFAQData,
   "wedding":{
     description:weddingDecorationDescription,
     faqData:weddingDecorationFAQData,
+  },
+  "wedding-decoration":{
+    description:weddingDecorationDescription,
+    faqData:weddingDecorationFAQData,
   }
 };
 

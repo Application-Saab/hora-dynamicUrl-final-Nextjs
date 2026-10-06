@@ -43,6 +43,15 @@ export function getSubCategory(catValue) {
   if (catValue === "engagement-decoration") {
     return "Engagementdecoration";
   }
+  if (catValue === "reception-decoration") {
+    return "ReceptionDecoration";
+  }
+  if (catValue === "sangeet-decoration") {
+    return "SangeetDecoration";
+  }
+  if (catValue === "mandap-decoration") {
+    return "MandapDecoration";
+  }
 
   const parts = catValue.split("-");
   return parts

@@ -186,54 +186,29 @@ export async function getServerSideProps(context) {
   };
 }
 
-const SkeletonLoader = () => (
-  <div
-    className="skeleton-loader"
-    style={{ maxWidth: "1200px", margin: "0 auto", backgroundColor: "white" }}
-  >
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "flex-start",
-        paddingTop: 20,
-        paddingBottom: 20,
-      }}
-      className="decDetails"
-    >
-      <div
-        style={{ width: "50%", textAlign: "center" }}
-        className="decDetailsLeft"
-      >
-        <div
-          style={{
-            width: "80%",
-            height: 300,
-            backgroundColor: "#f0f0f0",
-            margin: "0 auto",
-          }}
-        />
-      </div>
-      <div
-        style={{ width: "50%", paddingLeft: 20, paddingRight: 50 }}
-        className="decDetailsRight"
-      >
-        {[60, 40, 80, 60, 60, 60, 60, 100, 100].map((w, i) => (
-          <div
-            key={i}
-            style={{
-              height: i % 2 ? 30 : 20,
-              backgroundColor: "#f0f0f0",
-              marginBottom: 12,
-              width: `${w}%`,
-              borderRadius: 4,
-            }}
-          />
-        ))}
+const SkeletonLoader = () => {
+  return (
+    <div className="skeleton-loader" style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start", paddingTop: "20px", paddingBottom: "20px", position: "relative" }} className="decDetails">
+        <div style={{ width: "50%", textAlign: "center" }} className="decDetailsLeft">
+          <div style={{ width: "80%", height: "300px", backgroundColor: "#f0f0f0", margin: "0 auto", position: "relative" }} />
+        </div>
+        <div style={{ width: "50%", paddingLeft: "20px", paddingRight: "50px" }} className="decDetailsRight">
+          <div style={{ height: "20px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
+          <div style={{ height: "30px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "40%", borderRadius: "4px" }} className="decDetailsRightInner" />
+          <div style={{ height: "20px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "80%", borderRadius: "4px" }} className="decDetailsRightInner" />
+          <div style={{ height: "30px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
+          <div style={{ height: "20px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
+          <div style={{ height: "50px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
+          <div style={{ height: "20px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
+          <div style={{ height: "50px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
+          <div style={{ height: "50px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "100%", borderRadius: "4px" }} className="decDetailsRightInner" />
+          <div style={{ height: "50px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "100%", borderRadius: "4px" }} className="decDetailsRightInner" />
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // ---------- Page ----------
 const ProductDetails = ({
@@ -256,6 +231,7 @@ const ProductDetails = ({
 
   const [work, setWork] = useState(initialWork);
   const [loading, setLoading] = useState(!initialWork);
+  console.log('%c [ loading ]', 'font-size:13px; background:pink; color:#bf2c9f;', loading)
   const [similarProducts, setSimilarProducts] = useState(initialSimilar || []);
   const [addonData, setAddonData] = useState(initialAddons || []);
   const [addonIds, setAddonIds] = useState(initialWork?.addons || []);
@@ -328,7 +304,11 @@ const ProductDetails = ({
           `${BASE_URL}/api/photography/details/${productId}`,
         );
         const data = res.data?.data;
-        if (!data) throw new Error("No product found");
+        if (!data){
+          setLoading(false);
+          setWork(null);
+          throw new Error("No product found");
+        }
 
         setAddonIds(data?.addons || []);
         setThemeIds(data?.ThemesId || []);
@@ -354,6 +334,7 @@ const ProductDetails = ({
           );
         } else {
           setSimilarProducts([]);
+          setLoading(false);
         }
         if (tagId) {
           try {
@@ -365,9 +346,12 @@ const ProductDetails = ({
             console.error("SSR categoryResp:", e.message);
             setCategoryData(null);
           }
+        }else {
+          setLoading(false);
         }
       } catch (error) {
         console.error(error);
+        setLoading(false);
         setWork(null);
       } finally {
         setLoading(false);
@@ -607,8 +591,16 @@ const ProductDetails = ({
     }
   };
 
+  // if (!work) return <div className="photodetails-loading">Work not found</div>;
+    if (!work) {
+    return (
+      <div style={{ maxWidth: 1200, margin: "40px auto", textAlign: "center" }}>
+        <h1>Product not found</h1>
+        <p>This design is not found. Please try another design.</p>
+      </div>
+    );
+  }
   if (loading && !work) return <SkeletonLoader />;
-  if (!work) return <div className="photodetails-loading">Work not found</div>;
 
   return (
     <>

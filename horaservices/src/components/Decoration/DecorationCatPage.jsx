@@ -482,7 +482,7 @@ const DecorationCatPage = ({
   const normalizedCat = normalizeCatValue(catValue);
 
   const shouldHideBanner = (name) => {
-    const hideFor = ["wedding", "haldi-mehendi-decoration"];
+    const hideFor = ["wedding", "wedding-decoration", "haldi-mehendi-decoration"];
     return (
       hideFor.includes(normalizedCat) &&
       ["makeItMemorable", "DidyouKnow", "makeitmemorablebanner"].includes(name)
