@@ -11,6 +11,7 @@ export const DIRECT_ROUTES = [
   "/party-food-delivery-live-catering-buffet",
   "/photography",
   "/venue-list",
+  "photographer-profile",
 ];
 
 export const CITY_ROUTES = [
