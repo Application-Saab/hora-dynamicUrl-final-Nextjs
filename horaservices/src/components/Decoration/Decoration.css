@@ -313,26 +313,29 @@
 
 .wed-sec__eyebrow {
   margin: 0;
-  font-weight: 600;
-  font-size: 2.7cqw;
-  letter-spacing: 0.2em;
+color: #D79333;
+font-family: Inter, sans-serif;
+font-weight: 600;
+font-style: normal;
+font-size: clamp(8.6px, 2.54vw, 10px);
+line-height: clamp(6.74px, 1.99vw, 7.84px);
   text-transform: uppercase;
-  color: #c8933c;
 }
 
 .wed-sec__title {
   margin: 0.4cqw 0 0;
-  font-family: "Playfair Display", serif;
-  font-weight: 700;
-  font-size: 6.6cqw;
-  line-height: 1.15;
-  color: #5b1a55;
+ color: #5E3369;
+font-family: "Abhaya Libre", serif;
+font-weight: 700;
+font-size: clamp(25.7px, 7.63vw, 30px);
 }
 
 .wed-sec__subtitle {
-  margin: 1.4cqw 0 0;
-  font-size: 3cqw;
-  color: #777;
+  margin: clamp(4.3px, 1.27vw, 5px) 0 0;
+  font-family: Inter, sans-serif;
+font-weight: 400;
+font-size: clamp(9.43px, 2.8vw, 11px);
+color: #8A8785;
 }
 
 /* container: andar ke cqw is section ki width se bante hain */

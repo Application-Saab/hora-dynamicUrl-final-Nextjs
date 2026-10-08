@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import smallcardBackground from "@/assets/small-cardBackground.png";
+import smallcardBackground from "@/assets/small-cardBackground.webp";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 import "./SmallCardGrid.css";
 
@@ -91,7 +91,6 @@ const SmallCardGrid = ({ city = "", locality = "", decCat = [], categories = [] 
 
   return (
     <div className="small-card-grid-outer">
-      <div className="page-width">
         <div className="small-card-slider">
           <div className="small-card-viewport">
             <div
@@ -152,7 +151,6 @@ const SmallCardGrid = ({ city = "", locality = "", decCat = [], categories = [] 
               </span>
             ))}
           </div>
-        </div>
       </div>
     </div>
   );

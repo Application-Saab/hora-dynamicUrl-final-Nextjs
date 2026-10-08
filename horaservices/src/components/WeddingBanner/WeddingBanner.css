@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Great+Vibes&family=Inter:wght@300;600&display=swap");
-
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400&display=swap');
 .wed-banner-outer {
-  margin: 10px 0;
+  margin: 0;
 }
 
 /* container: andar ke saare cqw is wrapper ki width se bante hain */
@@ -38,13 +38,14 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(
-    90deg,
-    rgba(74, 36, 72, 0.97) 0%,
-    rgba(74, 36, 72, 0.9) 32%,
-    rgba(74, 36, 72, 0.45) 52%,
-    rgba(74, 36, 72, 0) 70%
-  );
+background: linear-gradient(
+  270deg,
+  rgba(217, 217, 217, 0) 0%,
+  rgba(121, 103, 112, 0.668269) 58.65%,
+  rgba(92, 70, 81, 0.866545) 69.71%,
+  rgba(89, 66, 78, 0.88807) 74.52%,
+  #492F3C 99.52%
+);
 }
 
 /* ---------- Text ---------- */
@@ -55,50 +56,48 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 0 5cqw;
+  padding: 0 clamp(11.15px, 3.31vw, 13px);
   color: #fff;
 }
 
 .wed-banner__title {
   margin: 0;
-  font-family: "Playfair Display", serif;
-  font-weight: 700;
-  font-size: 8.4cqw;
-  line-height: 1.05;
-  color: #fff;
+ font-family: "Baskervville", serif;
+font-weight: 700;
+color: #FFFFFF;
+font-size: clamp(24.84px, 7.37vw, 28.94px);
+line-height: clamp(7.49px, 2.22vw, 8.72px);
   text-shadow: 0 0.3cqw 1cqw rgba(0, 0, 0, 0.25);
 }
 
 .wed-banner__script {
   display: block;
   margin: 0.2cqw 0 2.4cqw 3.6cqw;
-  font-family: "Great Vibes", cursive;
-  font-size: 8.2cqw;
-  line-height: 1;
-  color: #e8c98a;
+color: #F3CA7E;
+font-family: "Dancing Script", cursive;
+font-weight: 400;
+font-size: clamp(26.75px, 7.93vw, 31.16px);
 }
 
 .wed-banner__count {
   margin: 0 0 1.8cqw;
-  font-family: "Inter", sans-serif;
-  font-weight: 300;
-  font-size: 4cqw;
-  line-height: 1.1;
-  color: #fff;
+font-family: "Poppins", sans-serif;
+font-weight: 400;
+font-size: clamp(14.34px, 4.25vw, 16.69px);
   white-space: nowrap;
 }
 
 .wed-banner__count b {
   font-weight: 600;
-  color: #e8c98a;
 }
 
 .wed-banner__tagline {
   margin: 0;
   max-width: 38cqw;
-  font-family: "Inter", sans-serif;
-  font-weight: 600;
-  font-size: 2.8cqw;
-  line-height: 1.3;
+  font-family: Inter, sans-serif;
+font-weight: 600;
+font-style: normal;
+font-size: clamp(9.56px, 2.84vw, 11.13px);
+line-height: clamp(10.92px, 3.23vw, 12.7px);
   color: #fff;
 }

@@ -512,7 +512,7 @@ const weddingCollections = [
 />
 
       <DecorSlider
-        title="Big Celebration"
+        title="Premium Birthday Decorations"
         catValue="premium-decoration"
         viewAllLink={`/${categorySlug}/premium-decoration`}
         data={PremiumData}

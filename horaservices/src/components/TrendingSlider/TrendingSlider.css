@@ -26,13 +26,12 @@
 /* ---------- Title ---------- */
 .trend-title {
   margin: 0;
-  padding: calc(var(--u) * 3.2) 0 calc(var(--u) * 1.4);
+padding: clamp(9.43px, 2.8vw, 11px) 0px ;
   text-align: center;
-  font-family: "Lora", serif;
-  font-weight: 600;
-  font-size: calc(var(--u) * 4.4);
-  line-height: 1.2;
-  color: #5b1a55;
+color: #5E3369;
+font-family: "Abhaya Libre", serif;
+font-weight: 700;
+font-size: clamp(15.45px, 4.58vw, 18px);
 }
 
 .trend-slider {
@@ -47,7 +46,7 @@
   grid-auto-columns: var(--card-w);
   gap: var(--row-gap) calc(var(--u) * 2.7);
 
-  padding: var(--pad) calc(var(--u) * 2.3);
+ padding: 0 0 0 clamp(8.6px, 2.54vw, 10px);
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scroll-snap-type: x proximity;
@@ -67,10 +66,11 @@
   width: var(--card-w);
   border-radius: calc(var(--u) * 2.6);
   overflow: hidden;
-  background: #fff;
+  background: #FEFAF4;
   text-decoration: none;
   scroll-snap-align: start;
-  box-shadow: 0 calc(var(--u) * 0.5) calc(var(--u) * 1.8) rgba(0, 0, 0, 0.14);
+  box-shadow: 0px 2.59px 2.59px 0px #F6EADC;
+
 }
 
 .trend-card__img {

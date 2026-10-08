@@ -92,7 +92,6 @@ const TrendingSlider = ({
 
   return (
     <section className="trend-outer">
-      <div className="page-width">
         <div className="trend-container">
           <div className="trend-viewport">
             <h2 className="trend-title">{title}</h2>
@@ -156,7 +155,6 @@ const TrendingSlider = ({
               ))}
             </div>
           </div>
-        </div>
       </div>
     </section>
   );

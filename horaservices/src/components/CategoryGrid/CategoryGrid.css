@@ -83,20 +83,21 @@
   justify-content: center;
   min-height: 2.3em; /* 1 ya 2 line, dono mein height same */
   margin: 0 0 1.2cqw;
-  font-family: "Roboto Slab", serif;
-  font-weight: 700;
-  font-size: 3.7cqw;
-  line-height: 1.15;
-  color: #5b1a55;
+ color: #571B51;
+font-family: "Roboto Slab", serif;
+font-weight: 900;
+font-size: clamp(11.8px, 3.49vw, 13.73px);
+text-align: center;
   text-wrap: balance;
 }
 
 .category-grid__content p {
   margin: -0.4cqw 0 2.4cqw;
-  font-family: "Roboto Slab", serif;
-  font-weight: 400;
-  font-size: 3.5cqw;
-  line-height: 1.2;
+color: #000000B2;
+font-family: "Roboto Slab", serif;
+font-weight: 400;
+font-size: clamp(11.18px, 3.31vw, 13px);
+line-height: clamp(23.08px, 6.83vw, 26.85px);
   text-transform: uppercase;
   color: #555;
   white-space: nowrap;
@@ -129,7 +130,7 @@
 }
 
 .category-grid__card--tall .category-grid__content h3 {
-  font-size: 6cqw;
+ font-size: clamp(19px, 5.6vw, 22px);
   margin: 0 0 1.2cqw;
 }
 
