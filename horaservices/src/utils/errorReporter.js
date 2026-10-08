@@ -103,14 +103,15 @@ const buildPayload = (error, errorInfo = {}, context = {}) => {
 export const reportError = async (error, errorInfo = {}, context = {}) => {
   try {
     const payload = buildPayload(error, errorInfo, context);
+    console.log('%c [ context ]', 'font-size:13px; background:pink; color:#bf2c9f;', context)
 
     // Try Beacon first
-    const beaconSent = sendWithBeacon(payload);
+    // const beaconSent = sendWithBeacon(payload);
 
     // If beacon failed or isn't supported, fall back to fetch
-    if (!beaconSent) {
+    // if (!beaconSent) {
       await sendWithFetch(payload);
-    }
+    // }
   } catch (e) {
     console.error("Failed to report error:", e);
   }
