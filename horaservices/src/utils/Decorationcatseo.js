@@ -25,6 +25,10 @@ const defaultCategorySeo = {
    "wedding":{
      title:"Wedding Decoration for Every Function | HORA Services",
      description:"Book wedding decoration with HORA, one partner coordinating every function, from haldi, mehndi and the mandap to the stage, entrance, lighting and reception. Home to banquet, in 8 cities."
+   },
+   "wedding-decoration":{
+     title:"Wedding Decoration for Every Function | HORA Services",
+     description:"Book wedding decoration with HORA, one partner coordinating every function, from haldi, mehndi and the mandap to the stage, entrance, lighting and reception. Home to banquet, in 8 cities."
    }
  };
 

@@ -35,7 +35,7 @@ export const planningCategories = [
     title: "Chef for Party",
     subtitle: "Hire expert chefs for your special menu",
     image: chefImg,
-    path: "/book-chef-cook-for-party",
+    path: "/chef-near-me",
   },
   {
     title: "Food Catering",

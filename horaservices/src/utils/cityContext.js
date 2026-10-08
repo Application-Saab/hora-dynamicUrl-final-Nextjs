@@ -38,11 +38,9 @@ const CITY_API_DONE_FLAG = "cityApiCallDone";
 // City URL/pill/modal logic SIRF venue-list ke liye active hai.
 // Tracking API is se koi lena dena nahi rakhti — wo har page par apna kaam karti hai.
 const CITY_OPTIONAL_CHILD_ROUTES = [
-  "/book-chef-cook-for-party",
+  "/chef-near-me",
   "/photography/product",
-  "/balloon-decoration/product"
-  // "/another-route",
-  // "/some-other-route",
+  "/balloon-decoration/product",
 ];
 
 const isCityOptionalChildRoute = (pathname) => {
@@ -281,17 +279,17 @@ export const CityProvider = ({ children }) => {
   useEffect(() => {
     if (!pathname) return;
 
-      // ============================================================
-  // CITY OPTIONAL CHILD ROUTE
-  // Example:
-  // /book-chef-cook-for-party/order-details
-  //
-  // Is route ko city ke sath force nahi karna hai.
-  // ============================================================
-  if (isCityOptionalChildRoute(pathname)) {
-    setShowCityModal(false);
-    return;
-  }
+    // ============================================================
+    // CITY OPTIONAL CHILD ROUTE
+    // Example:
+    // /chef-near-me/order-details
+    //
+    // Is route ko city ke sath force nahi karna hai.
+    // ============================================================
+    if (isCityOptionalChildRoute(pathname)) {
+      setShowCityModal(false);
+      return;
+    }
 
     const match = pathname.match(CITY_PATH_REGEX);
 

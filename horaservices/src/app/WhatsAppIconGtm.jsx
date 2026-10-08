@@ -147,7 +147,7 @@ const getPathFromWindow = () => {
           "Hi, I saw your website and want to know more about decoration services.";
         break;
 
-      case '/book-chef-cook-for-party':
+      case '/chef-near-me':
         eventName = 'chefforparty_page_whatsappclick';
         productNameEvent = 'chef for party page whatsapp button clicked';
         message = "Hi, I saw your website and want to know more about the services";
@@ -240,7 +240,7 @@ const getPathFromWindow = () => {
         message = addCityToMessage(cityPageMessage, formattedCity);
         break;
 
-      case '/book-chef-cook-for-party/order-details':
+      case '/chef-near-me/order-details':
         eventName = 'chefforpartyorderdetailspage_whatsapp_click';
         productNameEvent = 'chefforpartyorderdetailspage_whatsapp_click';
         message = chefOrderDetailsMessage;
@@ -252,7 +252,7 @@ const getPathFromWindow = () => {
         message = chefCheckoutMessage;
         break;
 
-      case '/[city]/book-chef-cook-for-party':
+      case '/[city]/chef-near-me':
         eventName = 'chefforpartycitypage_whatsapp_click';
         productNameEvent = 'chefforpartycitypage_whatsapp_click';
         message = addCityToMessage(chefCityPageMessage, formattedCity);

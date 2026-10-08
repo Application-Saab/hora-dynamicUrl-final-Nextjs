@@ -1,44 +1,841 @@
-import React, { useState, useEffect } from "react";
-import bannerSvgImage from "../../../../../public/assets/banner-home-bg.svg";
-import bannerDecorationImage from "../../../../assets/service-decoration.png";
-import bannerChefImage from "../../../../assets/chef-home-banner.png";
-import bannerHospitalityImage from "../../../../assets/hospitality.png";
-import bannerReturnGiftImage from "../../../../assets/return-gift-banner-home.png";
-import bannerFoodDeliveryImage from "../../../../assets/food-delivery-home-banner.png";
-import Celebrate1Image from "../../../../assets/Birthday&Celebration.png";
-import Celebrate2Image from "../../../../assets/corporate-party.png";
-import Celebrate3Image from "../../../../assets/house-party.png";
-import Celebrate4Image from "../../../../assets/wedding-event.png";
-import Celebrate5Image from "../../../../assets/gathering.png";
-import Celebrate6Image from "../../../../assets/kids-event.png";
-import { useRouter } from "next/router";
-import Link from "next/link";
+import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
+import { Step, Label, Divider } from "semantic-ui-react"; // Replace with actual library
+import { ListGroup, ListGroupItem } from "react-bootstrap";
+import { Modal, Button, Container, Row, Col, Spinner } from "react-bootstrap";
+import {
+  BASE_URL,
+  GET_CUISINE_ENDPOINT,
+  API_SUCCESS_CODE,
+  GET_MEAL_DISH_ENDPOINT,
+} from "../../../../utils/apiconstants";
+import RectanglePurple from "../../../../assets/Rectanglepurple.png";
+import RectangleWhite from "../../../../assets/rectanglewhite.png";
+import MinusIcon from "../../../../assets/minus.png";
+import PlusIcon from "../../../../assets/plus.png";
+import warningImage from "../../../../assets/Group.png";
+import SkeletonLoader from "../../../../utils/chefSkeleton";
+import "../../../../css/Toggle.css";
+import "../../../../css/chefOrder.css";
+import SelectDishes from "../../../../assets/selectDish.png";
+import SelectDateTime from "../../../../assets/event.png";
+import SelectConfirmOrder from "../../../../assets/confirm_order.png";
+import separator from "../../../../assets/separator.png";
+import InfoIcon from "../../../../assets/info.png";
 import Image from "next/image";
+import { useRouter } from "next/router";
+import axiosApi from "@/utils/axiosApi";
 import Head from "next/head";
-import "../../../../app/homepage.css";
-import cityData from "../../../../utils/cityData";
+import Link from "next/link";
+import { validateCityLocality } from "@/utils/validCities";
+import { ChefFAQS } from "@/components/ChefCookForParty/ChefLocalitiesSection";
+
+const CreateOrder = ({ initialCuisines = [], initialMealList = [] }) => {
+  const [isMobile, setIsMobile] = useState(false);
+  const bottomSheetRef = useRef(null);
+  const [orderType, setOrderType] = useState(2);
+  const [isDishSelected, setIsDishSelected] = useState(false);
+  const [selected, setSelected] = useState("veg");
+  const [cuisines, setCuisines] = useState(initialCuisines);
+  const [selectedCuisines, setSelectedCuisines] = useState(
+    initialCuisines.length > 0 ? [initialCuisines[0][0]] : [],
+  );
+  const [expandedCategories, setExpandedCategories] = useState([]);
+  const [mealList, setMealList] = useState(initialMealList);
+  const [isSelectedDish, setIsSelectedDish] = useState(false);
+  const [dishDetail, setDishDetail] = useState(null);
+  const [selectedCount, setSelectedCount] = useState(0);
+  const [selectedDishes, setSelectedDishes] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [isViewAllSheetOpen, setIsViewAllSheetOpen] = useState(false);
+  const [selectedDishPrice, setSelectedDishPrice] = useState(0);
+  const [selectedDishDictionary, setSelectedDishDictionary] = useState({});
+  const [isNonVegSelected, setIsNonVegSelected] = useState(false);
+  const [isVegSelected, setIsVegSelected] = useState(true);
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [loading, setLoading] = useState(initialMealList.length === 0);
+  const [isWarningVisibleForTotalAmount, setWarningVisibleForTotalAmount] =
+    useState(false);
+  const [isWarningVisibleForDishCount, setWarningVisibleForDishCount] =
+    useState(false);
+  const [isWarningVisibleForCuisineCount, setWarningVisibleForCuisineCount] =
+    useState(false);
+  const [isViewAllExpanded, setIsViewAllExpanded] = useState(false);
+  const [popupMessage, setPopupMessage] = useState({
+    image: "",
+    title: "",
+    body: "",
+    button: "",
+  });
+
+  // Handler for 'Only Veg' toggle switch
+  const handleVegSwitch = () => {
+    if (isNonVegSelected) return; // Prevent switching if 'Non-Veg' is selected
+    setIsVegSelected((prev) => !prev); // Toggle 'Only Veg' state
+  };
+
+  // Handler for 'Non-Veg' toggle switch
+  const handleNonVegSwitch = () => {
+    setIsNonVegSelected((prev) => !prev); // Toggle 'Non-Veg' state
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    // Initial setting
+    if (typeof window !== "undefined") {
+      setIsMobile(window.innerWidth <= 768);
+      window.addEventListener("resize", handleResize);
+    }
+
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("resize", handleResize);
+      }
+    };
+  }, []);
+  const maxItems = isMobile ? 3 : 7;
+
+  // Filter the cuisines based on selected state
+  const filteredCuisines = cuisines.filter((cuisine) => {
+    if (isVegSelected && !isNonVegSelected) {
+      return cuisine.type !== "veg"; // Show only non-veg items if 'Only Veg' is selected
+    } else if (!isVegSelected && isNonVegSelected) {
+      return cuisine.type !== "non-veg"; // Show only veg items if 'Non-Veg' is selected
+    } else if (isVegSelected && isNonVegSelected) {
+      return true; // Show all items if both are selected
+    }
+    return false; // Show nothing if neither are selected
+  });
+
+  // Filter the meal list based on selected state
+  const filteredMealList = mealList.filter((meal) => {
+    if (isVegSelected && !isNonVegSelected) {
+      return meal.type !== "veg"; // Show only non-veg items if 'Only Veg' is selected
+    } else if (!isVegSelected && isNonVegSelected) {
+      return meal.type !== "non-veg"; // Show only veg items if 'Non-Veg' is selected
+    } else if (isVegSelected && isNonVegSelected) {
+      return true; // Show all items if both are selected
+    }
+    return false; // Show nothing if neither are selected
+  });
+
+  const router = useRouter();
+
+  const handleWarningClose = () => {
+    setWarningVisibleForDishCount(false);
+    setWarningVisibleForCuisineCount(false);
+    setWarningVisibleForTotalAmount(false);
+  };
+
+  // get category of cuisines
+  useEffect(() => {
+    // Agar SSR se data already aa gaya hai to skip
+    if (initialCuisines.length > 0) return;
+
+    const fetchCuisineData = async () => {
+      try {
+        const url = BASE_URL + GET_CUISINE_ENDPOINT;
+        const requestData = {
+          type: "cuisine",
+        };
+        const response = await axiosApi.post(url, requestData, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (response.status === API_SUCCESS_CODE) {
+          const names = response.data.data.configuration.map(
+            ({ _id, name }) => [_id, name],
+          );
+          setCuisines(names);
+        }
+      } catch (error) {
+        console.log("Error Fetching Data:", error.message);
+      }
+    };
+    fetchCuisineData();
+  }, [initialCuisines]);
+
+  useEffect(() => {
+    if (cuisines.length > 0 && selectedCuisines.length === 0) {
+      handleCuisinePress(cuisines[0][0]);
+    }
+  }, [cuisines, selectedCuisines]);
+
+  const renderItem = ({ item }) => {
+    const isSelected = selectedCuisines.includes(item[0]);
+
+    return (
+      <div className="d-flex align-items-center justify-content-between mb-2">
+        <Button
+          variant={isSelected ? "primary" : "outline-primary"}
+          onClick={() => handleCuisinePress(item[0])}
+          className="cusinebtn"
+        >
+          {item[1]}
+        </Button>
+        {expandedCategories.includes(item[0]) && (
+          <ListGroup className="d-flex flex-wrap">
+            {cuisines.map((cuisine, index) => (
+              <ListGroupItem
+                key={index}
+                className="flex-grow-1"
+                style={{ flexBasis: "calc(25% - 10px)", margin: "5px" }} // Adjust margin and flexBasis as needed
+              >
+                {renderItem({ item: cuisine })}
+              </ListGroupItem>
+            ))}
+          </ListGroup>
+        )}
+      </div>
+    );
+  };
+
+  const handleIncreaseQuantity = (dish, isSelected) => {
+    if (selectedDishes.length >= 0 && !isSelected) {
+      //setIsButtonVisible(true);
+    }
+    if (selectedDishes.length > 11 && !isSelected) {
+      setWarningVisibleForDishCount(true);
+      setPopupMessage({
+        image: warningImage,
+        title: "Total Dishes Selected can not be more than 12 Dish.",
+        body: "Total dish selected can not be more than 12 dish, for more help contact us.",
+        button: "Contact Us",
+      });
+    } else {
+      const updatedSelectedDishes = [...selectedDishes];
+      const updatedSelectedDishDictionary = { ...selectedDishDictionary };
+      if (updatedSelectedDishes.includes(dish._id)) {
+        const index = updatedSelectedDishes.indexOf(dish._id);
+        updatedSelectedDishes.splice(index, 1);
+      } else {
+        updatedSelectedDishes.push(dish._id);
+      }
+      setSelectedDishes(updatedSelectedDishes);
+      setSelectedCount(updatedSelectedDishes.length);
+      if (isSelected) {
+        const updatedPrice = selectedDishPrice - parseInt(dish.dish_rate, 10);
+        setSelectedDishPrice(updatedPrice);
+      } else {
+        const updatedPrice = selectedDishPrice + parseInt(dish.dish_rate, 10);
+        setSelectedDishPrice(updatedPrice);
+      }
+      if (updatedSelectedDishDictionary[dish._id]) {
+        delete updatedSelectedDishDictionary[dish._id];
+      } else {
+        updatedSelectedDishDictionary[dish._id] = dish;
+      }
+      setSelectedDishDictionary(updatedSelectedDishDictionary);
+      setIsDishSelected(updatedSelectedDishes.length > 0);
+    }
+  };
+
+  const handleCuisinePress = (cuisineId) => {
+    if (selectedCuisines.length < 3 || selectedCuisines.includes(cuisineId)) {
+      setSelectedCuisines((prevSelected) => {
+        if (prevSelected.includes(cuisineId)) {
+          return prevSelected.filter((item) => item !== cuisineId);
+        } else {
+          return [...prevSelected, cuisineId];
+        }
+      });
+    } else {
+      setWarningVisibleForCuisineCount(true);
+      setPopupMessage({
+        image: warningImage,
+        title: "One chef is only expert in 3 cuisine only.",
+        body: "Our chef is expert in cuisines only please select appropriate number of cuisines to continue",
+        button: "Continue",
+      });
+    }
+  };
+
+  const fetchMealBasedOnCuisine = async () => {
+    try {
+      setLoading(true);
+      const url = BASE_URL + GET_MEAL_DISH_ENDPOINT;
+      const is_dish = isNonVegSelected ? 0 : 1;
+      const requestData = {
+        cuisineId: selectedCuisines,
+        is_dish: is_dish,
+      };
+      const response = await axiosApi.post(url, requestData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.status === API_SUCCESS_CODE) {
+        setMealList(response.data.data);
+      }
+    } catch (error) {
+      console.log("Error Fetching Data:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedCuisines.length > 0 && selectedCuisines.length <= 3) {
+      fetchMealBasedOnCuisine();
+    } else {
+      setMealList([]);
+      setSelectedDishDictionary({});
+      setIsDishSelected(false);
+      setSelectedDishes([]);
+      setSelectedCount(0);
+      setSelectedDishPrice(0);
+    }
+  }, [selectedCuisines, isNonVegSelected]);
+
+  const renderDishItem = ({ item }) => (
+    <div className="w-100">
+      {item.dish.length > 0 ? (
+        <div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "top",
+              margin: "9px 19px 0px 6px",
+            }}
+          >
+            <h1
+              style={{ color: "#000", fontSize: "16px", marginBottom: "0px" }}
+            >
+              {item.mealObject.name}
+              {"  "}
+              {"(" + item.dish.length + ")"}
+            </h1>
+            <Button
+              onClick={() => handleViewAll(item.mealObject._id)}
+              style={{
+                color: expandedCategories.includes(item.mealObject._id)
+                  ? "#000"
+                  : "#fff",
+                fontWeight: "400",
+                textDecorationLine: "none",
+                fontSize: 12,
+              }}
+              className={`viewbtn ${
+                expandedCategories.includes(item.mealObject._id)
+                  ? "clickedviewAll"
+                  : ""
+              }`}
+            >
+              View All
+            </Button>
+          </div>
+          <div className="dish-item">
+            {expandedCategories.includes(item.mealObject._id)
+              ? item.dish.map((dish, index) => {
+                  const dishImage = dish.image
+                    ? `https://horaservices.com/api/uploads/${dish.image}`
+                    : "";
+                  const specialApplianceImage =
+                    dish.special_appliance_id.length > 0 &&
+                    dish.special_appliance_id[0].image
+                      ? `https://horaservices.com/api/uploads/${dish.special_appliance_id[0].image}`
+                      : "";
+                  const selectedImage = selectedDishes.includes(dish._id)
+                    ? dishImage
+                    : dishImage;
+
+                  return (
+                    <div
+                      key={index}
+                      className={`dish-item-inner ${
+                        dish.is_dish === 1 ? "veg-border" : "non-veg-border"
+                      }`}
+                      style={{
+                        backgroundImage: `url(${
+                          selectedDishes.includes(dish._id)
+                            ? RectanglePurple.src
+                            : RectangleWhite.src
+                        })`,
+                      }}
+                    >
+                      {selectedImage ? (
+                        <Image
+                          src={selectedImage}
+                          alt={dish.name}
+                          className={`dish-image ${
+                            selectedDishes.includes(dish._id) ? "selected" : ""
+                          }`}
+                          width={300}
+                          height={300}
+                        />
+                      ) : (
+                        <div
+                          className={`dish-placeholder ${
+                            selectedDishes.includes(dish._id) ? "selected" : ""
+                          }`}
+                        >
+                          Image not available
+                        </div>
+                      )}
+                      <p
+                        className={`dish-name ${
+                          selectedDishes.includes(dish._id) ? "selected" : ""
+                        }`}
+                      >
+                        {isDishSelected &&
+                        dish.special_appliance_id.length > 0 &&
+                        selectedDishes.includes(dish._id)
+                          ? dish.special_appliance_id[0].name
+                          : dish.name}
+                      </p>
+                      <div className="d-flex justify-content-between w-100 px-3 dishPrice">
+                        <span
+                          className={`dish-price ${
+                            selectedDishes.includes(dish._id) ? "selected" : ""
+                          }`}
+                        >
+                          ₹ {dish.dish_rate}
+                        </span>
+
+                        <Button
+                          className="pluBtn"
+                          onClick={() =>
+                            handleIncreaseQuantity(
+                              dish,
+                              selectedDishes.includes(dish._id),
+                            )
+                          }
+                        >
+                          <Image
+                            src={
+                              selectedDishes.includes(dish._id)
+                                ? MinusIcon
+                                : PlusIcon
+                            }
+                            style={{ width: 21, height: 21 }}
+                          />
+                        </Button>
+                      </div>
+                      <div
+                        className={`dish-indicator ${
+                          dish.is_dish === 1 ? "veg" : "non-veg"
+                        }`}
+                      ></div>
+                    </div>
+                  );
+                })
+              : item.dish.slice(0, maxItems).map((dish, index) => {
+                  const dishImage = dish.image
+                    ? `https://horaservices.com/api/uploads/${dish.image}`
+                    : "";
+                  const specialApplianceImage =
+                    dish.special_appliance_id.length > 0 &&
+                    dish.special_appliance_id[0].image
+                      ? `https://horaservices.com/api/uploads/${dish.special_appliance_id[0].image}`
+                      : "";
+                  const selectedImage = selectedDishes.includes(dish._id)
+                    ? dishImage
+                    : dishImage;
+
+                  return (
+                    <div
+                      key={index}
+                      className={`dish-item-inner ${
+                        dish.is_dish === 1 ? "veg-border" : "non-veg-border"
+                      }`}
+                      style={{
+                        backgroundImage: `url(${
+                          selectedDishes.includes(dish._id)
+                            ? RectanglePurple.src
+                            : RectangleWhite.src
+                        })`,
+                      }}
+                    >
+                      {selectedImage ? (
+                        <Image
+                          src={selectedImage}
+                          alt={dish.name}
+                          className={`dish-image ${
+                            selectedDishes.includes(dish._id) ? "selected" : ""
+                          }`}
+                          width={300}
+                          height={300}
+                        />
+                      ) : (
+                        <div
+                          className={`dish-placeholder ${
+                            selectedDishes.includes(dish._id) ? "selected" : ""
+                          }`}
+                        >
+                          Image not available
+                        </div>
+                      )}
+                      <p
+                        className={`dish-name ${
+                          selectedDishes.includes(dish._id) ? "selected" : ""
+                        }`}
+                      >
+                        {isDishSelected &&
+                        dish.special_appliance_id.length > 0 &&
+                        selectedDishes.includes(dish._id)
+                          ? dish.special_appliance_id[0].name
+                          : dish.name}
+                      </p>
+                      <div className="d-flex justify-content-between w-100 px-3 dishPrice">
+                        {/* <span
+                                                className={`dish-price ${selectedDishes.includes(dish._id) ? "selected" : ""
+                                                    }`}
+                                            >
+                                                ₹ {dish.dish_rate}
+                                            </span> */}
+                        <Button
+                          className="pluBtn"
+                          onClick={() =>
+                            handleIncreaseQuantity(
+                              dish,
+                              selectedDishes.includes(dish._id),
+                            )
+                          }
+                        >
+                          <Image
+                            src={
+                              selectedDishes.includes(dish._id)
+                                ? MinusIcon
+                                : PlusIcon
+                            }
+                            style={{ width: 21, height: 21 }}
+                          />
+                        </Button>
+                      </div>
+                      <div
+                        className={`dish-indicator ${
+                          dish.is_dish === 1 ? "veg" : "non-veg"
+                        }`}
+                      ></div>
+                    </div>
+                  );
+                })}
+          </div>
+          <div className="chef-divider" style={{ marginTop: "20px" }}></div>
+        </div>
+      ) : null}
+    </div>
+  );
+
+  const addDish = (selectedDishPrice) => {
+    let totalDishPrice = 0;
+
+    // ✅ Only calculate base dish price (NO 700 here)
+    selectedDishes.forEach((dishId) => {
+      const dish = selectedDishDictionary[dishId];
+      if (dish) {
+        totalDishPrice += Number(dish.dish_rate) || 0;
+      }
+    });
+
+    console.log(
+      "✅ Total Dish Base Price Before Routing (without 700):",
+      totalDishPrice,
+    );
+
+    router.push({
+      pathname: "/chef-near-me/order-details",
+      query: {
+        orderType,
+        selectedDishDictionary: JSON.stringify(selectedDishDictionary),
+        selectedDishPrice: totalDishPrice,
+        selectedDishes: JSON.stringify(selectedDishes),
+        isDishSelected,
+        selectedCount,
+      },
+    });
+  };
+
+  const closeBottomSheet = () => {
+    setDishDetail(null);
+    bottomSheetRef.current.close();
+  };
+
+  const addDishAndCloseBottomSheet = () => {
+    closeBottomSheet();
+  };
+
+  const RenderBottomSheetContent = () => (
+    <div className="bottom-sheet-content">
+      <Image
+        src={`https://horaservices.com/api/uploads/${dishDetail.image}`}
+        alt={dishDetail.name}
+        className="bottom-sheet-image"
+      />
+      <h5 className="bottom-sheet-title">{dishDetail.name}</h5>
+      <hr />
+      <p className="bottom-sheet-description">{dishDetail.description}</p>
+      <div className="bottom-sheet-info">
+        <div className="info-item">
+          <strong>Per Plate Qty:</strong>{" "}
+          {dishDetail.per_plate_qty.qty
+            ? `${dishDetail.per_plate_qty.qty} ${dishDetail.per_plate_qty.unit}`
+            : "NA"}
+        </div>
+        <div className="info-item">
+          <strong>Price Per Plate:</strong>{" "}
+          {dishDetail.dish_rate ? `₹ ${dishDetail.dish_rate}` : "NA"}
+        </div>
+        <div className="info-item">
+          <strong>Price:</strong>{" "}
+          {dishDetail.price ? `₹ ${dishDetail.price}` : "NA"}
+        </div>
+      </div>
+      <Button variant="primary" onClick={addDishAndCloseBottomSheet}>
+        Add Dish
+      </Button>
+    </div>
+  );
+
+  const openBottomSheet = (dish, ref) => {
+    setDishDetail(dish);
+    ref.current.open();
+  };
+
+  const closeViewAllSheet = () => {
+    setIsViewAllSheetOpen(false);
+  };
+
+  const openViewAllSheet = (dish, ref) => {
+    setDishDetail(dish);
+    setIsViewAllSheetOpen(true);
+  };
+
+  const handleSwitchChange = (value) => {
+    setSelected(value);
+    if (value === "veg") {
+      setIsVegSelected(true);
+      setIsNonVegSelected(false);
+    } else {
+      setIsVegSelected(false);
+      setIsNonVegSelected(true);
+    }
+  };
+
+  const handleViewAll = (categoryId) => {
+    setIsViewAllExpanded(!isViewAllExpanded);
+
+    setExpandedCategories((prevExpanded) =>
+      categoryId === prevExpanded[0]
+        ? prevExpanded.length === 1
+          ? []
+          : prevExpanded.slice(1) // If the first category is clicked, toggle its expansion state only if it's not the only expanded category
+        : prevExpanded.includes(categoryId)
+          ? prevExpanded.filter((id) => id !== categoryId)
+          : [...prevExpanded, categoryId],
+    );
+  };
+
+  if (loading) {
+    return <SkeletonLoader loading={true} />;
+  }
+
+  return (
+    <div className="chef-create-order">
+      <Head>
+        <link
+          rel="canonical"
+          href="https://horaservices.com/chef-near-me"
+        />
+      </Head>
+      <div className="order-container chef">
+        <div
+          style={{
+            flexDirection: "row",
+            backgroundColor: "#EFF0F3",
+            boxShadow: "0px 0px 6px 0px rgba(0, 0, 0, 0.23)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "10px 0",
+          }}
+        >
+          <Image
+            style={{ width: "20px", height: "20px", marginRight: "10px" }}
+            src={InfoIcon}
+          />
+          <p
+            style={{
+              color: "#676767",
+              fontSize: "94%",
+              fontWeight: "400",
+              margin: "0",
+            }}
+            className="billheading"
+          >
+            Bill value depends upon Dish selected + Number of people
+          </p>
+        </div>
+        <div className="range-bar">
+          <Step active={true.toString()} className="step1">
+            <Image src={SelectDishes} alt="Select Dishes" style={styles.dish} />
+            <Label active={true.toString()}>Select Dishes</Label>
+          </Step>
+          <div className="sep-image">
+            <Image src={separator} />
+          </div>
+          <Step className="step2">
+            <Image
+              src={SelectDateTime}
+              alt="Select Date & Time"
+              style={styles.dish}
+            />
+            <Label>Select Date & Time</Label>
+          </Step>
+          <div className="sep-image">
+            <Image src={separator} />
+          </div>
+          <Step className="step3">
+            <Image
+              src={SelectConfirmOrder}
+              alt="Confirm Order"
+              style={styles.dish}
+            />
+            <Label>Select Confirm Order</Label>
+          </Step>
+        </div>
+      </div>
+      <div className="order-container chef-bottum">
+        <Row className="d-flex justify-content-start">
+          <div style={{ display: "flex", margin: "5px 0 0" }}>
+            <div style={{ marginRight: "10px" }}>
+              <Button
+                variant={selected === "veg" ? "success" : "outline-success"}
+                onClick={() => handleSwitchChange("veg")}
+                className="cuisinebtn"
+              >
+                Only Veg
+              </Button>
+            </div>
+            <div>
+              <Button
+                variant={selected === "non-veg" ? "danger" : "outline-danger"}
+                onClick={() => handleSwitchChange("non-veg")}
+                className="cuisinebtn"
+              >
+                Non-Veg
+              </Button>
+            </div>
+          </div>
+          <div className="chef-divider" style={{ marginTop: "10px" }}></div>
+          <div style={{ margin: "10px 0 0 0" }}>
+            <h1
+              style={{
+                fontSize: "14px",
+                color: "#000",
+                marginTop: "0px",
+                marginBottom: "0",
+              }}
+            >
+              Select Cusinies
+            </h1>
+            <ListGroup className="cuisine-list d-flex flex-row flex-wrap justify-content-start">
+              {cuisines.map((cuisine, index) => (
+                <ListGroupItem key={index} className="cuisine-item">
+                  {renderItem({ item: cuisine })}
+                </ListGroupItem>
+              ))}
+            </ListGroup>
+          </div>
+        </Row>
+        <div className="chef-divider"></div>
+        <Row className="mt-1">
+          <Col>
+            {selectedCuisines.length > 0 && (
+              <ListGroup className="dish-list">
+                {mealList.map((meal) => (
+                  <div className="w-100">
+                    <ListGroupItem key={meal._id} className="dish-item">
+                      {renderDishItem({ item: meal })}
+                    </ListGroupItem>
+                  </div>
+                ))}
+              </ListGroup>
+            )}
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <div
+              style={{
+                position: "fixed",
+                bottom: 0,
+                width: "100%",
+                backgroundColor: "#EDEDED",
+                borderTop: "1px solid #efefef",
+                padding: "15px 0",
+                left: "0",
+              }}
+            >
+              <Button
+                onClick={() => addDish(selectedDishPrice)}
+                style={{
+                  width: "50%",
+                  backgroundColor: isDishSelected ? "#9252AA" : "#F9E9FF",
+                  borderColor: isDishSelected ? "#9252AA" : "#F9E9FF",
+                }}
+                disabled={!isDishSelected}
+                className="continuebtnchef"
+              >
+                <div
+                  style={{
+                    className: "continueButtonLeftText",
+                    color: isDishSelected ? "white" : "#fff",
+                  }}
+                >
+                  Continue
+                </div>
+                <div
+                  style={{
+                    className: "continueButtonRightText",
+                    color: isDishSelected ? "white" : "#fff",
+                  }}
+                >
+                  {selectedCount} Items
+                </div>
+              </Button>
+            </div>
+          </Col>
+        </Row>
+      </div>
+    </div>
+  );
+};
+
+// const styles = {
+//   imageContainer: {
+//     position: "relative",
+//     width: "270px",
+//     backgroundColor: "#fff",
+//     marginBottom: 40,
+//     boxShadow: "0 6px 16px 0 rgba(0,0,0,.14)",
+//     borderRadius: "5px",
+//     overflow: "hidden",
+//     transition: "transform 0.3s ease-in-out",
+//     margin: "10px 12px 20px",
+//     padding: "6px 5px 10px",
+//   },
+//   dish: {
+//     width: "32px",
+//     height: "32px",
+//   },
+// };
 
 const ChefCitypage = ({
   city: ssrCity = "",
-  locality: ssrLocality = "",
-  cityLocalitiesList: ssrCityLocalitiesList = [],
+  initialCuisines = [],
+  initialMealList = [],
 }) => {
-  const router = useRouter();
-
   const [showButton, setShowButton] = useState(false);
   const [city, setCity] = useState(ssrCity || "");
-  const [locality, setLocality] = useState(ssrLocality || "");
-  const [cityLocalitiesList, setCityLocalitiesList] = useState(
-    ssrCityLocalitiesList || [],
-  );
-
   const openLink = () => {
-    if (typeof window !== "undefined") {
-      window.open(
-        "https://play.google.com/store/apps/details?id=com.hora",
-        "_blank",
-      );
-    }
+    window.open(
+      "https://play.google.com/store/apps/details?id=com.hora",
+      "_blank",
+    );
   };
 
   useEffect(() => {
@@ -53,84 +850,59 @@ const ChefCitypage = ({
     };
   }, []);
 
-  // Client-side navigation pe bhi update
+  const router = useRouter();
+
+  // Client-side navigation pe bhi city update ho jaye
   useEffect(() => {
     if (router.isReady) {
-      const { city: queryCity, locality: queryLocality } = router.query;
+      const { city: queryCity } = router.query;
       if (queryCity) {
         setCity(queryCity);
-        const normalized = queryCity.toLowerCase();
-        const localities = cityData[normalized]?.cityLocalitiesList || [];
-        setCityLocalitiesList(localities);
-      }
-      if (queryLocality) {
-        setLocality(queryLocality);
       }
     }
   }, [router.isReady, router.query]);
 
-  const formatLocalityName = (name) => {
-    return name.replace(/\s+/g, "-").toLowerCase();
-  };
-
+  // SSR pe city props se aayega, isliye loading gate hata diya
   const displayCity = city || ssrCity || "";
-  const displayLocality = locality || ssrLocality || "";
-  const normalizedCity = displayCity ? displayCity.toLowerCase() : "";
-  const hasCityPageParam = !!displayCity;
-
-  const handleClick = (localityName) => {
-    const formattedLocalityName = formatLocalityName(localityName);
-    router.push(`/${normalizedCity}/${formattedLocalityName}/chef-near-me`);
-  };
-
-  if (!hasCityPageParam) {
-    return <div>Please select a city first.</div>;
-  }
 
   return (
     <>
       <Head>
         <title>
-          {displayCity && displayLocality
-            ? `HORA Chef Services in ${displayLocality}, ${displayCity} | Hire Private Chef & Cook Near You – Book Now`
-            : displayCity
-              ? `HORA Chef Services in ${displayCity} | Hire Private Chef & Cook for Parties – Book Now`
-              : `HORA Chef Services | Hire Private Chef & Cook – Book Now`}
+          {displayCity
+            ? `HORA Chef Services in ${displayCity} | Hire Private Chef & Cook for Parties, Events & Home – Book Now`
+            : `HORA Chef Services | Hire Private Chef & Cook for Parties, Events & Home – Book Now`}
         </title>
 
         <meta
           name="description"
           content={
-            displayCity && displayLocality
-              ? `🍽️ Book a Professional Chef in ${displayLocality}, ${displayCity}! ✨ HORA Chef Services — Hire trained & verified private chefs and cooks near you for birthdays, house parties, weddings & more.`
-              : displayCity
-                ? `🍽️ Book a Professional Chef in ${displayCity}! ✨ HORA Chef Services — Hire trained & verified private chefs and cooks for parties, weddings & more.`
-                : `🍽️ Book a Professional Chef Near You! ✨ HORA Chef Services — Hire trained & verified private chefs and cooks for any event.`
+            displayCity
+              ? `🍽️ Book a Professional Chef in ${displayCity}! ✨ HORA Chef Services — Hire trained & verified private chefs and cooks for birthdays, house parties, weddings, corporate events & more. Starting at affordable prices.`
+              : `🍽️ Book a Professional Chef Near You! ✨ HORA Chef Services — Hire trained & verified private chefs and cooks for birthdays, house parties, weddings, corporate events & more.`
           }
         />
 
         <meta
           name="keywords"
           content={
-            displayCity && displayLocality
-              ? `chef near me in ${displayLocality} ${displayCity}, hire chef in ${displayLocality}, cook for party ${displayLocality} ${displayCity}, private chef ${displayLocality}, catering ${displayLocality} ${displayCity}`
-              : displayCity
-                ? `hire chef in ${displayCity}, private chef ${displayCity}, cook near me ${displayCity}, catering services ${displayCity}`
-                : `hire chef, private chef, cook near me, catering services`
+            displayCity
+              ? `hire chef in ${displayCity}, book a cook in ${displayCity}, private chef ${displayCity}, personal chef ${displayCity}, chef for party ${displayCity}, catering services ${displayCity}, home chef ${displayCity}, cook near me ${displayCity}`
+              : `hire chef, book a cook, private chef, personal chef, chef for party, catering services, home chef, cook near me`
           }
         />
 
         <meta
           property="og:title"
           content={
-            displayCity && displayLocality
-              ? `Hire Chef & Cook in ${displayLocality}, ${displayCity} | HORA Chef Services`
-              : `Hire Chef & Cook | HORA Chef Services`
+            displayCity
+              ? `Hire Professional Chef & Cook in ${displayCity} | HORA Chef Services`
+              : `Hire Professional Chef & Cook | HORA Chef Services`
           }
         />
         <meta
           property="og:description"
-          content="🍽️ Book professional chefs and cooks for your event. Contact us at 7338584828."
+          content="🍽️ Explore a wide range of professional chef and cook services for every event and party. Book your ideal chef directly through our website for a seamless experience. Need help? Contact us at 7338584828."
         />
         <meta
           property="og:image"
@@ -138,7 +910,15 @@ const ChefCitypage = ({
         />
         <meta
           property="og:image:alt"
-          content="hire chef near me, private chef, cook for party"
+          content="hire chef, private chef, cook for party, catering services, home chef"
+        />
+        <link
+          rel="canonical"
+          href={
+            displayCity
+              ? `https://horaservices.com/${displayCity.toLowerCase()}/chef-near-me`
+              : `https://horaservices.com/chef-near-me`
+          }
         />
         <meta name="robots" content="index, follow" />
         <meta name="author" content="Hora Services" />
@@ -147,647 +927,27 @@ const ChefCitypage = ({
           href="https://horaservices.com/api/uploads/logo-icon.png"
           type="image/x-icon"
         />
-        <link
-          rel="canonical"
-          href={
-            displayCity && displayLocality
-              ? `https://horaservices.com/${displayCity.toLowerCase()}/${displayLocality.toLowerCase()}/chef-near-me`
-              : displayCity
-                ? `https://horaservices.com/${displayCity.toLowerCase()}/chef-near-me`
-                : `https://horaservices.com/chef-near-me`
-          }
-        />
         <meta
           property="og:url"
           content={
-            displayCity && displayLocality
-              ? `https://horaservices.com/${displayCity.toLowerCase()}/${displayLocality.toLowerCase()}/chef-near-me`
-              : displayCity
-                ? `https://horaservices.com/${displayCity.toLowerCase()}/book-chef-cook-for-party`
-                : `https://horaservices.com/book-chef-cook-for-party`
+            displayCity
+              ? `https://horaservices.com/${displayCity.toLowerCase()}/chef-near-me`
+              : `https://horaservices.com/chef-near-me`
           }
         />
         <meta property="og:type" content="website" />
       </Head>
 
       <div>
-        <div style={styles.homebanner} className="homebanner citypage">
-          <div
-            style={{
-              ...styles.bgImg,
-              backgroundImage: `url(${bannerSvgImage.src})`,
-            }}
-            className="bgImg"
-          >
-            <div style={styles.pageWidth}>
-              <div style={styles.textContainer} className="textContainerhome">
-                <h1
-                  style={{ fontSize: "40px", fontWeight: "500", margin: "0" }}
-                >
-                  {"Simplifying and Enhancing celebrations."}
-                </h1>
-                <h2
-                  style={{
-                    fontSize: "72px",
-                    fontWeight: "900",
-                    margin: "0 0 10px",
-                    lineHeight: "77px",
-                    margin: "0px 0 10px",
-                    padding: "3px 14% 5px 14%",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  {"ALL PARTY SERVICES IN YOUR "}
-                  {displayCity}
-                </h2>
-              </div>
-            </div>
-            <div style={styles.bannerBottomSec} className="bannerBottomSec">
-              <div
-                style={styles.bannerDecorationImage}
-                className="bannerDecorationImage"
-              >
-                <Link
-                  href={`/${displayCity}/balloon-decoration`}
-                  style={{ textDecoration: "none" }}
-                >
-                  <Image
-                    src={bannerDecorationImage}
-                    alt="Decoration Near me"
-                    style={{ height: "auto" }}
-                  />
-                  <h2
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: "normal",
-                      color: "#fff",
-                      textAlign: "center",
-                    }}
-                  >
-                    Decoration
-                  </h2>
-                </Link>
-              </div>
-              <div
-                style={styles.bannerDecorationImage}
-                className="bannerDecorationImage"
-              >
-                <Link
-                  href={`/${displayCity}/book-chef-cook-for-party`}
-                  style={{ textDecoration: "none" }}
-                >
-                  <Image
-                    src={bannerChefImage}
-                    alt="Chef Near me"
-                    style={{ height: "auto" }}
-                  />
-                  <h2
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: "normal",
-                      color: "#fff",
-                      textAlign: "center",
-                    }}
-                  >
-                    Hire Chef
-                  </h2>
-                </Link>
-              </div>
-              <div
-                style={styles.bannerDecorationImage}
-                className="bannerDecorationImage"
-              >
-                <Link href="/" style={{ textDecoration: "none" }}>
-                  <Image
-                    src={bannerReturnGiftImage}
-                    alt="Return Gift Near me"
-                    style={{ height: "auto" }}
-                  />
-                  <h2
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: "normal",
-                      color: "#fff",
-                      textAlign: "center",
-                    }}
-                  >
-                    Gift & Party Supplies
-                  </h2>
-                </Link>
-              </div>
-              <div
-                style={styles.bannerDecorationImage}
-                className="bannerDecorationImage"
-              >
-                <Link href="/" style={{ textDecoration: "none" }}>
-                  <Image
-                    src={bannerFoodDeliveryImage}
-                    alt="Food Delivery Near me"
-                    style={{ height: "auto" }}
-                  />
-                  <h2
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: "normal",
-                      color: "#fff",
-                      textAlign: "center",
-                    }}
-                  >
-                    Food Delivery
-                  </h2>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div style={styles.celebrateWithUs} className="celebrateWithUs">
-          <div style={{ padding: "0 6%" }}>
-            <h3
-              style={{
-                fontSize: "70px",
-                fontWeight: "bold",
-                color: "#E6756B",
-                margin: "35px 0 20px",
-                textAlign: "center",
-              }}
-            >
-              CELEBRATE WITH US
-            </h3>
-            <div
-              style={styles.celebrateBottomSec}
-              className="celebrateBottomSec"
-            >
-              <div style={styles.celebrateBox} className="celebrateBox">
-                <Image
-                  src={Celebrate1Image}
-                  alt="Birthday and Anniversary"
-                  style={styles.celebrateDecorationImage}
-                  className="celebrateDecorationImage"
-                />
-                <h3
-                  style={{
-                    fontSize: "16px",
-                    color: "#0f0f0f",
-                    fontWeight: "600",
-                    textAlign: "center",
-                    margin: "7px 0 20px 0",
-                  }}
-                >
-                  {"Birthday and Anniversary"}
-                </h3>
-              </div>
-              <div style={styles.celebrateBox} className="celebrateBox">
-                <Image
-                  src={Celebrate2Image}
-                  alt="House Parties"
-                  style={styles.celebrateDecorationImage}
-                  className="celebrateDecorationImage"
-                />
-                <h3
-                  style={{
-                    fontSize: "16px",
-                    color: "#0f0f0f",
-                    fontWeight: "600",
-                    textAlign: "center",
-                    margin: "7px 0 20px 0",
-                  }}
-                >
-                  {"House Parties"}
-                </h3>
-              </div>
-              <div style={styles.celebrateBox} className="celebrateBox">
-                <Image
-                  src={Celebrate3Image}
-                  alt="Corporate Events"
-                  style={styles.celebrateDecorationImage}
-                  className="celebrateDecorationImage"
-                />
-                <h3
-                  style={{
-                    fontSize: "16px",
-                    color: "#0f0f0f",
-                    fontWeight: "600",
-                    textAlign: "center",
-                    margin: "7px 0 20px 0",
-                  }}
-                >
-                  {"Corporate Events"}
-                </h3>
-              </div>
-              <div style={styles.celebrateBox} className="celebrateBox">
-                <Image
-                  src={Celebrate4Image}
-                  alt="Wedding Events"
-                  style={styles.celebrateDecorationImage}
-                  className="celebrateDecorationImage"
-                />
-                <h3
-                  style={{
-                    fontSize: "16px",
-                    color: "#0f0f0f",
-                    fontWeight: "600",
-                    textAlign: "center",
-                    margin: "7px 0 20px 0",
-                  }}
-                >
-                  {"Wedding Events"}
-                </h3>
-              </div>
-              <div style={styles.celebrateBox} className="celebrateBox">
-                <Image
-                  src={Celebrate5Image}
-                  alt="Gatherings"
-                  style={styles.celebrateDecorationImage}
-                  className="celebrateDecorationImage"
-                />
-                <h3
-                  style={{
-                    fontSize: "16px",
-                    color: "#0f0f0f",
-                    fontWeight: "600",
-                    textAlign: "center",
-                    margin: "7px 0 20px 0",
-                  }}
-                >
-                  {"Gatherings"}
-                </h3>
-              </div>
-              <div style={styles.celebrateBox} className="celebrateBox">
-                <Image
-                  src={Celebrate6Image}
-                  alt="Kids Events"
-                  style={styles.celebrateDecorationImage}
-                  className="celebrateDecorationImage"
-                />
-                <h3
-                  style={{
-                    fontSize: "16px",
-                    color: "#0f0f0f",
-                    fontWeight: "600",
-                    textAlign: "center",
-                    margin: "7px 0 20px 0",
-                  }}
-                >
-                  {"Kids Events"}
-                </h3>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* ★★★ CreateOrder ko SSR data props me pass kiya */}
+        <CreateOrder
+          initialCuisines={initialCuisines}
+          initialMealList={initialMealList}
+        />
 
         <section id="section6" className="sectionidsec">
           <div style={styles.pageWidth}>
-            <div id="faqQ">
-              <div>
-                <h1
-                  style={{
-                    fontSize: "70px",
-                    textTransform: "uppercase",
-                    fontWeight: "bold",
-                    color: "#E6756B",
-                    margin: "35px 0 0px",
-                    textAlign: "center",
-                  }}
-                >
-                  Faq
-                </h1>
-              </div>
-              <div>
-                <strong>
-                  1: How can I hire an online chef for my event in{" "}
-                  {displayCity.toUpperCase()}?
-                </strong>
-                <p>
-                  A: Hiring an online chef in {displayCity.toUpperCase()} is
-                  easy!
-                </p>
-                <p>
-                  A: Visit our website or download our app and place the order
-                  by selecting your dish, number of people, date, and time of
-                  the event to secure their services for your event.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  2: What makes your catering services the best for small
-                  parties in {displayCity.toUpperCase()}?
-                </strong>
-                <p>
-                  A: Our catering services in {displayCity.toUpperCase()} are
-                  tailored for small parties , We offer personalized options to
-                  make your event unforgettable.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  3: Can I book a private chef for a day or night in{" "}
-                  {displayCity.toUpperCase()}?
-                </strong>
-                <p>
-                  A: Absolutely! Our private chefs are available for hire in{" "}
-                  {displayCity.toUpperCase()}, ensuring a unique dining
-                  experience for any occasion.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  4: How do I find a trained verified cook near me in{" "}
-                  {displayCity.toUpperCase()}?
-                </strong>
-                <p>
-                  A: Finding a trained verified cook near you is simple. Enter
-                  your location on our platform, and choose from a list of
-                  dishes, number of people, date and time of event.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  5: Is Book a cook in {displayCity.toUpperCase()} suitable for
-                  last-minute chef bookings?
-                </strong>
-                <p>
-                  A: Yes, our platform allows for convenient and quick bookings,
-                  you can book the order 24 hours in advance.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  6: What sets your chefs for hire in{" "}
-                  {displayCity.toUpperCase()} apart from others?
-                </strong>
-                <p>
-                  A: Our chefs in {displayCity.toUpperCase()} are not only
-                  skilled but also verified, ensuring a high standard of service
-                  and culinary expertise.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  7: Can I hire a cook at home for a special occasion in{" "}
-                  {displayCity.toUpperCase()}?
-                </strong>
-                <p>
-                  A: Certainly! Explore our selection of cooks available for
-                  hire at home in {displayCity.toUpperCase()} to make your event
-                  memorable.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  8: How do I take a chef in {displayCity.toUpperCase()} for a
-                  personalized cooking experience?
-                </strong>
-                <p>
-                  A: Taking a chef in {displayCity.toUpperCase()} is simple.
-                  Choose a chef, specify your preferences, and enjoy a
-                  personalized cooking experience in the comfort of your home.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  9: Are your party caterers in {displayCity.toUpperCase()}{" "}
-                  suitable for both small and large events?
-                </strong>
-                <p>
-                  A: Yes, our party caterers in {displayCity.toUpperCase()}{" "}
-                  cater to a variety of events, from intimate gatherings to
-                  larger celebrations.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  10: Can I hire a professional chef for a night in{" "}
-                  {displayCity.toUpperCase()}?
-                </strong>
-                <p>
-                  A: Absolutely! Explore our options to hire a professional chef
-                  for a night in {displayCity.toUpperCase()} and create a
-                  culinary experience to remember.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  11: Is it possible to hire someone to cook for me in{" "}
-                  {displayCity.toUpperCase()} regularly?
-                </strong>
-                <p>
-                  A: Yes, you can hire a cook near you in{" "}
-                  {displayCity.toUpperCase()} for regular cooking services.
-                  Choose a cook that fits your preferences and schedule.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  12: What is the process for hiring a private personal chef in{" "}
-                  {displayCity.toUpperCase()}?
-                </strong>
-                <p>
-                  A: Hiring a private personal chef is easy. Browse through our
-                  profiles, select your preferred chef, and book their services
-                  for a personalized culinary experience.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  13: : How can I find the best home caterers in{" "}
-                  {displayCity.toUpperCase()}?
-                </strong>
-                <p>
-                  A: Finding the best home caterers in{" "}
-                  {displayCity.toUpperCase()} is simple with our platform.
-                  Explore our options and choose the one that suits your needs.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  14: Do you have top-rated cooks in {displayCity.toUpperCase()}{" "}
-                  available for hire?
-                </strong>
-                <p>
-                  A: Yes, we have a selection of top-rated cooks in{" "}
-                  {displayCity.toUpperCase()} available for hire. Explore their
-                  profiles and book the one that meets your requirements.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  15: Can I hire a chef at home in {displayCity.toUpperCase()}{" "}
-                  for a cooking demonstration?
-                </strong>
-                <p>
-                  A: Absolutely! Hire a chef at home in{" "}
-                  {displayCity.toUpperCase()} for a cooking demonstration and
-                  learn culinary skills from a professional.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  16: What is the difference between a private chef and a
-                  personal cook in {displayCity.toUpperCase()}?
-                </strong>
-                <p>
-                  A: A private chef typically offers a more personalized and
-                  upscale dining experience, while a personal cook provides
-                  regular cooking services. Choose based on your specific needs.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  17: Can I hire cooks on demand in {displayCity.toUpperCase()}{" "}
-                  for last-minute gatherings?
-                </strong>
-                <p>
-                  A: Yes, our platform allows you to hire cooks on demand in{" "}
-                  {displayCity.toUpperCase()}, making it convenient for
-                  spontaneous events.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  18: How can I find local chefs for hire in{" "}
-                  {displayCity.toUpperCase()} for a regional cuisine?
-                </strong>
-                <p>
-                  A: Finding local chefs for hire in {displayCity.toUpperCase()}{" "}
-                  is easy. Specify your cuisine preferences, and our platform
-                  will display chefs with expertise in that cuisine.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  19: Are there cooking maids near me in{" "}
-                  {displayCity.toUpperCase()} available for hire?
-                </strong>
-                <p>
-                  A: Yes, you can find cooking maids near you in{" "}
-                  {displayCity.toUpperCase()} available for hire. Explore their
-                  profiles and choose the one that suits your needs.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  20: Can I hire a personal chef for a night in{" "}
-                  {displayCity.toUpperCase()} for a romantic dinner?
-                </strong>
-                <p>
-                  A: Certainly! Hire a personal chef for a night in{" "}
-                  {displayCity.toUpperCase()} and create a romantic dining
-                  experience in the comfort of your home
-                </p>
-              </div>
-              <div>
-                <strong>
-                  21: How do I hire a cook online in {displayCity.toUpperCase()}{" "}
-                  for virtual cooking sessions?
-                </strong>
-                <p>
-                  A: Hiring a cook online in {displayCity.toUpperCase()} for
-                  virtual cooking sessions is simple. Browse through available
-                  cooks, choose one, and arrange for an online cooking session.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  22: : What makes your home cooking service in{" "}
-                  {displayCity.toUpperCase()} unique?
-                </strong>
-                <p>
-                  A: Our home cooking service in {displayCity.toUpperCase()} is
-                  unique due to our diverse selection of trained and verified
-                  cooks, ensuring a high-quality culinary experience
-                </p>
-              </div>
-              <div>
-                <strong>
-                  23: Can I book mini caterers in {displayCity.toUpperCase()}{" "}
-                  for a small family gathering?
-                </strong>
-                <p>
-                  A: Absolutely! Our mini caterers in{" "}
-                  {displayCity.toUpperCase()} are perfect for small family
-                  gatherings, providing a customized and delightful culinary
-                  experience.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  24: How do I hire a private cook for home in{" "}
-                  {displayCity.toUpperCase()} for regular meals?
-                </strong>
-                <p>
-                  A: Hiring a private cook for home in{" "}
-                  {displayCity.toUpperCase()} for regular meals is easy. Choose
-                  a cook that fits your preferences and schedule for consistent
-                  cooking services.
-                </p>
-              </div>
-              <div>
-                <strong>
-                  25: Are your private chef services near me in{" "}
-                  {displayCity.toUpperCase()} available for special dietary
-                  requirements?
-                </strong>
-                <p>
-                  A: Yes, our private chef services near you in{" "}
-                  {displayCity.toUpperCase()} are customizable to accommodate
-                  special dietary requirements. Discuss your needs with the
-                  selected chef to ensure a tailored culinary experience.
-                </p>
-              </div>
-            </div>
-
-            <p
-              id="city-area-title"
-              style={{
-                fontSize: "70px",
-                textTransform: "uppercase",
-                fontWeight: "bold",
-                color: "#E6756B",
-                margin: "35px 0 2px",
-                textAlign: "center",
-              }}
-            >
-              Serving all Areas in {displayCity}
-            </p>
-            <p
-              style={{
-                fontSize: "10px",
-                fontWeight: "bold",
-                color: "#E6756B",
-                margin: "2px 0 2px",
-                textAlign: "center",
-              }}
-            >
-              All localities are here
-            </p>
-
-            <div className="localities-box">
-              <h1 className="city-heading">
-                {displayCity
-                  ? displayCity.charAt(0).toUpperCase() + displayCity.slice(1)
-                  : "City"}{" "}
-                Localities
-              </h1>
-              <ul className="localities-list">
-                {cityLocalitiesList.length > 0 ? (
-                  cityLocalitiesList.map((loc, index) => (
-                    <li key={index} className="locality-item">
-                      <button
-                        onClick={() => handleClick(loc.name)}
-                        className="locality-button"
-                      >
-                        {loc.name}
-                      </button>
-                    </li>
-                  ))
-                ) : (
-                  <div className="no-localities">
-                    No localities found for this city.
-                  </div>
-                )}
-              </ul>
-            </div>
+            <ChefFAQS city={displayCity} />
           </div>
         </section>
 
@@ -1084,6 +1244,22 @@ const styles = {
   serviceSecLeft: {
     width: "40%",
   },
+  imageContainer: {
+    position: "relative",
+    width: "270px",
+    backgroundColor: "#fff",
+    marginBottom: 40,
+    boxShadow: "0 6px 16px 0 rgba(0,0,0,.14)",
+    borderRadius: "5px",
+    overflow: "hidden",
+    transition: "transform 0.3s ease-in-out",
+    margin: "10px 12px 20px",
+    padding: "6px 5px 10px",
+  },
+  dish: {
+    width: "32px",
+    height: "32px",
+  },
 };
 
 // ====================== SSR ======================
@@ -1099,14 +1275,59 @@ export async function getServerSideProps(context) {
       notFound: true,
     };
   }
-  const cityLocalitiesList =
-    (citySlug && cityData[citySlug]?.cityLocalitiesList) || [];
+
+  let initialCuisines = [];
+  let initialMealList = [];
+
+  try {
+    // 1. Cuisines fetch
+    const cuisineRes = await axiosApi.post(
+      BASE_URL + GET_CUISINE_ENDPOINT,
+      { type: "cuisine" },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (cuisineRes.status === API_SUCCESS_CODE) {
+      initialCuisines = cuisineRes.data.data.configuration.map(
+        ({ _id, name }) => [_id, name],
+      );
+    }
+
+    // 2. Initial meals (first cuisine + default veg)
+    if (initialCuisines.length > 0) {
+      const firstCuisineId = initialCuisines[0][0];
+
+      const mealRes = await axiosApi.post(
+        BASE_URL + GET_MEAL_DISH_ENDPOINT,
+        {
+          cuisineId: [firstCuisineId],
+          is_dish: 1,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (mealRes.status === API_SUCCESS_CODE) {
+        initialMealList = mealRes.data.data;
+      }
+    }
+  } catch (error) {
+    console.log("SSR Error Fetching Data:", error.message);
+  }
 
   return {
     props: {
-      city : context.params?.city,
-      locality: context.params?.locality,
-      cityLocalitiesList,
+      city: context.params?.city || context.query?.city || "",
+      locality: context.params?.locality || context.query?.locality || "",
+      initialCuisines,
+      initialMealList,
     },
   };
 }

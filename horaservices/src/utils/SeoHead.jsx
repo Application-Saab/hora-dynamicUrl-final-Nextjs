@@ -126,6 +126,16 @@ const seoData = {
         ? `Make your wedding in ${location} unforgettable with stunning balloon & floral decorations. Book HORA today! 💍`
         : "Make your wedding unforgettable with stunning balloon & floral decorations. Book HORA today! 💍",
   },
+  "wedding-decoration": {
+    title: (location) =>
+      location
+        ? `Wedding Decoration in ${location} with Stunning Balloon & Floral Designs, Starting at ₹4999`
+        : "Wedding Decoration with Stunning Balloon & Floral Designs, Starting at ₹4999",
+    description: (location) =>
+      location
+        ? `Make your wedding in ${location} unforgettable with stunning balloon & floral decorations. Book HORA today! 💍`
+        : "Make your wedding unforgettable with stunning balloon & floral decorations. Book HORA today! 💍",
+  },
   "bachelorette-decoration": {
     title: (location) =>
       location
