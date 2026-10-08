@@ -42,6 +42,8 @@ import DecorationCatDescriptionData, {
 import EventDateBanner from "@/components/Eventdatebanner";
 import axiosApi from "@/utils/axiosApi";
 import MakeItYoursBanner from "@/components/MakeItYoursBanner";
+import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
+
 const DecorationCatPage = ({
   city: cityProp = "",
   locality = null,
@@ -71,6 +73,7 @@ const DecorationCatPage = ({
       setCity(String(router.query.city));
     }
   }, [router.isReady, router.query, catValueProp, cityProp]);
+
   const buildProcessedContent = (catVal, citySlug) => {
     const content = DecorationCatDescriptionData[catVal] || [];
     return content.map((item) => {
@@ -123,8 +126,8 @@ const DecorationCatPage = ({
   // ================= CACHE-FIRST BACK-NAVIGATION SUPPORT =================
   // Jab user product-detail (alag route) se BACK karke is page par aata
   // hai, yeh component pura REMOUNT hota hai — saara state khali ho jaata
-  // hai. Isse bachne ke liye ek module-level in-memory cache use karte
-  // hain (utils/pageDataCache.js): mount hote hi pehle cache check karo,
+  // hai. Isse bachne ke liye module-level in-memory cache use karte hain
+  // (utils/scrollDataCache.js): mount hote hi pehle cache check karo,
   // agar mile to turant wahi data dikhao — koi naya API call nahi.
   //
   // `hasHydratedFromCache` ek REF hai (state nahi), taaki isko set/read
@@ -251,13 +254,60 @@ const DecorationCatPage = ({
     }
   }, [theme, selectedPriceTheme]);
 
+  // initialCatId change hone par (naya SSR data) state reset karo
+  const prevInitialCatIdRef = useRef(initialCatId);
+  useEffect(() => {
+    if (initialCatId && initialCatId !== prevInitialCatIdRef.current) {
+      prevInitialCatIdRef.current = initialCatId;
+
+      setCatId(initialCatId);
+      setCatalogueData(initialCatalogueData);
+      setDefaultCatalogueData(initialCatalogueData);
+      setHasMore(initialCatalogueData.length > 0 ? initialHasMore : true);
+
+      const hasFreshData = initialCatalogueData.length > 0;
+      skipInitialFetch.current = hasFreshData;
+      setLoading(!hasFreshData);
+      setIsInitialLoad(!hasFreshData);
+
+      setCurrentPage(1);
+      hasHydratedFromCache.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialCatId, initialCatalogueData, initialHasMore]);
+
   // ================= CACHE-FIRST: subCategory resolve hote hi check karo =================
   useEffect(() => {
     addSpaces(subCategory);
+    if (!subCategory) return;
+
+    const cacheKey = `decorcat:${router.asPath}`;
+    const cached = getPageCache(cacheKey);
+
+    if (cached) {
+      setCatId(cached.data.catId);
+      setCatalogueData(cached.data.catalogueData);
+      setDefaultCatalogueData(cached.data.defaultCatalogueData);
+      setCurrentPage(cached.data.currentPage);
+      setHasMore(cached.data.hasMore);
+      setSortOption(cached.data.sortOption || "popularity");
+      setSearchQuery(cached.data.searchQuery || "");
+      setSelectedPriceTheme(cached.data.selectedPriceTheme || null);
+      setLoading(false);
+      setIsInitialLoad(false);
+      hasHydratedFromCache.current = true;
+      skipInitialFetch.current = false; // cache mil gaya, SSR-skip branch ab irrelevant
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("page-content-ready"));
+      }
+      return; // getSubCatId API call bhi skip
+    }
+
     if (!initialCatId) {
       getSubCatId(subCategory);
     }
-  }, [subCategory, initialCatId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subCategory, router.asPath, initialCatId]);
 
   useEffect(() => {
     const handleStickyScroll = () => {
@@ -284,6 +334,10 @@ const DecorationCatPage = ({
   useEffect(() => {
     if (!catId) return;
 
+    if (hasHydratedFromCache.current) {
+      return;
+    }
+
     // SSR se data aa chuka hai aur abhi koi filter change nahi hua
     if (skipInitialFetch.current) {
       skipInitialFetch.current = false;
@@ -294,30 +348,14 @@ const DecorationCatPage = ({
 
     setCurrentPage(1);
     getSubCatItems(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [catId, themeFilter, sortOption, selectedPriceTheme, searchQuery]);
-
-  useEffect(() => {
-    if (loading || isPaginating || !hasMore) return;
-
-    const timer = setTimeout(() => {
-      setCurrentPage((prev) => prev + 1);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [loading, isPaginating, hasMore]);
 
   // ================= currentPage change => fetch that page =================
   // Guard: agar yeh currentPage abhi-abhi CACHE se hydrate hua tha (page 1
   // nahi tha), to iska fetch mat karo — data already cache mein tha.
-  // Yeh flag "consume-once" hai: pehli baar check karke turant clear kar
-  // dete hain, taaki agla genuine auto-pagination increment normally chale.
   useEffect(() => {
     if (hasHydratedFromCache.current) {
-      // Is pass mein skip — lekin flag ko yahin se clear NAHI karte,
-      // kyunki neeche wala catId-effect bhi isी pass mein isi flag ko
-      // check karta hai. Flag ek alag "reset" effect (sabse niche
-      // declare kiya gaya, dono ke BAAD) clear karega — taaki dono
-      // effects isi ek hydration-pass mein sahi se skip ho jayein.
       return;
     }
     if (catValue && currentPage !== 1) {
@@ -338,8 +376,7 @@ const DecorationCatPage = ({
   // changes (user browsed from one category to another). Yeh effect
   // catValue ke pehli baar populate hone par (mount, "" -> actual value)
   // fire NAHI hona chahiye — warna cache se hydrate kiya hua
-  // selectedPriceTheme turant wipe ho jaata hai aur user ko lagta hai
-  // "filter hat gaya".
+  // selectedPriceTheme turant wipe ho jaata hai.
   const prevCatValueRef = useRef("");
   useEffect(() => {
     const prevCatValue = prevCatValueRef.current;
@@ -352,6 +389,12 @@ const DecorationCatPage = ({
       setSelectedPriceTheme(null);
     }
   }, [catValue]);
+
+  useEffect(() => {
+    if (hasHydratedFromCache.current) {
+      hasHydratedFromCache.current = false;
+    }
+  });
 
   function addSpaces(subCategory) {
     let result = "";
@@ -375,8 +418,21 @@ const DecorationCatPage = ({
 
       if (categoryId) {
         setCatId(categoryId);
+      } else {
+        console.error(
+          "getSubCatId: no _id in response for",
+          subCategory,
+          response?.data,
+        );
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error(
+        "getSubCatId failed for",
+        subCategory,
+        error?.response?.status,
+        error?.message,
+      );
+    }
   };
 
   const getDiscountedPriceLocal = getDiscountedPrice;
@@ -441,9 +497,27 @@ const DecorationCatPage = ({
           };
         });
 
-        setCatalogueData((prevData) =>
-          page === 1 ? decoratedData : [...prevData, ...decoratedData],
-        );
+        setCatalogueData((prevData) => {
+          const updated =
+            page === 1 ? decoratedData : [...prevData, ...decoratedData];
+
+          // Jo bhi CURRENT state hai (filter/sort/search laga ho ya na
+          // ho) usko cache karte hain — taaki product-detail se back
+          // aane par bilkul WAHI view turant restore ho jaaye.
+          setPageCache(`decorcat:${router.asPath}`, {
+            catId,
+            catalogueData: updated,
+            defaultCatalogueData: searchQuery ? defaultCatalogueData : updated,
+            currentPage: page,
+            hasMore: page < response.data.pagination.totalPages,
+            sortOption,
+            searchQuery,
+            selectedPriceTheme,
+          });
+
+          return updated;
+        });
+
         if (!searchQuery) {
           setDefaultCatalogueData((prevData) =>
             page === 1 ? decoratedData : [...prevData, ...decoratedData],
@@ -452,7 +526,7 @@ const DecorationCatPage = ({
         setHasMore(page < response.data.pagination.totalPages);
       }
     } catch (error) {
-      // 👇 NAYA: error ho jaaye tab bhi page-1 ke case mein event fire karo,
+      // Error ho jaaye tab bhi page-1 ke case mein event fire karo,
       // warna page hamesha ke liye hidden reh jaayega (sirf safety-net
       // timer se hi reveal hoga, jo 1500ms baad hai)
       if (page === 1 && typeof window !== "undefined") {
@@ -462,8 +536,7 @@ const DecorationCatPage = ({
       if (page === 1) {
         setLoading(false);
 
-        // 👇 NAYA: page-1 ka data successfully aa gaya, ab _app.tsx ko
-        // batao reveal karne ke liye
+        // page-1 ka data aa gaya, ab _app.tsx ko batao reveal karne ke liye
         if (typeof window !== "undefined") {
           window.dispatchEvent(new Event("page-content-ready"));
         }
@@ -482,7 +555,7 @@ const DecorationCatPage = ({
   const normalizedCat = normalizeCatValue(catValue);
 
   const shouldHideBanner = (name) => {
-    const hideFor = ["wedding", "wedding-decoration", "haldi-mehendi-decoration"];
+    const hideFor = ["wedding", "haldi-mehendi-decoration"];
     return (
       hideFor.includes(normalizedCat) &&
       ["makeItMemorable", "DidyouKnow", "makeitmemorablebanner"].includes(name)
@@ -509,9 +582,9 @@ const DecorationCatPage = ({
     const categorySlug = getCategorySlugFromPath(pathname, city, locality);
 
     if (!categorySlug) return "#";
-    if(isDirectProductPage){
-      return `/${categorySlug}/product/${productSlug}`
-    }else {
+    if (isDirectProductPage) {
+      return `/${categorySlug}/product/${productSlug}`;
+    } else {
       return `${buildBasePath()}/${categorySlug}/${catValue}/product/${productSlug}`;
     }
   };
@@ -566,6 +639,7 @@ const DecorationCatPage = ({
       ))}
     </div>
   );
+
   const handleWhatsAppClick = () => {
     const PHONE = "7338584828";
     const message = `Looking for a Custom Decoration? Our support team is ready to help!`;
@@ -599,6 +673,7 @@ const DecorationCatPage = ({
                 <DecorationBanner category={normalizedCat} />
               </section>
               <SearchSortBar
+                sortOption={sortOption}
                 onSortChange={handleSortChange}
                 searchCategoryList={searchCategoryList}
                 products={sortedCatalogueData}
@@ -635,7 +710,7 @@ const DecorationCatPage = ({
                       locality={locality}
                       variant="grid"
                       catValue="kids-birthday-decoration"
-                      activeValue={themeFilter} 
+                      activeValue={themeFilter}
                     />
                   </div>
                 )}
@@ -657,7 +732,7 @@ const DecorationCatPage = ({
                       locality={locality}
                       variant="grid"
                       catValue="naming-ceremony-decoration"
-                      activeValue={themeFilter} 
+                      activeValue={themeFilter}
                     />
                   </div>
                 )}
@@ -917,29 +992,7 @@ const DecorationCatPage = ({
               <CardSkeleton />
             </div>
           )}
-          {/* <div className="category-content">
-            {Array.isArray(currentCategoryContent) &&
-              currentCategoryContent.length > 0 && (
-                <>
-                  {currentCategoryContent
-                    .slice(0, showAll ? currentCategoryContent.length : 2)
-                    .map((item, index) => (
-                      <div key={index} className="category-item">
-                        <h1>{item.title}</h1>
-                        <div
-                          className="item-content"
-                          dangerouslySetInnerHTML={{ __html: item.htmlContent }}
-                        />
-                      </div>
-                    ))}
-                  {currentCategoryContent.length > 2 && (
-                    <button onClick={toggleShowAll} className="toggle-btn">
-                      {showAll ? "See Less" : "See More"}
-                    </button>
-                  )}
-                </>
-              )}
-          </div> */}
+
           <div className="category-content">
             {Array.isArray(currentCategoryContent) &&
               currentCategoryContent.length > 0 && (
