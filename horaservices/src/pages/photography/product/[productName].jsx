@@ -36,6 +36,7 @@ import axiosApi from "@/utils/axiosApi";
 import { categoryNameToSlug } from "@/utils/Getphotocategoryurl";
 import WhatsAppIcon from "@/app/WhatsAppIconGtm";
 import { useCity } from "@/utils/cityContext";
+import { ProductPageLoader } from "@/components/PageLoaders/ProductPageLoader";
 
 
 // ---------- helpers ----------
@@ -591,8 +592,7 @@ const ProductDetails = ({
     }
   };
 
-  // if (!work) return <div className="photodetails-loading">Work not found</div>;
-    if (!work) {
+  if (!work) {
     return (
       <div style={{ maxWidth: 1200, margin: "40px auto", textAlign: "center" }}>
         <h1>Product not found</h1>
@@ -600,7 +600,7 @@ const ProductDetails = ({
       </div>
     );
   }
-  if (loading && !work) return <SkeletonLoader />;
+  if (loading && !work) return <ProductPageLoader />;
 
   return (
     <>

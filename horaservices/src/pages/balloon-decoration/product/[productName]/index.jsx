@@ -62,13 +62,6 @@ export async function getServerSideProps(context) {
   if (product?.categoryId || finalCatValue || categoryDetails?._id) {
     try {
       let categoryId = categoryDetails?._id;
-      // if (!categoryId && finalCatValue) {
-      //   const catRes = await axiosApi.get(
-      //     `${BASE_URL}${GET_DECORATION_CAT_ID}${finalCatValue}`,
-      //   );
-      //   // categoryId = catRes?.data?.data?._id;
-      //   categoryId = categoryDetails?._id;
-      // }
       if (categoryId) {
         const res = await axiosApi.get(
           `${BASE_URL}/api/Decoration/searchByTag/v2/${categoryId}?page=1&priceFilter=all&sortBy=asc&theme=all&limit=500`,

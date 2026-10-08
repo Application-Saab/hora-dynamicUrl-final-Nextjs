@@ -36,7 +36,6 @@ import {
 import {
   BASE_URL,
   GET_DECORATION_BY_NAME,
-  GET_DECORATION_CAT_ID,
   GET_ADDON_BY_ID,
   COMPRESSED_WEBP_IMG_URL,
 } from "@/utils/apiconstants";
@@ -59,6 +58,7 @@ import ActionButtons from "@/components/Actionbuttons";
 import WhyHoraSection from "@/components/WhyHoraSection";
 import { useCity } from "@/utils/cityContext";
 import WhatsAppIcon from "@/app/WhatsAppIconGtm";
+import { ProductPageLoader } from "../PageLoaders/ProductPageLoader";
 
 // ---------- helpers ----------
 const getDiscountedPrice = (price) => {
@@ -86,30 +86,6 @@ const formatProductName = (productName) => {
     .split("-")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
-};
-
-const SkeletonLoader = () => {
-  return (
-    <div className="skeleton-loader" style={{ maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start", paddingTop: "20px", paddingBottom: "20px", position: "relative" }} className="decDetails">
-        <div style={{ width: "50%", textAlign: "center" }} className="decDetailsLeft">
-          <div style={{ width: "80%", height: "300px", backgroundColor: "#f0f0f0", margin: "0 auto", position: "relative" }} />
-        </div>
-        <div style={{ width: "50%", paddingLeft: "20px", paddingRight: "50px" }} className="decDetailsRight">
-          <div style={{ height: "20px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "30px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "40%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "20px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "80%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "30px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "20px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "50px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "20px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "50px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "50px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "100%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "50px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "100%", borderRadius: "4px" }} className="decDetailsRightInner" />
-        </div>
-      </div>
-    </div>
-  );
 };
 
 // ---------- Component (NO getServerSideProps here) ----------
@@ -318,17 +294,6 @@ function DecorationsCatDetails({
       console.error(e.message);
     }
   };
-
-  // const getSubCatId = async (catSlug) => {
-  //   try {
-  //     const res = await axiosApi.get(
-  //       `${BASE_URL}${GET_DECORATION_CAT_ID}${catSlug}`,
-  //     );
-  //     if (res.data?.data) setPassCategoryId(res.data.data._id);
-  //   } catch (e) {
-  //     console.error(e.message);
-  //   }
-  // };
 
   useEffect(() => {
     if (product && allProducts.length > 0) {
@@ -594,7 +559,7 @@ function DecorationsCatDetails({
 
   if (loading && !product) {
     return (
-      <SkeletonLoader />
+      <ProductPageLoader />
     );
   }
 
