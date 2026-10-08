@@ -1,0 +1,159 @@
+/* ================================================================== */
+/* Baby Celebrations section  (Decoration.css ke end mein paste karo)   */
+/* ================================================================== */
+
+/* container: andar ke cqw is section ki width se bante hain */
+.baby-sec {
+  container-type: inline-size;
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+  overflow: hidden;
+  background-color: #fff6ec; /* image ke neeche ka cream */
+}
+
+.baby-sec__bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.baby-sec__bg-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.baby-sec__inner {
+  position: relative;
+  z-index: 1;
+  padding-bottom: 6cqw;
+}
+
+/* heading */
+.baby-sec__head {
+  text-align: center;
+  padding: 7cqw 14cqw 4cqw;
+}
+
+.baby-sec__eyebrow {
+  margin: 0;
+  font-weight: 500;
+  font-size: max(11px, 2.9cqw);
+  color: #444;
+}
+
+.baby-sec__title {
+  margin: 0.6cqw 0 0;
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  font-size: max(24px, 7.6cqw);
+  line-height: 1.15;
+  color: #2b1245;
+}
+
+.baby-sec__subtitle {
+  margin: 1.4cqw 0 0;
+  font-size: max(10px, 2.6cqw);
+  color: #444;
+}
+
+/* 2 x 2 grid */
+.baby-sec__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4cqw;
+  padding: 0 4cqw;
+}
+
+/* ================================================================== */
+/* BabyCelebrationCard                                                 */
+/* ================================================================== */
+.baby-card {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  padding: 4cqw;
+  border-radius: 6cqw;
+  background: #fff;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 4px 14px rgba(120, 80, 140, 0.14);
+}
+
+.baby-card__photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 0.82;
+  border-radius: 6cqw;
+  overflow: hidden;
+  background: #f1e9f3;
+}
+
+.baby-card__img {
+  object-fit: cover;
+}
+
+.baby-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 3cqw;
+  padding: 4cqw 1cqw 1cqw;
+}
+
+/* gol coloured icon (image) */
+.baby-card__icon {
+  position: relative;
+  display: block;
+  width: 17cqw;
+  height: 17cqw;
+}
+
+.baby-card__icon-img {
+  object-fit: contain;
+}
+
+/* title + subtitle ke saath arrow */
+.baby-card__row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2cqw;
+}
+
+.baby-card__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.baby-card__title {
+  margin: 0;
+  font-weight: 700;
+  font-size: max(12px, 8cqw);
+  line-height: 1.2;
+  color: #1f1f1f;
+}
+
+.baby-card__subtitle {
+  margin: 1cqw 0 0;
+  font-size: max(10px, 6.4cqw);
+  line-height: 1.3;
+  color: #666;
+}
+
+/* gol arrow button */
+.baby-card__arrow {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12cqw;
+  height: 12cqw;
+  padding: 2.5cqw;
+  border-radius: 50%;
+  color: var(--baby-color);
+  background: color-mix(in srgb, var(--baby-color) 16%, white);
+}

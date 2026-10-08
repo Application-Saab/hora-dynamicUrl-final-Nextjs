@@ -334,3 +334,62 @@
   font-size: 3cqw;
   color: #777;
 }
+
+/* container: andar ke cqw is section ki width se bante hain */
+.couple-sec {
+  container-type: inline-size;
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+  overflow: hidden;
+  background-color: #fdf8ec; /* image ke neeche ka cream */
+}
+
+.couple-sec__bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.couple-sec__bg-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.couple-sec__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.couple-sec__head {
+  text-align: center;
+  padding: 5cqw 0;
+}
+
+.couple-sec__eyebrow {
+  margin: 0;
+  font-weight: 600;
+  font-size: 2.7cqw;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #c8933c;
+}
+
+.couple-sec__title {
+  margin: 0.4cqw 0 0;
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  font-size: 6.6cqw;
+  line-height: 1.15;
+  color: #5b1a55;
+}
+
+.couple-sec__subtitle {
+  margin: 1.4cqw 0 0;
+  font-size: 3cqw;
+  color: #777;
+}

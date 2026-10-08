@@ -65,6 +65,7 @@ import anniversaryBg from "@/assets/Anniversaary.webp";   // pink background
 import firstNightBg from "@/assets/Firts_night.webp";     // purple background
 import anniversaryPhoto from "@/assets/Anniversaary.webp";   // apni photo
 import firstNightPhoto from "@/assets/Firts_night.webp"; 
+import coupleBgBanner from "@/assets/COUPLE_CELEBRATIONS_Bg_banner.webp";
 const BannerSlider = dynamic(() => import("@/components/BannerSlider"));
 const DecorSlider = dynamic(() => import("@/components/DecorSlider"));
 const ProductSliderSection = dynamic(
@@ -86,6 +87,18 @@ import SearchSortBar from "../SearchSortBar";
 import WeddingBanner from "../WeddingBanner";
 import TrendingSlider from "../TrendingSlider";
 import CelebrationCard from "../CelebrationCard";
+import BabyCelebrationCard from "../BabyCelebrationCard";
+
+
+import babyBgBanner from "@/assets/baby-bg-banner.webp";
+import babyShowerPhoto from "@/assets/baby-shower.webp";
+import babyWelcomePhoto from "@/assets/baby-welcome.webp";
+import namingPhoto from "@/assets/naming-ceremony.webp";
+import annaprashanPhoto from "@/assets/annaprashan.webp";
+import babyShowerIcon from "@/assets/baby-shower-icon.webp";
+import babyWelcomeIcon from "@/assets/baby-welcome-icon.webp";
+import namingIcon from "@/assets/naming-ceremony-icon.webp";
+import annaprashanIcon from "@/assets/annaprashan-icon.webp";
 
 const stats = [
   {
@@ -543,38 +556,63 @@ const weddingCollections = [
           </section>
         </div>
       </div>
-<CelebrationCard
-  bg={anniversaryBg}
-  photo={anniversaryPhoto}
-  imageSide="left"
-  title="Anniversary"
-  subtitle="Celebrate the beautiful journey of love together"
-  accent="#c4405f"
-  titleColor="#c4405f"
-  featuresBoxed
-  href={`/${categorySlug}/anniversary-decoration`}
-  features={[
-    { icon: <CalendarHeart size="100%" strokeWidth={1.6} />, label: "Romantic Setups" },
-    { icon: <Flower2 size="100%" strokeWidth={1.6} />,       label: "Elegant Decor" },
-    { icon: <Camera size="100%" strokeWidth={1.6} />,        label: "Picture Perfect" },
-  ]}
-/>
-<CelebrationCard
-  bg={firstNightBg}
-  photo={firstNightPhoto}
-  imageSide="right"
-  title="First Night"
-  titleIcon={<Star size="100%" strokeWidth={1.6} />}
-  subtitle="Begin your new chapter with love & romance"
-  accent="#7a4fb0"
-  titleColor="#6a3fa0"
-  href={`/${categorySlug}/first-night-decoration`}
-  features={[
-    { icon: <Sparkles size="100%" strokeWidth={1.6} />,   label: "Romantic Ambience" },
-    { icon: <Flower2 size="100%" strokeWidth={1.6} />,    label: "Beautiful Decor" },
-    { icon: <PartyPopper size="100%" strokeWidth={1.6} />, label: "Memorable Moment" },
-  ]}
-/>
+ <section className="couple-sec">
+  {/* background image */}
+  <div className="couple-sec__bg" aria-hidden="true">
+    <Image
+      src={coupleBgBanner}
+      alt=""
+      sizes="(max-width: 768px) 100vw, 600px"
+      className="couple-sec__bg-img"
+    />
+  </div>
+
+  <div className="couple-sec__inner">
+    {/* heading */}
+    <div className="couple-sec__head">
+      <p className="couple-sec__eyebrow">Made for beautiful Moments</p>
+      <h2 className="couple-sec__title">Couple Celebrations</h2>
+      <p className="couple-sec__subtitle">
+        Decorations that make your bond even more special
+      </p>
+    </div>
+
+    {/* ye dono background ke upar aayenge */}
+    <CelebrationCard
+      bg={anniversaryBg}
+      photo={anniversaryPhoto}
+      imageSide="left"
+      title="Anniversary"
+      subtitle="Celebrate the beautiful journey of love together"
+      accent="#c4405f"
+      titleColor="#c4405f"
+      featuresBoxed
+      href={`/${categorySlug}/anniversary-decoration`}
+      features={[
+        { icon: <CalendarHeart size="100%" strokeWidth={1.6} />, label: "Romantic Setups" },
+        { icon: <Flower2 size="100%" strokeWidth={1.6} />,       label: "Elegant Decor" },
+        { icon: <Camera size="100%" strokeWidth={1.6} />,        label: "Picture Perfect" },
+      ]}
+    />
+
+    <CelebrationCard
+      bg={firstNightBg}
+      photo={firstNightPhoto}
+      imageSide="right"
+      title="First Night"
+      titleIcon={<Star size="100%" strokeWidth={1.6} />}
+      subtitle="Begin your new chapter with love & romance"
+      accent="#7a4fb0"
+      titleColor="#6a3fa0"
+      href={`/${categorySlug}/first-night-decoration`}
+      features={[
+        { icon: <Sparkles size="100%" strokeWidth={1.6} />,    label: "Romantic Ambience" },
+        { icon: <Flower2 size="100%" strokeWidth={1.6} />,     label: "Beautiful Decor" },
+        { icon: <PartyPopper size="100%" strokeWidth={1.6} />, label: "Memorable Moment" },
+      ]}
+    />
+  </div>
+</section>
       <DecorSlider
         title="Anniversary Decoration"
         catValue="anniversary-decoration"
@@ -587,16 +625,61 @@ const weddingCollections = [
         hasCityPageParam={hasCityPageParam}
       />
 
-      <section className="BabyShowerBanner">
-        <Image
-          src={BabyShowerBannerIMG}
-          alt="Decoration-Banner"
-          width={1200}
-          height={400}
-          className="decorationBanner-image"
-          priority
-        />
-      </section>
+  <section className="baby-sec">
+  <div className="baby-sec__bg" aria-hidden="true">
+    <Image
+      src={babyBgBanner}
+      alt=""
+      sizes="(max-width: 768px) 100vw, 600px"
+      className="baby-sec__bg-img"
+    />
+  </div>
+
+  <div className="baby-sec__inner">
+    <div className="baby-sec__head">
+      <p className="baby-sec__eyebrow">Celebrate the joy of</p>
+      <h2 className="baby-sec__title">Baby Celebrations</h2>
+      <p className="baby-sec__subtitle">
+        Beautiful setups for your little one&apos;s special moments
+      </p>
+    </div>
+
+    <div className="baby-sec__grid">
+      <BabyCelebrationCard
+        image={babyShowerPhoto}
+        icon={babyShowerIcon}
+        title="Baby Shower"
+        subtitle="Celebrate the upcoming arrival"
+        color="#9b59c4"
+        href={`/${categorySlug}/baby-shower-decoration`}
+      />
+      <BabyCelebrationCard
+        image={babyWelcomePhoto}
+        icon={babyWelcomeIcon}
+        title="Baby Welcome"
+        subtitle="Welcome your little bundle of joy"
+        color="#e48f8f"
+        href={`/${categorySlug}/welcome-baby-decoration`}
+      />
+      <BabyCelebrationCard
+        image={namingPhoto}
+        icon={namingIcon}
+        title="Naming Ceremony"
+        subtitle="Celebrate the upcoming arrival"
+        color="#25a99a"
+        href={`/${categorySlug}/naming-ceremony-decoration`}
+      />
+      <BabyCelebrationCard
+        image={annaprashanPhoto}
+        icon={annaprashanIcon}
+        title="Annaprashan Ceremony"
+        subtitle="Welcome your little bundle of joy"
+        color="#e8a23a"
+        href={`/${categorySlug}/annaprashan-decoration`}
+      />
+    </div>
+  </div>
+</section>
 
       <ProductSliderSection
         title="Babyshower Decoration"
