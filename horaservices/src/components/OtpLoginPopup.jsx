@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   BASE_URL,
   OTP_GENERATE_END_POINT,
@@ -19,12 +19,9 @@ import ArrowImgback from "@/assets/arrow.svg";
 import axiosApi from "@/utils/axiosApi";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 import loginLine from "@/assets/loginline.svg";
-
-/* WhatsApp booking number (country code ke sath, bina + ke) */
-const WHATSAPP_BOOKING_NUMBER = "917338584828";
-const WHATSAPP_BOOKING_LINK = `https://wa.me/${WHATSAPP_BOOKING_NUMBER}?text=${encodeURIComponent(
-  "Hi Hora, I want to book a service.",
-)}`;
+import { useCity } from "@/utils/cityContext";
+import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
+import { resolveWhatsAppLink, sendWelcomeMessage } from "@/utils/loginWhatsapplogic";
 
 /* ---------------- SMALL INLINE ICONS ---------------- */
 const WhatsAppIcon = () => (
@@ -59,7 +56,12 @@ const OtpLogin = ({
   fromCheckout = false,
   backIconHidden = false,
   extraVerifyData = {},
+  serviceName = "",
+  cityName = "",
 }) => {
+  /* Popup khula hai to background page scroll nahi hoga */
+  useLockBodyScroll(true);
+
   const [mobileNumber, setMobileNumber] = useState("");
   const [otp, setOtp] = useState(["", "", "", ""]);
   const pathname = usePathname();
@@ -80,6 +82,18 @@ const OtpLogin = ({
   /* WhatsApp button sirf checkout page par dikhega */
   const isCheckoutPage = pathname?.includes("checkout") || fromCheckout;
 
+  /* Dynamic WhatsApp link (service + city ke saath)
+     City: prop -> URL -> header me selected city (food checkout me URL me city nahi hoti) */
+  const searchParams = useSearchParams();
+  const cityCtx = useCity();
+  const whatsappLink = resolveWhatsAppLink({
+    serviceName,
+    cityName,
+    searchParams,
+    pathname,
+    selectedCityName: cityCtx?.selectedCityName,
+  });
+
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const [error, setError] = useState("");
@@ -95,57 +109,6 @@ const OtpLogin = ({
     if (/^\d{0,10}$/.test(value)) {
       setMobileNumber(value);
       setError("");
-    }
-  };
-
-  /* ---------------- WHATSAPP WELCOME MESSAGE ----------------
-     NOTE: API key frontend me nahi honi chahiye. Best: is call ko
-     backend me move karo. Tab tak key .env.local se aayegi:
-     NEXT_PUBLIC_DOUBLETICK_KEY=your_new_key
-     (purani key rotate kar do, wo code me expose ho chuki hai)
-  ------------------------------------------------------------ */
-  const sendWelcomeMessage = async (mobile) => {
-    const formatted = mobile.startsWith("+91") ? mobile : "+91" + mobile;
-
-    try {
-      await axiosApi.post(
-        "https://public.doubletick.io/whatsapp/message/template",
-        {
-          messages: [
-            {
-              from: "+917338584828",
-              to: formatted,
-              content: {
-                templateName: "happy_to_help_v4",
-                language: "en",
-                templateData: {
-                  header: {
-                    type: "IMAGE",
-                    mediaUrl:
-                      "https://quickscale-template-media.s3.ap-south-1.amazonaws.com/org_FGdNfMoTi9/2a2f1b0c-63e0-4c3e-a0fb-7ba269f23014.jpeg",
-                  },
-                  body: { placeholders: ["Hora Services"] },
-                  buttons: [
-                    {
-                      type: "URL",
-                      parameter: "https://horaservices.com/",
-                    },
-                  ],
-                },
-              },
-            },
-          ],
-        },
-        {
-          headers: {
-            accept: "application/json",
-            "content-type": "application/json",
-            Authorization: process.env.NEXT_PUBLIC_DOUBLETICK_KEY,
-          },
-        },
-      );
-    } catch (err) {
-      console.error("WhatsApp error", err);
     }
   };
 
@@ -373,10 +336,12 @@ const OtpLogin = ({
 
     return () => controller.abort();
   }, [isOtpSent]);
-const maskedNumber =
-  mobileNumber.length === 10
-    ? `${mobileNumber.slice(0, 2)}*****${mobileNumber.slice(-3)}`
-    : mobileNumber;
+
+  const maskedNumber =
+    mobileNumber.length === 10
+      ? `${mobileNumber.slice(0, 2)}*****${mobileNumber.slice(-3)}`
+      : mobileNumber;
+
   /* ---------------- UI ---------------- */
   return (
     <div className="login-popup-overlay">
@@ -425,11 +390,18 @@ const maskedNumber =
               </h1>
 
               <p className="login-subtitle">
-                {isOtpSent
-                  ? "Check your phone we have sent you an OTP"
-                  : isCheckoutPage
-                    ? "Login with your mobile number or choose WhatsApp booking for quick support."
-                    : "Login with your mobile number"}
+                {isOtpSent ? (
+                  <>
+                    Check your phone we have sent you an OTP to{" "}
+                    <span className="login-subtitle__number">
+                      (+91) {maskedNumber}
+                    </span>
+                  </>
+                ) : isCheckoutPage ? (
+                  "Login with your mobile number or choose WhatsApp booking for quick support."
+                ) : (
+                  "Login with your mobile number"
+                )}
               </p>
             </div>
 
@@ -476,7 +448,7 @@ const maskedNumber =
 
                     <a
                       className="login-whatsapp-btn"
-                      href={WHATSAPP_BOOKING_LINK}
+                      href={whatsappLink}
                       target="_blank"
                       rel="noreferrer"
                     >
@@ -502,10 +474,6 @@ const maskedNumber =
             {/* OTP SCREEN */}
             {isOtpSent && (
               <>
-                <p className="verify-text">
-                  <span>(+91) {maskedNumber}</span>
-                </p>
-
                 <div
                   className={`otp-box-wrapper ${otpError ? "otp-error" : ""}`}
                 >
@@ -617,7 +585,6 @@ const maskedNumber =
                   className="btn-arrow-img"
                 />
               </button>
-
             </div>
           </div>
         )}

@@ -28,7 +28,7 @@ export function getSubCategory(catValue) {
   if (catValue === "naming-ceremony-decoration") {
     return "NamingCeremony";
   }
-  if (catValue === "coorporate-showrooms-decoration") {
+  if (catValue === "corporate-showrooms-decoration") {
     return "Coorporateshowrooms";
   }
   if (catValue === "car-decoration") {

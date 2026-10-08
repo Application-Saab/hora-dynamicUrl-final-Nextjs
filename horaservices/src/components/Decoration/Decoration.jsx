@@ -287,7 +287,7 @@ const { citySeoData, defaultSeo } = Decorationseodata;
     title: "Wedding",
     description: "DECORATIONS",
     link: `/${categorySlug}/wedding-decoration`,
-    catValue: "Wedding",
+    catValue: "wedding",
   };
 
   const handleWhatsApp = () => {

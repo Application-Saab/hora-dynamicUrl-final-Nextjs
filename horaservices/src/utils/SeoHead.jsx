@@ -86,7 +86,7 @@ const seoData = {
         ? `Celebrate your baby's naming ceremony in ${location} with beautiful & customized decorations. Book HORA today! 🎀`
         : "Celebrate your baby's naming ceremony with beautiful & customized decorations. Book HORA today! 🎀",
   },
-  "Nation-Pride-decoration": {
+  "nation-pride-decoration": {
     title: (location) =>
       location
         ? `Nation Pride Decoration in ${location} with Latest Designs, Starting at ₹3000`
@@ -116,7 +116,7 @@ const seoData = {
         ? `Get premium stage decoration in ${location} with stunning balloon & floral designs for any occasion. Book HORA! 🌸`
         : "Get premium stage decoration with stunning balloon & floral designs for any occasion. Book HORA! 🌸",
   },
-  Wedding: {
+  "wedding": {
     title: (location) =>
       location
         ? `Wedding Decoration in ${location} with Stunning Balloon & Floral Designs, Starting at ₹4999`
@@ -136,7 +136,7 @@ const seoData = {
         ? `Throw the ultimate bachelorette party in ${location} with trendy balloon & theme decorations. Book HORA! 🥂`
         : "Throw the ultimate bachelorette party with trendy balloon & theme decorations. Book HORA! 🥂",
   },
-  "coorporate-showrooms-decoration": {
+  "corporate-showrooms-decoration": {
     title: (location) =>
       location
         ? `Corporate Showroom Decoration in ${location} for Product Launches & Brand Promotions, Starting at ₹3999`
@@ -279,6 +279,9 @@ export const getPageMetaDescription = (catValue, city, locality) => {
 // MAIN COMPONENT
 // ─────────────────────────────────────────────
 const SeoHead = ({ catValue, city, locality, theme, isBooster = false }) => {
+  console.log('%c [ theme ]', 'font-size:13px; background:pink; color:#bf2c9f;', theme)
+  console.log('%c [ city ]', 'font-size:13px; background:pink; color:#bf2c9f;', city)
+  console.log('%c [ catValue ]', 'font-size:13px; background:pink; color:#bf2c9f;', catValue)
   const schemaOrg = getDecorationCatOrganizationSchema(catValue);
   const scriptTag = JSON.stringify(schemaOrg);
 

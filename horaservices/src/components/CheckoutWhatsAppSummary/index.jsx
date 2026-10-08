@@ -42,7 +42,7 @@ export const contactUsRedirect = ({
       "first-night-decoration": "first night decoration",
       "premium-decoration": "premium decoration",
       "haldi-mehendi-decoration": "haldi & mehendi decoration",
-      "Wedding": "wedding decoration",
+      "wedding": "wedding decoration",
       "bachelorette-decoration": "bachelorette decoration",
     },
   };

@@ -11,6 +11,7 @@ import SearchSortBar from "@/components/SearchSortBar";
 import SeoHead from "@/utils/SeoHead";
 import boosterBanner from "@/assets/celebrationboosters.webp";
 import "./celebrationbooster.css";
+import Head from "next/head";
 
 // Ideally move this to utils/apiconstants.js alongside your other endpoints
 // (BASE_URL, GET_DECORATION_CAT_ITEM, etc.) instead of hardcoding it here.
@@ -165,44 +166,67 @@ const CelebrationBoosterPage = () => {
   };
 
   return (
-    <div className="celebrationBoosterSection">
-      <SeoHead catValue={CATEGORY_SLUG} isBooster={true}/>
-      <section className="celebrationBoosterBanner">
-        <Image
-          src={boosterBanner}
-          alt="Celebration Boosters"
-          width={1200}
-          height={400}
-          className="celebrationBoosterBanner-img"
-          priority
+    <>
+      <Head>
+        <title>
+          {`Book Party Props & Celebration Boosters for Events | HORA Services`}
+        </title>
+        <meta
+          name="description"
+          content={`Elevate your wedding or birthday with our premium party props! Book cold pyro entries, fog matkas, money guns, and more celebration boosters today.`}
         />
-      </section>
+        <link rel="canonical" href="https://horaservices.com/celebration-booster" />
+        <meta
+          name="keywords"
+          content={`Elevate your wedding or birthday with our premium party props! Book cold pyro entries, fog matkas, money guns, and more celebration boosters today.`}
+        />
+        <meta name="robots" content="index, follow" />
+        <meta property="og:title" content="Book Party Props & Celebration Boosters for Events | HORA Services" />
+        <meta
+          property="og:url"
+          content={`https://horaservices.com/celebration-booster`}
+        />
+        <meta property="og:type" content="website" />
+      </Head>
 
-      {loading ? (
-        <div className="skeleton-wrapper">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <CardSkeleton key={index} />
-          ))}
-        </div>
-      ) : error ? (
-        <div className="boosterStateMsg boosterError">{error}</div>
-      ) : displayData.length === 0 ? (
-        <div className="noProductsWrapper">
-          <h2>
-            {isSearchActive
-              ? "No boosters match your search"
-              : "No celebration boosters available"}
-          </h2>
-        </div>
-      ) : (
-        <ProductGrid
-          data={displayData}
-          onCardClick={handleViewDetails}
-          getHref={getProductHref}
-          catValue={CATEGORY_SLUG}
-        />
-      )}
-    </div>
+      <div className="celebrationBoosterSection">
+        <section className="celebrationBoosterBanner">
+          <Image
+            src={boosterBanner}
+            alt="Celebration Boosters"
+            width={1200}
+            height={400}
+            className="celebrationBoosterBanner-img"
+            priority
+          />
+        </section>
+
+        {loading ? (
+          <div className="skeleton-wrapper">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <CardSkeleton key={index} />
+            ))}
+          </div>
+        ) : error ? (
+          <div className="boosterStateMsg boosterError">{error}</div>
+        ) : displayData.length === 0 ? (
+          <div className="noProductsWrapper">
+            <h2>
+              {isSearchActive
+                ? "No boosters match your search"
+                : "No celebration boosters available"}
+            </h2>
+          </div>
+        ) : (
+          <ProductGrid
+            data={displayData}
+            onCardClick={handleViewDetails}
+            getHref={getProductHref}
+            catValue={CATEGORY_SLUG}
+          />
+        )}
+      </div>
+    </>
   );
 };
 

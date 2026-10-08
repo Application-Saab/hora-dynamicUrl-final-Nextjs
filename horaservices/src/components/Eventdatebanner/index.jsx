@@ -12,7 +12,7 @@ import { BASE_URL } from "@/utils/apiconstants";
 import { useDateGate } from "@/utils/dateGateContext";
 import DateSelectionBottomSheet from "../DateSelectionBottomSheet";
 import PencilEditIcon from "@/assets/pencilEdit.svg";
-import EventReminderPopup from "../EventReminderPopup";
+// import EventReminderPopup from "../EventReminderPopup"; // ❌ reminder popup band (coupon/invite sheet use ho rahi hai)
 import { fetchWithError } from "@/utils/fetchWithError";
 
 const MONTH_NAMES = [
@@ -32,6 +32,7 @@ export default function EventDateBanner({
   userId: userIdProp,
   visitorId: visitorIdProp,
   pincode,
+  city, 
   eventTitle = "",
 }) {
   const { dateResolved, setDateResolved } = useDateGate();
@@ -40,25 +41,25 @@ export default function EventDateBanner({
   const [eventId, setEventId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [reminderOpen, setReminderOpen] = useState(false);
-  const [reminderVariant, setReminderVariant] = useState("planner");
+  // const [reminderOpen, setReminderOpen] = useState(false); // ❌ reminder band
+  // const [reminderVariant, setReminderVariant] = useState("planner"); // ❌ reminder band
 
-const getIds = () => {
-  const userId = userIdProp || null;
+  const getIds = () => {
+    const userId = userIdProp || null;
 
-  if (userId) {
-    // Logged in — sirf userId se query karo, purana guest visitorId ignore karo
-    return { userId, visitorId: null };
-  }
+    if (userId) {
+      // Logged in — sirf userId se query karo, purana guest visitorId ignore karo
+      return { userId, visitorId: null };
+    }
 
-  if (typeof window === "undefined") {
-    return { userId: null, visitorId: visitorIdProp };
-  }
+    if (typeof window === "undefined") {
+      return { userId: null, visitorId: visitorIdProp };
+    }
 
-  const visitorId =
-    visitorIdProp || localStorage.getItem("VISITOR_ID") || null;
-  return { userId: null, visitorId };
-};
+    const visitorId =
+      visitorIdProp || localStorage.getItem("VISITOR_ID") || null;
+    return { userId: null, visitorId };
+  };
 
   const fetchEventDate = () => {
     const { userId, visitorId } = getIds();
@@ -112,16 +113,16 @@ const getIds = () => {
     if (newDate) {
       setEventDate(newDate);
 
-      // Reminder ab HAR baar dikhega jab bhi date confirm/edit ki jaaye —
-      // "already shown" wala once-per-date flag-check jaan-boojh kar
-      // hataya gaya hai, kyunki requirement hai ki jitni baar bhi date
-      // change ho, reminder popup aana chahiye.
-      const today = new Date();
-      const selected = new Date(newDate);
-      const diffMs = selected.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
-      const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-      setReminderVariant(diffDays >= 0 && diffDays <= 4 ? "approaching" : "planner");
-      setReminderOpen(true);
+      // ❌ Reminder popup ab band hai. Date confirm hone par
+      // DateSelectionBottomSheet khud city ke hisaab se
+      // Delhi -> ₹150 coupon sheet, baaki cities -> invite sheet dikhata hai.
+      //
+      // const today = new Date();
+      // const selected = new Date(newDate);
+      // const diffMs = selected.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
+      // const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+      // setReminderVariant(diffDays >= 0 && diffDays <= 4 ? "approaching" : "planner");
+      // setReminderOpen(true);
     }
     setIsSheetOpen(false);
     fetchEventDate();
@@ -179,6 +180,7 @@ const getIds = () => {
           </button>
         </div>
       )}
+
       <DateSelectionBottomSheet
         isOpen={isSheetOpen}
         onClose={() => setIsSheetOpen(false)}
@@ -186,15 +188,20 @@ const getIds = () => {
         userId={currentUserId}
         visitorId={currentVisitorId}
         pincode={pincode}
+        city={city} 
+        whatsappNumber="917338584828" 
         eventTitle={eventTitle}
         eventId={eventId}
         initialDate={eventDate}
       />
+
+      {/* ❌ Reminder popup band
       <EventReminderPopup
         isOpen={reminderOpen}
         onClose={() => setReminderOpen(false)}
         variant={reminderVariant}
       />
+      */}
     </>
   );
 }

@@ -580,7 +580,7 @@ function DecorationsCatDetails({
     return (
       <div style={{ maxWidth: 1200, margin: "40px auto", textAlign: "center" }}>
         <h1>Product not found</h1>
-        <p>Is design ko nahi mil paya. Koi aur try karo.</p>
+        <p>This design is not found. Please try another design.</p>
       </div>
     );
   }
