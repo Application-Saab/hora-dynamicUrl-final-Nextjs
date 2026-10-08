@@ -19,6 +19,7 @@ import ImageGrid from "../../../../../components/image-galleries/ImageGrid";
 import CommonImagePopup from "../../../../../components/CommonImagePopup";
 import "./profile.css"
 import { useParams } from "next/navigation";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 const Profile = () => {
    const [activeTab, setActiveTab] = useState("all");
@@ -109,9 +110,7 @@ const Profile = () => {
 
          const folderName = `recentWork_${ownerId}`;
 
-         const response = await fetch(
-            `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}`
-         );
+         const response = await fetchWithError(`${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}`);
 
          const result = await response.json();
 
@@ -134,15 +133,12 @@ const Profile = () => {
       try {
          setLoading(true);
 
-         const userResponse = await fetch(
-            `${BASE_URL}/api/users/user_details/${supplierID}`
-         );
+         const userResponse = await fetchWithError(`${BASE_URL}/api/users/user_details/${supplierID}`);
 
          const userResult = await userResponse.json();
 
-         const specializationResponse = await fetch(
-            `${BASE_URL}/api/specializations/get`
-         );
+         const specializationResponse = await fetchWithError(`${BASE_URL}/api/specializations/get`);
+
 
          const specializationResult = await specializationResponse.json();
 
@@ -173,9 +169,7 @@ const Profile = () => {
       try {
          if (!supplierID) return;
 
-         const response = await fetch(
-            `${BASE_URL}/api/order/supplier/${supplierID}/past-order-count`
-         );
+         const response = await fetchWithError(`${BASE_URL}/api/order/supplier/${supplierID}/past-order-count`);
 
          const result = await response.json();
 
