@@ -1,22 +1,22 @@
 "use client";
 
 import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
-import profileBanner from "../../../../../assets/photographerprofile/profileBanner.jpg";
-import profileImage from "../../../../../assets/photographerprofile/profileImage.svg";
-import location from "../../../../../assets/photographerprofile/location.svg";
-import experience from "../../../../../assets/photographerprofile/experience.svg";
-import userProfile from "../../../../../assets/photographerprofile/userProfile.svg";
-import aboutUser from "../../../../../assets/photographerprofile/aboutUser.svg";
-import star from "../../../../../assets/photographerprofile/star.svg";
-import recent from "../../../../../assets/photographerprofile/recent.svg";
-import Icon1 from "../../../../../assets/photographerprofile/Icon1.svg";
-import Icon2 from "../../../../../assets/photographerprofile/Icon2.svg";
-import Icon3 from "../../../../../assets/photographerprofile/Icon3.svg";
-import star2 from "../../../../../assets/photographerprofile/star2.svg";
+import profileBanner from "../../../../assets/photographerprofile/profileBanner.jpg";
+import profileImage from "../../../../assets/photographerprofile/profileImage.svg";
+import location from "../../../../assets/photographerprofile/location.svg";
+import experience from "../../../../assets/photographerprofile/experience.svg";
+import userProfile from "../../../../assets/photographerprofile/userProfile.svg";
+import aboutUser from "../../../../assets/photographerprofile/aboutUser.svg";
+import star from "../../../../assets/photographerprofile/star.svg";
+import recent from "../../../../assets/photographerprofile/recent.svg";
+import Icon1 from "../../../../assets/photographerprofile/Icon1.svg";
+import Icon2 from "../../../../assets/photographerprofile/Icon2.svg";
+import Icon3 from "../../../../assets/photographerprofile/Icon3.svg";
+import star2 from "../../../../assets/photographerprofile/star2.svg";
 import Image from "next/image";
 import { BASE_URL } from "@/utils/apiconstants";
-import ImageGrid from "../../../../../components/image-galleries/ImageGrid";
-import CommonImagePopup from "../../../../../components/CommonImagePopup";
+import ImageGrid from "../../../../components/image-galleries/ImageGrid";
+import CommonImagePopup from "../../../../components/CommonImagePopup";
 import "./profile.css"
 import { useParams } from "next/navigation";
 import { fetchWithError } from "@/utils/fetchWithError";
