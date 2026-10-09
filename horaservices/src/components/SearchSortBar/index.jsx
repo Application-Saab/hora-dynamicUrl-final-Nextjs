@@ -268,6 +268,7 @@ export default function SearchSortBar({
   getProductHref,
   getCategoryHref,
   userId = null,
+  showSort = true, // false => "Sort by" button aur Sort sheet dono nahi dikhenge
 }) {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -460,7 +461,9 @@ export default function SearchSortBar({
         style={{ height: isFixed ? topBarRef.current?.offsetHeight || 0 : 0 }}
       />
       <div
-        className={`search-sort-top-bar ${isFixed ? "fixed" : ""}`}
+        className={`search-sort-top-bar ${isFixed ? "fixed" : ""} ${
+          showSort ? "" : "search-sort-top-bar--no-sort"
+        }`}
         ref={topBarRef}
       >
         <div className="search-box">
@@ -494,28 +497,32 @@ export default function SearchSortBar({
           />
         )}
 
-        <button
-          type="button"
-          className="sort-btn"
-          onClick={() => {
-            if (typeof window !== "undefined") {
-              window.dataLayer = window.dataLayer || [];
-              window.dataLayer.push({ event: "sort_sheet_open" });
-            }
-            setIsSortOpen(true);
-          }}
-        >
-          <Image src={closeIcon} alt="Close" className="sort-close-icon" />
-          Sort by
-        </button>
+        {showSort && (
+          <button
+            type="button"
+            className="sort-btn"
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({ event: "sort_sheet_open" });
+              }
+              setIsSortOpen(true);
+            }}
+          >
+            <Image src={closeIcon} alt="Close" className="sort-close-icon" />
+            Sort by
+          </button>
+        )}
       </div>
 
-      <SortSheet
-        isOpen={isSortOpen}
-        onClose={() => setIsSortOpen(false)}
-        sortOption={sortOption}
-        onSelect={handleSortSelect}
-      />
+      {showSort && (
+        <SortSheet
+          isOpen={isSortOpen}
+          onClose={() => setIsSortOpen(false)}
+          sortOption={sortOption}
+          onSelect={handleSortSelect}
+        />
+      )}
     </div>
   );
 }

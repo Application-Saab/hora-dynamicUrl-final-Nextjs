@@ -6,8 +6,8 @@
 .baby-sec {
   container-type: inline-size;
   position: relative;
-  max-width: 600px;
-  margin: 0 auto;
+  max-width: 480px;
+  margin: 10px auto;
   overflow: hidden;
   background-color: #fff6ec; /* image ke neeche ka cream */
 }
@@ -41,31 +41,35 @@
 
 .baby-sec__eyebrow {
   margin: 0;
-  font-weight: 500;
-  font-size: max(11px, 2.9cqw);
-  color: #444;
+  color: #2D2D2F;
+font-family: Inter, sans-serif;
+font-weight: 500;
+font-size: clamp(8.6px, 2.54vw, 10px);
+text-align: center;
 }
 
 .baby-sec__title {
   margin: 0.6cqw 0 0;
-  font-family: "Playfair Display", serif;
-  font-weight: 700;
-  font-size: max(24px, 7.6cqw);
-  line-height: 1.15;
-  color: #2b1245;
+  color: #2A0227;
+font-family: "Playfair Display", serif;
+font-weight: 700;
+font-size: clamp(21.48px, 6.36vw, 25px);
 }
 
 .baby-sec__subtitle {
   margin: 1.4cqw 0 0;
-  font-size: max(10px, 2.6cqw);
-  color: #444;
+color: #2D2D2F;
+font-family: Inter, sans-serif;
+font-weight: 500;
+font-size: clamp(6.88px, 2.04vw, 8px);
+text-align: center;
 }
 
 /* 2 x 2 grid */
 .baby-sec__grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 4cqw;
+  gap: clamp(11.18px, 3.31vw, 13px);
   padding: 0 4cqw;
 }
 
@@ -76,8 +80,11 @@
   container-type: inline-size;
   display: flex;
   flex-direction: column;
-  padding: 4cqw;
-  border-radius: 6cqw;
+  padding: clamp(4.3px, 1.27vw, 5px);
+  border-top-left-radius: clamp(25.77px, 7.63vw, 30px);
+  border-top-right-radius: clamp(25.77px, 7.63vw, 30px);
+  border-bottom-right-radius: clamp(17.18px, 5.09vw, 20px);
+  border-bottom-left-radius: clamp(17.18px, 5.09vw, 20px);
   background: #fff;
   text-decoration: none;
   color: inherit;
@@ -87,8 +94,11 @@
 .baby-card__photo {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 0.82;
-  border-radius: 6cqw;
+  height: clamp(97.85px, 29.01vw, 114px);
+  border-top-left-radius: clamp(25.77px, 7.63vw, 30px);
+  border-top-right-radius: clamp(25.77px, 7.63vw, 30px);
+  border-bottom-right-radius: clamp(25.77px, 7.63vw, 30px);
+  border-bottom-left-radius: clamp(28.35px, 8.4vw, 33px);
   overflow: hidden;
   background: #f1e9f3;
 }
@@ -99,8 +109,8 @@
 
 .baby-card__body {
   display: flex;
-  flex-direction: column;
-  gap: 3cqw;
+  flex-direction: row;
+  gap: clamp(5.16px, 1.53vw, 6px);
   padding: 4cqw 1cqw 1cqw;
 }
 
@@ -108,8 +118,8 @@
 .baby-card__icon {
   position: relative;
   display: block;
-  width: 17cqw;
-  height: 17cqw;
+  width: clamp(32.68px, 9.67vw, 38px);
+height: clamp(32.68px, 9.67vw, 38px);
 }
 
 .baby-card__icon-img {
@@ -131,17 +141,19 @@
 
 .baby-card__title {
   margin: 0;
-  font-weight: 700;
-  font-size: max(12px, 8cqw);
-  line-height: 1.2;
-  color: #1f1f1f;
+ color: #10172D;
+font-family: Inter, sans-serif;
+font-weight: 600;
+font-size: clamp(10.32px, 3.05vw, 12px);
 }
 
 .baby-card__subtitle {
   margin: 1cqw 0 0;
-  font-size: max(10px, 6.4cqw);
-  line-height: 1.3;
-  color: #666;
+ color: #636363;
+font-family: Inter, sans-serif;
+font-weight: 400;
+line-height: clamp(11px, 3.26vw, 12.8px);
+font-size: clamp(8.6px, 2.54vw, 10px);
 }
 
 /* gol arrow button */

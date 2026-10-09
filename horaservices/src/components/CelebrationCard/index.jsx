@@ -1,5 +1,5 @@
 import Image from "next/image";
-import "./CelebrationCard.css";
+import "./celebrationcard.css";
 
 const HeartOutline = () => (
   <svg viewBox="0 0 24 24" width="100%" height="100%" aria-hidden="true">

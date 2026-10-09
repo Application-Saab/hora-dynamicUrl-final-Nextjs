@@ -63,8 +63,8 @@ import weddingBg from "@/assets/weddingbackground_image.webp";
 import { CalendarHeart, Flower2, Camera, Sparkles, PartyPopper, Star } from "lucide-react";
 import anniversaryBg from "@/assets/Anniversaary.webp";   // pink background
 import firstNightBg from "@/assets/Firts_night.webp";     // purple background
-import anniversaryPhoto from "@/assets/Anniversaary.webp";   // apni photo
-import firstNightPhoto from "@/assets/Firts_night.webp"; 
+import anniversaryPhoto from "@/assets/AnniversaaryImage.webp";   // apni photo
+import firstNightPhoto from "@/assets/FirstnightImage.webp"; 
 import coupleBgBanner from "@/assets/COUPLE_CELEBRATIONS_Bg_banner.webp";
 const BannerSlider = dynamic(() => import("@/components/BannerSlider"));
 const DecorSlider = dynamic(() => import("@/components/DecorSlider"));
@@ -99,6 +99,9 @@ import babyShowerIcon from "@/assets/baby-shower-icon.webp";
 import babyWelcomeIcon from "@/assets/baby-welcome-icon.webp";
 import namingIcon from "@/assets/naming-ceremony-icon.webp";
 import annaprashanIcon from "@/assets/annaprashan-icon.webp";
+import HoraBanner from "../DecorationLandingTopbanner";
+import BirthdayBanner from "../Birthdaybanner";
+import BirthdayMagicalBanner from "../Birthdaymagicalbanner";
 
 const stats = [
   {
@@ -405,11 +408,14 @@ const weddingCollections = [
       </Head>
 
       <div className="top-slider">
-       <Banner
+       {/* <Banner
   image={bannerImg}
   alt="Your Celebrations, Our Commitment"
   border="1px solid #97538C"   // yahan se border bheja
-/>
+/> */}
+<div className="page-width">
+<HoraBanner />
+</div>
 <SearchSortBar
   sortOption={sortOption}
   onSortChange={setSortOption}
@@ -418,6 +424,7 @@ const weddingCollections = [
   categoryType="decoration"
   getCategoryHref={getCategoryHref}
   getProductHref={() => "#"}
+  showSort={false}
 />
          </div>
       {/* CIRCLE TABS */}
@@ -504,13 +511,9 @@ const weddingCollections = [
           </div>
         </div>
       </section>
-
-         <Banner
-  image={PremiumBannerImg}
-  alt="Your Celebrations, Our Commitment"
-  border="none"   // yahan se border bheja
-/>
-
+<div className="page-width">
+        <BirthdayBanner />
+</div>
       <DecorSlider
         title="Premium Birthday Decorations"
         catValue="premium-decoration"
@@ -523,13 +526,9 @@ const weddingCollections = [
         decCat={decCat}
         locality={locality}
       />
-
-        <Banner
-  image={BirthdayBannerImg}
-  alt="Your Celebrations, Our Commitment"
-  border="none"   // yahan se border bheja
-/>
-
+<div className="page-width">
+    <BirthdayMagicalBanner />
+</div>
       <ProductSliderSection
         title="Birthday Decoration"
         data={birthdayData}
@@ -584,8 +583,8 @@ const weddingCollections = [
       imageSide="left"
       title="Anniversary"
       subtitle="Celebrate the beautiful journey of love together"
-      accent="#c4405f"
-      titleColor="#c4405f"
+      accent="#C44357"
+      titleColor="#C44357"
       featuresBoxed
       href={`/${categorySlug}/anniversary-decoration`}
       features={[
@@ -602,8 +601,8 @@ const weddingCollections = [
       title="First Night"
       titleIcon={<Star size="100%" strokeWidth={1.6} />}
       subtitle="Begin your new chapter with love & romance"
-      accent="#7a4fb0"
-      titleColor="#6a3fa0"
+      accent="#764C9E"
+      titleColor="#764C9E"
       href={`/${categorySlug}/first-night-decoration`}
       features={[
         { icon: <Sparkles size="100%" strokeWidth={1.6} />,    label: "Romantic Ambience" },
@@ -623,6 +622,7 @@ const weddingCollections = [
         city={city}
         locality={locality}
         hasCityPageParam={hasCityPageParam}
+        viewAllText="View All Anniversary  Decoration" 
       />
 
   <section className="baby-sec">

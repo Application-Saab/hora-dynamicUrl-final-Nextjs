@@ -3,8 +3,11 @@
 /* container: andar ke saare cqw is wrapper ki width se bante hain */
 .cel-wrap {
   container-type: inline-size;
-  max-width: 600px;
-  margin: 10px auto;
+  max-width: 480px;
+  padding: clamp(7.74px, 2.29vw, 9px)
+         clamp(7.74px, 2.29vw, 9px)
+         clamp(12.03px, 3.56vw, 14px)
+         clamp(7.74px, 2.29vw, 9px);
 }
 
 /* ---------- Card ---------- */
@@ -40,8 +43,6 @@
   flex: 0 0 47%;
   border-radius: 4cqw;
   overflow: hidden;
-  border: 0.6cqw solid rgba(255, 255, 255, 0.92);
-  box-shadow: 0 0.6cqw 2cqw rgba(0, 0, 0, 0.18);
 }
 
 /* ---------- Text side ---------- */
@@ -63,14 +64,15 @@
   justify-content: center;
   gap: 1.2cqw;
   margin: 0;
-  font-family: "Playfair Display", serif;
-  font-weight: 500;
-  font-size: 5.4cqw;
+  font-family: Inter, sans-serif;
+font-weight: 700;
+font-style: normal;
+font-size: clamp(14.54px, 4.3vw, 16.91px);
+ color: var(--title);
   line-height: 1.1;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   white-space: nowrap;
-  color: var(--title);
 }
 
 .cel-card__title-icon {
@@ -104,12 +106,13 @@
 
 .cel-card__subtitle {
   margin: 0;
-  max-width: 38cqw;
-  font-family: "Inter", sans-serif;
-  font-weight: 400;
-  font-size: 3.4cqw;
+ max-width: clamp(100.65px, 29.77vw, 117px);
+ font-family: Inter, sans-serif;
+font-weight: 400;
+font-style: normal;
+font-size: clamp(8.72px, 2.58vw, 10.14px);
   line-height: 1.3;
-  color: #444;
+  color: #29282D;
 }
 
 /* ---------- Features ---------- */
@@ -123,9 +126,6 @@
 
 .cel-card__feats--boxed {
   padding: 1.8cqw 0.4cqw;
-  border-radius: 3cqw;
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0.4cqw 1.6cqw rgba(0, 0, 0, 0.08);
 }
 
 .cel-card__feat {

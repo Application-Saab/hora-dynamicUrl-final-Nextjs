@@ -158,3 +158,20 @@ text-align: center;
 text-decoration: underline;
 color: #97538C;
 }
+
+.premium-view-all-bottom {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.premium-view-all-text {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.premium-view-all-arrow {
+  width: clamp(14px, 4vw, 18px);
+  height: auto;
+}

@@ -280,8 +280,8 @@
 .wed-sec {
   container-type: inline-size;
   position: relative;
-  max-width: 600px;
-  margin: 0 auto;
+  max-width: 480px;
+  margin: 10px auto;
   overflow: hidden;
   background-color: #fdf8ec; /* image ke neeche ka cream */
 }
@@ -375,24 +375,33 @@ color: #8A8785;
 
 .couple-sec__eyebrow {
   margin: 0;
-  font-weight: 600;
-  font-size: 2.7cqw;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: #c8933c;
+font-family: Inter, sans-serif;
+font-weight: 500;
+font-style: normal;
+font-size: clamp(8.6px, 2.54vw, 10px);
+line-height: 100%;
+letter-spacing: 0%;
+text-align: center;
+  color: #2D2D2F;
 }
 
 .couple-sec__title {
-  margin: 0.4cqw 0 0;
-  font-family: "Playfair Display", serif;
-  font-weight: 700;
-  font-size: 6.6cqw;
-  line-height: 1.15;
-  color: #5b1a55;
+  margin: clamp(6px, 1.78vw, 7px) 0 0;
+ color: #2A0227;
+font-family: Inter, sans-serif;
+font-weight: 600;
+  text-transform: uppercase;
+font-size: clamp(15.45px, 4.58vw, 18px);
 }
 
 .couple-sec__subtitle {
   margin: 1.4cqw 0 0;
-  font-size: 3cqw;
-  color: #777;
+ color: #2D2D2F;
+font-family: Inter, sans-serif;
+font-weight: 500;
+font-style: normal;
+font-size: clamp(6.88px, 2.04vw, 8px);
+line-height: 100%;
+letter-spacing: 0%;
+text-align: center;
 }

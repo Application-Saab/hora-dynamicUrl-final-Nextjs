@@ -4,7 +4,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import "./DecorSlider.css";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
-
+import arrowIcon from "@/assets/arrow-right.svg";
 const getDiscountedDifference = (price) => {
   const numeric = parseFloat(price?.replace(/[^0-9.-]+/g, ""));
   if (isNaN(numeric) || numeric < 0) return 0;
@@ -101,7 +101,15 @@ const DecorSlider = ({
 
       <div className="premium-footer">
         <a href={finalViewAllHref} className="premium-view-all-bottom">
-          {viewAllText} →
+          <span className="premium-view-all-text">{viewAllText}</span>
+          <Image
+            src={arrowIcon}
+            alt=""
+            aria-hidden="true"
+            width={35}
+            height={35}
+            className="premium-view-all-arrow"
+          />
         </a>
       </div>
     </section>

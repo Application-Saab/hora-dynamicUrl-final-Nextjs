@@ -7,7 +7,7 @@ import logo from "../../assets/new_logo_light.png";
 import "./ProductSliderSection.css";
 import { decCat } from "@/utils/decorationCategories";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
-
+import arrowIcon from "@/assets/arrow-right.svg";
 const getDiscountedPrice = (price) => {
   const p = parseFloat(price.replace(/[^0-9.-]+/g, "")) || 0;
   const discount = p < 3000 ? 20 : p <= 5000 ? 27 : 35;
@@ -28,6 +28,7 @@ const ProductSliderSection = ({
   catValue,
   city = "",
   locality = "",
+  viewAllText = "", 
 }) => {
   const pathname = usePathname();
 
@@ -83,12 +84,12 @@ const ProductSliderSection = ({
 
   return (
     <div className="product-section-container">
-      <div className="product-section-header">
-        <Link href={buildViewAllLink()}>
-          <h2>{title}</h2>
-        </Link>
-        <Link href={buildViewAllLink()}>View All</Link>
-      </div>
+     <div className="product-section-header">
+  <Link href={buildViewAllLink()} className="product-section-title-link">
+    <h2>{title}</h2>
+  </Link>
+  <Link href={buildViewAllLink()}>View All</Link>
+</div>
 
       <div className="product-section-grid">
         {data.map((item, index) =>
@@ -131,6 +132,19 @@ const ProductSliderSection = ({
             </a>
           )
         )}
+      </div>
+       <div className="product-section-footer">
+       <Link href={buildViewAllLink()} className="product-section-footer-link">
+  {viewAllText || `View All ${title}`}
+  <Image
+    src={arrowIcon}
+    alt=""
+    aria-hidden="true"
+    width={35}
+    height={35}
+    className="product-section-footer-arrow"
+  />
+</Link>
       </div>
     </div>
   );
