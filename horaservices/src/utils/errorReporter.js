@@ -103,7 +103,6 @@ const buildPayload = (error, errorInfo = {}, context = {}) => {
 export const reportError = async (error, errorInfo = {}, context = {}) => {
   try {
     const payload = buildPayload(error, errorInfo, context);
-
     // Try Beacon first
     const beaconSent = sendWithBeacon(payload);
 
