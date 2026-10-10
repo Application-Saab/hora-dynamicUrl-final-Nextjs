@@ -1,6 +1,7 @@
 import Image from "next/image";
 import "./celebrationcard.css";
 
+/* Default divider (jab `divider` image na di jaye) */
 const HeartOutline = () => (
   <svg viewBox="0 0 24 24" width="100%" height="100%" aria-hidden="true">
     <path
@@ -14,16 +15,17 @@ const HeartOutline = () => (
 );
 
 const CelebrationCard = ({
-  bg,                       // background image (static import)
-  photo,                    // card ki main photo
+  bg,                        // background image (static import)
+  photo,                     // card ki main photo (static import)
   photoAlt = "",
-  imageSide = "left",       // "left" ya "right"
+  imageSide = "left",        // "left" ya "right"
   title,
-  titleIcon = null,         // optional: title ke left ka icon (jaise star)
+  titleIcon = null,          // optional: title ke left ka icon
   subtitle,
-  features = [],            // [{ icon: <Icon />, label: "..." }]
-  featuresBoxed = false,    // true = features white box mein
-  accent = "#c4405f",       // divider, heart, icons ka color
+  features = [],             // [{ icon: StaticImport | JSX, label: "..." }]
+  featuresBoxed = false,     // true = features white box mein
+  divider = null,            // optional: line-heart-line ki image (static import)
+  accent = "#c4405f",        // divider, heart, icons ka color
   titleColor = "#c4405f",
   href = "",
 }) => {
@@ -64,20 +66,47 @@ const CelebrationCard = ({
             {title}
           </h3>
 
-          <div className="cel-card__divider" aria-hidden="true">
-            <span className="cel-card__line" />
-            <span className="cel-card__heart">
-              <HeartOutline />
-            </span>
-            <span className="cel-card__line" />
-          </div>
+          {divider ? (
+            <div className="cel-card__divider-img" aria-hidden="true">
+              <Image
+                src={divider}
+                alt=""
+                fill
+                sizes="30vw"
+                style={{ objectFit: "contain" }}
+              />
+            </div>
+          ) : (
+            <div className="cel-card__divider" aria-hidden="true">
+              <span className="cel-card__line" />
+              <span className="cel-card__heart">
+                <HeartOutline />
+              </span>
+              <span className="cel-card__line" />
+            </div>
+          )}
 
           <p className="cel-card__subtitle">{subtitle}</p>
 
-          <ul className={`cel-card__feats ${featuresBoxed ? "cel-card__feats--boxed" : ""}`}>
+          <ul
+            className={`cel-card__feats ${featuresBoxed ? "cel-card__feats--boxed" : ""}`}
+          >
             {features.map((f, i) => (
               <li key={i} className="cel-card__feat">
-                <span className="cel-card__feat-icon">{f.icon}</span>
+                <span className="cel-card__feat-icon">
+                  {/* f.icon image (static import) ho ya JSX, dono chalega */}
+                  {f.icon && typeof f.icon === "object" && "src" in f.icon ? (
+                    <Image
+                      src={f.icon}
+                      alt=""
+                      aria-hidden="true"
+                      width={25}
+                      height={24}
+                    />
+                  ) : (
+                    f.icon
+                  )}
+                </span>
                 <span className="cel-card__feat-label">{f.label}</span>
               </li>
             ))}

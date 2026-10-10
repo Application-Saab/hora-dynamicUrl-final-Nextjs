@@ -20,7 +20,7 @@ const ChevronIcon = () => (
 );
 
 const GoArrowIcon = () => (
-  <svg viewBox="0 0 24 24" width="62%" height="62%" aria-hidden="true">
+  <svg viewBox="0 0 24 24" width="75%" height="75%" aria-hidden="true">
     <path
       d="M5 12h14M13 6l6 6-6 6"
       fill="none"

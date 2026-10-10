@@ -88,7 +88,9 @@ const ProductSliderSection = ({
   <Link href={buildViewAllLink()} className="product-section-title-link">
     <h2>{title}</h2>
   </Link>
-  <Link href={buildViewAllLink()}>View All</Link>
+   <Link href={buildViewAllLink()} className="product-section-link">
+    View All
+  </Link>
 </div>
 
       <div className="product-section-grid">
@@ -135,7 +137,9 @@ const ProductSliderSection = ({
       </div>
        <div className="product-section-footer">
        <Link href={buildViewAllLink()} className="product-section-footer-link">
-  {viewAllText || `View All ${title}`}
+  <span className="product-section-footer-text">
+    {viewAllText || `View All ${title}`}
+  </span>
   <Image
     src={arrowIcon}
     alt=""

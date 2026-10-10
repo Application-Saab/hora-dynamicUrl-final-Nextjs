@@ -7,6 +7,7 @@ import "./CategoryGrid.css";
 import Dashes from "@/assets/Decordashes.svg";
 import Heart from "@/assets/Decorheart.svg";
 import DashesSmall from "@/assets/Decordashessmall.svg";
+import arrowIcon from "@/assets/arrowicon.svg";
 
 const CategoryGrid = ({ cardsData = [], city = "", locality = "" }) => {
   const pathname = usePathname();
@@ -97,7 +98,9 @@ const CategoryGrid = ({ cardsData = [], city = "", locality = "" }) => {
                     {card.subtitle && <p>{card.subtitle}</p>}
 
                     {card.catValue && (
-                      <span className="category-grid__button">View more →</span>
+                       <span className="category-grid__button">
+                            View more <Image src={arrowIcon} alt="" className="category-grid__arrow" />
+                       </span>
                     )}
                   </div>
                 </a>

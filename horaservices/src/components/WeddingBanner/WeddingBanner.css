@@ -1,5 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Great+Vibes&family=Inter:wght@300;600&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Baskervville:wght@400;700&family=Dancing+Script:wght@400&family=Inter:wght@300;600&family=Poppins:wght@400;600&display=swap');
+
 .wed-banner-outer {
   margin: 0;
 }
@@ -7,7 +8,7 @@
 /* container: andar ke saare cqw is wrapper ki width se bante hain */
 .wed-banner-wrap {
   container-type: inline-size;
-  max-width: 600px;
+  max-width: 480px;
   margin: 0 auto;
 }
 
@@ -72,7 +73,7 @@ line-height: clamp(7.49px, 2.22vw, 8.72px);
 
 .wed-banner__script {
   display: block;
-  margin: 0.2cqw 0 2.4cqw 3.6cqw;
+  margin: 1cqw 0 0.4cqw 2cqw;
 color: #F3CA7E;
 font-family: "Dancing Script", cursive;
 font-weight: 400;
@@ -83,12 +84,13 @@ font-size: clamp(26.75px, 7.93vw, 31.16px);
   margin: 0 0 1.8cqw;
 font-family: "Poppins", sans-serif;
 font-weight: 400;
-font-size: clamp(14.34px, 4.25vw, 16.69px);
+font-size: clamp(11.39px, 3.4vw, 13.36px);
   white-space: nowrap;
 }
 
 .wed-banner__count b {
   font-weight: 600;
+  font-size: clamp(14.34px, 4.25vw, 16.69px);
 }
 
 .wed-banner__tagline {

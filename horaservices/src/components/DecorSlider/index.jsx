@@ -48,7 +48,7 @@ const DecorSlider = ({
     <section className="premium-slide-decor">
       <div className="premium-slide-decor-header">
         <h2>{title}</h2>
-        <a href={finalViewAllHref} className="premium-view-all">
+        <a href={finalViewAllHref} className="premium-slide-link">
           View All
         </a>
       </div>

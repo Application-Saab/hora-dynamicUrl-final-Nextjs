@@ -45,8 +45,8 @@ font-size: clamp(15.45px, 4.58vw, 18px);
   grid-template-rows: repeat(2, auto);
   grid-auto-columns: var(--card-w);
   gap: var(--row-gap) calc(var(--u) * 2.7);
-
- padding: 0 0 0 clamp(8.6px, 2.54vw, 10px);
+ 
+  padding: 0 0 10px clamp(8.6px, 2.54vw, 10px);
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scroll-snap-type: x proximity;
@@ -90,11 +90,12 @@ font-size: clamp(15.45px, 4.58vw, 18px);
 }
 
 .trend-card__name {
-  font-family: "Inter", sans-serif;
-  font-weight: 600;
-  font-size: calc(var(--u) * 2.6);
-  line-height: 1.2;
-  color: #222;
+ font-family: 'Inter', sans-serif;
+font-weight: 500;
+font-style: normal;
+font-size: clamp(7.35px, 2.2vw, 8.63px);
+line-height: clamp(7.93px, 2.37vw, 9.32px);
+  color: #000000;
   text-align: left;
   overflow: hidden;
   display: -webkit-box;
@@ -104,8 +105,8 @@ font-size: clamp(15.45px, 4.58vw, 18px);
 
 .trend-card__go {
   flex: none;
-  width: calc(var(--u) * 5);
-  height: calc(var(--u) * 5);
+  width: clamp(12.73px, 3.8vw, 14.94px);
+  height: clamp(12.73px, 3.8vw, 14.94px);
   display: flex;
   align-items: center;
   justify-content: center;

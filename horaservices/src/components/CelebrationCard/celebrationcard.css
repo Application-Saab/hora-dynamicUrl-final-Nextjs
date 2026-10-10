@@ -1,13 +1,13 @@
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500;700&display=swap");
 
 /* container: andar ke saare cqw is wrapper ki width se bante hain */
 .cel-wrap {
   container-type: inline-size;
   max-width: 480px;
   padding: clamp(7.74px, 2.29vw, 9px)
-         clamp(7.74px, 2.29vw, 9px)
-         clamp(12.03px, 3.56vw, 14px)
-         clamp(7.74px, 2.29vw, 9px);
+           clamp(7.74px, 2.29vw, 9px)
+           clamp(12.03px, 3.56vw, 14px)
+           clamp(7.74px, 2.29vw, 9px);
 }
 
 /* ---------- Card ---------- */
@@ -65,10 +65,10 @@
   gap: 1.2cqw;
   margin: 0;
   font-family: Inter, sans-serif;
-font-weight: 700;
-font-style: normal;
-font-size: clamp(14.54px, 4.3vw, 16.91px);
- color: var(--title);
+  font-weight: 700;
+  font-style: normal;
+  font-size: clamp(14.54px, 4.3vw, 16.91px);
+  color: var(--title);
   line-height: 1.1;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -82,7 +82,7 @@ font-size: clamp(14.54px, 4.3vw, 16.91px);
   color: var(--accent);
 }
 
-/* line - heart - line */
+/* ---------- Divider: default (line - heart - line) ---------- */
 .cel-card__divider {
   display: flex;
   align-items: center;
@@ -104,13 +104,22 @@ font-size: clamp(14.54px, 4.3vw, 16.91px);
   height: 3cqw;
 }
 
+/* ---------- Divider: image wala ---------- */
+.cel-card__divider-img {
+  position: relative;
+  width: 26cqw;
+  aspect-ratio: 121 / 13;
+  margin: 1.4cqw 0 1.8cqw;
+}
+
+/* ---------- Subtitle ---------- */
 .cel-card__subtitle {
   margin: 0;
- max-width: clamp(100.65px, 29.77vw, 117px);
- font-family: Inter, sans-serif;
-font-weight: 400;
-font-style: normal;
-font-size: clamp(8.72px, 2.58vw, 10.14px);
+  max-width: clamp(100.65px, 29.77vw, 117px);
+  font-family: Inter, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: clamp(8.72px, 2.58vw, 10.14px);
   line-height: 1.3;
   color: #29282D;
 }
@@ -144,10 +153,18 @@ font-size: clamp(8.72px, 2.58vw, 10.14px);
 }
 
 .cel-card__feat-icon {
+  position: relative;
   display: flex;
   width: 6cqw;
   height: 6cqw;
   color: var(--accent);
+}
+
+/* image icons poori box bharein, rang image ka hi rahega */
+.cel-card__feat-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .cel-card__feat-label {

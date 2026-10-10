@@ -111,7 +111,18 @@ color: #97538C;;
   color: #97538C;
   margin-bottom: 0px;
 }
-
+.premium-slide-link {
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: clamp(15.45px, 4.58vw, 18px);
+  line-height:clamp(6.67px, 2vw, 7.84px);
+  color: #97538C;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;   /* line aur text ke beech gap */
+  text-decoration-skip-ink: auto;
+}
 .premium-price-wrapper {
   display: flex;
   align-items: start;
@@ -148,30 +159,32 @@ color: #97538C;;
   padding: clamp(10px, 3vw, 14px) 10px 0 0; /* right 10px = section ke left padding ke barabar, taaki center sahi dikhe */
 }
 
-.premium-view-all-bottom {
-font-family: Inter, sans-serif;
-font-weight: 700;
-font-style: normal;
-font-size: clamp(13.74px, 4.07vw, 16px);
-line-height: 100%;
-text-align: center;
-text-decoration: underline;
-color: #97538C;
+.premium-footer {
+  display: flex;
+  justify-content: center;
+  padding: clamp(10px, 3vw, 14px) 10px 0 0;
 }
 
 .premium-view-all-bottom {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  font-family: Inter, sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: clamp(13.74px, 4.07vw, 16px);
+  line-height: 1.2;
+  color: #97538C;
   text-decoration: none;
+  padding-bottom: 1px;                    /* text/arrow aur line ke beech gap */
+  border-bottom: 1.5px solid #97538C;     /* text + arrow dono ke neeche line */
 }
 
 .premium-view-all-text {
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  text-decoration: none;                  /* span ki underline hata di */
 }
 
 .premium-view-all-arrow {
-  width: clamp(14px, 4vw, 18px);
+  width: clamp(10.2px, 3.05vw, 12px);
   height: auto;
 }

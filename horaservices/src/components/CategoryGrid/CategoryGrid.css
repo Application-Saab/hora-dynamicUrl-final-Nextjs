@@ -119,6 +119,10 @@ line-height: clamp(23.08px, 6.83vw, 26.85px);
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
+.category-grid__arrow {
+  width: 16px;
+  height: 16px;
+}
 .category-grid__card:hover .category-grid__button {
   opacity: 0.85;
   transform: translateY(-1px);
