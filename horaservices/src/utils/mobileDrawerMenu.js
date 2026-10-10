@@ -21,7 +21,7 @@ export const MOBILE_DRAWER_MENU = [
   },
   {
     label: "Chef for Party",
-    href: "/book-chef-cook-for-party",
+    href: "/chef-near-me",
     type: "link"
   },
   {

@@ -150,7 +150,7 @@ export const decCat = [
     image: "",
     name: "Wedding",
     subCategory: "Wedding",
-    catValue: "Wedding",
+    catValue: "wedding-decoration",
     imgAlt: "Wedding Decor",
   },
 
@@ -186,7 +186,7 @@ export const decCat = [
     catValue: "house-warming-decoration",
     imgAlt: "House Warming Decoration",
   },
-   {
+  {
     id: "17",
     Image: "",
     name: "Engagement decoration",
@@ -194,5 +194,28 @@ export const decCat = [
     catValue: "engagement-decoration",
     imgAlt: "Engagement Decoration",
   },
-
+  {
+    id: "18",
+    Image: "",
+    name: "Reception decoration",
+    subCategory: "ReceptionDecoration",
+    catValue: "reception-decoration",
+    imgAlt: "Reception Decoration",
+  },
+  {
+    id: "19",
+    Image: "",
+    name: "Sangeet decoration",
+    subCategory: "SangeetDecoration",
+    catValue: "sangeet-decoration",
+    imgAlt: "Sangeet Decoration",
+  },
+  {
+    id: "20",
+    Image: "",
+    name: "Mandap decoration",
+    subCategory: "MandapDecoration",
+    catValue: "mandap-decoration",
+    imgAlt: "Mandap Decoration",
+  },
 ];

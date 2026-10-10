@@ -36,7 +36,6 @@ import {
 import {
   BASE_URL,
   GET_DECORATION_BY_NAME,
-  GET_DECORATION_CAT_ID,
   GET_ADDON_BY_ID,
   COMPRESSED_WEBP_IMG_URL,
 } from "@/utils/apiconstants";
@@ -59,6 +58,7 @@ import ActionButtons from "@/components/Actionbuttons";
 import WhyHoraSection from "@/components/WhyHoraSection";
 import { useCity } from "@/utils/cityContext";
 import WhatsAppIcon from "@/app/WhatsAppIconGtm";
+import { ProductPageLoader } from "../PageLoaders/ProductPageLoader";
 
 // ---------- helpers ----------
 const getDiscountedPrice = (price) => {
@@ -294,17 +294,6 @@ function DecorationsCatDetails({
       console.error(e.message);
     }
   };
-
-  // const getSubCatId = async (catSlug) => {
-  //   try {
-  //     const res = await axiosApi.get(
-  //       `${BASE_URL}${GET_DECORATION_CAT_ID}${catSlug}`,
-  //     );
-  //     if (res.data?.data) setPassCategoryId(res.data.data._id);
-  //   } catch (e) {
-  //     console.error(e.message);
-  //   }
-  // };
 
   useEffect(() => {
     if (product && allProducts.length > 0) {
@@ -570,9 +559,7 @@ function DecorationsCatDetails({
 
   if (loading && !product) {
     return (
-      <div style={{ maxWidth: 1200, margin: "40px auto", textAlign: "center" }}>
-        Loading…
-      </div>
+      <ProductPageLoader />
     );
   }
 

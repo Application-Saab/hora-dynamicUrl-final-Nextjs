@@ -477,6 +477,7 @@ const getDecorationImageUrl = (item) => {
       "premium-decoration": "Hi, I want to book premium decor design & need more info",
       "haldi-mehendi-decoration": "Hi, I want to book haldi & mehendi decor design & need more info",
       "Wedding": "Hi, I want to book wedding decor design & need more info",
+      "wedding-decoration": "Hi, I want to book wedding decor design & need more info",
       "bachelorette-decoration": "Hi, I want to book bachelorette decor design & need more info",
     };
 

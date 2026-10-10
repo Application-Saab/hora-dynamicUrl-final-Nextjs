@@ -300,7 +300,7 @@ const Decoration = ({ city, locality }) => {
     title: "Wedding",
     description: "DECORATIONS",
     link: `/${categorySlug}/wedding-decoration`,
-    catValue: "wedding",
+    catValue: "/wedding-decoration",
   };
 
   const handleWhatsApp = () => {

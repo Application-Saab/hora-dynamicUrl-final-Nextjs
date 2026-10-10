@@ -223,7 +223,7 @@ export default function Home({
       title: "Party Food Delivery",
       description: "Delicious food for all your party needs",
       imgAlt: "Party food delivery service",
-      link: "/book-chef-cook-for-party",
+      link: "/chef-near-me",
     },
     {
       image: "https://horaservices.com/api/uploads/homepage_slider3.webp",
@@ -247,7 +247,7 @@ export default function Home({
       image: "https://horaservices.com/api/uploads/homepage_food2.webp",
       title: "Chef For Party",
       imgAlt: "Chef cooking for a party",
-      link: "/book-chef-cook-for-party",
+      link: "/chef-near-me",
     },
     {
       id: 3,
@@ -275,7 +275,7 @@ export default function Home({
     {
       id: 2,
       title: "Chef For Party",
-      link: "/book-chef-cook-for-party",
+      link: "/chef-near-me",
       imageUrl: "https://horaservices.com/api/uploads/homepage_whatareu2.webp",
       imgAlt: "Chef services for party events",
       points: [

@@ -7,7 +7,7 @@ export const DIRECT_ROUTES = [
   "/balloon-decoration-google-ads",
   "/balloon-decoration-instagram",
   "/balloon-decoration-youtube",
-  "/book-chef-cook-for-party",
+  "/chef-near-me",
   "/party-food-delivery-live-catering-buffet",
   "/photography",
   "/venue-list",
@@ -18,7 +18,7 @@ export const CITY_ROUTES = [
   "/venue-list",
   "/balloon-decoration",
   "/photography",
-  "/book-chef-cook-for-party",
+  "/chef-near-me",
   "/balloon-decoration-google-ads",
   "/balloon-decoration-instagram",
   "/balloon-decoration-youtube",
@@ -27,7 +27,7 @@ export const CITY_ROUTES = [
 export const CITY_LOCALITY_ROUTES = [
   "/",
   "/balloon-decoration",
-  "/book-chef-cook-for-party",
+  "/chef-near-me",
   "/photography",
 ];
 
