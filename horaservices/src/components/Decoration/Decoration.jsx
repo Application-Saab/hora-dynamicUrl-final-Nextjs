@@ -66,7 +66,7 @@ import firstNightBg from "@/assets/Firts_night.webp";     // purple background
 import anniversaryPhoto from "@/assets/AnniversaaryImage.webp";   // apni photo
 import firstNightPhoto from "@/assets/FirstnightImage.webp";
 import coupleBgBanner from "@/assets/COUPLE_CELEBRATIONS_Bg_banner.webp";
-
+import whatsappIcon from "@/assets/whatsapp-icon.png";
 import elegantDecor from "@/assets/elegant-decor.svg";
 import perfectPicture from "@/assets/perfect-picture.svg";
 import romanticSetup from "@/assets/romantic-setup.svg";
@@ -356,7 +356,7 @@ const Decoration = ({ city, locality }) => {
     : defaultSeo;
   const weddingCollections = [
     { title: "Haldi Decoration", image: haldiImg, catValue: "haldi-mehendi-decoration" },
-    { title: "Mehandi Decoration", image: mehandiImg, catValue: "mehendi-decoration" },
+    { title: "Mehandi Decoration", image: mehandiImg, catValue: "haldi-mehendi-decoration" },
     { title: "Mandap Decoration", image: mandapImg, catValue: "mandap-decoration" },
     { title: "Wedding Car Decoration", image: carImg, catValue: "wedding-car-decoration" },
     { title: "Reception Decoration", image: receptionImg, catValue: "reception-decoration" },
@@ -497,11 +497,31 @@ const Decoration = ({ city, locality }) => {
         </div>
       </section>
 
-      <Banner
-        image={whatsappbanner}
-        alt="Your Celebrations, Our Commitment"
-        border="1px solid #599911"   // yahan se border bheja
-      />
+   <div className="wa-banner">
+  <Banner
+    image={whatsappbanner}
+    alt="Your Celebrations, Our Commitment"
+    border="1px solid #599911"
+  />
+
+  <a
+    className="wa-banner__btn"
+    href="https://wa.me/91XXXXXXXXXX?text=Hi%2C%20I%20need%20help%20with%20decoration"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Chat now on WhatsApp"
+  >
+    <Image
+      src={whatsappIcon}
+      alt=""
+      aria-hidden="true"
+      width={24}
+      height={24}
+      className="wa-banner__icon"
+    />
+    <span>Chat Now on WhatsApp</span>
+  </a>
+</div>
       {/* <DecorGrid
         largeCard={largeCard}
         smallCards={smallCards}
@@ -547,7 +567,7 @@ const Decoration = ({ city, locality }) => {
         locality={locality}
       />
       <div className="page-width">
-        <BirthdayMagicalBanner />
+        <BirthdayMagicalBanner href={`/${categorySlug}/birthday-decoration`} />
       </div>
       <ProductSliderSection
         title="Birthday Decoration"

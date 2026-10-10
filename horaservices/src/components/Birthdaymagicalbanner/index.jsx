@@ -1,6 +1,7 @@
 import "./birthdaymagicalbanner.css";
 
 import Image from "next/image";
+import Link from "next/link";
 import bgImage from "@/assets/landing-birthday-magical-bg.webp";
 
 /* ---------- 4 line-icons (drawn on a 24x24 grid) ---------- */
@@ -92,9 +93,14 @@ function Heart() {
   );
 }
 
-export default function BirthdayMagicalBanner() {
+export default function BirthdayMagicalBanner({href = "/birthday-decoration"}) {
   return (
     <section className="bm-banner" aria-labelledby="bm-banner-title">
+        <Link
+      href={href}
+      className="bm-banner"
+      aria-labelledby="bm-banner-title"
+    >
       <div className="bm-frame">
         {/* pink balloon arch + soft cream panel (one image) */}
         <figure className="bm-figure">
@@ -157,6 +163,7 @@ export default function BirthdayMagicalBanner() {
           </ul>
         </div>
       </div>
+      </Link>
     </section>
   );
 }

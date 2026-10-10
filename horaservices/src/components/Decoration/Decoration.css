@@ -416,3 +416,53 @@ line-height: 100%;
 letter-spacing: 0%;
 text-align: center;
 }
+
+/* container: andar ke saare cqw is wrapper ki width se bante hain */
+.wa-banner {
+  position: relative;
+  container-type: inline-size;
+  width: 100%;
+  max-width: 480px;          /* apne banner ki max-width ke barabar rakhein */
+}
+
+.wa-banner__btn {
+  position: absolute;
+  left: clamp(11px, 11cqw, 11cqw);
+bottom: clamp(4.6px, 4.6cqw, 4.6cqw);
+  width: clamp(120px, 35.88vw, 155px);
+  height: clamp(23.35px, 6.95vw, 27.48px);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6cqw;
+  background: #1C7E2B;
+  color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 0.8cqw 1.6cqw rgba(58, 130, 16, 0.35);
+
+  font-family: 'Inter', sans-serif;
+font-weight: 700;
+font-style: normal;
+font-size: clamp(7.4px, 2.2vw, 8.69px);
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.wa-banner__btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 1.2cqw 2cqw rgba(58, 130, 16, 0.45);
+}
+
+.wa-banner__btn:focus-visible {
+  outline: 2px solid #599911;
+  outline-offset: 2px;
+}
+
+.wa-banner__icon {
+width: clamp(11.3px, 3.37vw, 13.3px);
+height: clamp(11.36px, 3.39vw, 13.36px);
+  flex-shrink: 0;
+}
