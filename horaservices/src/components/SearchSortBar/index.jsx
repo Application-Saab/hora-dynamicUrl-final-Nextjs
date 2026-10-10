@@ -268,19 +268,23 @@ export default function SearchSortBar({
   getProductHref,
   getCategoryHref,
   userId = null,
+  initialQuery = "",
 }) {
   const [isSortOpen, setIsSortOpen] = useState(false);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
   const [placeholderText, setPlaceholderText] = useState(DEFAULT_PLACEHOLDER);
-  const [isFocused, setIsFocused] = useState(false); // input focus/blur track karne ke liye
+  const [isFocused, setIsFocused] = useState(false);
   const wrapperRef = useRef(null);
   const topBarRef = useRef(null);
   const placeholderRef = useRef(null);
   const route = useRouter();
 
   const pathname = route.asPath;
+  useEffect(() => {
+    setQuery(initialQuery || "");
+  }, [initialQuery]);
 
   const queryRef = useRef(query);
   useEffect(() => {
