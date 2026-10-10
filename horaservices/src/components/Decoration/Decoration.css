@@ -379,9 +379,11 @@ color: #8A8785;
 
 .couple-sec__head {
   text-align: center;
-  padding: 5cqw 0;
+ padding: clamp(17px, 5.09vw, 20px) 0 clamp(4px, 1.27vw, 5px);
 }
-
+.Couple-Celebrations-box{
+margin-bottom: 15px;
+}
 .couple-sec__eyebrow {
   margin: 0;
 font-family: Inter, sans-serif;

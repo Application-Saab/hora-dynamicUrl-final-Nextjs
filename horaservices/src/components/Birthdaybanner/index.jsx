@@ -1,6 +1,7 @@
 import "./birthdaybanner.css";
 
 import Image from "next/image";
+import Link from "next/link";
 import bgImage from "@/assets/landing-birthday-banner-bg.webp";
 
 /* ---------- 4 line-icons (white, drawn on a 24x24 grid) ---------- */
@@ -64,9 +65,14 @@ function Sparkle({ side = "left" }) {
   );
 }
 
-export default function BirthdayBanner() {
+export default function BirthdayBanner({ href = "/birthday-decoration" }) {
   return (
     <section className="birthday-banner" aria-labelledby="birthday-banner-title">
+      <Link
+      href={href}
+      className="birthday-banner"
+      aria-labelledby="birthday-banner-title"
+    >
       <div className="bb-frame">
         {/* balloons + rainbow backdrop + gradient curve (all in one image) */}
         <figure className="bb-figure">
@@ -128,6 +134,7 @@ export default function BirthdayBanner() {
           </ul>
         </div>
       </div>
+      </Link>
     </section>
   );
 }

@@ -532,7 +532,7 @@ const Decoration = ({ city, locality }) => {
         </div>
       </section>
       <div className="page-width">
-        <BirthdayBanner />
+       <BirthdayBanner href={`/${categorySlug}/birthday-decoration`} />
       </div>
       <DecorSlider
         title="Premium Birthday Decorations"
@@ -596,9 +596,9 @@ const Decoration = ({ city, locality }) => {
             </p>
           </div>
 
-          {/* ye dono background ke upar aayenge */}
+          <div className="Couple-Celebrations-box">
           <CelebrationCard
-            href="/anniversary-decoration"            // TODO: sahi link
+            href={`/${categorySlug}/anniversary-decoration`}          // TODO: sahi link
             bg={anniversaryBg}
             photo={anniversaryPhoto}
             photoAlt="Anniversary decoration"
@@ -617,15 +617,15 @@ const Decoration = ({ city, locality }) => {
 
           {/* ===== First Night ===== */}
           <CelebrationCard
-            href="/first-night-decoration"            // TODO: sahi link
+            href={`/${categorySlug}/first-night-decoration`}           // TODO: sahi link
             bg={firstNightBg}
             photo={firstNightPhoto}
             photoAlt="First night decoration"
             imageSide="right"
             title="First Night"
             subtitle="Make your first night truly special."          // TODO: design wala text
-            accent="#97538C"                          // TODO: design ka rang
-            titleColor="#97538C"
+            accent="#764C9E"                          // TODO: design ka rang
+            titleColor="#764C9E"
             divider={firstNightDivider}
             features={[
               { icon: beautifulDecor, label: "Beautiful Decor" },
@@ -633,6 +633,7 @@ const Decoration = ({ city, locality }) => {
               { icon: memorableMoment, label: "Memorable Moment" },
             ]}
           />
+          </div>
         </div>
       </section>
       <DecorSlider
