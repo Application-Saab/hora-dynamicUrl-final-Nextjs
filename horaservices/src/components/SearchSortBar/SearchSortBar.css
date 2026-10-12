@@ -170,13 +170,101 @@ max-width: 480px;
 
 
 .sort-sheet {
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+  overflow: hidden;
   width: 100%;
   max-width: 600px;
   background: #fff;
   border-radius: clamp(16px, 4vw, 22px) clamp(16px, 4vw, 22px) 0 0;
-  padding: clamp(18px, 5vw, 26px) clamp(20px, 5.5vw, 28px) clamp(28px, 7vw, 36px);
+  padding: clamp(18px, 5vw, 26px) clamp(20px, 5.5vw, 28px) 0;
   transform: translateY(100%);
   transition: transform 0.3s ease;
+}
+
+/* Sirf ye list scroll hogi (scrollbar hidden) */
+.sort-options-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.sort-options-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---- Section headings (Sort By / Design Type) ---- */
+.sort-section-title {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: clamp(15px, 4.2vw, 17px);
+  color: #1a1a1a;
+  margin: clamp(10px, 3vw, 14px) 0 clamp(4px, 1.5vw, 8px);
+}
+
+.sort-section-sub {
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(12px, 3.4vw, 14px);
+  color: #8a8a8a;
+  margin-bottom: clamp(4px, 1.5vw, 8px);
+}
+
+.sort-section-divider {
+  margin: clamp(8px, 2.5vw, 12px) 0 0;
+}
+
+/* ---- Checkbox (Design Type, multi-select) ---- */
+.sort-checkbox {
+  flex-shrink: 0;
+  width: clamp(18px, 5vw, 22px);
+  height: clamp(18px, 5vw, 22px);
+  border-radius: 50%;
+  border: 2px solid #cfcfcf;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.sort-checkbox-selected {
+  background: #954c8e;
+  border-color: #954c8e;
+}
+
+/* ---- Footer buttons (Clear all / Apply) - hamesha neeche fixed ---- */
+.sort-footer {
+  flex-shrink: 0;
+  display: flex;
+  gap: clamp(10px, 3vw, 14px);
+  padding: clamp(12px, 3.5vw, 16px) 0 clamp(18px, 5vw, 24px);
+  background: #fff;
+  border-top: 1px solid #eee;
+}
+
+.sort-clear-btn,
+.sort-apply-btn {
+  flex: 1;
+  height: clamp(42px, 12vw, 50px);
+  border-radius: clamp(8px, 2.58vw, 12px);
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: clamp(14px, 4vw, 16px);
+  cursor: pointer;
+}
+
+.sort-clear-btn {
+  background: #fff;
+  color: #954c8e;
+  border: 1.5px solid #954c8e;
+}
+
+.sort-apply-btn {
+  background: #954c8e;
+  color: #fff;
+  border: 1.5px solid #954c8e;
 }
 
 .sort-sheet-open {
@@ -185,6 +273,7 @@ max-width: 480px;
 
 .sort-title {
   font-family: "Poppins", sans-serif;
+  flex-shrink: 0;
   font-weight: 500;
   font-size: clamp(19px, 5.6vw, 24px);
   color: #8a8a8a;
@@ -192,6 +281,7 @@ max-width: 480px;
 }
 
 .sort-divider {
+  flex-shrink: 0;
   border: none;
   border-top: 1px solid #7E7E7E;
   margin: 0 0 clamp(4px, 1.5vw, 8px);

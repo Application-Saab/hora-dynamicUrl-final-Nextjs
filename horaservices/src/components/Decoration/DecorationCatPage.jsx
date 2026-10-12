@@ -34,7 +34,7 @@ import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 import SeoHead from "@/utils/SeoHead";
 // ✅ CHANGE 1: `themes` bhi import karo (URL ke priceTheme=budget se theme object nikalne ke liye)
 import ThemeSelector, { themes as priceThemes } from "@/components/Themeselector";
-import SearchSortBar from "@/components/SearchSortBar";
+import SearchSortBar, { designTypeOptions } from "@/components/SearchSortBar";
 import DecorationBanner from "@/components/CategoryDecorationBanner";
 import DecorationCatDescriptionData, {
   buildCityLinksHtml,
@@ -45,29 +45,58 @@ import axiosApi from "@/utils/axiosApi";
 import MakeItYoursBanner from "@/components/MakeItYoursBanner";
 import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
 
-// ✅ CHANGE 2: URL query -> filter state parse karne ka helper (component ke BAHAR)
-// Supported URL: ?sortBy=lowToHigh&search=barbie&priceTheme=budget
-const VALID_SORTS = ["newArrival", "lowToHigh", "highToLow"];
+const PRICE_SORTS = ["newArrival", "lowToHigh", "highToLow"];
+const VALID_SORTS = [...PRICE_SORTS];
+
+// Backend param: designType=Wall  (multiple => "Wall,Ring")
+// Agar backend multiple values repeat karke leta hai (designType=Wall&designType=Ring)
+// to DESIGN_TYPE_MODE = "repeat" kar do.
+const DESIGN_TYPE_PARAM_NAME = "designType";
+const DESIGN_TYPE_MODE = "comma"; // "comma" | "repeat"
+
+const getQueryValue = (query, lowerKey, legacyKey) => {
+  const v = query?.[lowerKey] ?? query?.[legacyKey];
+  return typeof v === "string" ? v : "";
+};
 
 const parseFiltersFromQuery = (query = {}) => {
-  const sortOption = VALID_SORTS.includes(query.sortBy)
-    ? query.sortBy
-    : "popularity";
+  const rawSort = getQueryValue(query, "sortby", "sortBy").toLowerCase();
+  const sortOption =
+    VALID_SORTS.find((id) => id.toLowerCase() === rawSort) || "popularity";
 
-  const search = typeof query.search === "string" ? query.search.trim() : "";
+  const search = getQueryValue(query, "search", "search").trim();
 
+  const rawPriceTheme = getQueryValue(
+    query,
+    "pricetheme",
+    "priceTheme",
+  ).toLowerCase();
   const priceTheme =
-    priceThemes.find((t) => t.id === query.priceTheme) || null;
+    priceThemes.find((t) => String(t.id).toLowerCase() === rawPriceTheme) ||
+    null;
 
-  return { sortOption, search, priceTheme };
+  // "wall,ring" -> ["wall", "ring"] (URL ki lowercase value se internal id)
+  const rawDesign = getQueryValue(query, "designtype", "designType");
+  const designTypes = [
+    ...new Set(
+      rawDesign
+        .split(",")
+        .map((v) => v.trim().toLowerCase())
+        .filter(Boolean)
+        .map((v) => designTypeOptions.find((o) => o.id.toLowerCase() === v)?.id)
+        .filter(Boolean),
+    ),
+  ];
+
+  return { sortOption, search, priceTheme, designTypes };
 };
 
 // ✅ CHANGE 17: Cache key ab FILTERS se banti hai, router.asPath se nahi.
 // asPath fetch ke time par purana ho sakta hai (router.replace async hai),
 // jisse sorted data galat key mein save hota tha aur "Popularity" par wapas
 // aane par purana sorted data restore ho jata tha.
-const buildCacheKey = (path, sort, priceThemeId, search) =>
-  `decorcat:${path}|sort=${sort || "popularity"}|price=${priceThemeId || ""}|search=${search || ""}`;
+const buildCacheKey = (path, sort, priceThemeId, search, designTypes = []) =>
+  `decorcat:${path}|sort=${sort || "popularity"}|price=${priceThemeId || ""}|search=${search || ""}|design=${designTypes.join(",")}`;
 
 const DecorationCatPage = ({
   city: cityProp = "",
@@ -86,7 +115,8 @@ const DecorationCatPage = ({
   const hasUrlFilters =
     urlFilters.sortOption !== "popularity" ||
     !!urlFilters.search ||
-    !!urlFilters.priceTheme;
+    !!urlFilters.priceTheme ||
+    urlFilters.designTypes.length > 0;
 
   // ✅ CHANGE 4: Agar URL mein filter hai to SSR ka (unfiltered) data skip nahi
   // karna — fresh filtered fetch hona chahiye.
@@ -171,24 +201,68 @@ const DecorationCatPage = ({
   // shallow: true => getServerSideProps dobara nahi chalega, page reload nahi hoga.
   // Value null/""/undefined ho to param URL se hat jata hai.
   const updateQueryParams = (updates) => {
-    if (typeof window === "undefined") return;
+  if (typeof window === "undefined") return;
 
-    const url = new URL(window.location.href);
-    const params = url.searchParams;
+  const url = new URL(window.location.href);
+  const params = url.searchParams;
 
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value === null || value === undefined || value === "") {
-        params.delete(key);
-      } else {
-        params.set(key, String(value));
-      }
+  // Key aur value dono lowercase. Purani camelCase keys
+  // (sortBy/priceTheme/designType) URL se hata dete hain.
+  Object.entries(updates).forEach(([key, value]) => {
+    const lowerKey = key.toLowerCase();
+    if (lowerKey !== key) params.delete(key); 
+
+    const isEmpty =
+      value === null ||
+      value === undefined ||
+      value === "" ||
+      (Array.isArray(value) && value.length === 0);
+
+    if (isEmpty) {
+      params.delete(lowerKey);
+    } else {
+      const str = Array.isArray(value) ? value.join(",") : String(value);
+      params.set(lowerKey, str.toLowerCase());
+    }
+  });
+
+  const qs = params.toString().replace(/%2C/gi, ",");
+  const newUrl = `${url.pathname}${qs ? `?${qs}` : ""}`;
+
+  router.replace(newUrl, undefined, { shallow: true, scroll: false });
+};
+useEffect(() => {
+  if (!router.isReady || typeof window === "undefined") return;
+
+  const url = new URL(window.location.href);
+  let changed = false;
+
+  ["sortBy", "priceTheme", "designType"].forEach((key) => {
+    const value = url.searchParams.get(key);
+    if (value === null) return;
+
+    const lowerKey = key.toLowerCase();
+    url.searchParams.delete(key);
+    if (!url.searchParams.has(lowerKey)) {
+      url.searchParams.set(lowerKey, value.toLowerCase());
+    }
+    changed = true;
+  });
+
+  if (changed) {
+    const qs = url.searchParams.toString().replace(/%2C/gi, ",");
+    router.replace(`${url.pathname}${qs ? `?${qs}` : ""}`, undefined, {
+      shallow: true,
+      scroll: false,
     });
-
-    const qs = params.toString();
-    const newUrl = `${url.pathname}${qs ? `?${qs}` : ""}`;
-
-    router.replace(newUrl, undefined, { shallow: true, scroll: false });
-  };
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [
+  router.isReady,
+  router.query.sortBy,
+  router.query.priceTheme,
+  router.query.designType,
+]);
 
   // ✅ CHANGE 8 (UPDATED): Ab themed URL (…/kids-birthday-decoration/hero) par
   // bhi user usi URL par rehta hai. Sirf query add/remove hoti hai:
@@ -196,6 +270,23 @@ const DecorationCatPage = ({
   // Theme (hero) aur price range DONO ek saath apply hote hain.
   const handleSelectPriceTheme = (theme) => {
     hasHydratedFromCache.current = false; // genuine user action
+    if (typeof window !== "undefined") {
+      window.dataLayer = window.dataLayer || [];
+      if (theme) {
+        window.dataLayer.push({
+          event: `price_theme_${String(theme.id).toLowerCase()}`,
+          price_theme_id: theme.id,
+          price_theme_label: theme.label || theme.name || theme.title || "",
+          page_path: pathname,
+        });
+      } else {
+        window.dataLayer.push({
+          event: "price_theme_clear",
+          page_path: pathname,
+        });
+      }
+    }
+
     setSelectedPriceTheme(theme); // null = clear
     updateQueryParams({ priceTheme: theme ? theme.id : null });
   };
@@ -207,15 +298,28 @@ const DecorationCatPage = ({
 
   const isPriceThemeActive = !!selectedPriceTheme;
 
-  // ---- Sort state (New Arrival / Popularity / Price Low-High / Price High-Low) ----
+  // ---- Sort state (New Arrival / Popularity / Price Low-High / Price High-Low / Style options) ----
   // ✅ CHANGE 9: initial value URL se aayegi (pehle "popularity" thi)
   const [sortOption, setSortOption] = useState(urlFilters.sortOption);
 
-  const handleSortChange = (id) => {
+  // ---- Design Type filter (multi-select: wall, ring, ...) ----
+  const [designTypes, setDesignTypes] = useState(urlFilters.designTypes);
+  const designTypesKey = designTypes.join(",");
+
+  // Sort & Filter sheet ka "Apply" — sort + design type EK saath, EK hi URL update
+  // (do alag router.replace se purani URL overwrite ho sakti thi)
+  const handleSortFilterApply = ({
+    sortOption: nextSort,
+    designTypes: nextDesigns,
+  }) => {
     hasHydratedFromCache.current = false;
-    setSortOption(id);
+    setSortOption(nextSort);
+    setDesignTypes(nextDesigns);
     // ✅ CHANGE 10: URL update (popularity default hai, to param hata do)
-    updateQueryParams({ sortBy: id === "popularity" ? null : id });
+    updateQueryParams({
+      sortBy: nextSort === "popularity" ? null : nextSort,
+      designType: nextDesigns,
+    });
   };
 
   // ---- Search: whether a free-text search is currently active ----
@@ -230,8 +334,14 @@ const DecorationCatPage = ({
       setThemeFilter("all");
       setSortOption("popularity");
       setSelectedPriceTheme(null);
+      setDesignTypes([]);
       // ✅ CHANGE 11: search URL mein, baaki filters URL se clear
-      updateQueryParams({ search: trimmed, sortBy: null, priceTheme: null });
+      updateQueryParams({
+        search: trimmed,
+        sortBy: null,
+        priceTheme: null,
+        designType: null,
+      });
     } else {
       updateQueryParams({ search: null });
     }
@@ -284,16 +394,27 @@ const DecorationCatPage = ({
     const next = parseFiltersFromQuery(router.query);
 
     setSortOption((prev) => (prev === next.sortOption ? prev : next.sortOption));
-    setSearchQuery((prev) => (prev === next.search ? prev : next.search));
+    // URL mein search lowercase hota hai, isliye case-insensitive compare
+    // (warna "Barbie" type karne par state lowercase se overwrite hoke refetch hota)
+    setSearchQuery((prev) =>
+      prev.toLowerCase() === next.search.toLowerCase() ? prev : next.search,
+    );
     setSelectedPriceTheme((prev) =>
       prev?.id === next.priceTheme?.id ? prev : next.priceTheme,
+    );
+    setDesignTypes((prev) =>
+      prev.join(",") === next.designTypes.join(",") ? prev : next.designTypes,
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     router.isReady,
+    router.query.sortby,
     router.query.sortBy,
     router.query.search,
+    router.query.pricetheme,
     router.query.priceTheme,
+    router.query.designtype,
+    router.query.designType,
   ]);
 
   // ✅ CHANGE 14: URL ka [theme] (jaise "hero") hamesha apply hoga, price
@@ -341,6 +462,7 @@ const DecorationCatPage = ({
       urlF.sortOption,
       urlF.priceTheme?.id,
       urlF.search,
+      urlF.designTypes,
     );
     const cached = getPageCache(cacheKey);
 
@@ -353,6 +475,7 @@ const DecorationCatPage = ({
       setSortOption(cached.data.sortOption || "popularity");
       setSearchQuery(cached.data.searchQuery || "");
       setSelectedPriceTheme(cached.data.selectedPriceTheme || null);
+      setDesignTypes(cached.data.designTypes || []);
       setLoading(false);
       setIsInitialLoad(false);
       hasHydratedFromCache.current = true;
@@ -409,7 +532,7 @@ const DecorationCatPage = ({
     setCurrentPage(1);
     getSubCatItems(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [catId, themeFilter, sortOption, selectedPriceTheme, searchQuery]);
+  }, [catId, themeFilter, sortOption, selectedPriceTheme, searchQuery, designTypesKey]);
 
   // ================= currentPage change => fetch that page =================
   useEffect(() => {
@@ -505,12 +628,21 @@ const DecorationCatPage = ({
       params.set("limit", "30");
       params.set("page", String(page));
 
-      if (sortOption === "newArrival") {
-        params.set("sortBy", "newArrival");
-      } else if (sortOption === "lowToHigh") {
-        params.set("sortBy", "lowToHigh");
-      } else if (sortOption === "highToLow") {
-        params.set("sortBy", "highToLow");
+      if (PRICE_SORTS.includes(sortOption)) {
+        params.set("sortBy", sortOption);
+      }
+
+      // ✅ Design Type: designType=Wall  (multiple => "Wall,Ring")
+      if (designTypes.length > 0) {
+        const apiValues = designTypes
+          .map((id) => designTypeOptions.find((o) => o.id === id)?.apiValue)
+          .filter(Boolean);
+
+        if (DESIGN_TYPE_MODE === "repeat") {
+          apiValues.forEach((v) => params.append(DESIGN_TYPE_PARAM_NAME, v));
+        } else if (apiValues.length) {
+          params.set(DESIGN_TYPE_PARAM_NAME, apiValues.join(","));
+        }
       }
 
       if (themeFilter && themeFilter !== "all") {
@@ -558,6 +690,7 @@ const DecorationCatPage = ({
               sortOption,
               selectedPriceTheme?.id,
               searchQuery,
+              designTypes,
             ),
             {
               catId,
@@ -570,6 +703,7 @@ const DecorationCatPage = ({
               sortOption,
               searchQuery,
               selectedPriceTheme,
+              designTypes,
             },
           );
 
@@ -648,12 +782,16 @@ const DecorationCatPage = ({
   // taaki URL aur state dono mein filter bane rahein.
   // Search yahan nahi jodi: search active hone par theme tabs hide hote hain.
   const buildFilterQueryString = () => {
-    const sp = new URLSearchParams();
-    if (sortOption && sortOption !== "popularity") sp.set("sortBy", sortOption);
-    if (selectedPriceTheme?.id) sp.set("priceTheme", selectedPriceTheme.id);
-    const qs = sp.toString();
-    return qs ? `?${qs}` : "";
-  };
+  const sp = new URLSearchParams();
+  if (sortOption && sortOption !== "popularity")
+    sp.set("sortby", sortOption.toLowerCase());
+  if (selectedPriceTheme?.id)
+    sp.set("pricetheme", String(selectedPriceTheme.id).toLowerCase());
+  if (designTypes.length > 0)
+    sp.set("designtype", designTypes.join(",").toLowerCase());
+  const qs = sp.toString().replace(/%2C/gi, ",");
+  return qs ? `?${qs}` : "";
+};
   const filterQueryString = buildFilterQueryString();
 
   const getCategoryHref = (item) => {
@@ -757,7 +895,8 @@ const DecorationCatPage = ({
               </section>
               <SearchSortBar
                 sortOption={sortOption}
-                onSortChange={handleSortChange}
+                designTypes={designTypes}
+                onApplyFilters={handleSortFilterApply}
                 searchCategoryList={searchCategoryList}
                 products={sortedCatalogueData}
                 onCategorySelect={openCatItems}
