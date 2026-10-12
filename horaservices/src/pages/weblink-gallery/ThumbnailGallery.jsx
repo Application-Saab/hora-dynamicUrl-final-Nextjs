@@ -1135,7 +1135,7 @@ useEffect(() => {
     return null;
   }
 
-  const currentUrl = `${BASE_URL}/eventcapsule/share/${shortCode}`;
+  const currentUrl = `https://horaservices.com`;
 
 
   const handleSubFolderSelect = (id) => {
