@@ -719,7 +719,7 @@ const Decoration = ({ city, locality }) => {
               title="Annaprashan Ceremony"
               subtitle="Welcome your little bundle of joy"
               color="#e8a23a"
-              href={`/${categorySlug}/annaprashan-decoration`}
+              href={`/${categorySlug}/naming-ceremony-decoration/annaprashan`}
             />
           </div>
         </div>
