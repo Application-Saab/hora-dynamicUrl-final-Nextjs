@@ -14,7 +14,7 @@ const STORAGE_KEYS = {
   USER_ID: "userID",
 };
 
-export default function HomeContent({ isNotFound = false }) {
+export default function HomeContent({ isNotFound = false, heading }) {
   const [loggedinUserId, setLoggedinUserId] = useState(null);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
 
@@ -42,7 +42,7 @@ export default function HomeContent({ isNotFound = false }) {
 
   return (
     <div className="home-wrapper">
-      <HomeBanner />
+      <HomeBanner {...(heading ? { heading } : {})} />
       <InviteCard />
 
       {isUserLoggedIn && loggedinUserId && <EventHub userId={loggedinUserId} />}

@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import Head from "next/head";
 import {
   BASE_URL,
   PAYMENT_STATUS,
@@ -9,16 +10,34 @@ import {
 } from "@/utils/apiconstants";
 import { getHomeOrganizationSchema } from "@/utils/schema";
 import HomeContent from "@/components/HomeContent";
+import HomeSeoContent, { HOME_FAQS } from "@/components/HomePageComponent/HomeSeoContent";
 import { getVisitorId, getDeviceInfo, getBrowserInfo } from "@/utils/analytics";
 import VisitorTracker from "@/utils/VisitorTracker";
 import axiosApi from "@/utils/axiosApi";
 import { safeGetItem } from "@/utils/safeStorage";
+
+const HOME_URL = "https://horaservices.com/";
+const HOME_TITLE =
+  "HORA: Party Decoration, Venues, Chefs & Photographers";
+const HOME_DESCRIPTION =
+  "Book balloon decoration, party venues, chefs, catering and photographers in Delhi NCR, Bangalore, Mumbai and Hyderabad. Upfront prices, same-day slots.";
+const HOME_OG_IMAGE =
+  "https://horaservices.com/api/uploads/attachment-1711520474508.png";
 
 export default function Home() {
   const router = useRouter();
   const pathname = usePathname();
   const schemaOrg = getHomeOrganizationSchema();
   const scriptTag = JSON.stringify(schemaOrg);
+  const faqSchema = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: HOME_FAQS.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  });
 
   useEffect(() => {
     const checkPaymentStatus = async (transactionId) => {
@@ -94,7 +113,35 @@ export default function Home() {
 
   return (
     <>
+      <Head>
+        <title>{HOME_TITLE}</title>
+        <meta name="description" content={HOME_DESCRIPTION} />
+        <meta name="robots" content="index,follow" />
+        <link rel="canonical" href={HOME_URL} />
+
+        <meta property="og:title" content={HOME_TITLE} />
+        <meta property="og:description" content={HOME_DESCRIPTION} />
+        <meta property="og:url" content={HOME_URL} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="HORA" />
+        <meta property="og:image" content={HOME_OG_IMAGE} />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={HOME_TITLE} />
+        <meta name="twitter:description" content={HOME_DESCRIPTION} />
+        <meta name="twitter:image" content={HOME_OG_IMAGE} />
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: scriptTag }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: faqSchema }}
+        />
+      </Head>
       <HomeContent />
+      <HomeSeoContent />
       <div>
         <VisitorTracker />
       </div>

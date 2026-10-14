@@ -91,7 +91,7 @@ export default function LocalityPage({
         />
       </Head>
 
-      <HomeContent />
+      <HomeContent heading={`Party Services in ${localityName}, ${cityName}`} />
     </>
   );
 }

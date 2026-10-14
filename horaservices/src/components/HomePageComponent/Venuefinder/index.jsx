@@ -31,7 +31,7 @@ export default function VenueFinder({ onSelectVenue, isNotFound = false }) {
   return (
     <div className="venue-finder">
       <div className="venue-hero">
-        <h1>Find the Perfect Venue For Your Event</h1>
+        <h2>Find the Perfect Venue For Your Event</h2>
         <p>Book the Best Venues for your unforgettable events</p>
       </div>
 

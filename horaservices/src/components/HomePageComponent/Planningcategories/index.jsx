@@ -55,7 +55,7 @@ export default function PlanningCategories({ onSelect, isNotFound = false }) {
   return (
     <div className="planning-Cat">
       <div className="planning-hero-Cat">
-        <h1>Planning Celebration?</h1>
+        <h2>Planning Celebration?</h2>
 
         <p>
           Pick a category to explore beautiful ideas and make your event

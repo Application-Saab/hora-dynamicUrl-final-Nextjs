@@ -156,7 +156,7 @@ export const getDecorationProductOrganizationSchema = (product) => ({
     "name": "Hora",
     "alternateName": "Hora Services",
     "url": "https://horaservices.com",
-    "description": "🍽️ Food (Live Catering | Bulk Food Delivery | Chef for Party) 🎨 Decoration (Balloon Decoration | Flower Decoration) | 📸 Photography 🎉 Entertainment. Discover the ultimate solution for party planning with Hora’s one-stop platform. Customise your party packages, create your ideal celebration, and book everything you need all in one place. We make planning effortless and enjoyable! 🎈✨",
+    "description": "HORA is a party services platform in Delhi NCR, Bangalore, Mumbai and Hyderabad for booking balloon decoration, party venues, chefs, catering and photographers online.",
     "keywords": "Personal chef, private chef to cook in home in India, home chef, book a cook near you, chef at home, Private cook in Mumbai, Book a cook for home near you, Hire Chef in Bangalore, Private Chef in Delhi, Catering service, balloon, decoration, celebration, party, birthday, anniversary, decorator, candle light dinner,  surprises, couples, bouquets , online caterers, catering services, best caterers, birthday party catering, birthday caterers, party catering, home catering, corporate catering, caterers for small parties, wedding caterers",
     "logo": "https://horaservices.com/api/uploads/logo-icon.png",
     "sameAs": [
@@ -170,12 +170,7 @@ export const getDecorationProductOrganizationSchema = (product) => ({
       "https://horaservices.com/api/uploads/attachment-1711520474508.png",
       "https://horaservices.com/api/uploads/homepage_whatareu4.webp",
       "https://horaservices.com/api/uploads/homepage_whatareu2.webp",
-    ],
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.5",
-      "reviewCount": "10600"
-    }
+    ]
   });
 
 

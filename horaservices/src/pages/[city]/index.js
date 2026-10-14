@@ -76,7 +76,7 @@ export default function CityPage({ citySlug, cityName }) {
         />
       </Head>
 
-      <HomeContent />
+      <HomeContent heading={`Party Services in ${cityName}`} />
 
       <LocalitiesSection
         key={citySlug}
