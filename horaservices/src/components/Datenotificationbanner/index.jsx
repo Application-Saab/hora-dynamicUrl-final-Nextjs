@@ -3,6 +3,16 @@ import Image from "next/image";
 import { X } from "lucide-react";
 import "./DateNotificationBanner.css";
 import dateIllustration from "@/assets/dateIllustration.svg";
+
+// GTM dataLayer push (SSR-safe)
+const pushGTMEvent = (eventName, params = {}) => {
+  if (typeof window === "undefined") return;
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: eventName, ...params });
+};
+
+const BANNER_NAME = "date_notification_banner";
+
 // "1" wala calendar icon (Image 2 jaisa)
 function CalendarOneIcon() {
   return (
@@ -32,6 +42,13 @@ export default function DateNotificationBanner({
   durationMs = 8000,
   illustration = dateIllustration,
 }) {
+  // GTM: banner dikhte hi (mount par) ek baar view event
+  useEffect(() => {
+    pushGTMEvent("date_notification_banner_view", {
+      banner_name: BANNER_NAME,
+    });
+  }, []);
+
   useEffect(() => {
     const t = setTimeout(() => onTimeout?.(), durationMs);
     return () => clearTimeout(t);
@@ -58,14 +75,14 @@ export default function DateNotificationBanner({
           <p className="dnb-subtitle">You can set your event date anytime.</p>
         </div>
 
-       {illustration && (
-  <Image
-    src={illustration}
-    alt=""
-    className="dnb-illustration"
-    priority
-  />
-)}
+        {illustration && (
+          <Image
+            src={illustration}
+            alt=""
+            className="dnb-illustration"
+            priority
+          />
+        )}
 
         <button
           type="button"
@@ -73,6 +90,10 @@ export default function DateNotificationBanner({
           aria-label="Close"
           onClick={(e) => {
             e.stopPropagation();
+            // GTM: cross icon click
+            pushGTMEvent("date_notification_banner_cross_click", {
+              banner_name: BANNER_NAME,
+            });
             onClose?.();
           }}
         >

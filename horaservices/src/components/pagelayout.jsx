@@ -17,7 +17,7 @@ import { DateGateProvider, useDateGate } from "@/utils/dateGateContext";
 import { fetchWithError } from "@/utils/fetchWithError";
 
 const DATE_SHEET_DELAY_MS = 30 * 1000;
-const BANNER_FIRST_DELAY_MS = 1000;
+const BANNER_FIRST_DELAY_MS = 30 * 1000; 
 const BANNER_REPEAT_MS = 30 * 1000;
 const BANNER_VISIBLE_MS = 8 * 1000;
 
