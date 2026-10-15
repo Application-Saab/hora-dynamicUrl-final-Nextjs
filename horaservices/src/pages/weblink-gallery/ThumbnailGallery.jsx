@@ -726,9 +726,20 @@ useEffect(() => {
     // Agar panel se aaya hai toh API mat call karo
     if (fromPanel === "true") return;
 
-    const isAlreadyViewed = viewedBy?.some(
-      (id) => String(id) === String(localUserId)
-    );
+    const isAlreadyViewed = viewedBy?.some((item) => {
+      if (typeof item === "string") {
+        return String(item) === String(localUserId);
+      }
+
+      if (item && typeof item === "object") {
+        return (
+          String(item?.userId) === String(localUserId) &&
+          item?.viewedAt != null
+        );
+      }
+
+      return false;
+    });
 
 
     if (!isAlreadyViewed) {
@@ -1135,7 +1146,7 @@ useEffect(() => {
     return null;
   }
 
-  const currentUrl = `${BASE_URL}/eventcapsule/share/${shortCode}`;
+  const currentUrl = `https://horaservices.com`;
 
 
   const handleSubFolderSelect = (id) => {

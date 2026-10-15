@@ -1,7 +1,10 @@
-# Allow all bots to crawl everything
 User-agent: *
 Allow: /
+Disallow: /photo-gallery
+Disallow: /checkout
+Disallow: /book-chef-checkout
+Disallow: /party-food-delivery-live-catering-buffet-checkout
+Disallow: /orderlist
+Disallow: /myaccount
 
-# Reference both sitemaps
-Sitemap: https://horaservices.com/product.xml
 Sitemap: https://horaservices.com/sitemap.xml
