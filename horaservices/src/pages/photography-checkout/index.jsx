@@ -1,77 +1,163 @@
-
-import React, { useEffect, useState } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import React, { useEffect, useMemo, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 import Head from "next/head";
-import { BASE_URL, CONFIRM_ORDER_ENDPOINT, SAVE_LOCATION_ENDPOINT } from '../../utils/apiconstants';
-import { PAYMENT, API_SUCCESS_CODE } from '../../utils/apiconstants';
-import { Form, Dropdown } from 'react-bootstrap';
-import '../../css/decoration.css';
-import { useRouter } from 'next/router';
-import Image from 'next/image';
-import Loader from '../../components/Loader'
-import { pincodes } from "../../utils/pincodes.js"
+import {
+  BASE_URL,
+  CONFIRM_ORDER_ENDPOINT,
+  GET_ADDON_BY_ID,
+  GET_PHOTOGRAPHY_PRODUCT_BY_ID,
+  SAVE_LOCATION_ENDPOINT,
+} from "../../utils/apiconstants";
+import { PAYMENT, API_SUCCESS_CODE } from "../../utils/apiconstants";
+import { Form, Dropdown } from "react-bootstrap";
+import "../../css/decoration.css";
+import { useRouter } from "next/router";
+import Image from "next/image";
+import Loader from "../../components/Loader";
+import { pincodes } from "../../utils/pincodes.js";
 import OtpLoginPopup from "@/components/OtpLoginPopup";
 import "./photographyCheckout.css";
 import { getPhotographyOrganizationSchema } from "../../utils/schema";
 import BackgroundDetails from "../../assets/BackgroundDetails.svg";
-import productsData from '../../utils/photoGraphyImages.js';
+import productsData from "../../utils/photoGraphyImages.js";
 import CommentIcon from "../../assets/commentIcon.png";
 import locationIcon from "../../assets/locationIcon.png";
 import CityIcon from "../../assets/CityIcon.png";
 import PinIcon from "../../assets/Pincode.jpeg";
-import cancellation from "../../assets/Cancellation.svg"
-import BackgorundImgDetails from "../../assets/BackgorundImgDetails.svg"
-import UrgentBookingModal from '@/components/UrgentBookingModal';
-import {contactUsRedirect} from '@/components/CheckoutWhatsAppSummary';
+import cancellation from "../../assets/Cancellation.svg";
+import BackgorundImgDetails from "../../assets/BackgorundImgDetails.svg";
+import UrgentBookingModal from "@/components/UrgentBookingModal";
+import { contactUsRedirect } from "@/components/CheckoutWhatsAppSummary";
 import { formatDate } from "../../utils/formateDate";
-import axiosApi from '@/utils/axiosApi';
-import { safeGetItem } from '@/utils/safeStorage';
-import {  parseFromPath,
+import axiosApi from "@/utils/axiosApi";
+import { safeGetItem } from "@/utils/safeStorage";
+import {
   formatPhotographyCategory,
-  photographyContactMessage,} from "@/utils/whatsappMessages"
+  photographyContactMessage,
+} from "@/utils/whatsappMessages";
+import { useCity } from "@/utils/cityContext";
+import { categoryNameToSlug } from "@/utils/Getphotocategoryurl";
+import { fetchWithError } from "@/utils/fetchWithError";
+
+// Safe parse helpers
+const safeJsonParse = (value, fallback) => {
+  if (value == null || value === "") return fallback;
+  if (typeof value === "object") return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+};
+
 const Checkout = () => {
   const router = useRouter();
-   const schemaOrg = getPhotographyOrganizationSchema();
-   const scriptTag = JSON.stringify(schemaOrg);
-  let { product, totalAmount, orderType,duration } = router.query;
-const from = router.query.from || "";
+  const { selectedCitySlug } = useCity();
+  const schemaOrg = getPhotographyOrganizationSchema();
+  const scriptTag = JSON.stringify(schemaOrg);
+  let { totalAmount, productid, selectedaddonids } = router.query;
 
-let category =
-  router.query.catValue ||
-  product?.tag?.[0]?.name ||
-  from.split("/")[2] ||
-  "photography";
+  const selectedAddonIdsParam = Array.isArray(selectedaddonids)
+    ? selectedaddonids[0]
+    : selectedaddonids;
 
-  const rawAddOns = router.query.selectedAddOnProduct
-    ? JSON.parse(router.query.selectedAddOnProduct)
+  const rawAddonIds = useMemo(
+    () => safeJsonParse(selectedAddonIdsParam, []),
+    [selectedAddonIdsParam],
+  );
+
+  const [selectedProduct, setSelectedProduct] = useState({});
+  const [selectedCatValue, setSelectedCatValue] = useState({});
+  const [selectedAddonsData, setSelectedAddonsData] = useState([]);
+
+  useEffect(() => {
+    const getProductDetails = async () => {
+      if (productid) {
+        const res = await fetchWithError(
+          `${BASE_URL}${GET_PHOTOGRAPHY_PRODUCT_BY_ID}${productid}`,
+        );
+        const data = await res.json();
+        if (res.ok && !data.error) setSelectedProduct(data.data || []);
+        if (data?.data?.tag?.length > 0) {
+          let tagData = data?.data?.tag[0];
+          setSelectedCatValue(categoryNameToSlug[tagData?.name]);
+        }
+      }
+    };
+    getProductDetails();
+  }, [productid]);
+
+  useEffect(() => {
+    if (!router.isReady || !Array.isArray(rawAddonIds) || !rawAddonIds.length) {
+      return;
+    }
+
+    const getAddons = async () => {
+      try {
+        const q = new URLSearchParams();
+
+        rawAddonIds.forEach((item) => {
+          if (item?.id) {
+            q.append("ids", item.id);
+          }
+        });
+
+        if (!q.size) return;
+
+        const res = await fetchWithError(
+          `${BASE_URL}${GET_ADDON_BY_ID}?${q.toString()}`,
+        );
+
+        const data = await res.json();
+
+        if (res.ok && !data.error) {
+          const newData = (data?.data || []).map((addon) => {
+            const matchedAddon = rawAddonIds.find(
+              (urlAddon) => urlAddon?.id === addon?._id,
+            );
+
+            return {
+              ...addon,
+              quantity: matchedAddon?.quantity ?? 1,
+            };
+          });
+          setSelectedAddonsData(newData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch addons:", error);
+      }
+    };
+
+    getAddons();
+  }, [router.isReady, rawAddonIds]);
+
+  let category = selectedCatValue;
+
+  const selectedThemes = router.query.selectedThemes
+    ? JSON.parse(router.query.selectedThemes)
     : [];
-const selectedThemes = router.query.selectedThemes
-  ? JSON.parse(router.query.selectedThemes)
-  : [];
-  const selectedAddOnProduct = rawAddOns.map(item => ({
+  const selectedAddOnProduct = selectedAddonsData?.map((item) => ({
     ...item,
     totalPrice: item.price * (item.quantity || 1),
   }));
 
-
- const itemQuantities = router.query.itemQuantities ? JSON.parse(router.query.itemQuantities) : {};
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDateError, setSelectedDateError] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
   const [selectedTimeSlotError, setSelectedTimeSlotError] = useState(false);
-  const [address, setAddress] = useState('');
+  const [address, setAddress] = useState("");
   const [addressError, setAddressError] = useState(false);
-  const [pinCode, setPinCode] = useState('');
+  const [pinCode, setPinCode] = useState("");
   const [pincodeReqError, setPincodeReqError] = useState(false);
   const [pinCodeError, setPinCodeError] = useState(false);
-  const [city, setCity] = useState('');
+  const [city, setCity] = useState("");
   const [cityError, setCityError] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [combinedDateTime, setCombinedDateTime] = useState(null);
-   const [isClosed, setIsClosed] = useState(false);
+  const [isClosed, setIsClosed] = useState(false);
   const [combinedDateTimeError, setCombinedDateTimeError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isEventPushed, setIsEventPushed] = useState(false);
@@ -81,65 +167,58 @@ const selectedThemes = router.query.selectedThemes
   const [sendInclusion, setSendInclusion] = useState(false);
   const [productPrice, setProductPrice] = useState(null);
   const [productImage, setProductImage] = useState(null);
-  // const [productDuration, setProductDuration] = useState(null);
   const [productData, setProductData] = useState(null);
-
-
-  if (product) {
-    product = JSON.parse(product)
-  }
 
   const parseInclusions = (htmlString) => {
     const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlString, 'text/html');
-    const divs = doc.querySelectorAll('div');
-    return Array.from(divs).map(div => div.textContent.trim());
+    const doc = parser.parseFromString(htmlString, "text/html");
+    const divs = doc.querySelectorAll("div");
+    return Array.from(divs).map((div) => div.textContent.trim());
   };
   useEffect(() => {
-    setIsClosed(false); 
+    setIsClosed(false);
   }, [combinedDateTimeError]);
   useEffect(() => {
     if (!router.isReady) return;
 
-    if (router.query.product) {
-      const parsedProduct = JSON.parse(router.query.product);
-    
-      const formattedInclusions = parseInclusions(parsedProduct.inclusion[0]);
+    if (selectedProduct) {
+      const parsedProduct = selectedProduct;
+      let formattedInclusions;
+      if (parsedProduct?.inclusion?.length > 0) {
+        formattedInclusions = parseInclusions(selectedProduct?.inclusion[0]);
+      } else {
+        formattedInclusions = [];
+      }
       setSendInclusion(formattedInclusions);
-    setProductPrice(product.price || product.price);
+      setProductPrice(selectedProduct?.price || selectedProduct?.price);
 
       setProductData({
-      ...parsedProduct,
-      advance_amount: Number(parsedProduct.advance_amount || 0), // ✅ IMPORTANT
-    });
+        ...parsedProduct,
+        advance_amount: Number(parsedProduct.advance_amount || 0),
+      });
 
       // Product ID se local image set karo
       if (parsedProduct._id && productsData[parsedProduct._id]) {
         setProductImage(productsData[parsedProduct._id].images[0]);
       }
     }
-  }, [router.isReady, router.query.product]);
-
+  }, [router.isReady, selectedProduct]);
 
   useEffect(() => {
-    // Check localStorage or a cookie for login status, or call an API
-    const loggedInStatus = safeGetItem('isLoggedIn') === 'true'; // Check login status
-    setIsLoggedIn(loggedInStatus); // Update state based on login status
+    const loggedInStatus = safeGetItem("isLoggedIn") === "true";
+    setIsLoggedIn(loggedInStatus);
     if (!loggedInStatus) {
-      setIsModalOpen(true); // Open modal if not logged in
+      setIsModalOpen(true);
     }
-    setLoading(false); // Done with loading
-  }, []); // Run once when component mounts
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    // If logged in, close the modal
     if (isLoggedIn) {
       setIsModalOpen(false);
     }
-  }, [isLoggedIn]); // This will run when `isLoggedIn` state changes
+  }, [isLoggedIn]);
 
- 
-  
   const handleComment = (e) => {
     const commentText = e.target.value;
     setComment(commentText);
@@ -150,55 +229,61 @@ const selectedThemes = router.query.selectedThemes
     let addOnProductsText = "";
 
     if (selectedAddOnProduct.length > 0) {
-      selectedAddOnProduct.map(item => `${item.title}: ₹${item.price}`).join(" ");
+      selectedAddOnProduct
+        .map((item) => `${item.title}: ₹${item.price}`)
+        .join(" ");
     }
 
     return comment + addOnProductsText;
   };
 
-
   const handleDateChange = (date) => {
-    // console.log(`Date selected: ${date}`);
     setSelectedDate(date);
     setSelectedDateError(false);
-    combineDateTime(date, selectedTimeSlot); // Pass the current selected time slot
+    combineDateTime(date, selectedTimeSlot);
   };
 
   const handleTimeSlotChange = (event) => {
     const timeSlot = event.target.value;
     setSelectedTimeSlot(timeSlot);
     setSelectedTimeSlotError(false);
-    setCombinedDateTimeError(false); 
-};
- const combineDateTime = (date, timeSlot) => {
-  if (!date || !timeSlot) return null;
+    setCombinedDateTimeError(false);
+  };
+  const combineDateTime = (date, timeSlot) => {
+    if (!date || !timeSlot) return null;
 
-  const [startHour, period] = timeSlot.split('-')[0].trim().split(' ');
-  let hour = parseInt(startHour.split(':')[0], 10);
+    const [startHour, period] = timeSlot.split("-")[0].trim().split(" ");
+    let hour = parseInt(startHour.split(":")[0], 10);
 
-  if (period === 'PM' && hour !== 12) hour += 12;
-  if (period === 'AM' && hour === 12) hour = 0;
+    if (period === "PM" && hour !== 12) hour += 12;
+    if (period === "AM" && hour === 12) hour = 0;
 
-  const combinedDate = new Date(date);
-  combinedDate.setHours(hour, 0, 0, 0);
+    const combinedDate = new Date(date);
+    combinedDate.setHours(hour, 0, 0, 0);
 
-  return combinedDate; // ✅ IMPORTANT
-};
-const validateDateTime = (combinedDate) => {
-  const now = new Date();
-  const timeDifference = combinedDate - now;
+    return combinedDate;
+  };
+  const validateDateTime = (combinedDate) => {
+    const now = new Date();
+    const timeDifference = combinedDate - now;
 
-  return timeDifference < 24 * 60 * 60 * 1000; // true = invalid
-};
+    return timeDifference < 24 * 60 * 60 * 1000;
+  };
   const generateTimeSlots = () => {
     const startTime = 7; // Starting hour
     const endTime = 22; // Ending hour
-    const interval = 1// Interval in hours
+    const interval = 1; // Interval in hours
 
     const timeSlots = [];
     for (let hour = startTime; hour < endTime; hour += interval) {
-      const startTimeFormatted = hour < 10 ? `0${hour}:00 AM` : `${hour % 12 || 12}:00 ${hour < 12 ? 'AM' : 'PM'}`;
-      const endTimeFormatted = hour + interval < 10 ? `0${hour + interval}:00 AM` : `${(hour + interval) % 12 || 12}:00 ${hour + interval < 12 ? 'AM' : 'PM'}`;
+      const startTimeFormatted =
+        hour < 10
+          ? `0${hour}:00 AM`
+          : `${hour % 12 || 12}:00 ${hour < 12 ? "AM" : "PM"}`;
+      const endTimeFormatted =
+        hour + interval < 10
+          ? `0${hour + interval}:00 AM`
+          : `${(hour + interval) % 12 || 12}:00 ${hour + interval < 12 ? "AM" : "PM"}`;
       timeSlots.push(`${startTimeFormatted} - ${endTimeFormatted}`);
     }
     return timeSlots;
@@ -207,40 +292,39 @@ const validateDateTime = (combinedDate) => {
   const handleAddressChange = (e) => {
     setAddress(e.target.value);
     if (e.target.value) {
-      setAddressError(false)
+      setAddressError(false);
     } else {
-      setAddressError(true)
+      setAddressError(true);
     }
   };
 
   const handlePinCodeChange = (e) => {
     if (e.target.value) {
-      setPincodeReqError(false)
+      setPincodeReqError(false);
     } else {
-      setPincodeReqError(true)
+      setPincodeReqError(true);
     }
     setPinCode(e.target.value);
-    if (((e.target.value).length) == 6) {
-      const validpin = pincodes.some((validPin) => validPin === e.target.value)
+    if (e.target.value.length == 6) {
+      const validpin = pincodes.some((validPin) => validPin === e.target.value);
       if (!validpin) {
-        setPinCodeError(true)
+        setPinCodeError(true);
       } else {
-        setPinCodeError(false)
+        setPinCodeError(false);
       }
     } else {
-      setPinCodeError(true)
+      setPinCodeError(true);
     }
   };
 
   const handleCityChange = (e) => {
     setCity(e.target.value);
     if (e.target.value) {
-      setCityError(false)
+      setCityError(false);
     } else {
-      setCityError(true)
+      setCityError(true);
     }
   };
-
 
   const saveAddress = async () => {
     try {
@@ -248,7 +332,7 @@ const validateDateTime = (combinedDate) => {
       // Retrieve userID from localStorage
       let userId = safeGetItem("userID");
       if (!userId) {
-        console.error('Error retrieving userID');
+        console.error("Error retrieving userID");
         return;
       }
       const address2 = address + pinCode;
@@ -257,255 +341,226 @@ const validateDateTime = (combinedDate) => {
         address2: address2,
         locality: city,
         city: city,
-        userId: userId
+        userId: userId,
       };
-      const token = safeGetItem('token');
+      const token = safeGetItem("token");
       const response = await axiosApi.post(url, requestData, {
         headers: {
-          'Content-Type': 'application/json',
-          'authorization': token
+          "Content-Type": "application/json",
+          authorization: token,
         },
       });
 
       if (response.status === API_SUCCESS_CODE) {
-        // Handle navigation in React (e.g., using React Router)
-        console.log("Address saved successfully");
-        return response.data.data._id
+        return response.data.data._id;
       }
     } catch (error) {
-      console.log('Error  Data:', error.message);
+      console.log("Error  Data:", error.message);
     }
   };
- const productAdvanceAmount = Number(productData?.advance_amount || 0);
+  const productAdvanceAmount = Number(productData?.advance_amount || 0);
 
   const addonAdvanceAmount = selectedAddOnProduct.reduce((acc, item) => {
     const qty = item.quantity || 0;
     return acc + Math.round(item.price * qty * 0.35);
   }, 0);
 
-const advanceAmount = productAdvanceAmount + addonAdvanceAmount;
-const balanceAmount = totalAmount - advanceAmount;
-
-
+  const advanceAmount = productAdvanceAmount + addonAdvanceAmount;
+  const balanceAmount = totalAmount - advanceAmount;
 
   const onContinueClick = async () => {
     setIsClosed(false);
- if (!selectedTimeSlot) {
-    setSelectedTimeSlotError(true);
-    setLoading(false);
-    return;
-  }
+    if (!selectedTimeSlot) {
+      setSelectedTimeSlotError(true);
+      setLoading(false);
+      return;
+    }
 
-   const combinedDate = combineDateTime(selectedDate, selectedTimeSlot);
+    const combinedDate = combineDateTime(selectedDate, selectedTimeSlot);
 
-  if (!combinedDate) {
-    setLoading(false);
-    return;
-  }
-   setLoading(true);
-  const isInvalid = validateDateTime(combinedDate);
+    if (!combinedDate) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    const isInvalid = validateDateTime(combinedDate);
 
-  if (isInvalid) {
-    setCombinedDateTimeError(true);
-      setLoading(false); 
-  } else {
-    setCombinedDateTimeError(false);
-  }
+    if (isInvalid) {
+      setCombinedDateTimeError(true);
+      setLoading(false);
+    } else {
+      setCombinedDateTimeError(false);
+    }
     const apiUrl = BASE_URL + PAYMENT;
-    const storedUserID = await safeGetItem('userID');
-    // const phoneNumber = await safeGetItem('mobileNumber')
+    const storedUserID = await safeGetItem("userID");
     let merchantTransactionId;
     try {
       const addressID = await saveAddress();
-      const storedUserID = await safeGetItem('userID');
-     
-
+      const storedUserID = await safeGetItem("userID");
 
       const url = BASE_URL + CONFIRM_ORDER_ENDPOINT;
 
       const requestData = {
-        "toId": "",
-        "add_on": selectedAddOnProduct,
-        // "add_on": sendInclusion,
-        "order_time": selectedTimeSlot,
-        "phone_no": phoneNumber,
-        "no_of_people": 0,
-        "type": 8,
-        "fromId": storedUserID,
-        "is_discount": "0",
-        "addressId": addressID,
-        "order_date": formatDate(selectedDate),
-        "no_of_burner": 0,
-        "order_locality": city,
-        "total_amount": totalAmount,
-        "orderApplianceIds": [],
-        "payable_amount": totalAmount,
-        "is_gst": "0",
-        "advance_amount": advanceAmount,
-        "balance_amount": balanceAmount,
-        "order_taken_by": "Booked Online",
-        "order_type": true,
-        "order_pincode": pinCode,
-        "items": [product._id],
-        "decoration_comments": getFinalComment(),
-        "status": 0,
-        "themes": selectedThemes,
-      }
-      const token = await safeGetItem('token');
+        toId: "",
+        add_on: selectedAddOnProduct,
+        order_time: selectedTimeSlot,
+        phone_no: phoneNumber,
+        no_of_people: 0,
+        type: 8,
+        fromId: storedUserID,
+        is_discount: "0",
+        addressId: addressID,
+        order_date: formatDate(selectedDate),
+        no_of_burner: 0,
+        order_locality: city,
+        total_amount: totalAmount,
+        orderApplianceIds: [],
+        payable_amount: totalAmount,
+        is_gst: "0",
+        advance_amount: advanceAmount,
+        balance_amount: balanceAmount,
+        order_taken_by: "Booked Online",
+        order_type: true,
+        order_pincode: pinCode,
+        items: [selectedProduct?._id],
+        decoration_comments: getFinalComment(),
+        status: 0,
+        themes: selectedThemes,
+      };
+      const token = await safeGetItem("token");
       const response = await axiosApi.post(url, requestData, {
         headers: {
-          'Content-Type': 'application/json',
-          'authorization': token
+          "Content-Type": "application/json",
+          authorization: token,
         },
       });
-      merchantTransactionId = response.data.data._id
-      //}
+      merchantTransactionId = response.data.data._id;
     } catch (error) {
-      console.log('Error Confirming Order:', error.message);
+      console.log("Error Confirming Order:", error.message);
     }
-  if (isInvalid) {
-    setLoading(false);
-    return; 
+    if (isInvalid) {
+      setLoading(false);
+      return;
     }
 
     const requestData2 = {
       user_id: storedUserID,
-      price:advanceAmount,
+      price: advanceAmount,
       phone: phoneNumber,
       name: `user_${merchantTransactionId}`,
-      merchantTransactionId: merchantTransactionId
+      merchantTransactionId: merchantTransactionId,
     };
     try {
       if (city && pinCode && address && selectedTimeSlot && selectedDate) {
-      if (isInvalid) {
-      setCombinedDateTimeError(true); 
-      setLoading(false);
-      return; 
-    }
+        if (isInvalid) {
+          setCombinedDateTimeError(true);
+          setLoading(false);
+          return;
+        }
         const response2 = await axiosApi.post(apiUrl, requestData2, {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         });
 
-        window.location.href = response2.data
+        window.location.href = response2.data;
       } else {
         if (!city) {
-          setCityError(true)
+          setCityError(true);
         }
         if (!pinCode) {
-          setPincodeReqError(true)
-          setPinCodeError(true)
+          setPincodeReqError(true);
+          setPinCodeError(true);
         }
         if (!address) {
-          setAddressError(true)
+          setAddressError(true);
         }
         if (!selectedTimeSlot) {
-          setSelectedTimeSlotError(true)
+          setSelectedTimeSlotError(true);
         }
         if (!selectedDate) {
-          setSelectedDateError(true)
+          setSelectedDateError(true);
         }
       }
     } catch (error) {
       // Handle errors
-      console.error('API error:', error);
-    }
-    finally {
+      console.error("API error:", error);
+    } finally {
       setLoading(false); // Hide loader
     }
-  }
+  };
 
-const getPhotographyImageUrl = (item) => {
-  let fileName = "";
+  const getPhotographyImageUrl = (item) => {
+    let fileName = "";
 
-  if (item?.featured_image && typeof item.featured_image === "string") {
-    fileName = item.featured_image;
-  } else if (
-    Array.isArray(item?.featured_image) &&
-    item.featured_image.length > 0
-  ) {
-    fileName =
-      item.featured_image[0]?.fileName ||
-      item.featured_image[0] ||
-      "";
-  } else if (item?.featured_images?.[0]?.fileName) {
-    fileName = item.featured_images[0].fileName;
-  }
+    if (item?.featured_image && typeof item.featured_image === "string") {
+      fileName = item.featured_image;
+    } else if (
+      Array.isArray(item?.featured_image) &&
+      item.featured_image.length > 0
+    ) {
+      fileName =
+        item.featured_image[0]?.fileName || item.featured_image[0] || "";
+    } else if (item?.featured_images?.[0]?.fileName) {
+      fileName = item.featured_images[0].fileName;
+    }
 
-  if (!fileName) {
-    return "/default-image.webp";
-  }
+    if (!fileName) {
+      return "/default-image.webp";
+    }
 
-  // Agar already full URL hai
-  if (fileName.startsWith("http://") || fileName.startsWith("https://")) {
-    return fileName;
-  }
+    // Agar already full URL hai
+    if (fileName.startsWith("http://") || fileName.startsWith("https://")) {
+      return fileName;
+    }
 
-  // Extension remove karke compressed webp URL
-  const cleanFileName = fileName.split(".")[0];
+    // Extension remove karke compressed webp URL
+    const cleanFileName = fileName.split(".")[0];
 
-  return `https://horaservices.com/api/uploads/compressed_webp/${cleanFileName}.webp`;
-};
-const contactUsRedirection = (productName) => {
-  const { city: fromCity, category: fromCategory } = parseFromPath(from);
+    return `https://horaservices.com/api/uploads/compressed_webp/${cleanFileName}.webp`;
+  };
+  const contactUsRedirection = (productName) => {
+    const waCategory =
+      selectedCatValue || formatPhotographyCategory(selectedCatValue);
+    const waCity = city || selectedCitySlug;
 
-  const waCategory =
-    fromCategory || formatPhotographyCategory(router.query.catValue);
-  const waCity = city || fromCity;
+    const msg = photographyContactMessage(waCategory, waCity, productName);
 
-  const msg = photographyContactMessage(waCategory, waCity, productName);
+    // GTM push
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "photography_checkout_contact_us_click",
+      product_name: productName,
+      city: waCity || "unknown",
+      category: waCategory || "unknown",
+    });
 
-  // ✅ GTM push
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: "photography_checkout_contact_us_click",
-    product_name: productName,
-    city: waCity || "unknown",
-    category: waCategory || "unknown",
-  });
-
-  // ✅ Open WhatsApp
-  window.open(`https://wa.me/+917338584828/?text=${encodeURIComponent(msg)}`);
-};
-
-
-
-  // useEffect(() => {
-  //   setIsClient(true);
-  //   const handleResize = () => {
-  //     setIsMobile(window.innerWidth < 800);
-  //   };
-
-  //   handleResize(); // Check initial size
-  //   window.addEventListener('resize', handleResize);
-
-  //   return () => window.removeEventListener('resize', handleResize);
-  // }, []);
-
+    // ✅ Open WhatsApp
+    window.open(`https://wa.me/+917338584828/?text=${encodeURIComponent(msg)}`);
+  };
 
   useEffect(() => {
-    if (product?.name && product?.price && !isEventPushed) {
+    if (selectedProduct?.name && selectedProduct?.price && !isEventPushed) {
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
-        event: 'photography_checkout_page',
+        event: "photography_checkout_page",
         pageUrl: window.location.href,
-        productName: product.name,
-        productPrice: product.price,
+        productName: selectedProduct.name,
+        productPrice: selectedProduct.price,
         UserPhoneNumber: phoneNumber,
-
       });
 
       setIsEventPushed(true);
     }
-  }, [product, isEventPushed])
-
- 
+  }, [selectedProduct, isEventPushed]);
 
   return (
     <div className="App">
-       <Head>
-        <title>HORA Photography : Professional photography for all events - Birthdays, Parties, & Weddings – Starting at ₹3500</title>
+      <Head>
+        <title>
+          HORA Photography : Professional photography for all events -
+          Birthdays, Parties, & Weddings – Starting at ₹3500
+        </title>
         <meta
           name="description"
           content="📸 Capture Every Moment, Forever! ✨
@@ -513,8 +568,9 @@ const contactUsRedirection = (productName) => {
       Weddings 👰‍♀️🤵
       Maternity & Baby Shoots 🤰👼
       Birthdays & Anniversaries 🎂❤️
-      Housewarming & Corporate Events" />
-         <meta
+      Housewarming & Corporate Events"
+        />
+        <meta
           name="keywords"
           content="couple photoshoot, romantic photoshoot for couples, pre wedding photoshoot, pre wedding photography, couple pre wedding photography, candid pre wedding shoot, pre bridal photography, pre wedding shoot price, pre wedding shoot in bangalore, 
           couples photography, maternity photoshoot, maternity photoshoot near me, maternity photo sessions, maternity photoshoot in bangalore, maternity couple photoshoot, mother to be photoshoot, maternity shoot near me, pregnancy photoshoot near me, 
@@ -525,42 +581,64 @@ const contactUsRedirection = (productName) => {
            birthday party photographer, event photography, photoshoot for wedding anniversary, anniversary photoshoot, candid photography, cinematic photography, fashion photography, model photography, black and white photography, landscape photography, portrait photography, 
            photographers near me, professional photographer near me, professional photographer, freelance photographer, best photographers near me, photoshoot near me, photographer in bangalore, photography in bangalore, bangalore photoshoot, photography services"
         />
-        <meta property="og:title" content="HORA Photography : Professional photography for all events" />
+        <meta
+          property="og:title"
+          content="HORA Photography : Professional photography for all events"
+        />
         <link rel="canonical" href="https://horaservices.com/photography" />
         <meta
           property="og:description"
           content="Professional event photography for weddings, birthdays, baby showers, and more. Book today for stunning, affordable memories — starting at just ₹3500!"
         />
-        <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
-        <meta property="og:url" content="https://horaservices.com/photography" />
+        <meta
+          property="og:image"
+          content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
+        />
+        <meta
+          property="og:url"
+          content="https://horaservices.com/photography"
+        />
         <meta property="og:type" content="website" />
         <meta name="robots" content="index, follow" />
         <meta name="author" content="Hora Services" />
-        <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+        <link
+          rel="icon"
+          href="https://horaservices.com/api/uploads/logo-icon.png"
+          type="image/x-icon"
+        />
         <script type="application/ld+json">{scriptTag}</script>
       </Head>
-      {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} fromCheckout/>}
+      {!isLoggedIn && isModalOpen && (
+        <OtpLoginPopup setIsModalOpen={setIsModalOpen} fromCheckout />
+      )}
       {loading && <Loader />}
 
-      <div className="booking-form-card" >
-        <div style={{
-
-          backgroundImage: `url(${BackgroundDetails.src})`,
-          backgroundSize: '423px 100%',
-          backgroundPosition: ' left 0px top 40%',
-          backgroundRepeat: 'no-repeat',
-
-        }} >
-
+      <div className="booking-form-card">
+        <div
+          style={{
+            backgroundImage: `url(${BackgroundDetails.src})`,
+            backgroundSize: "423px 100%",
+            backgroundPosition: " left 0px top 40%",
+            backgroundRepeat: "no-repeat",
+          }}
+        >
           {/* Transparent Foreground Form Layer */}
-          <div className="booking-form with-bg-shapes" >
+          <div className="booking-form with-bg-shapes">
             <div className="background-shape top-left" />
             <div className="background-shape bottom-right" />
 
-            <h4 className="form-title" style={{ color: '#8b3dff', fontWeight: 700 }}>Booking Details</h4>
-  <div className="photographer-note">
-     Duration: {duration ? `${duration} ` : "Not selected"}
-</div>
+            <h4
+              className="form-title"
+              style={{ color: "#8b3dff", fontWeight: 700 }}
+            >
+              Booking Details
+            </h4>
+            <div className="photographer-note">
+              Duration:{" "}
+              {selectedProduct?.duration
+                ? `${selectedProduct?.duration} `
+                : "Not selected"}
+            </div>
             <div className="form-row">
               <div className="form-half large-input">
                 <label className="form-label">Booking Date</label>
@@ -591,17 +669,16 @@ const contactUsRedirection = (productName) => {
               </div>
             </div>
 
-          
-<div className="amountBox">
-  <div className="amountRow">
-    <span className="labels">TOTAL AMOUNT :</span>
-    <span className="value">₹ {totalAmount}</span>
-  </div>
-  <div className="amountRow">
-    <span className="labels">ADVANCE AMOUNT :</span>
-    <span className="value">₹ {advanceAmount}</span>
-  </div>
-</div>
+            <div className="amountBox">
+              <div className="amountRow">
+                <span className="labels">TOTAL AMOUNT :</span>
+                <span className="value">₹ {totalAmount}</span>
+              </div>
+              <div className="amountRow">
+                <span className="labels">ADVANCE AMOUNT :</span>
+                <span className="value">₹ {advanceAmount}</span>
+              </div>
+            </div>
             <div className="form-group input-with-icon">
               <label className="form-label">Share comments</label>
               <Image src={CommentIcon} className="input-icon" alt="comment" />
@@ -624,7 +701,9 @@ const contactUsRedirection = (productName) => {
                 rows={2}
                 placeholder="Enter your address here..."
               />
-              {addressError && <p className="error-text">This field is required!</p>}
+              {addressError && (
+                <p className="error-text">This field is required!</p>
+              )}
             </div>
 
             <div className="form-group input-with-icon">
@@ -635,13 +714,17 @@ const contactUsRedirection = (productName) => {
                 onChange={handleCityChange}
                 className="formcontrol select-colored"
               >
-                <option value="" disabled>Select City</option>
+                <option value="" disabled>
+                  Select City
+                </option>
                 <option value="Bangalore">Bangalore</option>
                 <option value="Delhi">Delhi NCR</option>
                 <option value="Mumbai">Mumbai</option>
                 <option value="Hyderabad">Hyderabad</option>
               </select>
-              {cityError && <p className="error-text">This field is required!</p>}
+              {cityError && (
+                <p className="error-text">This field is required!</p>
+              )}
             </div>
 
             <div className="form-group input-with-icon">
@@ -655,20 +738,21 @@ const contactUsRedirection = (productName) => {
                 placeholder="Enter your pin code here..."
               />
               {pinCode && (
-                <p className={`info-text ${pinCodeError ? "error-text" : "success-text"}`}>
+                <p
+                  className={`info-text ${pinCodeError ? "error-text" : "success-text"}`}
+                >
                   Service {pinCodeError ? "not " : ""}available in your area!
                 </p>
               )}
-              {pincodeReqError && <p className="error-text">This field is required!</p>}
+              {pincodeReqError && (
+                <p className="error-text">This field is required!</p>
+              )}
             </div>
-
           </div>
         </div>
       </div>
 
-
-
-      <div className="rightSeccheckout" >
+      <div className="rightSeccheckout">
         <div className="floating-center-image">
           <Image
             src={BackgorundImgDetails}
@@ -676,94 +760,124 @@ const contactUsRedirection = (productName) => {
             className="floating-image"
           />
         </div>
-        <div className='rightsecdecinner photography'>
-          <h3 style={{ fontSize: "22px", fontWeight: "600", color: "rgb(157, 74, 147)", margin: "33px 0 11px 0", lineHeight: "35px", width: "100%", textAlign: "center" }}>Product Details</h3>
-          <div className='card-container'>
-
-            <div >
-             
-              <p className='productTitle'>{productData?.name || "N/A"}</p>
+        <div className="rightsecdecinner photography">
+          <h3
+            style={{
+              fontSize: "22px",
+              fontWeight: "600",
+              color: "rgb(157, 74, 147)",
+              margin: "33px 0 11px 0",
+              lineHeight: "35px",
+              width: "100%",
+              textAlign: "center",
+            }}
+          >
+            Product Details
+          </h3>
+          <div className="card-container">
+            <div>
+              <p className="productTitle">{productData?.name || "N/A"}</p>
             </div>
-           <div >
-             <Image
-  className="checkoutRightImg"
-  src={getPhotographyImageUrl(product)}
-  alt={product?.name || "Photography product"}
-  width={300}
-  height={300}
-/>
-            </div> 
+            <div>
+              <Image
+                className="checkoutRightImg"
+                src={getPhotographyImageUrl(selectedProduct)}
+                alt={selectedProduct?.name || "Photography product"}
+                width={300}
+                height={300}
+              />
+            </div>
 
-            <div className='prod-details'>
-         
-              <div className='detailitem'>
+            <div className="prod-details">
+              <div className="detailitem">
                 <label>Product Amount:</label>
                 <p>₹{productPrice}</p>
               </div>
-              <div className='addon-prices'>
-                        <div >
-                         {selectedAddOnProduct.length > 0 && (
-  <>
-    <label>Add-Ons :</label>
-    <ul className="addon-list">
-      {selectedAddOnProduct.map((item, index) => (
-        <li key={index} className="addon-item">
-          <span className="addon-title">{index + 1}. {item.title}</span>
-          <span className="addon-price">
-            ₹{item.price} x {item.quantity} = ₹ {item.totalPrice}
-          </span>
-         </li>
-      ))}
-    </ul>
-  </>
-)}
-{selectedThemes.length > 0 && (
-  <div className='addon-prices'>
-    <label>Selected Themes:</label>
-    <ul className="addon-list">
-      {selectedThemes.map((theme, index) => {
-        const fileName = theme?.image || theme?.featured_image || theme?.icon || "";
-        const imgUrl = !fileName
-          ? "/default-image.webp"
-          : fileName.startsWith("http")
-          ? fileName
-          : `https://horaservices.com/api/uploads/compressed_webp/${fileName.split(".")[0]}.webp`;
+              <div className="addon-prices">
+                <div>
+                  {selectedAddOnProduct.length > 0 && (
+                    <>
+                      <label>Add-Ons :</label>
+                      <ul className="addon-list">
+                        {selectedAddOnProduct.map((item, index) => (
+                          <li key={index} className="addon-item">
+                            <span className="addon-title">
+                              {index + 1}. {item.title}
+                            </span>
+                            <span className="addon-price">
+                              ₹{item.price} x {item.quantity} = ₹{" "}
+                              {item.totalPrice}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                  {selectedThemes.length > 0 && (
+                    <div className="addon-prices">
+                      <label>Selected Themes:</label>
+                      <ul className="addon-list">
+                        {selectedThemes.map((theme, index) => {
+                          const fileName =
+                            theme?.image ||
+                            theme?.featured_image ||
+                            theme?.icon ||
+                            "";
+                          const imgUrl = !fileName
+                            ? "/default-image.webp"
+                            : fileName.startsWith("http")
+                              ? fileName
+                              : `https://horaservices.com/api/uploads/compressed_webp/${fileName.split(".")[0]}.webp`;
 
-        return (
-          <li key={theme._id || index} className="addon-item" style={{ display: "flex", alignItems: "center" }}>
-            <Image
-              src={imgUrl}
-              alt={theme.title || "Theme"}
-              width={28}
-              height={28}
-              style={{ borderRadius: "4px", objectFit: "cover", marginRight: "6px" }}
-            />
-            <span className="addon-title">{index + 1}. {theme.title}</span>
-          </li>
-        );
-      })}
-    </ul>
-  </div>
-)}
-                        </div>
-                      </div>
-                     
-              <div className='detailitem'>
-                <label style={{ color: "rgb(157, 74, 147)"}}>Total Amount:</label>
-                <p style={{ color: "rgb(157, 74, 147)"}}>₹{totalAmount}</p>
+                          return (
+                            <li
+                              key={theme._id || index}
+                              className="addon-item"
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              <Image
+                                src={imgUrl}
+                                alt={theme.title || "Theme"}
+                                width={28}
+                                height={28}
+                                style={{
+                                  borderRadius: "4px",
+                                  objectFit: "cover",
+                                  marginRight: "6px",
+                                }}
+                              />
+                              <span className="addon-title">
+                                {index + 1}. {theme.title}
+                              </span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
+                </div>
               </div>
-               {/* <div className='detailitem'>
+
+              <div className="detailitem">
+                <label style={{ color: "rgb(157, 74, 147)" }}>
+                  Total Amount:
+                </label>
+                <p style={{ color: "rgb(157, 74, 147)" }}>₹{totalAmount}</p>
+              </div>
+              {/* <div className='detailitem'>
                 <label style={{ color: "rgb(157, 74, 147)"}}>Advance Amount:</label>
                 <p style={{ color: "rgb(157, 74, 147)"}}>₹ {Math.round(totalAmount * 0.35)}</p>
               </div> */}
-<div className='detailitem'>
-  <label style={{ color: "rgb(157, 74, 147)" }}>Advance Amount:</label>
-  <p style={{ color: "rgb(157, 74, 147)" }}>₹ {advanceAmount}</p>
-</div>
+              <div className="detailitem">
+                <label style={{ color: "rgb(157, 74, 147)" }}>
+                  Advance Amount:
+                </label>
+                <p style={{ color: "rgb(157, 74, 147)" }}>₹ {advanceAmount}</p>
+              </div>
             </div>
           </div>
         </div>
-       
+
         <div className="needmore">
           <div
             style={{
@@ -775,19 +889,44 @@ const contactUsRedirection = (productName) => {
               width: "100%",
             }}
           >
-            <p style={{ fontSize: 14, fontWeight: 500, color: "black", marginBottom: 0 }}>
+            <p
+              style={{
+                fontSize: 14,
+                fontWeight: 500,
+                color: "black",
+                marginBottom: 0,
+              }}
+            >
               Need more info?
             </p>
 
-
-            <button className="button-cta whatsapp-cta" onClick={() => contactUsRedirection(productData?.name)}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle icon-cta"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" className="whatsapp-iconimg"></path></svg>Whatsapp</button>
-
+            <button
+              className="button-cta whatsapp-cta"
+              onClick={() => contactUsRedirection(productData?.name)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="25"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-message-circle icon-cta"
+              >
+                <path
+                  d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"
+                  className="whatsapp-iconimg"
+                ></path>
+              </svg>
+              Whatsapp
+            </button>
           </div>
         </div>
         <div className="policy-wrapper">
           <div className="policy-heading">
-
             <Image
               src={cancellation}
               className="policy-icon"
@@ -795,63 +934,65 @@ const contactUsRedirection = (productName) => {
               width={16}
             />
 
-            <span className="policy-title">Cancellation and Order Change Policy</span>
+            <span className="policy-title">
+              Cancellation and Order Change Policy
+            </span>
           </div>
-         <ol className="policy-list">
-  <li>
-    If the order is beyond 48 hours: You are eligible for a 100% refund of the advance payment.
-  </li>
+          <ol className="policy-list">
+            <li>
+              If the order is beyond 48 hours: You are eligible for a 100%
+              refund of the advance payment.
+            </li>
 
-  <li>
-    If the order is cancelled more than 24 hours before the scheduled delivery:
-    You will not receive a refund of the advance payment.
-  </li>
+            <li>
+              If the order is cancelled more than 24 hours before the scheduled
+              delivery: You will not receive a refund of the advance payment.
+            </li>
 
-  <li>
-    If the order is cancelled within 24 hours:
-    The full advance amount will be non-refundable, and 100% of the payment
-    for photography has to be paid by the customer.
-  </li>
-</ol>
+            <li>
+              If the order is cancelled within 24 hours: The full advance amount
+              will be non-refundable, and 100% of the payment for photography
+              has to be paid by the customer.
+            </li>
+          </ol>
         </div>
+      </div>
 
+      <div className="confirmbutton-wrapper">
+        <button
+          className="confirmbutton"
+          onClick={onContinueClick}
+          type="button"
+        >
+          Confirm Order
+        </button>
       </div>
-    
-<div className="confirmbutton-wrapper">
-  <button
-    className="confirmbutton"
-    onClick={onContinueClick}
-    type="button"
-  >
-    Confirm Order
-  </button>
-</div>
-{combinedDateTimeError && !isClosed && (
- <UrgentBookingModal
-  onClose={() => {
-    setIsClosed(true);
-    setCombinedDateTimeError(false);
-  }}
-  onWhatsApp={() =>
-    contactUsRedirect({
-      type: "photography",
-      category,
-      city,
-      selectedDate,
-      selectedTimeSlot,
-      address,
-      totalAmount,
-      product,
-      selectedAddOnProduct,
-      comment,
-      router
-    })
-  }
-/>
-)}
-      </div>
+      {combinedDateTimeError && !isClosed && (
+        <UrgentBookingModal
+          onClose={() => {
+            setIsClosed(true);
+            setCombinedDateTimeError(false);
+          }}
+          onWhatsApp={() =>
+            contactUsRedirect({
+              type: "photography",
+              category,
+              city,
+              selectedDate,
+              selectedTimeSlot,
+              address,
+              totalAmount,
+              product: selectedProduct,
+              selectedAddOnProduct,
+              comment,
+              router,
+            })
+          }
+        />
+      )}
+    </div>
   );
-}
+};
 
 export default Checkout;
 
@@ -872,20 +1013,26 @@ export const CustomDatePicker = ({
   //   setShowDatePicker(isOpen);
   // };
 
-
   return (
-    <div className={`custom-datepicker-container ${combinedDateTimeError ? 'error' : ''}`}>
-
-      <Dropdown show={showDatePicker} onToggle={toggleDatePicker} className="dropdown-custom">
+    <div
+      className={`custom-datepicker-container ${combinedDateTimeError ? "error" : ""}`}
+    >
+      <Dropdown
+        show={showDatePicker}
+        onToggle={toggleDatePicker}
+        className="dropdown-custom"
+      >
         <Dropdown.Toggle
           variant="outline-secondary"
-          className={`dropdown-toggle-custom ${selectedDateError ? 'error' : ''}`}
-          style={{ cursor: 'pointer' }}
+          className={`dropdown-toggle-custom ${selectedDateError ? "error" : ""}`}
+          style={{ cursor: "pointer" }}
         >
-          <span>{selectedDate ? selectedDate.toLocaleDateString() : ' Select Date'}</span>
+          <span>
+            {selectedDate ? selectedDate.toLocaleDateString() : " Select Date"}
+          </span>
         </Dropdown.Toggle>
 
-        <Dropdown.Menu className="dropdown-menu-custom" show={showDatePicker} >
+        <Dropdown.Menu className="dropdown-menu-custom" show={showDatePicker}>
           <DatePicker
             selected={selectedDate}
             onChange={handleDateChange}
@@ -906,8 +1053,9 @@ export const CustomTimePicker = ({
 }) => {
   return (
     <div
-      className={`custom-timepicker-container ${combinedDateTimeError || selectedTimeSlotError ? 'error' : ''
-        }`}
+      className={`custom-timepicker-container ${
+        combinedDateTimeError || selectedTimeSlotError ? "error" : ""
+      }`}
     >
       <Form.Control
         as="select"
