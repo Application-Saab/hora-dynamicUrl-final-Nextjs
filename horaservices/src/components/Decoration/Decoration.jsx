@@ -46,6 +46,7 @@ import decorationBridetobe from "@/assets/decorationBride-tobe.webp";
 import decorationhaldi from "@/assets/decorationhaldi-Mhendi.webp";
 import Engagementdecoration from "@/assets/engament.webp";
 import Decorationseodata from "@/utils/Decorationseodata.json";
+import { getBalloonDecorationSeo } from "@/utils/balloonDecorationSeo";
 const BannerSlider = dynamic(() => import("@/components/BannerSlider"));
 const DecorSlider = dynamic(() => import("@/components/DecorSlider"));
 const ProductSliderSection = dynamic(
@@ -286,9 +287,11 @@ const { citySeoData, defaultSeo } = Decorationseodata;
    * Title/description har city ke liye custom.
    * ------------------------------------------------------------------ */
 
-  const pageSeo = city
-    ? citySeoData[city.toLowerCase()] || defaultSeo
-    : defaultSeo;
+  // SEO sheet copy (main page + city hubs) takes priority; cities/localities
+  // not in the sheet keep the existing per-city copy.
+  const pageSeo =
+    getBalloonDecorationSeo({ city, locality }) ||
+    (city ? citySeoData[city.toLowerCase()] || defaultSeo : defaultSeo);
 
   return (
     <div className="dec-landing-page">
