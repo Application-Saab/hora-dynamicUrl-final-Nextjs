@@ -485,7 +485,7 @@ const Decoration = ({ city, locality }) => {
           {/* ye dono background ke upar aayenge */}
           <WeddingBanner
             image={weddingBannerImg}
-            href={`/${categorySlug}/wedding`}
+            href={`/${categorySlug}/wedding-decoration`}
           />
 
           <TrendingSlider
