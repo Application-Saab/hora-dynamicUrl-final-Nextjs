@@ -18,6 +18,13 @@ const DAY_NAMES = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
 const NOT_SELECTED = "NOT_SELECTED";
 
+// GTM dataLayer push (SSR-safe)
+const pushGTMEvent = (eventName, params = {}) => {
+  if (typeof window === "undefined") return;
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: eventName, ...params });
+};
+
 const toISODateOnly = (date) => {
   return new Date(
     Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
@@ -112,8 +119,8 @@ export default function DateSelectionBottomSheet({
   userId,
   visitorId,
   pincode,
-  city: cityProp = "", 
-  whatsappNumber = "917338584828", 
+  city: cityProp = "",
+  whatsappNumber = "917338584828",
   eventTitle = "",
   initialDate = null,
   eventId = null,
@@ -139,6 +146,18 @@ export default function DateSelectionBottomSheet({
   const [isCheckingExisting, setIsCheckingExisting] = useState(false);
   const [offerSheet, setOfferSheet] = useState(null);
   const [offerDate, setOfferDate] = useState(null);
+
+  // GTM: popup khulte hi event (kahin se bhi khule — auto / notification / edit button)
+  useEffect(() => {
+    if (!isOpen) return;
+    pushGTMEvent("event_date_popup_view", {
+      popup_name: "event_date_selection",
+      city: resolvedCity || "",
+      event_title: eventTitle || "",
+      page_path: typeof window !== "undefined" ? window.location.pathname : "",
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -191,7 +210,7 @@ export default function DateSelectionBottomSheet({
     };
   }, [isOpen, userId, visitorId]);
 
- 
+
   const offerSheets = (
     <>
       <CouponBottomSheet
@@ -249,6 +268,17 @@ export default function DateSelectionBottomSheet({
     setError(null);
   };
 
+  // GTM: sirf cross (X) button click par event, phir popup band
+  const handleCrossClick = () => {
+    pushGTMEvent("event_date_popup_cross_click", {
+      popup_name: "event_date_selection",
+      city: resolvedCity || "",
+      event_title: eventTitle || "",
+      page_path: typeof window !== "undefined" ? window.location.pathname : "",
+    });
+    onClose();
+  };
+
   const handleConfirm = async () => {
     if (!userId && !visitorId) {
       setError("Missing userId/visitorId — can't save this date.");
@@ -293,7 +323,32 @@ export default function DateSelectionBottomSheet({
 
       const data = await res.json();
 
-       if (onConfirm) onConfirm(selectedDate, data);
+      // GTM: date successfully save hone par confirm event (selected date ke saath)
+      const pad = (n) => String(n).padStart(2, "0");
+      const selectedDateStr = `${selectedDate.getFullYear()}-${pad(
+        selectedDate.getMonth() + 1
+      )}-${pad(selectedDate.getDate())}`;
+      const daysLeft = Math.round(
+        (new Date(
+          selectedDate.getFullYear(),
+          selectedDate.getMonth(),
+          selectedDate.getDate()
+        ) -
+          todayDateOnly) /
+          (1000 * 60 * 60 * 24)
+      );
+      pushGTMEvent("event_date_popup_confirm", {
+        popup_name: "event_date_selection",
+        event_date: selectedDateStr, // 2026-09-02
+        event_date_formatted: formatEventDate(selectedDate), // 2 September 2026
+        days_left: daysLeft,
+        mode: resolvedMode, // "create" (pehli baar) | "add" (date change/add)
+        city: resolvedCity || "",
+        event_title: eventTitle || "",
+        page_path: typeof window !== "undefined" ? window.location.pathname : "",
+      });
+
+      if (onConfirm) onConfirm(selectedDate, data);
 
       // Delhi -> ₹150 coupon sheet, baaki cities -> invite sheet
       setOfferDate(selectedDate);
@@ -334,8 +389,9 @@ export default function DateSelectionBottomSheet({
   return (
     <>
       <div className="dsb-device">
-        <div className="dsb-overlay" onClick={onClose} />        <div className="dsb-sheet-wrapper">
-          <button className="dsb-close-btn" onClick={onClose} aria-label="Close">
+        <div className="dsb-overlay" onClick={onClose} />
+        <div className="dsb-sheet-wrapper">
+          <button className="dsb-close-btn" onClick={handleCrossClick} aria-label="Close">
             <X size={16} strokeWidth={2.4} color="#1a1a1a" />
           </button>
 

@@ -38,7 +38,6 @@ import WhatsAppIcon from "@/app/WhatsAppIconGtm";
 import { useCity } from "@/utils/cityContext";
 import { ProductPageLoader } from "@/components/PageLoaders/ProductPageLoader";
 
-
 // ---------- helpers ----------
 const getDiscountedPrice = (price = 0) => {
   const discountedPrice = price / 0.78;
@@ -187,30 +186,6 @@ export async function getServerSideProps(context) {
   };
 }
 
-const SkeletonLoader = () => {
-  return (
-    <div className="skeleton-loader" style={{ maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start", paddingTop: "20px", paddingBottom: "20px", position: "relative" }} className="decDetails">
-        <div style={{ width: "50%", textAlign: "center" }} className="decDetailsLeft">
-          <div style={{ width: "80%", height: "300px", backgroundColor: "#f0f0f0", margin: "0 auto", position: "relative" }} />
-        </div>
-        <div style={{ width: "50%", paddingLeft: "20px", paddingRight: "50px" }} className="decDetailsRight">
-          <div style={{ height: "20px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "30px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "40%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "20px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "80%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "30px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "20px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "50px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "20px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "50px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "60%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "50px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "100%", borderRadius: "4px" }} className="decDetailsRightInner" />
-          <div style={{ height: "50px", backgroundColor: "#f0f0f0", marginBottom: "12px", width: "100%", borderRadius: "4px" }} className="decDetailsRightInner" />
-        </div>
-      </div>
-    </div>
-  );
-};
-
 // ---------- Page ----------
 const ProductDetails = ({
   initialWork = null,
@@ -228,11 +203,10 @@ const ProductDetails = ({
   const city = ssrCity || router.query.city || null;
   const locality = ssrLocality || router.query.locality || null;
   const catValue = ssrCatValue || router.query.catValue || "";
-  const { selectedCityName } = useCity()
+  const { selectedCityName } = useCity();
 
   const [work, setWork] = useState(initialWork);
   const [loading, setLoading] = useState(!initialWork);
-  console.log('%c [ loading ]', 'font-size:13px; background:pink; color:#bf2c9f;', loading)
   const [similarProducts, setSimilarProducts] = useState(initialSimilar || []);
   const [addonData, setAddonData] = useState(initialAddons || []);
   const [addonIds, setAddonIds] = useState(initialWork?.addons || []);
@@ -242,14 +216,8 @@ const ProductDetails = ({
     !(initialThemes && initialThemes.length >= 0) && !initialWork,
   );
   const [categoryData, setCategoryData] = useState(ssrCategoryDetails);
-  console.log(
-    "%c [ categoryData ]",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    categoryData,
-  );
   const [themeError, setThemeError] = useState(null);
   const [selectedThemeData, setSelectedThemeData] = useState([]);
-
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [isArrowDown, setIsArrowDown] = useState(false);
   const [itemQuantities, setItemQuantities] = useState({});
@@ -305,7 +273,7 @@ const ProductDetails = ({
           `${BASE_URL}/api/photography/details/${productId}`,
         );
         const data = res.data?.data;
-        if (!data){
+        if (!data) {
           setLoading(false);
           setWork(null);
           throw new Error("No product found");
@@ -347,7 +315,7 @@ const ProductDetails = ({
             console.error("SSR categoryResp:", e.message);
             setCategoryData(null);
           }
-        }else {
+        } else {
           setLoading(false);
         }
       } catch (error) {
@@ -554,21 +522,18 @@ const ProductDetails = ({
     const totalPrice = calculateTotalPrice(product.price);
     const advanceAmount = getFinalAdvanceAmount();
     const balanceAmount = totalPrice - advanceAmount;
+    const selectedAddonSort = selectedAddOnProduct?.map((item) => ({
+      id: item?._id,
+      quantity: item?.quantity,
+    }));
 
     router.push({
       pathname: "/photography-checkout",
       query: {
-        from: typeof window !== "undefined" ? window.location.pathname : "",
-        product: JSON.stringify(product),
-        ProductPrice: product.discountedPrice || product.price,
-        selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
-        itemQuantities: JSON.stringify(itemQuantities),
+        productid: work?._id,
+        selectedaddonids: JSON.stringify(selectedAddonSort),
         selectedThemes: JSON.stringify(selectedThemeData),
         totalAmount: totalPrice,
-        advanceAmount,
-        balanceAmount,
-        duration: work?.duration,
-        catValue: categoryNameToSlug[categoryData?.name]
       },
     });
   };
@@ -858,7 +823,7 @@ const ProductDetails = ({
         <WhatsAppIcon
           router={router}
           categorySlug={categoryNameToSlug[categoryData?.name] || ""}
-          citySlugProduct = {selectedCityName}
+          citySlugProduct={selectedCityName}
         />
       </div>
     </>
