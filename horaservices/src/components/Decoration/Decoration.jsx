@@ -46,6 +46,8 @@ import decorationBridetobe from "@/assets/decorationBride-tobe.webp";
 import decorationhaldi from "@/assets/decorationhaldi-Mhendi.webp";
 import Engagementdecoration from "@/assets/engament.webp";
 import Decorationseodata from "@/utils/Decorationseodata.json";
+import DecorationBanner from "@/components/CategoryDecorationBanner";
+import { getBalloonDecorationH1 } from "@/utils/balloonDecorationH1";
 const BannerSlider = dynamic(() => import("@/components/BannerSlider"));
 const DecorSlider = dynamic(() => import("@/components/DecorSlider"));
 const ProductSliderSection = dynamic(
@@ -169,6 +171,8 @@ const Decoration = ({ city, locality }) => {
 
   const hasCityPageParam = city ? true : false;
   const pathname = router.asPath;
+  // Page H1 from the SEO sheet (main page + city hubs); null elsewhere.
+  const sheetH1 = getBalloonDecorationH1(pathname);
 
   const categorySlug = useMemo(
     () => getCategorySlugFromPath(pathname, city, locality),
@@ -346,6 +350,7 @@ const { citySeoData, defaultSeo } = Decorationseodata;
       <div className="top-slider">
         <BannerSlider images={bannerImages} showSeeMore={true} />
       </div>
+      {sheetH1 && <DecorationBanner title={sheetH1} />}
       {/* CIRCLE TABS */}
       <div className="category-tabs-outer">
         <CategoryTabs
