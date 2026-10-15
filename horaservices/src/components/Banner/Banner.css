@@ -1,0 +1,18 @@
+.hora-banner-outer {
+  margin: 10px 0;
+}
+
+.hora-banner {
+  display: block;
+  line-height: 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+}
+
+.hora-banner__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+  border-radius: 12px;
+}

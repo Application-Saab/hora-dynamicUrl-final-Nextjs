@@ -360,6 +360,7 @@ export default function SearchSortBar({
   getProductHref,
   getCategoryHref,
   userId = null,
+  showSort = true, // false => "Sort by" button aur Sort sheet dono nahi dikhenge
   initialQuery = "",
   designTypes = [],
   onApplyFilters, // ({ sortOption, designTypes }) => void  (ek saath apply)
@@ -436,7 +437,7 @@ export default function SearchSortBar({
     return () => clearTimeout(timeoutId);
   }, [typewriterWords, query, isFocused]);
 
-  // Fixed-on-scroll behavior (unchanged) ...
+  // Fixed-on-scroll behavior
   useEffect(() => {
     const getTriggerOffset = () =>
       placeholderRef.current
@@ -582,7 +583,9 @@ export default function SearchSortBar({
         style={{ height: isFixed ? topBarRef.current?.offsetHeight || 0 : 0 }}
       />
       <div
-        className={`search-sort-top-bar ${isFixed ? "fixed" : ""}`}
+        className={`search-sort-top-bar ${isFixed ? "fixed" : ""} ${
+          showSort ? "" : "search-sort-top-bar--no-sort"
+        }`}
         ref={topBarRef}
       >
         <div className="search-box">
@@ -616,29 +619,33 @@ export default function SearchSortBar({
           />
         )}
 
-        <button
-          type="button"
-          className="sort-btn"
-          onClick={() => {
-            if (typeof window !== "undefined") {
-              window.dataLayer = window.dataLayer || [];
-              window.dataLayer.push({ event: "sort_sheet_open" });
-            }
-            setIsSortOpen(true);
-          }}
-        >
-          <Image src={closeIcon} alt="Close" className="sort-close-icon" />
-          Sort by
-        </button>
+        {showSort && (
+          <button
+            type="button"
+            className="sort-btn"
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({ event: "sort_sheet_open" });
+              }
+              setIsSortOpen(true);
+            }}
+          >
+            <Image src={closeIcon} alt="Close" className="sort-close-icon" />
+            Sort by
+          </button>
+        )}
       </div>
 
-      <SortSheet
-        isOpen={isSortOpen}
-        onClose={() => setIsSortOpen(false)}
-        sortOption={sortOption}
-        designTypes={designTypes}
-        onApply={handleApply}
-      />
+      {showSort && (
+        <SortSheet
+          isOpen={isSortOpen}
+          onClose={() => setIsSortOpen(false)}
+          sortOption={sortOption}
+          designTypes={designTypes}
+          onApply={handleApply}
+        />
+      )}
     </div>
   );
 }

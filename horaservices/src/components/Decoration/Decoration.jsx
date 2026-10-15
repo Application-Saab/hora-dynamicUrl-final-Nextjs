@@ -45,7 +45,37 @@ import decorationWedding from "@/assets/decorationwedding.webp";
 import decorationBridetobe from "@/assets/decorationBride-tobe.webp";
 import decorationhaldi from "@/assets/decorationhaldi-Mhendi.webp";
 import Engagementdecoration from "@/assets/engament.webp";
+import bannerImg from "@/assets/Banner.webp";
+import whatsappbanner from "@/assets/Whatsaap_banner.webp";
+import weddingBannerImg from "@/assets/Wedding_banner.webp";
+import PremiumBannerImg from "@/assets/priumum_banner.webp";
+import BirthdayBannerImg from "@/assets/Birthday_magical_banner.webp";
 import Decorationseodata from "@/utils/Decorationseodata.json";
+import haldiImg from "@/assets/trending-haldi.webp";
+import mehandiImg from "@/assets/trending-mehandi.webp";
+import mandapImg from "@/assets/trending-mandap.webp";
+import carImg from "@/assets/trending-wedding-car.webp";
+import receptionImg from "@/assets/trending-reception.webp";
+import sangeetImg from "@/assets/trending-sangeet.webp";
+import engagementImg from "@/assets/trending-engagement.webp";
+import firstNightImg from "@/assets/trending-first-night.webp";
+import weddingBg from "@/assets/weddingbackground_image.webp";
+import { CalendarHeart, Flower2, Camera, Sparkles, PartyPopper, Star } from "lucide-react";
+import anniversaryBg from "@/assets/Anniversaary.webp";   // pink background
+import firstNightBg from "@/assets/Firts_night.webp";     // purple background
+import anniversaryPhoto from "@/assets/AnniversaaryImage.webp";   // apni photo
+import firstNightPhoto from "@/assets/FirstnightImage.webp";
+import coupleBgBanner from "@/assets/COUPLE_CELEBRATIONS_Bg_banner.webp";
+import whatsappIcon from "@/assets/whatsapp-icon.png";
+import elegantDecor from "@/assets/elegant-decor.svg";
+import perfectPicture from "@/assets/perfect-picture.svg";
+import romanticSetup from "@/assets/romantic-setup.svg";
+import anniversaryDivider from "@/assets/divider-heart.svg";
+import beautifulDecor from "@/assets/beautiful-decor.svg";
+import romanticAmbience from "@/assets/romantic-ambience.svg";
+import memorableMoment from "@/assets/memorable-moment.svg";
+import firstNightDivider from "@/assets/divider-nightheart.svg";
+
 const BannerSlider = dynamic(() => import("@/components/BannerSlider"));
 const DecorSlider = dynamic(() => import("@/components/DecorSlider"));
 const ProductSliderSection = dynamic(
@@ -62,6 +92,26 @@ import {
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 import GoogleReviewsCard from "@/components/PhotoGalleryPose/GoogleReviewsCard";
+import Banner from "@/components/Banner";
+import SearchSortBar from "../SearchSortBar";
+import WeddingBanner from "../WeddingBanner";
+import TrendingSlider from "../TrendingSlider";
+import CelebrationCard from "../CelebrationCard";
+import BabyCelebrationCard from "../BabyCelebrationCard";
+
+
+import babyBgBanner from "@/assets/baby-bg-banner.webp";
+import babyShowerPhoto from "@/assets/baby-shower.webp";
+import babyWelcomePhoto from "@/assets/baby-welcome.webp";
+import namingPhoto from "@/assets/naming-ceremony.webp";
+import annaprashanPhoto from "@/assets/annaprashan.webp";
+import babyShowerIcon from "@/assets/baby-shower-icon.webp";
+import babyWelcomeIcon from "@/assets/baby-welcome-icon.webp";
+import namingIcon from "@/assets/naming-ceremony-icon.webp";
+import annaprashanIcon from "@/assets/annaprashan-icon.webp";
+import HoraBanner from "../DecorationLandingTopbanner";
+import BirthdayBanner from "../Birthdaybanner";
+import BirthdayMagicalBanner from "../Birthdaymagicalbanner";
 
 const stats = [
   {
@@ -169,12 +219,27 @@ const Decoration = ({ city, locality }) => {
 
   const hasCityPageParam = city ? true : false;
   const pathname = router.asPath;
+  const [sortOption, setSortOption] = useState("popularity");
 
+  // Dropdown mein category par click ka URL (CategoryGrid jaisa hi)
+  const getCategoryHref = (cat) => {
+    let path = "";
+    if (city) path += `/${city.toLowerCase()}`;
+    if (locality) path += `/${locality.toLowerCase()}`;
+    return `${path}/${categorySlug}/${cat.catValue}`;
+  };
+  // Search dropdown aur typewriter placeholder isi list se chalte hain
+  const searchCategoryList = categories.map((c) => ({
+    id: c.catValue,
+    label: c.name,
+    image: c.image,
+    catValue: c.catValue,
+  }));
   const categorySlug = useMemo(
     () => getCategorySlugFromPath(pathname, city, locality),
     [pathname, city, locality],
   );
-const { citySeoData, defaultSeo } = Decorationseodata;
+  const { citySeoData, defaultSeo } = Decorationseodata;
   const cardsData = [
     {
       image: Kidsbirthday,
@@ -186,14 +251,14 @@ const { citySeoData, defaultSeo } = Decorationseodata;
     },
     {
       image: BabyWelcome,
-      title: "Baby Welcome",
+      title: "Baby Welcome Decoration",
       catValue: "welcome-baby-decoration",
       link: `/${categorySlug}/welcome-baby-decoration`,
       sizeClass: "category-grid__card--small",
     },
     {
       image: Anniversary,
-      title: "Anniversary",
+      title: "Anniversary Decoration",
       catValue: "anniversary-decoration",
       link: `/${categorySlug}/anniversary-decoration`,
       sizeClass: "category-grid__card--small",
@@ -289,7 +354,16 @@ const { citySeoData, defaultSeo } = Decorationseodata;
   const pageSeo = city
     ? citySeoData[city.toLowerCase()] || defaultSeo
     : defaultSeo;
-
+  const weddingCollections = [
+    { title: "Haldi Decoration", image: haldiImg, catValue: "haldi-mehendi-decoration" },
+    { title: "Mehandi Decoration", image: mehandiImg, catValue: "haldi-mehendi-decoration" },
+    { title: "Mandap Decoration", image: mandapImg, catValue: "mandap-decoration" },
+    { title: "Wedding Car Decoration", image: carImg, catValue: "wedding-car-decoration" },
+    { title: "Reception Decoration", image: receptionImg, catValue: "reception-decoration" },
+    { title: "Sangeet Decoration", image: sangeetImg, catValue: "sangeet-decoration" },
+    { title: "Engagement Decoration", image: engagementImg, catValue: "engagement-decoration" },
+    { title: "First Night Decoration", image: firstNightImg, catValue: "first-night-decoration" },
+  ];
   return (
     <div className="dec-landing-page">
       <Head>
@@ -344,42 +418,118 @@ const { citySeoData, defaultSeo } = Decorationseodata;
       </Head>
 
       <div className="top-slider">
-        <BannerSlider images={bannerImages} showSeeMore={true} />
+        {/* <Banner
+  image={bannerImg}
+  alt="Your Celebrations, Our Commitment"
+  border="1px solid #97538C"   // yahan se border bheja
+/> */}
+        <div className="page-width">
+          <HoraBanner />
+        </div>
+        <SearchSortBar
+          sortOption={sortOption}
+          onSortChange={setSortOption}
+          searchCategoryList={searchCategoryList}
+          products={[]}
+          categoryType="decoration"
+          getCategoryHref={getCategoryHref}
+          getProductHref={() => "#"}
+          showSort={false}
+        />
       </div>
       {/* CIRCLE TABS */}
-      <div className="category-tabs-outer">
-        <CategoryTabs
-          data={decCat}
-          onSelect={openCatItems}
+      <div ref={smallCardRef}>
+        <SmallCardGrid
           city={city}
           hasCityPageParam={hasCityPageParam}
+          decCat={decCat}
+          categories={categories}
           locality={locality}
-          variant="circle"
         />
       </div>
 
       <div className="CategoryGrid-outer">
         <CategoryGrid cardsData={cardsData} city={city} locality={locality} />
       </div>
+      <section className="wed-sec">
+        {/* background image */}
+        <div className="wed-sec__bg" aria-hidden="true">
+          <Image
+            src={weddingBg}
+            alt=""
+            sizes="(max-width: 768px) 100vw, 600px"
+            className="wed-sec__bg-img"
+          />
+        </div>
 
-      {/* SEE MORE BUTTON */}
-      <div className="see-more-container">
-        <button className="see-more-btn" onClick={handleSeeMoreClick}>
-          <span>SEE MORE</span>
-          <span className="arrow-icondecoration">
-            <Image src={arrowIcon} alt="Arrow Down" width={30} height={30} />
-          </span>
-        </button>
-      </div>
+        <div className="wed-sec__inner">
+          {/* heading */}
+          <div className="wed-sec__head">
+            <p className="wed-sec__eyebrow">
+              <svg
+                className="wed-sec__heart"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+              <span>Your Dream Wedding</span>
+            </p>
+            <h2 className="wed-sec__title">Starts Here</h2>
+            <p className="wed-sec__subtitle">
+              Beautiful decoration for every wedding celebration
+            </p>
+          </div>
 
-      <DecorGrid
+          {/* ye dono background ke upar aayenge */}
+          <WeddingBanner
+            image={weddingBannerImg}
+            href={`/${categorySlug}/wedding`}
+          />
+
+          <TrendingSlider
+            title="Trending Wedding Collections"
+            data={weddingCollections}
+            city={city}
+            locality={locality}
+          />
+        </div>
+      </section>
+
+   <div className="wa-banner">
+  <Banner
+    image={whatsappbanner}
+    alt="Your Celebrations, Our Commitment"
+    border="1px solid #599911"
+  />
+
+  <a
+    className="wa-banner__btn"
+    href="https://wa.me/91XXXXXXXXXX?text=Hi%2C%20I%20need%20help%20with%20decoration"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Chat now on WhatsApp"
+  >
+    <Image
+      src={whatsappIcon}
+      alt=""
+      aria-hidden="true"
+      width={24}
+      height={24}
+      className="wa-banner__icon"
+    />
+    <span>Chat Now on WhatsApp</span>
+  </a>
+</div>
+      {/* <DecorGrid
         largeCard={largeCard}
         smallCards={smallCards}
         city={city}
         hasCityPageParam={hasCityPageParam}
         decCat={decCat}
         locality={locality}
-      />
+      /> */}
 
       <section className="why-people-love-us">
         <div className="page-width">
@@ -401,53 +551,11 @@ const { citySeoData, defaultSeo } = Decorationseodata;
           </div>
         </div>
       </section>
-
-      <div className="whatsapp-support-box">
-        <ul className="whatsapp-feature-list">
-          <li> 🛠️ Easy Customize</li>
-          <li>💬 Customer Support</li>
-        </ul>
-        <a
-          type="button"
-          href={`https://wa.me/7338584828?text=${encodeURIComponent(
-            "I want to customize a decoration",
-          )}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={handleWhatsApp}
-          className="whatsapp-btn"
-        >
-          <img
-            src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png"
-            alt="WhatsApp"
-          />
-          Chat Now on WhatsApp
-        </a>
+      <div className="page-width">
+       <BirthdayBanner href={`/${categorySlug}/birthday-decoration`} />
       </div>
-
-      <div ref={smallCardRef}>
-        <SmallCardGrid
-          city={city}
-          hasCityPageParam={hasCityPageParam}
-          decCat={decCat}
-          categories={categories}
-          locality={locality}
-        />
-      </div>
-
-      <section className="why-choose-hora">
-        <Image
-          src={WhyHoraIMG}
-          alt="Why Choose Hora"
-          width={1200}
-          height={400}
-          className="why-choose-image"
-          priority
-        />
-      </section>
-
       <DecorSlider
-        title="Big Celebration"
+        title="Premium Birthday Decorations"
         catValue="premium-decoration"
         viewAllLink={`/${categorySlug}/premium-decoration`}
         data={PremiumData}
@@ -458,18 +566,9 @@ const { citySeoData, defaultSeo } = Decorationseodata;
         decCat={decCat}
         locality={locality}
       />
-
-      <section className="decorationBanner">
-        <Image
-          src={DecorationBannerIMG}
-          alt="Decoration-Banner"
-          width={1200}
-          height={400}
-          className="decorationBanner-image"
-          priority
-        />
-      </section>
-
+      <div className="page-width">
+        <BirthdayMagicalBanner href={`/${categorySlug}/birthday-decoration`} />
+      </div>
       <ProductSliderSection
         title="Birthday Decoration"
         data={birthdayData}
@@ -496,7 +595,67 @@ const { citySeoData, defaultSeo } = Decorationseodata;
           </section>
         </div>
       </div>
+      <section className="couple-sec">
+        {/* background image */}
+        <div className="couple-sec__bg" aria-hidden="true">
+          <Image
+            src={coupleBgBanner}
+            alt=""
+            sizes="(max-width: 768px) 100vw, 600px"
+            className="couple-sec__bg-img"
+          />
+        </div>
 
+        <div className="couple-sec__inner">
+          {/* heading */}
+          <div className="couple-sec__head">
+            <p className="couple-sec__eyebrow">Made for beautiful Moments</p>
+            <h2 className="couple-sec__title">Couple Celebrations</h2>
+            <p className="couple-sec__subtitle">
+              Decorations that make your bond even more special
+            </p>
+          </div>
+
+          <div className="Couple-Celebrations-box">
+          <CelebrationCard
+            href={`/${categorySlug}/anniversary-decoration`}          // TODO: sahi link
+            bg={anniversaryBg}
+            photo={anniversaryPhoto}
+            photoAlt="Anniversary decoration"
+            imageSide="left"
+            title="Anniversary"
+            subtitle="Celebrate your love with a beautiful setup."   // TODO: design wala text
+            accent="#c4405f"                          // TODO: design ka rang
+            titleColor="#c4405f"
+            divider={anniversaryDivider}
+            features={[
+              { icon: elegantDecor, label: "Elegant Decor" },
+              { icon: perfectPicture, label: "Perfect Picture" },
+              { icon: romanticSetup, label: "Romantic Setup" },
+            ]}
+          />
+
+          {/* ===== First Night ===== */}
+          <CelebrationCard
+            href={`/${categorySlug}/first-night-decoration`}           // TODO: sahi link
+            bg={firstNightBg}
+            photo={firstNightPhoto}
+            photoAlt="First night decoration"
+            imageSide="right"
+            title="First Night"
+            subtitle="Make your first night truly special."          // TODO: design wala text
+            accent="#764C9E"                          // TODO: design ka rang
+            titleColor="#764C9E"
+            divider={firstNightDivider}
+            features={[
+              { icon: beautifulDecor, label: "Beautiful Decor" },
+              { icon: romanticAmbience, label: "Romantic Ambience" },
+              { icon: memorableMoment, label: "Memorable Moment" },
+            ]}
+          />
+          </div>
+        </div>
+      </section>
       <DecorSlider
         title="Anniversary Decoration"
         catValue="anniversary-decoration"
@@ -507,17 +666,63 @@ const { citySeoData, defaultSeo } = Decorationseodata;
         city={city}
         locality={locality}
         hasCityPageParam={hasCityPageParam}
+        viewAllText="View All Anniversary  Decoration"
       />
 
-      <section className="BabyShowerBanner">
-        <Image
-          src={BabyShowerBannerIMG}
-          alt="Decoration-Banner"
-          width={1200}
-          height={400}
-          className="decorationBanner-image"
-          priority
-        />
+      <section className="baby-sec">
+        <div className="baby-sec__bg" aria-hidden="true">
+          <Image
+            src={babyBgBanner}
+            alt=""
+            sizes="(max-width: 768px) 100vw, 600px"
+            className="baby-sec__bg-img"
+          />
+        </div>
+
+        <div className="baby-sec__inner">
+          <div className="baby-sec__head">
+            <p className="baby-sec__eyebrow">Celebrate the joy of</p>
+            <h2 className="baby-sec__title">Baby Celebrations</h2>
+            <p className="baby-sec__subtitle">
+              Beautiful setups for your little one&apos;s special moments
+            </p>
+          </div>
+
+          <div className="baby-sec__grid">
+            <BabyCelebrationCard
+              image={babyShowerPhoto}
+              icon={babyShowerIcon}
+              title="Baby Shower"
+              subtitle="Celebrate the upcoming arrival"
+              color="#9b59c4"
+              href={`/${categorySlug}/baby-shower-decoration`}
+            />
+            <BabyCelebrationCard
+              image={babyWelcomePhoto}
+              icon={babyWelcomeIcon}
+              title="Baby Welcome"
+              subtitle="Welcome your little bundle of joy"
+              color="#e48f8f"
+              href={`/${categorySlug}/welcome-baby-decoration`}
+            />
+            <BabyCelebrationCard
+              image={namingPhoto}
+              icon={namingIcon}
+              title="Naming Ceremony"
+              subtitle="Celebrate the upcoming arrival"
+              color="#25a99a"
+              href={`/${categorySlug}/naming-ceremony-decoration`}
+            />
+            <BabyCelebrationCard
+              image={annaprashanPhoto}
+              icon={annaprashanIcon}
+              title="Annaprashan Ceremony"
+              subtitle="Welcome your little bundle of joy"
+              color="#e8a23a"
+              href={`/${categorySlug}/naming-ceremony-decoration/annaprashan`}
+            />
+          </div>
+        </div>
       </section>
 
       <ProductSliderSection
