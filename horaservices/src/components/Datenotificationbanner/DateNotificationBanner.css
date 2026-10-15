@@ -1,0 +1,158 @@
+
+.dnb-wrap {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + clamp(8px, 2.54vw, 10px));
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  padding: clamp(8px, 2.54vw, 10px);
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+/* ===== Banner ===== */
+.dnb-banner {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  margin-bottom: 10px;
+  align-items: center;
+  gap: clamp(7px, 2.54vw, 10px);
+  padding: clamp(8px, 2.54vw, 10px);
+  border-radius: clamp(11px, 3.56vw, 14px);
+  background: linear-gradient(
+    90deg,
+    #6c3bbd 0%,
+    #b240c4 60%,
+    #cc4ccb 100%
+  );
+  box-shadow: 0 clamp(6px, 2.03vw, 8px)
+    clamp(18px, 6.1vw, 24px)
+    rgba(112, 61, 190, 0.35);
+  color: #fff;
+  cursor: pointer;
+  overflow: hidden;
+  pointer-events: auto;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  animation: dnb-fade-in 0.3s ease-out;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes dnb-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(clamp(-12px, -3.05vw, -9px));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Left Icon Circle ===== */
+.dnb-icon {
+  flex: 0 0 auto;
+  width: clamp(34px, 10.18vw, 40px);
+  height: clamp(32px, 9.67vw, 38px);
+  border-radius: 50%;
+  background: #f4f0fa;
+  box-shadow: 0 clamp(3px, 1.02vw, 4px)
+    clamp(9px, 3.05vw, 12px)
+    rgba(0, 0, 0, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== Text ===== */
+.dnb-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.dnb-title {
+  margin: 0;
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: clamp(12px, 3.53vw, 13.89px);
+  line-height: 1;
+  letter-spacing: 0;
+  color: #fff;
+}
+
+.dnb-subtitle {
+  margin: clamp(4px, 1.53vw, 6px) 0 0;
+  font-family: Inter, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: clamp(9px, 2.65vw, 10.42px);
+  line-height: clamp(14px, 4.12vw, 16.2px);
+  letter-spacing: 0;
+  color: #fff;
+}
+
+/* ===== Right Illustration ===== */
+.dnb-illustration {
+  flex: 0 0 auto;
+  width: clamp(64px, 19.08vw, 75px);
+  height: auto;
+  margin-right: clamp(18px, 6.36vw, 25px);
+  object-fit: contain;
+}
+
+/* ===== Close Button ===== */
+.dnb-close {
+  position: absolute;
+  top: clamp(7px, 2.54vw, 10px);
+  right: clamp(7px, 2.54vw, 10px);
+  width: clamp(12px, 3.56vw, 14px);
+  height: clamp(12px, 3.56vw, 14px);
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 clamp(1px, 0.51vw, 2px)
+    clamp(4px, 1.53vw, 6px)
+    rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* ===== Progress Bar ===== */
+.dnb-progress-track {
+  position: absolute;
+  left: clamp(6px, 2.03vw, 8px);
+  right: clamp(6px, 2.03vw, 8px);
+  bottom: clamp(3px, 1.02vw, 4px);
+  height: clamp(3px, 1.02vw, 4px);
+  border-radius: clamp(3px, 1.02vw, 4px);
+  background: rgba(255, 255, 255, 0.35);
+  overflow: hidden;
+}
+
+.dnb-progress-bar {
+  height: 100%;
+  width: 100%;
+  background: #fff;
+  border-radius: inherit;
+  transform-origin: left center;
+  animation-name: dnb-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes dnb-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}

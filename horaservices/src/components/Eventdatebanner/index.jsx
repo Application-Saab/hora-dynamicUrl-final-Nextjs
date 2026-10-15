@@ -1,10 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Pencil } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import Image from "next/image";
 import Head from "next/head";
 import "./Eventdatebanner.css";
-import calendarBgimage from "@/assets/calendarBgimage.webp";
+import bannerBg from "@/assets/eventDateBanner.svg";
 import calendarBarBgimage from "../../assets/calendarBarBgimage.webp";
 import plannerImage from "@/assets/Planner.webp";
 import approachingImage from "@/assets/Approaching.webp";
@@ -12,7 +12,6 @@ import { BASE_URL } from "@/utils/apiconstants";
 import { useDateGate } from "@/utils/dateGateContext";
 import DateSelectionBottomSheet from "../DateSelectionBottomSheet";
 import PencilEditIcon from "@/assets/pencilEdit.svg";
-// import EventReminderPopup from "../EventReminderPopup"; // ❌ reminder popup band (coupon/invite sheet use ho rahi hai)
 import { fetchWithError } from "@/utils/fetchWithError";
 
 const MONTH_NAMES = [
@@ -25,14 +24,15 @@ const formatEventDate = (isoString) => {
   const d = new Date(isoString);
   const day = String(d.getUTCDate()).padStart(2, "0");
   const month = MONTH_NAMES[d.getUTCMonth()];
-  return `${day} ${month}`;
+  const year = d.getUTCFullYear();
+  return `${day} ${month} ${year}`;
 };
 
 export default function EventDateBanner({
   userId: userIdProp,
   visitorId: visitorIdProp,
   pincode,
-  city, 
+  city,
   eventTitle = "",
 }) {
   const { dateResolved, setDateResolved } = useDateGate();
@@ -109,20 +109,9 @@ export default function EventDateBanner({
     }
   }, [dateResolved]);
 
-  const handleConfirm = (newDate, apiData) => {
+  const handleConfirm = (newDate) => {
     if (newDate) {
       setEventDate(newDate);
-
-      // ❌ Reminder popup ab band hai. Date confirm hone par
-      // DateSelectionBottomSheet khud city ke hisaab se
-      // Delhi -> ₹150 coupon sheet, baaki cities -> invite sheet dikhata hai.
-      //
-      // const today = new Date();
-      // const selected = new Date(newDate);
-      // const diffMs = selected.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
-      // const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-      // setReminderVariant(diffDays >= 0 && diffDays <= 4 ? "approaching" : "planner");
-      // setReminderOpen(true);
     }
     setIsSheetOpen(false);
     fetchEventDate();
@@ -141,29 +130,31 @@ export default function EventDateBanner({
 
       {showBanner && (
         <div className="edb-banner">
-          <div className="edb-banner-image-wrap">
-            <Image
-              src={calendarBgimage}
-              alt=""
-              fill
-              className="edb-banner-bg"
-              style={{ pointerEvents: "none" }}
-              priority
-              placeholder="blur"
-              sizes="(max-width: 600px) 100vw, 600px"
-              quality={90}
-            />
+          {/* Background SVG (gradient + balloons illustration) */}
+          <Image
+            src={bannerBg}
+            alt=""
+            fill
+            priority
+            unoptimized
+            className="edb-banner-bg"
+            sizes="(max-width: 600px) 100vw, 600px"
+          />
+
+          {/* Left: calendar icon box */}
+          <div className="edb-cal-box" aria-hidden="true">
+            <CalendarDays className="edb-cal-icon" strokeWidth={2} />
           </div>
 
+          {/* Middle: label + date */}
           <div className="edb-banner-content">
-            <span className="edb-banner-text">
-              <span className="edb-banner-text-label">Event Date</span>
-              <span className="edb-banner-text-date">
-                {formatEventDate(eventDate)}
-              </span>
+            <span className="edb-banner-text-label">Your Event Date</span>
+            <span className="edb-banner-text-date">
+              {formatEventDate(eventDate)}
             </span>
           </div>
 
+          {/* Edit button */}
           <button
             type="button"
             className="edb-edit-btn"
@@ -188,20 +179,12 @@ export default function EventDateBanner({
         userId={currentUserId}
         visitorId={currentVisitorId}
         pincode={pincode}
-        city={city} 
-        whatsappNumber="917338584828" 
+        city={city}
+        whatsappNumber="917338584828"
         eventTitle={eventTitle}
         eventId={eventId}
         initialDate={eventDate}
       />
-
-      {/* ❌ Reminder popup band
-      <EventReminderPopup
-        isOpen={reminderOpen}
-        onClose={() => setReminderOpen(false)}
-        variant={reminderVariant}
-      />
-      */}
     </>
   );
 }
