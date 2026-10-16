@@ -25,16 +25,6 @@ import DecorGrid from "@/components/DecorGrid";
 import WhyHoraIMG from "../../assets/WhyHoraIMG.webp";
 import DecorationBannerIMG from "../../assets/DecorationBannerIMG.webp";
 import decorCollageIMG from "../../assets/decorCollageIMG.webp";
-import HappyBirthdayImg from "../../assets/HappyBirthdayImg.png";
-import BabyShowerImg from "../../assets/BabyShowerIMG.webp";
-import kidsBirthdayImg from "../../assets/KidsBirthdayIMG.png";
-import BabyWelcomeImg from "../../assets/WelcomBabyIMG.webp";
-import PremiumDecorImg from "../../assets/PremiumDecorIMG.webp";
-import BacheloretteImg from "../../assets/BacheloretteIMG.png";
-import HaldiMehandiImg from "../../assets/HaldiMehandiIMG.webp";
-import FirstNightImg from "../../assets/FirstNightIMG.webp";
-import AnniversaryImg from "../../assets/AnniversaryDecorIMG.webp";
-import BabyShowerBannerIMG from "../../assets/BabyShowerBannerIMG.webp";
 import BrandBannerIMG from "../../assets/BrandBannerIMG.webp";
 import HappyCustomerIMG from "../../assets/HappyCustomerIMG.jpg";
 import GoogleRatingIMG from "../../assets/GoogleRatingIMG4.png";
@@ -112,6 +102,7 @@ import annaprashanIcon from "@/assets/annaprashan-icon.webp";
 import HoraBanner from "../DecorationLandingTopbanner";
 import BirthdayBanner from "../Birthdaybanner";
 import BirthdayMagicalBanner from "../Birthdaymagicalbanner";
+import { smallCardCategories } from "@/utils/smallCardCategories";
 
 const stats = [
   {
@@ -136,53 +127,6 @@ const stats = [
   },
 ];
 
-const categories = [
-  {
-    name: "Birthday",
-    image: HappyBirthdayImg,
-    catValue: "birthday-decoration",
-  },
-  {
-    name: "Baby Shower",
-    image: BabyShowerImg,
-    catValue: "baby-shower-decoration",
-  },
-  {
-    name: "Kids Birthday",
-    image: kidsBirthdayImg,
-    catValue: "kids-birthday-decoration",
-  },
-  {
-    name: "Welcome Baby",
-    image: BabyWelcomeImg,
-    catValue: "welcome-baby-decoration",
-  },
-  {
-    name: "Stage Decoration",
-    image: PremiumDecorImg,
-    catValue: "premium-decoration",
-  },
-  {
-    name: "Bachelorette",
-    image: BacheloretteImg,
-    catValue: "bachelorette-decoration",
-  },
-  {
-    name: "Haldi Mehandi",
-    image: HaldiMehandiImg,
-    catValue: "haldi-mehendi-decoration",
-  },
-  {
-    name: "First Night",
-    image: FirstNightImg,
-    catValue: "first-night-decoration",
-  },
-  {
-    name: "Anniversary",
-    image: AnniversaryImg,
-    catValue: "anniversary-decoration",
-  },
-];
 const brandItems = [
   {
     img: HappyCustomerIMG,
@@ -229,7 +173,7 @@ const Decoration = ({ city, locality }) => {
     return `${path}/${categorySlug}/${cat.catValue}`;
   };
   // Search dropdown aur typewriter placeholder isi list se chalte hain
-  const searchCategoryList = categories.map((c) => ({
+  const searchCategoryList = smallCardCategories.map((c) => ({
     id: c.catValue,
     label: c.name,
     image: c.image,
@@ -443,7 +387,7 @@ const Decoration = ({ city, locality }) => {
           city={city}
           hasCityPageParam={hasCityPageParam}
           decCat={decCat}
-          categories={categories}
+          categories={smallCardCategories}
           locality={locality}
         />
       </div>

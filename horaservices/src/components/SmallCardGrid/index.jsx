@@ -20,7 +20,13 @@ const ChevronIcon = () => (
   </svg>
 );
 
-const SmallCardGrid = ({ city = "", locality = "", decCat = [], categories = [] }) => {
+const SmallCardGrid = ({
+  city = "",
+  locality = "",
+  decCat = [],
+  categories = [],
+  firstRowCount = 9, // pehli row mein kitne cards
+}) => {
   const pathname = usePathname();
   const scrollerRef = useRef(null);
   const [canPrev, setCanPrev] = useState(false);
@@ -91,20 +97,27 @@ const SmallCardGrid = ({ city = "", locality = "", decCat = [], categories = [] 
 
   return (
     <div className="small-card-grid-outer">
-        <div className="small-card-slider">
-          <div className="small-card-viewport">
-            <div
-              className="small-card-grid"
-              ref={scrollerRef}
-              onScroll={updateArrows}
-            >
-              {categories.map((item, index) => (
+      <div className="small-card-slider">
+        <div className="small-card-viewport">
+          <div
+            className="small-card-grid"
+            ref={scrollerRef}
+            onScroll={updateArrows}
+          >
+            {categories.map((item, index) => {
+              const isFirstRow = index < firstRowCount;
+              const gridRow = isFirstRow ? 1 : 2;
+              const gridColumn = isFirstRow
+                ? index + 1
+                : index - firstRowCount + 1;
+
+              return (
                 <a
                   key={index}
                   href={buildCardPath(item)}
                   className="small-card-wrapper"
                   onClick={() => handleClick(item)}
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: "pointer", gridRow, gridColumn }}
                 >
                   <div
                     className="small-card"
@@ -122,35 +135,36 @@ const SmallCardGrid = ({ city = "", locality = "", decCat = [], categories = [] 
                   </div>
                   <p className="small-card-name">{item.name}</p>
                 </a>
-              ))}
-            </div>
-
-            {/* arrows: har row ke card ke beech mein */}
-            {[1, 2].map((row) => (
-              <span key={row}>
-                {canPrev && (
-                  <button
-                    type="button"
-                    aria-label="Previous"
-                    className={`small-card-arrow small-card-arrow--prev small-card-arrow--row${row}`}
-                    onClick={() => scrollByPage(-1)}
-                  >
-                    <ChevronIcon />
-                  </button>
-                )}
-                {canNext && (
-                  <button
-                    type="button"
-                    aria-label="Next"
-                    className={`small-card-arrow small-card-arrow--next small-card-arrow--row${row}`}
-                    onClick={() => scrollByPage(1)}
-                  >
-                    <ChevronIcon />
-                  </button>
-                )}
-              </span>
-            ))}
+              );
+            })}
           </div>
+
+          {/* arrows: har row ke card ke beech mein */}
+          {[1, 2].map((row) => (
+            <span key={row}>
+              {canPrev && (
+                <button
+                  type="button"
+                  aria-label="Previous"
+                  className={`small-card-arrow small-card-arrow--prev small-card-arrow--row${row}`}
+                  onClick={() => scrollByPage(-1)}
+                >
+                  <ChevronIcon />
+                </button>
+              )}
+              {canNext && (
+                <button
+                  type="button"
+                  aria-label="Next"
+                  className={`small-card-arrow small-card-arrow--next small-card-arrow--row${row}`}
+                  onClick={() => scrollByPage(1)}
+                >
+                  <ChevronIcon />
+                </button>
+              )}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );
