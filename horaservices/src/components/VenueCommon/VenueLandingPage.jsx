@@ -12,6 +12,7 @@ import { safeGetItem } from "@/utils/safeStorage";
 import VenueSearchBar from "@/components/Venue/Venuesearchbar";
 import Head from "next/head";
 import { venueData } from "@/utils/venueCircleData.js";
+import EventDateBanner from "../Eventdatebanner";
 
 function getCitySlugFromPath(pathname) {
   if (!pathname) return "";
@@ -29,8 +30,9 @@ const VenuelandMainPage = ({
 }) => {
   const router = useRouter();
   const { selectedCityName } = useCity();
+  const visitorId = safeGetItem("VISITOR_ID");
 
-const { city: queryCity, venueCat: queryVenueCat } = router.query; // venue -> venueCat
+  const { city: queryCity, venueCat: queryVenueCat } = router.query; // venue -> venueCat
   const [pathCitySlug, setPathCitySlug] = useState(propCitySlug || "");
 
   useEffect(() => {
@@ -54,25 +56,25 @@ const { city: queryCity, venueCat: queryVenueCat } = router.query; // venue -> v
   }, []);
 
   // URL ke venue slug ko activeVenueType ke saath sync karo
-useEffect(() => {
-  if (!router.isReady) return;
+  useEffect(() => {
+    if (!router.isReady) return;
 
-  if (!queryVenueCat) {
-    setActiveVenueType("all");
-    return;
-  }
+    if (!queryVenueCat) {
+      setActiveVenueType("all");
+      return;
+    }
 
-  const matched = venueData.find((v) => v.slug === queryVenueCat);
-  setActiveVenueType(matched ? matched.id : "all");
-}, [queryVenueCat, router.isReady]);
+    const matched = venueData.find((v) => v.slug === queryVenueCat);
+    setActiveVenueType(matched ? matched.id : "all");
+  }, [queryVenueCat, router.isReady]);
 
   // Priority: SSR prop > query > path > context
   const rawCitySlug = propCitySlug || queryCity || pathCitySlug || "";
   const cityForSEO = propCity
     ? propCity
     : rawCitySlug
-    ? rawCitySlug.charAt(0).toUpperCase() + rawCitySlug.slice(1)
-    : selectedCityName;
+      ? rawCitySlug.charAt(0).toUpperCase() + rawCitySlug.slice(1)
+      : selectedCityName;
 
   const selectedVenueCategory = venueData.find((v) => v.id === activeVenueType);
   const categoryLabel =
@@ -156,6 +158,7 @@ useEffect(() => {
           citySlug={rawCitySlug}
         />
 
+        <EventDateBanner userId={loggedinUserId} visitorId={visitorId} />
         <VenueList
           eventType={activeEvent}
           venueType={activeVenueType}
