@@ -11,7 +11,7 @@ import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 import CitySelector from "@/components/Venue/CitySelector";
 import { CityProvider, useCity } from "@/utils/cityContext";
 import DateSelectionBottomSheet from "@/components/DateSelectionBottomSheet";
-import DateNotificationBanner from "@/components/DateNotificationBanner";
+import DateNotificationBanner from "@/components/Datenotificationbanner";
 import { BASE_URL } from "@/utils/apiconstants";
 import { DateGateProvider, useDateGate } from "@/utils/dateGateContext";
 import { fetchWithError } from "@/utils/fetchWithError";

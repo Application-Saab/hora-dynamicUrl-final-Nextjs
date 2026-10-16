@@ -104,7 +104,7 @@ import babyBgBanner from "@/assets/baby-bg-banner.webp";
 import babyShowerPhoto from "@/assets/baby-shower.webp";
 import babyWelcomePhoto from "@/assets/baby-welcome.webp";
 import namingPhoto from "@/assets/naming-ceremony.webp";
-import annaprashanPhoto from "@/assets/annaprashan.webp";
+import annaprashanPhoto from "@/assets/Annaprashan.webp";
 import babyShowerIcon from "@/assets/baby-shower-icon.webp";
 import babyWelcomeIcon from "@/assets/baby-welcome-icon.webp";
 import namingIcon from "@/assets/naming-ceremony-icon.webp";
