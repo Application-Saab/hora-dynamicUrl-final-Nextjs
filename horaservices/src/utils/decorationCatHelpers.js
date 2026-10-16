@@ -52,7 +52,9 @@ export function getSubCategory(catValue) {
   if (catValue === "mandap-decoration") {
     return "MandapDecoration";
   }
-
+  if (catValue === "wedding-decoration") {
+    return "Wedding";
+  }
   const parts = catValue.split("-");
   return parts
     .slice(0, 2)
