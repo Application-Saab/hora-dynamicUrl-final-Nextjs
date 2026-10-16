@@ -55,6 +55,18 @@ export function getSubCategory(catValue) {
   if (catValue === "wedding-decoration") {
     return "Wedding";
   }
+   if (catValue === "wedding-car-decoration") {
+    return "WeddingCarDecoration";
+  }
+    if (catValue === "annaprashan-decoration") {
+    return "AnnaprashanDecoration";
+  }
+    if (catValue === "haldi-decoration") {
+    return "HaldiDecoration ";
+  }
+    if (catValue === "mehendi-decoration") {
+    return "MehendiDecoration";
+  }
   const parts = catValue.split("-");
   return parts
     .slice(0, 2)

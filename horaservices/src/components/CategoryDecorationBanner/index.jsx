@@ -28,6 +28,10 @@ const categoryTitleMap = {
   "reception-decoration": "Reception Decoration",
   "sangeet-decoration": "Sangeet Decoration",
   "mandap-decoration": "Mandap Decoration",
+   "mehendi-decoration":"Mehendi Decoration",
+   "haldi-decoration":"Haldi Decoration",
+   "annaprashan-decoration":"Annaprashan Decoration",
+  "wedding-car-decoration":"Wedding Car Decoration",
 };
 
 

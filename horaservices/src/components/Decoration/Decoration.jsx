@@ -355,8 +355,8 @@ const Decoration = ({ city, locality }) => {
     ? citySeoData[city.toLowerCase()] || defaultSeo
     : defaultSeo;
   const weddingCollections = [
-    { title: "Haldi Decoration", image: haldiImg, catValue: "haldi-mehendi-decoration" },
-    { title: "Mehandi Decoration", image: mehandiImg, catValue: "haldi-mehendi-decoration" },
+    { title: "Haldi Decoration", image: haldiImg, catValue: "haldi-decoration" },
+    { title: "Mehandi Decoration", image: mehandiImg, catValue: "mehendi-decoration" },
     { title: "Mandap Decoration", image: mandapImg, catValue: "mandap-decoration" },
     { title: "Wedding Car Decoration", image: carImg, catValue: "wedding-car-decoration" },
     { title: "Reception Decoration", image: receptionImg, catValue: "reception-decoration" },
@@ -719,7 +719,7 @@ const Decoration = ({ city, locality }) => {
               title="Annaprashan Ceremony"
               subtitle="Welcome your little bundle of joy"
               color="#e8a23a"
-              href={`/${categorySlug}/naming-ceremony-decoration/annaprashan`}
+              href={`/${categorySlug}/annaprashan-decoration`}
             />
           </div>
         </div>
