@@ -11,6 +11,7 @@ import { trackSearch } from "@/utils/track";
 import { useRouter } from "next/router";
 import searchIcon from "@/assets/searchbar.svg";
 import closeIcon from "@/assets/sortbar.svg";
+
 const sortOptions = [
   { id: "popularity", label: "Popularity" },
   { id: "newArrival", label: "New Arrival" },
@@ -37,6 +38,7 @@ const DELETE_SPEED = 45; // har character delete hone ki speed (ms)
 const PAUSE_AFTER_TYPE = 1300; // word poora type hone ke baad kitni der ruke (ms)
 const PAUSE_AFTER_DELETE = 300; // word poora delete hone ke baad next word se pehle pause (ms)
 const DEFAULT_PLACEHOLDER = "Search Themes";
+const DEFAULT_SORT = "popularity"; // default sort jispe reset hoga
 
 function SortSheet({
   isOpen,
@@ -76,7 +78,7 @@ function SortSheet({
     );
 
   const handleClear = () => {
-    setDraftSort("popularity");
+    setDraftSort(DEFAULT_SORT);
     setDraftDesigns([]);
   };
 
@@ -272,8 +274,8 @@ function SearchDropdown({
               type="button"
               href={getCategoryHref?.(cat) || "#"}
               className="search-category-row"
-              onClick={(e) => {
-                // tracking + close dropdown parent handle karega
+              onClick={() => {
+                // tracking + close dropdown + filter reset parent handle karega
                 onSelectCategory?.(cat);
               }}
             >
@@ -349,7 +351,7 @@ function SearchDropdown({
 }
 
 export default function SearchSortBar({
-  sortOption = "popularity",
+  sortOption = DEFAULT_SORT,
   onSortChange,
   searchCategoryList = [],
   products = [],
@@ -466,7 +468,7 @@ export default function SearchSortBar({
     const trimmed = queryRef.current.trim();
     onSearchChange?.(trimmed);
     trackSearch({ searchTerm: trimmed, userId, pageName: pathname });
-  }, [onSearchChange, userId]);
+  }, [onSearchChange, userId, pathname]);
 
   // Close dropdown on outside click / Escape
   useEffect(() => {
@@ -545,6 +547,20 @@ export default function SearchSortBar({
     }
   };
 
+  // Category ya product select hone ke baad ka common cleanup
+  const closeAndResetAfterSelect = () => {
+    setIsDropdownOpen(false);
+    setQuery("");
+    onSearchChange?.("");
+
+    // NOTE: Filters yahan reset nahi karte. Category/product ke href mein
+    // filters ka query nahi jaata, to naye URL par parent ka URL->state sync
+    // filters ko apne aap default kar deta hai (extra router.replace / race nahi).
+
+    // Sort sheet khuli ho to band
+    setIsSortOpen(false);
+  };
+
   const handleCategoryClick = (cat) => {
     trackSearch({
       searchTerm: query,
@@ -554,9 +570,7 @@ export default function SearchSortBar({
       userId,
       pageName: pathname,
     });
-    setIsDropdownOpen(false);
-    setQuery("");
-    onSearchChange?.("");
+    closeAndResetAfterSelect();
     onCategorySelect?.(cat);
   };
 
@@ -569,9 +583,7 @@ export default function SearchSortBar({
       userId,
       pageName: pathname,
     });
-    setIsDropdownOpen(false);
-    setQuery("");
-    onSearchChange?.("");
+    closeAndResetAfterSelect();
     onProductSelect?.(product);
   };
 

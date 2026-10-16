@@ -188,6 +188,11 @@ const DecorationCatPage = ({
   const selectedTheme = router.query.themes;
   const isThemePage = !!selectedTheme;
 
+  // ✅ NEW: [theme] route (jaise /kids-birthday-decoration/hero) par search/sort bar
+  // aur price selector nahi dikhana. isThemePage ko nahi badla kyunki wo neeche
+  // products ki slicing/layout bhi control karta hai.
+  const isThemeRoute = !!theme || isThemePage;
+
   // ---- Price-range theme selector state (Budget / Value / Photogenic / Stage) ----
   // ✅ CHANGE 6: initial value URL se aayegi (pehle null thi)
   const [selectedPriceTheme, setSelectedPriceTheme] = useState(
@@ -201,68 +206,68 @@ const DecorationCatPage = ({
   // shallow: true => getServerSideProps dobara nahi chalega, page reload nahi hoga.
   // Value null/""/undefined ho to param URL se hat jata hai.
   const updateQueryParams = (updates) => {
-  if (typeof window === "undefined") return;
+    if (typeof window === "undefined") return;
 
-  const url = new URL(window.location.href);
-  const params = url.searchParams;
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
 
-  // Key aur value dono lowercase. Purani camelCase keys
-  // (sortBy/priceTheme/designType) URL se hata dete hain.
-  Object.entries(updates).forEach(([key, value]) => {
-    const lowerKey = key.toLowerCase();
-    if (lowerKey !== key) params.delete(key); 
+    // Key aur value dono lowercase. Purani camelCase keys
+    // (sortBy/priceTheme/designType) URL se hata dete hain.
+    Object.entries(updates).forEach(([key, value]) => {
+      const lowerKey = key.toLowerCase();
+      if (lowerKey !== key) params.delete(key);
 
-    const isEmpty =
-      value === null ||
-      value === undefined ||
-      value === "" ||
-      (Array.isArray(value) && value.length === 0);
+      const isEmpty =
+        value === null ||
+        value === undefined ||
+        value === "" ||
+        (Array.isArray(value) && value.length === 0);
 
-    if (isEmpty) {
-      params.delete(lowerKey);
-    } else {
-      const str = Array.isArray(value) ? value.join(",") : String(value);
-      params.set(lowerKey, str.toLowerCase());
-    }
-  });
-
-  const qs = params.toString().replace(/%2C/gi, ",");
-  const newUrl = `${url.pathname}${qs ? `?${qs}` : ""}`;
-
-  router.replace(newUrl, undefined, { shallow: true, scroll: false });
-};
-useEffect(() => {
-  if (!router.isReady || typeof window === "undefined") return;
-
-  const url = new URL(window.location.href);
-  let changed = false;
-
-  ["sortBy", "priceTheme", "designType"].forEach((key) => {
-    const value = url.searchParams.get(key);
-    if (value === null) return;
-
-    const lowerKey = key.toLowerCase();
-    url.searchParams.delete(key);
-    if (!url.searchParams.has(lowerKey)) {
-      url.searchParams.set(lowerKey, value.toLowerCase());
-    }
-    changed = true;
-  });
-
-  if (changed) {
-    const qs = url.searchParams.toString().replace(/%2C/gi, ",");
-    router.replace(`${url.pathname}${qs ? `?${qs}` : ""}`, undefined, {
-      shallow: true,
-      scroll: false,
+      if (isEmpty) {
+        params.delete(lowerKey);
+      } else {
+        const str = Array.isArray(value) ? value.join(",") : String(value);
+        params.set(lowerKey, str.toLowerCase());
+      }
     });
-  }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [
-  router.isReady,
-  router.query.sortBy,
-  router.query.priceTheme,
-  router.query.designType,
-]);
+
+    const qs = params.toString().replace(/%2C/gi, ",");
+    const newUrl = `${url.pathname}${qs ? `?${qs}` : ""}`;
+
+    router.replace(newUrl, undefined, { shallow: true, scroll: false });
+  };
+  useEffect(() => {
+    if (!router.isReady || typeof window === "undefined") return;
+
+    const url = new URL(window.location.href);
+    let changed = false;
+
+    ["sortBy", "priceTheme", "designType"].forEach((key) => {
+      const value = url.searchParams.get(key);
+      if (value === null) return;
+
+      const lowerKey = key.toLowerCase();
+      url.searchParams.delete(key);
+      if (!url.searchParams.has(lowerKey)) {
+        url.searchParams.set(lowerKey, value.toLowerCase());
+      }
+      changed = true;
+    });
+
+    if (changed) {
+      const qs = url.searchParams.toString().replace(/%2C/gi, ",");
+      router.replace(`${url.pathname}${qs ? `?${qs}` : ""}`, undefined, {
+        shallow: true,
+        scroll: false,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    router.isReady,
+    router.query.sortBy,
+    router.query.priceTheme,
+    router.query.designType,
+  ]);
 
   // ✅ CHANGE 8 (UPDATED): Ab themed URL (…/kids-birthday-decoration/hero) par
   // bhi user usi URL par rehta hai. Sirf query add/remove hoti hai:
@@ -323,7 +328,8 @@ useEffect(() => {
   };
 
   // ---- Search: whether a free-text search is currently active ----
-  const isSearchActive = !!searchQuery.trim();
+  // ✅ UPDATED: theme route par search bar hidden hai, isliye search kabhi active nahi
+  const isSearchActive = !isThemeRoute && !!searchQuery.trim();
 
   const handleSearchChange = (query) => {
     const trimmed = query?.trim() || "";
@@ -777,27 +783,11 @@ useEffect(() => {
     }
   };
 
-  // ✅ CHANGE 15: Current filters (sort + price theme) ka query string.
-  // Theme tab badalne par (babyboss -> babyshark) ye link mein judta hai,
-  // taaki URL aur state dono mein filter bane rahein.
-  // Search yahan nahi jodi: search active hone par theme tabs hide hote hain.
-  const buildFilterQueryString = () => {
-  const sp = new URLSearchParams();
-  if (sortOption && sortOption !== "popularity")
-    sp.set("sortby", sortOption.toLowerCase());
-  if (selectedPriceTheme?.id)
-    sp.set("pricetheme", String(selectedPriceTheme.id).toLowerCase());
-  if (designTypes.length > 0)
-    sp.set("designtype", designTypes.join(",").toLowerCase());
-  const qs = sp.toString().replace(/%2C/gi, ",");
-  return qs ? `?${qs}` : "";
-};
-  const filterQueryString = buildFilterQueryString();
-
   const getCategoryHref = (item) => {
     if (!item?.value || !catValue) return "#";
     const categorySlug = getCategorySlugFromPath(pathname, city, locality);
-    return `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}${filterQueryString}`;
+    // Search se jaate waqt filters carry nahi hote, isliye query string nahi
+    return `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}`;
   };
 
   // Tracking only — navigation <a href> se hogi
@@ -810,36 +800,22 @@ useEffect(() => {
     if (!item?.value || !catValue) return;
 
     hasHydratedFromCache.current = false;
-    // ✅ CHANGE 15: pehle yahan setSelectedPriceTheme(null) tha — hata diya,
-    // kyunki theme badalne par filter bane rehne chahiye.
+    // Theme page par filters carry nahi hote (URL clean rehta hai)
 
     const categorySlug = getCategorySlugFromPath(pathname, city, locality);
-    const finalPath = `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}${filterQueryString}`;
+    const finalPath = `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}`;
     router.push(finalPath);
   };
 
-  // ✅ CHANGE 16: CategoryTabs ke <a href> mein query nahi hoti, isliye
-  // wrapper par click CAPTURE karke link mein current filters jod dete hain.
-  // CategoryTabs ki file badalne ki zaroorat nahi.
-  // - Ctrl/Cmd/Shift click (new tab) aur middle click ko touch nahi karte.
-  // - Jis link mein pehle se query ho use bhi chhod dete hain.
-  const handleTabsClickCapture = (e) => {
-    if (!filterQueryString) return;
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
-      return;
-    }
+  // Search dropdown se category select: filters carry nahi honge
+  const openSearchCategory = (item) => {
+    if (!item?.value || !catValue) return;
 
-    const anchor = e.target?.closest?.("a[href]");
-    if (!anchor) return;
-
-    const url = new URL(anchor.href, window.location.origin);
-    if (url.origin !== window.location.origin || url.search) return;
-
-    // Next <Link> ya normal <a> ka default navigation roko, aur query ke
-    // saath khud navigate karo
-    e.preventDefault();
     hasHydratedFromCache.current = false;
-    router.push(`${url.pathname}${filterQueryString}`);
+
+    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+    const finalPath = `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}`;
+    router.push(finalPath);
   };
 
   const toggleShowAll = () => {
@@ -893,31 +869,37 @@ useEffect(() => {
               <section>
                 <DecorationBanner category={normalizedCat} />
               </section>
-              <SearchSortBar
-                sortOption={sortOption}
-                designTypes={designTypes}
-                onApplyFilters={handleSortFilterApply}
-                searchCategoryList={searchCategoryList}
-                products={sortedCatalogueData}
-                onCategorySelect={openCatItems}
-                onProductSelect={handleViewDetails}
-                onSearchChange={handleSearchChange}
-                getProductHref={getProductHref}
-                getCategoryHref={getCategoryHref}
-                userId={userId}
-                // ✅ CHANGE 13: URL wali search input box mein bhi dikhe
-                initialQuery={searchQuery}
-              />
 
-              {isPriceThemeSelectorPage && !isSearchActive && (
-                <ThemeSelector
-                  onSelectTheme={handleSelectPriceTheme}
-                  selectedThemeId={selectedPriceTheme?.id || null}
-                />
+              {/* ✅ Theme route (/hero etc.) par search/sort bar aur price selector nahi */}
+              {!isThemeRoute && (
+                <>
+                  <SearchSortBar
+                    sortOption={sortOption}
+                    designTypes={designTypes}
+                    onApplyFilters={handleSortFilterApply}
+                    searchCategoryList={searchCategoryList}
+                    products={sortedCatalogueData}
+                    onCategorySelect={openSearchCategory}
+                    onProductSelect={handleViewDetails}
+                    onSearchChange={handleSearchChange}
+                    getProductHref={getProductHref}
+                    getCategoryHref={getCategoryHref}
+                    userId={userId}
+                    initialQuery={searchQuery}
+                  />
+
+                  {isPriceThemeSelectorPage && !isSearchActive && (
+                    <ThemeSelector
+                      onSelectTheme={handleSelectPriceTheme}
+                      selectedThemeId={selectedPriceTheme?.id || null}
+                    />
+                  )}
+                </>
               )}
+
               {catValue?.toLowerCase() === "kids-birthday-decoration" &&
                 !isSearchActive && (
-                  <div className="category-tabs-container" onClickCapture={handleTabsClickCapture}>
+                  <div className="category-tabs-container">
                     <CategoryTabs
                       data={themeFilters.map((item) => ({
                         id: item.value,
@@ -933,14 +915,13 @@ useEffect(() => {
                       variant="grid"
                       catValue="kids-birthday-decoration"
                       activeValue={themeFilter}
-                      queryString={filterQueryString}
                     />
                   </div>
                 )}
 
               {catValue?.toLowerCase() === "naming-ceremony-decoration" &&
                 !isSearchActive && (
-                  <div className="category-tabs-outer" onClickCapture={handleTabsClickCapture}>
+                  <div className="category-tabs-outer">
                     <CategoryTabs
                       data={NamingCeremonyThemes.map((item) => ({
                         id: item.value,
@@ -956,7 +937,6 @@ useEffect(() => {
                       variant="grid"
                       catValue="naming-ceremony-decoration"
                       activeValue={themeFilter}
-                      queryString={filterQueryString}
                     />
                   </div>
                 )}
