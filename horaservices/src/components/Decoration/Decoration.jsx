@@ -25,16 +25,6 @@ import DecorGrid from "@/components/DecorGrid";
 import WhyHoraIMG from "../../assets/WhyHoraIMG.webp";
 import DecorationBannerIMG from "../../assets/DecorationBannerIMG.webp";
 import decorCollageIMG from "../../assets/decorCollageIMG.webp";
-import HappyBirthdayImg from "../../assets/HappyBirthdayImg.png";
-import BabyShowerImg from "../../assets/BabyShowerIMG.webp";
-import kidsBirthdayImg from "../../assets/KidsBirthdayIMG.png";
-import BabyWelcomeImg from "../../assets/WelcomBabyIMG.webp";
-import PremiumDecorImg from "../../assets/PremiumDecorIMG.webp";
-import BacheloretteImg from "../../assets/BacheloretteIMG.png";
-import HaldiMehandiImg from "../../assets/HaldiMehandiIMG.webp";
-import FirstNightImg from "../../assets/FirstNightIMG.webp";
-import AnniversaryImg from "../../assets/AnniversaryDecorIMG.webp";
-import BabyShowerBannerIMG from "../../assets/BabyShowerBannerIMG.webp";
 import BrandBannerIMG from "../../assets/BrandBannerIMG.webp";
 import HappyCustomerIMG from "../../assets/HappyCustomerIMG.jpg";
 import GoogleRatingIMG from "../../assets/GoogleRatingIMG4.png";
@@ -112,6 +102,7 @@ import annaprashanIcon from "@/assets/annaprashan-icon.webp";
 import HoraBanner from "../DecorationLandingTopbanner";
 import BirthdayBanner from "../Birthdaybanner";
 import BirthdayMagicalBanner from "../Birthdaymagicalbanner";
+import { smallCardCategories } from "@/utils/smallCardCategories";
 
 const stats = [
   {
@@ -136,53 +127,6 @@ const stats = [
   },
 ];
 
-const categories = [
-  {
-    name: "Birthday",
-    image: HappyBirthdayImg,
-    catValue: "birthday-decoration",
-  },
-  {
-    name: "Baby Shower",
-    image: BabyShowerImg,
-    catValue: "baby-shower-decoration",
-  },
-  {
-    name: "Kids Birthday",
-    image: kidsBirthdayImg,
-    catValue: "kids-birthday-decoration",
-  },
-  {
-    name: "Welcome Baby",
-    image: BabyWelcomeImg,
-    catValue: "welcome-baby-decoration",
-  },
-  {
-    name: "Stage Decoration",
-    image: PremiumDecorImg,
-    catValue: "premium-decoration",
-  },
-  {
-    name: "Bachelorette",
-    image: BacheloretteImg,
-    catValue: "bachelorette-decoration",
-  },
-  {
-    name: "Haldi Mehandi",
-    image: HaldiMehandiImg,
-    catValue: "haldi-mehendi-decoration",
-  },
-  {
-    name: "First Night",
-    image: FirstNightImg,
-    catValue: "first-night-decoration",
-  },
-  {
-    name: "Anniversary",
-    image: AnniversaryImg,
-    catValue: "anniversary-decoration",
-  },
-];
 const brandItems = [
   {
     img: HappyCustomerIMG,
@@ -229,7 +173,7 @@ const Decoration = ({ city, locality }) => {
     return `${path}/${categorySlug}/${cat.catValue}`;
   };
   // Search dropdown aur typewriter placeholder isi list se chalte hain
-  const searchCategoryList = categories.map((c) => ({
+  const searchCategoryList = smallCardCategories.map((c) => ({
     id: c.catValue,
     label: c.name,
     image: c.image,
@@ -364,6 +308,17 @@ const Decoration = ({ city, locality }) => {
     { title: "Engagement Decoration", image: engagementImg, catValue: "engagement-decoration" },
     { title: "First Night Decoration", image: firstNightImg, catValue: "first-night-decoration" },
   ];
+
+  // City ka naam sundar format mein (e.g. "bangalore" -> "Bangalore")
+  const cityName = city
+    ? city.charAt(0).toUpperCase() + city.slice(1).toLowerCase()
+    : "";
+
+  const waMessage = cityName
+    ? `Hi, how can we help in your balloon decor services for ${cityName}`
+    : "Hi, how can we help in your balloon decor services";
+
+  const waLink = `https://wa.me/917338584828?text=${encodeURIComponent(waMessage)}`;
   return (
     <div className="dec-landing-page">
       <Head>
@@ -443,7 +398,7 @@ const Decoration = ({ city, locality }) => {
           city={city}
           hasCityPageParam={hasCityPageParam}
           decCat={decCat}
-          categories={categories}
+          categories={smallCardCategories}
           locality={locality}
         />
       </div>
@@ -497,31 +452,32 @@ const Decoration = ({ city, locality }) => {
         </div>
       </section>
 
-   <div className="wa-banner">
-  <Banner
-    image={whatsappbanner}
-    alt="Your Celebrations, Our Commitment"
-    border="1px solid #599911"
-  />
+      <div className="wa-banner">
+        <Banner
+          image={whatsappbanner}
+          alt="Your Celebrations, Our Commitment"
+          border="1px solid #599911"
+        />
 
-  <a
-    className="wa-banner__btn"
-    href="https://wa.me/91XXXXXXXXXX?text=Hi%2C%20I%20need%20help%20with%20decoration"
-    target="_blank"
-    rel="noopener noreferrer"
-    aria-label="Chat now on WhatsApp"
-  >
-    <Image
-      src={whatsappIcon}
-      alt=""
-      aria-hidden="true"
-      width={24}
-      height={24}
-      className="wa-banner__icon"
-    />
-    <span>Chat Now on WhatsApp</span>
-  </a>
-</div>
+        <a
+          className="wa-banner__btn"
+          href={waLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Chat now on WhatsApp"
+          onClick={trackWAClicks}
+        >
+          <Image
+            src={whatsappIcon}
+            alt=""
+            aria-hidden="true"
+            width={24}
+            height={24}
+            className="wa-banner__icon"
+          />
+          <span>Chat Now on WhatsApp</span>
+        </a>
+      </div>
       {/* <DecorGrid
         largeCard={largeCard}
         smallCards={smallCards}
@@ -552,7 +508,7 @@ const Decoration = ({ city, locality }) => {
         </div>
       </section>
       <div className="page-width">
-       <BirthdayBanner href={`/${categorySlug}/birthday-decoration`} />
+        <BirthdayBanner href={`/${categorySlug}/birthday-decoration`} />
       </div>
       <DecorSlider
         title="Premium Birthday Decorations"
@@ -617,42 +573,42 @@ const Decoration = ({ city, locality }) => {
           </div>
 
           <div className="Couple-Celebrations-box">
-          <CelebrationCard
-            href={`/${categorySlug}/anniversary-decoration`}          // TODO: sahi link
-            bg={anniversaryBg}
-            photo={anniversaryPhoto}
-            photoAlt="Anniversary decoration"
-            imageSide="left"
-            title="Anniversary"
-            subtitle="Celebrate your love with a beautiful setup."   // TODO: design wala text
-            accent="#c4405f"                          // TODO: design ka rang
-            titleColor="#c4405f"
-            divider={anniversaryDivider}
-            features={[
-              { icon: elegantDecor, label: "Elegant Decor" },
-              { icon: perfectPicture, label: "Perfect Picture" },
-              { icon: romanticSetup, label: "Romantic Setup" },
-            ]}
-          />
+            <CelebrationCard
+              href={`/${categorySlug}/anniversary-decoration`}          // TODO: sahi link
+              bg={anniversaryBg}
+              photo={anniversaryPhoto}
+              photoAlt="Anniversary decoration"
+              imageSide="left"
+              title="Anniversary"
+              subtitle="Celebrate your love with a beautiful setup."   // TODO: design wala text
+              accent="#c4405f"                          // TODO: design ka rang
+              titleColor="#c4405f"
+              divider={anniversaryDivider}
+              features={[
+                { icon: elegantDecor, label: "Elegant Decor" },
+                { icon: perfectPicture, label: "Perfect Picture" },
+                { icon: romanticSetup, label: "Romantic Setup" },
+              ]}
+            />
 
-          {/* ===== First Night ===== */}
-          <CelebrationCard
-            href={`/${categorySlug}/first-night-decoration`}           // TODO: sahi link
-            bg={firstNightBg}
-            photo={firstNightPhoto}
-            photoAlt="First night decoration"
-            imageSide="right"
-            title="First Night"
-            subtitle="Make your first night truly special."          // TODO: design wala text
-            accent="#764C9E"                          // TODO: design ka rang
-            titleColor="#764C9E"
-            divider={firstNightDivider}
-            features={[
-              { icon: beautifulDecor, label: "Beautiful Decor" },
-              { icon: romanticAmbience, label: "Romantic Ambience" },
-              { icon: memorableMoment, label: "Memorable Moment" },
-            ]}
-          />
+            {/* ===== First Night ===== */}
+            <CelebrationCard
+              href={`/${categorySlug}/first-night-decoration`}           // TODO: sahi link
+              bg={firstNightBg}
+              photo={firstNightPhoto}
+              photoAlt="First night decoration"
+              imageSide="right"
+              title="First Night"
+              subtitle="Make your first night truly special."          // TODO: design wala text
+              accent="#764C9E"                          // TODO: design ka rang
+              titleColor="#764C9E"
+              divider={firstNightDivider}
+              features={[
+                { icon: beautifulDecor, label: "Beautiful Decor" },
+                { icon: romanticAmbience, label: "Romantic Ambience" },
+                { icon: memorableMoment, label: "Memorable Moment" },
+              ]}
+            />
           </div>
         </div>
       </section>

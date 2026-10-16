@@ -45,6 +45,16 @@ export const contactUsRedirect = ({
       "wedding-decoration": "wedding decoration",
       "wedding": "wedding decoration",
       "bachelorette-decoration": "bachelorette decoration",
+      "engagement-decoration": "Engagement Decoration",
+      "reception-decoration": "Reception Decoration",
+      "sangeet-decoration": "Sangeet Decoration",
+      "mandap-decoration": "Mandap Decoration",
+      "mehendi-decoration":"Mehendi Decoration",
+      "haldi-decoration":"Haldi Decoration",
+      "annaprashan-decoration":"Annaprashan Decoration",
+      "wedding-car-decoration":"Wedding Car Decoration",
+      "baptism-decoration":" Baptism Decoration",
+      "name-reveal-decoration":"Name reveal decoration"
     },
   };
 

@@ -32,6 +32,8 @@ const categoryTitleMap = {
    "haldi-decoration":"Haldi Decoration",
    "annaprashan-decoration":"Annaprashan Decoration",
   "wedding-car-decoration":"Wedding Car Decoration",
+  "baptism-decoration":" Baptism Decoration",
+  "name-reveal-decoration":"Name reveal decoration"
 };
 
 
