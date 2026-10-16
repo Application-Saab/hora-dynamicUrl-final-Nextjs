@@ -267,26 +267,60 @@ height: clamp(5.65px, 1.785vw, 7.02px);
   color: #6B6B6B;
   margin-left: clamp(3.257px, calc(1.018vw), 4.885px);
 }
-
-/* ── CTA ── */
-.venue-menu-btn {
-    background: #97538C;
-    border: none;
-    border-radius: clamp(3.104px, calc(0.97vw), 4.656px);
-    padding: clamp(6.208px, calc(1.94vw), 9.312px);
-    font-family: "Inter", sans-serif;
-    font-weight: 600;
-    font-style: normal;
-    font-size: clamp(9.536px, calc(2.98vw), 14.304px);
-    text-align: center;
-    color: #fff;
-    cursor: pointer;
-    box-sizing: border-box;
+/* ── CTA Container ── */
+.venue-card-btn-ctn {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between;
+  gap: clamp(3px, calc(1vw), 6px);
+  margin-block: clamp(3px, calc(1vw), 5px);
+  width: 100%;
 }
+
+.venue-card-btn-ctn > div {
+  flex: 1 1 0% !important;
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Dono buttons ke display, height aur padding ko strictly match karein */
+.venue-menu-btn,
+.check-availability-btn-venue {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: clamp(22px, calc(6.5vw), 28px) !important;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  line-height: 1 !important;
+  cursor: pointer;
+  border-radius: clamp(2.5px, calc(0.8vw), 4px);
+  padding: 0 clamp(2px, calc(0.8vw), 6px) !important;
+  font-size: clamp(6.8px, calc(2.2vw), 11px) !important;
+}
+
+.venue-menu-btn {
+  background: #97538c;
+  border: 1px solid #97538c !important;
+  color: #fff !important;
+}
+
+.check-availability-btn-venue {
+  background: transparent;
+  border: 1px solid #219f54 !important;
+  color: #219f54 !important;
+}
+
 .venue-menu-btn:hover {
   opacity: 0.9;
 }
-
 /* ── View more ── */
 .view-all-wrap {
   display: flex;
