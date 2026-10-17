@@ -349,9 +349,9 @@ const LayoutInner = ({ children }) => {
   return (
     <ConsultationPopupProvider>
       <div className="page-container container-fluid p-0">
-        <Head>
+        {/* <Head>
           <meta name="fast2sms" content="p8oFAZAbcm2E8mwWaW6YA5iS1ZYtRGJe" />
-        </Head>
+        </Head> */}
 
         {/* City modal sirf venue-list route par khulti hai */}
         {showCityModal && (

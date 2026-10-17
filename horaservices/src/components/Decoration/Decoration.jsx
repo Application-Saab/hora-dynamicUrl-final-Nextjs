@@ -26,6 +26,7 @@ import BrandBanner from "@/components/BrandBanner";
 import whatsappbanner from "@/assets/Whatsaap_banner.webp";
 import weddingBannerImg from "@/assets/Wedding_banner.webp";
 import Decorationseodata from "@/utils/Decorationseodata.json";
+import { getBalloonDecorationSeo } from "@/utils/balloonDecorationSeo";
 import haldiImg from "@/assets/trending-haldi.webp";
 import mehandiImg from "@/assets/trending-mehandi.webp";
 import mandapImg from "@/assets/trending-mandap.webp";
@@ -322,7 +323,7 @@ const Decoration = ({ city, locality }) => {
 
   const reviewsRef = useRef(null);
 
-  const SITE = "https://horaservices.com";
+   const SITE = "https://horaservices.com";
   const citySlug = city ? slugify(city) : "";
   const localitySlug = locality ? slugify(locality) : "";
 
@@ -333,10 +334,11 @@ const Decoration = ({ city, locality }) => {
         ? `${SITE}/${citySlug}/balloon-decoration`
         : `${SITE}/balloon-decoration`;
 
-  // Per-city SEO copy
-  const pageSeo = city
-    ? citySeoData[city.toLowerCase()] || defaultSeo
-    : defaultSeo;
+  // SEO sheet copy (main page + city hubs) takes priority; cities/localities
+  // not in the sheet keep the existing per-city copy.
+  const pageSeo =
+    getBalloonDecorationSeo({ city, locality }) ||
+    (city ? citySeoData[city.toLowerCase()] || defaultSeo : defaultSeo);
 
   const weddingCollections = [
     { title: "Haldi Decoration", image: haldiImg, catValue: "haldi-decoration" },
