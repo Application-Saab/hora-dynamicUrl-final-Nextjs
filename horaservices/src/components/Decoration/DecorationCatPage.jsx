@@ -32,8 +32,9 @@ import CardSkeleton from "@/components/CardSkeleton";
 import HighPriceProduct from "@/components/Highpriceproduct";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 import SeoHead from "@/utils/SeoHead";
-import ThemeSelector from "@/components/Themeselector";
-import SearchSortBar from "@/components/SearchSortBar";
+// ✅ CHANGE 1: `themes` bhi import karo (URL ke priceTheme=budget se theme object nikalne ke liye)
+import ThemeSelector, { themes as priceThemes } from "@/components/Themeselector";
+import SearchSortBar, { designTypeOptions } from "@/components/SearchSortBar";
 import DecorationBanner from "@/components/CategoryDecorationBanner";
 import DecorationCatDescriptionData, {
   buildCityLinksHtml,
@@ -43,6 +44,59 @@ import EventDateBanner from "@/components/Eventdatebanner";
 import axiosApi from "@/utils/axiosApi";
 import MakeItYoursBanner from "@/components/MakeItYoursBanner";
 import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
+
+const PRICE_SORTS = ["newArrival", "lowToHigh", "highToLow"];
+const VALID_SORTS = [...PRICE_SORTS];
+
+// Backend param: designType=Wall  (multiple => "Wall,Ring")
+// Agar backend multiple values repeat karke leta hai (designType=Wall&designType=Ring)
+// to DESIGN_TYPE_MODE = "repeat" kar do.
+const DESIGN_TYPE_PARAM_NAME = "designType";
+const DESIGN_TYPE_MODE = "comma"; // "comma" | "repeat"
+
+const getQueryValue = (query, lowerKey, legacyKey) => {
+  const v = query?.[lowerKey] ?? query?.[legacyKey];
+  return typeof v === "string" ? v : "";
+};
+
+const parseFiltersFromQuery = (query = {}) => {
+  const rawSort = getQueryValue(query, "sortby", "sortBy").toLowerCase();
+  const sortOption =
+    VALID_SORTS.find((id) => id.toLowerCase() === rawSort) || "popularity";
+
+  const search = getQueryValue(query, "search", "search").trim();
+
+  const rawPriceTheme = getQueryValue(
+    query,
+    "pricetheme",
+    "priceTheme",
+  ).toLowerCase();
+  const priceTheme =
+    priceThemes.find((t) => String(t.id).toLowerCase() === rawPriceTheme) ||
+    null;
+
+  // "wall,ring" -> ["wall", "ring"] (URL ki lowercase value se internal id)
+  const rawDesign = getQueryValue(query, "designtype", "designType");
+  const designTypes = [
+    ...new Set(
+      rawDesign
+        .split(",")
+        .map((v) => v.trim().toLowerCase())
+        .filter(Boolean)
+        .map((v) => designTypeOptions.find((o) => o.id.toLowerCase() === v)?.id)
+        .filter(Boolean),
+    ),
+  ];
+
+  return { sortOption, search, priceTheme, designTypes };
+};
+
+// ✅ CHANGE 17: Cache key ab FILTERS se banti hai, router.asPath se nahi.
+// asPath fetch ke time par purana ho sakta hai (router.replace async hai),
+// jisse sorted data galat key mein save hota tha aur "Popularity" par wapas
+// aane par purana sorted data restore ho jata tha.
+const buildCacheKey = (path, sort, priceThemeId, search, designTypes = []) =>
+  `decorcat:${path}|sort=${sort || "popularity"}|price=${priceThemeId || ""}|search=${search || ""}|design=${designTypes.join(",")}`;
 
 const DecorationCatPage = ({
   city: cityProp = "",
@@ -55,7 +109,20 @@ const DecorationCatPage = ({
 }) => {
   const router = useRouter();
   const pathname = router.asPath.split("?")[0];
-  const skipInitialFetch = useRef(initialCatalogueData.length > 0);
+
+  // ✅ CHANGE 3: URL se initial filters nikalo
+  const urlFilters = parseFiltersFromQuery(router.query);
+  const hasUrlFilters =
+    urlFilters.sortOption !== "popularity" ||
+    !!urlFilters.search ||
+    !!urlFilters.priceTheme ||
+    urlFilters.designTypes.length > 0;
+
+  // ✅ CHANGE 4: Agar URL mein filter hai to SSR ka (unfiltered) data skip nahi
+  // karna — fresh filtered fetch hona chahiye.
+  const skipInitialFetch = useRef(
+    initialCatalogueData.length > 0 && !hasUrlFilters,
+  );
 
   const [city, setCity] = useState(cityProp || "");
   const [catValue, setCatValue] = useState(catValueProp || "");
@@ -116,52 +183,117 @@ const DecorationCatPage = ({
     hasInitialData ? initialHasMore : true,
   );
   const [themeFilter, setThemeFilter] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  // ✅ CHANGE 5: initial value URL se aayegi (pehle "" thi)
+  const [searchQuery, setSearchQuery] = useState(urlFilters.search);
   const selectedTheme = router.query.themes;
   const isThemePage = !!selectedTheme;
 
+  // ✅ NEW: [theme] route (jaise /kids-birthday-decoration/hero) par search/sort bar
+  // aur price selector nahi dikhana. isThemePage ko nahi badla kyunki wo neeche
+  // products ki slicing/layout bhi control karta hai.
+  const isThemeRoute = !!theme || isThemePage;
+
   // ---- Price-range theme selector state (Budget / Value / Photogenic / Stage) ----
-  const [selectedPriceTheme, setSelectedPriceTheme] = useState(null); // { id, label, priceRange, ... } | null
+  // ✅ CHANGE 6: initial value URL se aayegi (pehle null thi)
+  const [selectedPriceTheme, setSelectedPriceTheme] = useState(
+    urlFilters.priceTheme,
+  );
 
   // ================= CACHE-FIRST BACK-NAVIGATION SUPPORT =================
-  // Jab user product-detail (alag route) se BACK karke is page par aata
-  // hai, yeh component pura REMOUNT hota hai — saara state khali ho jaata
-  // hai. Isse bachne ke liye module-level in-memory cache use karte hain
-  // (utils/scrollDataCache.js): mount hote hi pehle cache check karo,
-  // agar mile to turant wahi data dikhao — koi naya API call nahi.
-  //
-  // `hasHydratedFromCache` ek REF hai (state nahi), taaki isko set/read
-  // karna re-render trigger na kare. Iska use "abhi jo catId/currentPage
-  // set hua hai woh CACHE se aaya hai, isliye usse trigger hone wale
-  // fetch effects ko is baar SKIP karna hai" — yeh batane ke liye hota hai.
   const hasHydratedFromCache = useRef(false);
 
+  // ✅ CHANGE 7: URL ke query params update karne ka helper
+  // shallow: true => getServerSideProps dobara nahi chalega, page reload nahi hoga.
+  // Value null/""/undefined ho to param URL se hat jata hai.
+  const updateQueryParams = (updates) => {
+    if (typeof window === "undefined") return;
+
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+
+    // Key aur value dono lowercase. Purani camelCase keys
+    // (sortBy/priceTheme/designType) URL se hata dete hain.
+    Object.entries(updates).forEach(([key, value]) => {
+      const lowerKey = key.toLowerCase();
+      if (lowerKey !== key) params.delete(key);
+
+      const isEmpty =
+        value === null ||
+        value === undefined ||
+        value === "" ||
+        (Array.isArray(value) && value.length === 0);
+
+      if (isEmpty) {
+        params.delete(lowerKey);
+      } else {
+        const str = Array.isArray(value) ? value.join(",") : String(value);
+        params.set(lowerKey, str.toLowerCase());
+      }
+    });
+
+    const qs = params.toString().replace(/%2C/gi, ",");
+    const newUrl = `${url.pathname}${qs ? `?${qs}` : ""}`;
+
+    router.replace(newUrl, undefined, { shallow: true, scroll: false });
+  };
+  useEffect(() => {
+    if (!router.isReady || typeof window === "undefined") return;
+
+    const url = new URL(window.location.href);
+    let changed = false;
+
+    ["sortBy", "priceTheme", "designType"].forEach((key) => {
+      const value = url.searchParams.get(key);
+      if (value === null) return;
+
+      const lowerKey = key.toLowerCase();
+      url.searchParams.delete(key);
+      if (!url.searchParams.has(lowerKey)) {
+        url.searchParams.set(lowerKey, value.toLowerCase());
+      }
+      changed = true;
+    });
+
+    if (changed) {
+      const qs = url.searchParams.toString().replace(/%2C/gi, ",");
+      router.replace(`${url.pathname}${qs ? `?${qs}` : ""}`, undefined, {
+        shallow: true,
+        scroll: false,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    router.isReady,
+    router.query.sortBy,
+    router.query.priceTheme,
+    router.query.designType,
+  ]);
+
+  // ✅ CHANGE 8 (UPDATED): Ab themed URL (…/kids-birthday-decoration/hero) par
+  // bhi user usi URL par rehta hai. Sirf query add/remove hoti hai:
+  //   /hero  ->  /hero?priceTheme=value
+  // Theme (hero) aur price range DONO ek saath apply hote hain.
   const handleSelectPriceTheme = (theme) => {
-    setSelectedPriceTheme(theme); // theme = null clears the filter, otherwise the full theme object
-
-    // Ek time par sirf EK filter active rahega: ya toh CategoryTabs wala
-    // theme (jaise Cocomelon) ya phir ye price-range segmentation
-    // (Budget Friendly / Value For Money / Photogenic / Stage).
-    if (theme) {
-      setThemeFilter("all");
-
-      // `theme` yahan URL ka ek query-string value nahi, balki dynamic
-      // route ka path SEGMENT hai (…/[catValue]/[theme]). Isliye query
-      // object se hataya nahi ja sakta (router.replace with the same
-      // bracketed pathname throws an interpolation error). Agar hum
-      // abhi kisi themed URL par khade hain, to seedha non-themed base
-      // listing URL par navigate kar dete hain.
-      if (router.query?.theme && catValue) {
-        const categorySlug = getCategorySlugFromPath(pathname, city, locality);
-
-        let base = "";
-        if (city) base += `/${city.toLowerCase()}`;
-        if (locality) base += `/${locality.toLowerCase()}`;
-
-        const basePath = `${base}/${categorySlug}/${catValue}`;
-        router.push(basePath);
+    hasHydratedFromCache.current = false; // genuine user action
+    if (typeof window !== "undefined") {
+      window.dataLayer = window.dataLayer || [];
+      if (theme) {
+        window.dataLayer.push({
+          event: `price_theme_${String(theme.id).toLowerCase()}`,
+          price_theme_id: theme.id,
+          price_theme_label: theme.label || theme.name || theme.title || "",
+          page_path: pathname,
+        });
+      } else {
+        window.dataLayer.push({
+          event: "price_theme_clear",
+          page_path: pathname,
+        });
       }
     }
+
+    setSelectedPriceTheme(theme); // null = clear
+    updateQueryParams({ priceTheme: theme ? theme.id : null });
   };
 
   // Only show the price-range theme selector on these two category pages
@@ -171,24 +303,34 @@ const DecorationCatPage = ({
 
   const isPriceThemeActive = !!selectedPriceTheme;
 
-  // ---- Sort state (New Arrival / Popularity / Price Low-High / Price High-Low) ----
-  const [sortOption, setSortOption] = useState("popularity");
+  // ---- Sort state (New Arrival / Popularity / Price Low-High / Price High-Low / Style options) ----
+  // ✅ CHANGE 9: initial value URL se aayegi (pehle "popularity" thi)
+  const [sortOption, setSortOption] = useState(urlFilters.sortOption);
 
-  const handleSortChange = (id) => {
-    // User ne khud filter badla — ab yeh ek GENUINE fresh query hai,
-    // cache-hydration skip-guard ko force-clear kar dete hain taaki
-    // niche wala effect zaroor fresh-fetch kare.
+  // ---- Design Type filter (multi-select: wall, ring, ...) ----
+  const [designTypes, setDesignTypes] = useState(urlFilters.designTypes);
+  const designTypesKey = designTypes.join(",");
+
+  // Sort & Filter sheet ka "Apply" — sort + design type EK saath, EK hi URL update
+  // (do alag router.replace se purani URL overwrite ho sakti thi)
+  const handleSortFilterApply = ({
+    sortOption: nextSort,
+    designTypes: nextDesigns,
+  }) => {
     hasHydratedFromCache.current = false;
-    setSortOption(id);
+    setSortOption(nextSort);
+    setDesignTypes(nextDesigns);
+    // ✅ CHANGE 10: URL update (popularity default hai, to param hata do)
+    updateQueryParams({
+      sortBy: nextSort === "popularity" ? null : nextSort,
+      designType: nextDesigns,
+    });
   };
 
   // ---- Search: whether a free-text search is currently active ----
-  const isSearchActive = !!searchQuery.trim();
+  // ✅ UPDATED: theme route par search bar hidden hai, isliye search kabhi active nahi
+  const isSearchActive = !isThemeRoute && !!searchQuery.trim();
 
-  // Search box (e.g. "barbie") -> forwarded to the API as `search`.
-  // Jab search active ho jaye, baaki filters (theme tabs, price-range theme,
-  // sort) ko reset kar dete hain taaki search sirf naam/tag se match kare,
-  // kisi pehle se lage filtered subset ke upar nahi.
   const handleSearchChange = (query) => {
     const trimmed = query?.trim() || "";
     hasHydratedFromCache.current = false; // genuine user action
@@ -198,12 +340,20 @@ const DecorationCatPage = ({
       setThemeFilter("all");
       setSortOption("popularity");
       setSelectedPriceTheme(null);
+      setDesignTypes([]);
+      // ✅ CHANGE 11: search URL mein, baaki filters URL se clear
+      updateQueryParams({
+        search: trimmed,
+        sortBy: null,
+        priceTheme: null,
+        designType: null,
+      });
+    } else {
+      updateQueryParams({ search: null });
     }
   };
 
   // ---- Search: "Matching Categories" source ----
-  // Theme-category suggestions only exist for these two category pages
-  // (they're the only ones with a defined set of theme filters).
   const searchCategoryList = useMemo(() => {
     const lowerCatValue = catValue?.toLowerCase();
 
@@ -240,19 +390,48 @@ const DecorationCatPage = ({
       setVisitorId(localStorage.getItem("VISITOR_ID") || null);
     }
   }, []);
-  useEffect(() => {
-    // Price-range segmentation (Budget/Value/Photogenic/Stage) aur
-    // CategoryTabs theme (jaise Cocomelon) ek saath active nahi ho sakte.
-    // Agar price-range theme already selected hai, to URL ke ?theme= ko
-    // ignore kar dete hain taaki dono filter combine na ho jayein.
-    if (selectedPriceTheme) return;
 
+  // ✅ CHANGE 12: URL -> STATE sync (refresh, shared link, browser back/forward)
+  // URL hi source of truth hai. Agar URL ke query se state alag hai to state
+  // update hoga, aur neeche wala fetch effect apne aap fresh data layega.
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const next = parseFiltersFromQuery(router.query);
+
+    setSortOption((prev) => (prev === next.sortOption ? prev : next.sortOption));
+    // URL mein search lowercase hota hai, isliye case-insensitive compare
+    // (warna "Barbie" type karne par state lowercase se overwrite hoke refetch hota)
+    setSearchQuery((prev) =>
+      prev.toLowerCase() === next.search.toLowerCase() ? prev : next.search,
+    );
+    setSelectedPriceTheme((prev) =>
+      prev?.id === next.priceTheme?.id ? prev : next.priceTheme,
+    );
+    setDesignTypes((prev) =>
+      prev.join(",") === next.designTypes.join(",") ? prev : next.designTypes,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    router.isReady,
+    router.query.sortby,
+    router.query.sortBy,
+    router.query.search,
+    router.query.pricetheme,
+    router.query.priceTheme,
+    router.query.designtype,
+    router.query.designType,
+  ]);
+
+  // ✅ CHANGE 14: URL ka [theme] (jaise "hero") hamesha apply hoga, price
+  // theme ke saath bhi. Pehle priceTheme active hone par ye ignore hota tha.
+  useEffect(() => {
     if (theme) {
       setThemeFilter(theme);
     } else {
       setThemeFilter("all");
     }
-  }, [theme, selectedPriceTheme]);
+  }, [theme]);
 
   // initialCatId change hone par (naya SSR data) state reset karo
   const prevInitialCatIdRef = useRef(initialCatId);
@@ -266,7 +445,7 @@ const DecorationCatPage = ({
       setHasMore(initialCatalogueData.length > 0 ? initialHasMore : true);
 
       const hasFreshData = initialCatalogueData.length > 0;
-      skipInitialFetch.current = hasFreshData;
+      skipInitialFetch.current = hasFreshData && !hasUrlFilters;
       setLoading(!hasFreshData);
       setIsInitialLoad(!hasFreshData);
 
@@ -277,11 +456,20 @@ const DecorationCatPage = ({
   }, [initialCatId, initialCatalogueData, initialHasMore]);
 
   // ================= CACHE-FIRST: subCategory resolve hote hi check karo =================
+  // NOTE: cacheKey mein router.asPath hai, jisme ab ?sortBy=... bhi aata hai,
+  // isliye har filter ka apna alag cache banega (back par wahi view milega).
   useEffect(() => {
     addSpaces(subCategory);
     if (!subCategory) return;
 
-    const cacheKey = `decorcat:${router.asPath}`;
+    const urlF = parseFiltersFromQuery(router.query);
+    const cacheKey = buildCacheKey(
+      pathname,
+      urlF.sortOption,
+      urlF.priceTheme?.id,
+      urlF.search,
+      urlF.designTypes,
+    );
     const cached = getPageCache(cacheKey);
 
     if (cached) {
@@ -293,10 +481,11 @@ const DecorationCatPage = ({
       setSortOption(cached.data.sortOption || "popularity");
       setSearchQuery(cached.data.searchQuery || "");
       setSelectedPriceTheme(cached.data.selectedPriceTheme || null);
+      setDesignTypes(cached.data.designTypes || []);
       setLoading(false);
       setIsInitialLoad(false);
       hasHydratedFromCache.current = true;
-      skipInitialFetch.current = false; // cache mil gaya, SSR-skip branch ab irrelevant
+      skipInitialFetch.current = false;
       if (typeof window !== "undefined") {
         window.dispatchEvent(new Event("page-content-ready"));
       }
@@ -349,11 +538,9 @@ const DecorationCatPage = ({
     setCurrentPage(1);
     getSubCatItems(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [catId, themeFilter, sortOption, selectedPriceTheme, searchQuery]);
+  }, [catId, themeFilter, sortOption, selectedPriceTheme, searchQuery, designTypesKey]);
 
   // ================= currentPage change => fetch that page =================
-  // Guard: agar yeh currentPage abhi-abhi CACHE se hydrate hua tha (page 1
-  // nahi tha), to iska fetch mat karo — data already cache mein tha.
   useEffect(() => {
     if (hasHydratedFromCache.current) {
       return;
@@ -372,11 +559,7 @@ const DecorationCatPage = ({
     }
   }, [catValue, city]);
 
-  // Reset the price-range theme filter whenever the category GENUINELY
-  // changes (user browsed from one category to another). Yeh effect
-  // catValue ke pehli baar populate hone par (mount, "" -> actual value)
-  // fire NAHI hona chahiye — warna cache se hydrate kiya hua
-  // selectedPriceTheme turant wipe ho jaata hai.
+  // Category GENUINELY change ho to price-range theme reset karo
   const prevCatValueRef = useRef("");
   useEffect(() => {
     const prevCatValue = prevCatValueRef.current;
@@ -441,9 +624,6 @@ const DecorationCatPage = ({
     if (!catId) return;
 
     try {
-      // Page 1 (fresh filter/theme/search/category change) => poora
-      // skeleton dikhao. Page 2+ (auto-pagination) => purane products
-      // hide na ho, sirf niche ek chhota loader dikhega.
       if (page === 1) {
         setLoading(true);
       } else {
@@ -454,12 +634,21 @@ const DecorationCatPage = ({
       params.set("limit", "30");
       params.set("page", String(page));
 
-      if (sortOption === "newArrival") {
-        params.set("sortBy", "newArrival");
-      } else if (sortOption === "lowToHigh") {
-        params.set("sortBy", "lowToHigh");
-      } else if (sortOption === "highToLow") {
-        params.set("sortBy", "highToLow");
+      if (PRICE_SORTS.includes(sortOption)) {
+        params.set("sortBy", sortOption);
+      }
+
+      // ✅ Design Type: designType=Wall  (multiple => "Wall,Ring")
+      if (designTypes.length > 0) {
+        const apiValues = designTypes
+          .map((id) => designTypeOptions.find((o) => o.id === id)?.apiValue)
+          .filter(Boolean);
+
+        if (DESIGN_TYPE_MODE === "repeat") {
+          apiValues.forEach((v) => params.append(DESIGN_TYPE_PARAM_NAME, v));
+        } else if (apiValues.length) {
+          params.set(DESIGN_TYPE_PARAM_NAME, apiValues.join(","));
+        }
       }
 
       if (themeFilter && themeFilter !== "all") {
@@ -501,19 +690,28 @@ const DecorationCatPage = ({
           const updated =
             page === 1 ? decoratedData : [...prevData, ...decoratedData];
 
-          // Jo bhi CURRENT state hai (filter/sort/search laga ho ya na
-          // ho) usko cache karte hain — taaki product-detail se back
-          // aane par bilkul WAHI view turant restore ho jaaye.
-          setPageCache(`decorcat:${router.asPath}`, {
-            catId,
-            catalogueData: updated,
-            defaultCatalogueData: searchQuery ? defaultCatalogueData : updated,
-            currentPage: page,
-            hasMore: page < response.data.pagination.totalPages,
-            sortOption,
-            searchQuery,
-            selectedPriceTheme,
-          });
+          setPageCache(
+            buildCacheKey(
+              pathname,
+              sortOption,
+              selectedPriceTheme?.id,
+              searchQuery,
+              designTypes,
+            ),
+            {
+              catId,
+              catalogueData: updated,
+              defaultCatalogueData: searchQuery
+                ? defaultCatalogueData
+                : updated,
+              currentPage: page,
+              hasMore: page < response.data.pagination.totalPages,
+              sortOption,
+              searchQuery,
+              selectedPriceTheme,
+              designTypes,
+            },
+          );
 
           return updated;
         });
@@ -526,9 +724,6 @@ const DecorationCatPage = ({
         setHasMore(page < response.data.pagination.totalPages);
       }
     } catch (error) {
-      // Error ho jaaye tab bhi page-1 ke case mein event fire karo,
-      // warna page hamesha ke liye hidden reh jaayega (sirf safety-net
-      // timer se hi reveal hoga, jo 1500ms baad hai)
       if (page === 1 && typeof window !== "undefined") {
         window.dispatchEvent(new Event("page-content-ready"));
       }
@@ -536,7 +731,6 @@ const DecorationCatPage = ({
       if (page === 1) {
         setLoading(false);
 
-        // page-1 ka data aa gaya, ab _app.tsx ko batao reveal karne ke liye
         if (typeof window !== "undefined") {
           window.dispatchEvent(new Event("page-content-ready"));
         }
@@ -592,6 +786,7 @@ const DecorationCatPage = ({
   const getCategoryHref = (item) => {
     if (!item?.value || !catValue) return "#";
     const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+    // Search se jaate waqt filters carry nahi hote, isliye query string nahi
     return `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}`;
   };
 
@@ -605,10 +800,19 @@ const DecorationCatPage = ({
     if (!item?.value || !catValue) return;
 
     hasHydratedFromCache.current = false;
-    setSelectedPriceTheme(null);
+    // Theme page par filters carry nahi hote (URL clean rehta hai)
 
-    // CategoryTabs ab khud <a href> se navigate karega.
-    // SearchSortBar abhi bhi onCategorySelect pe depend karta hai:
+    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+    const finalPath = `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}`;
+    router.push(finalPath);
+  };
+
+  // Search dropdown se category select: filters carry nahi honge
+  const openSearchCategory = (item) => {
+    if (!item?.value || !catValue) return;
+
+    hasHydratedFromCache.current = false;
+
     const categorySlug = getCategorySlugFromPath(pathname, city, locality);
     const finalPath = `${buildBasePath()}/${categorySlug}/${catValue}/${item.value}`;
     router.push(finalPath);
@@ -618,10 +822,6 @@ const DecorationCatPage = ({
     setShowAll((prev) => !prev);
   };
 
-  // Sorting and price-range filtering now happen server-side (sortBy /
-  // minPrice / maxPrice query params in getSubCatItems), so `catalogueData`
-  // arriving from the API is already in the right order and already
-  // restricted to the selected price range.
   const sortedCatalogueData = catalogueData;
   const priceThemeFilteredData = catalogueData;
 
@@ -629,9 +829,6 @@ const DecorationCatPage = ({
     (item) => Number(item.price) > 11000,
   );
 
-  // Small reusable skeleton block used whenever we're (re)fetching after a
-  // filter/theme/sort/search change, so the UI never has to guess "empty" vs
-  // "still loading" — it always knows which one it is.
   const FilterLoadingSkeleton = () => (
     <div className="skeleton-wrapper">
       {Array.from({ length: 6 }).map((_, index) => (
@@ -672,27 +869,34 @@ const DecorationCatPage = ({
               <section>
                 <DecorationBanner category={normalizedCat} />
               </section>
-              <SearchSortBar
-                sortOption={sortOption}
-                onSortChange={handleSortChange}
-                searchCategoryList={searchCategoryList}
-                products={sortedCatalogueData}
-                onCategorySelect={openCatItems}
-                onProductSelect={handleViewDetails}
-                onSearchChange={handleSearchChange}
-                getProductHref={getProductHref}
-                getCategoryHref={getCategoryHref}
-                userId={userId}
-              />
 
-              {/* Price-range theme cards — SIRF birthday & kids-birthday-decoration pe,
-                  aur search active hote hi hide ho jate hain */}
-              {isPriceThemeSelectorPage && !isSearchActive && (
-                <ThemeSelector
-                  onSelectTheme={handleSelectPriceTheme}
-                  selectedThemeId={selectedPriceTheme?.id || null}
-                />
+              {/* ✅ Theme route (/hero etc.) par search/sort bar aur price selector nahi */}
+              {!isThemeRoute && (
+                <>
+                  <SearchSortBar
+                    sortOption={sortOption}
+                    designTypes={designTypes}
+                    onApplyFilters={handleSortFilterApply}
+                    searchCategoryList={searchCategoryList}
+                    products={sortedCatalogueData}
+                    onCategorySelect={openSearchCategory}
+                    onProductSelect={handleViewDetails}
+                    onSearchChange={handleSearchChange}
+                    getProductHref={getProductHref}
+                    getCategoryHref={getCategoryHref}
+                    userId={userId}
+                    initialQuery={searchQuery}
+                  />
+
+                  {isPriceThemeSelectorPage && !isSearchActive && (
+                    <ThemeSelector
+                      onSelectTheme={handleSelectPriceTheme}
+                      selectedThemeId={selectedPriceTheme?.id || null}
+                    />
+                  )}
+                </>
               )}
+
               {catValue?.toLowerCase() === "kids-birthday-decoration" &&
                 !isSearchActive && (
                   <div className="category-tabs-container">
@@ -751,7 +955,6 @@ const DecorationCatPage = ({
                       isDirectProductPage={isDirectProductPage}
                     />
                   ) : isSearchActive ? (
-                    // Koi search result nahi mila — piche default list dikhayenge, blank nahi
                     defaultCatalogueData.length > 0 ? (
                       <ProductGrid
                         data={defaultCatalogueData}
@@ -768,17 +971,12 @@ const DecorationCatPage = ({
                   )}
                 </>
               ) : loading ? (
-                // ---- No filter/search active, but a re-fetch is in flight
-                // (e.g. theme tab switch, sort change) — show skeleton
-                // instead of flashing "No products found" for an instant. ----
                 <FilterLoadingSkeleton />
               ) : sortedCatalogueData.length === 0 ? (
-                // ---- Category ke paas abhi koi product nahi (filter/search ki wajah se nahi) ----
                 <div className="noProductsWrapper">
                   <h2>No products found</h2>
                 </div>
               ) : (
-                // ---- DEFAULT LAYOUT: banners interspersed with product grids ----
                 <>
                   <ProductGrid
                     data={sortedCatalogueData.slice(0, 4)}
@@ -944,9 +1142,6 @@ const DecorationCatPage = ({
             </>
           )}
 
-          {/* Grouped "load more" section — skipped while a price-range filter
-              OR a search is active, to avoid showing the full catalogue
-              underneath the filtered/search results */}
           {!isPriceThemeActive &&
             !isSearchActive &&
             Array.from(

@@ -1,0 +1,171 @@
+/* ================================================================== */
+/* Baby Celebrations section  (Decoration.css ke end mein paste karo)   */
+/* ================================================================== */
+
+/* container: andar ke cqw is section ki width se bante hain */
+.baby-sec {
+  container-type: inline-size;
+  position: relative;
+  max-width: 480px;
+  margin: 10px auto;
+  overflow: hidden;
+  background-color: #fff6ec; /* image ke neeche ka cream */
+}
+
+.baby-sec__bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.baby-sec__bg-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.baby-sec__inner {
+  position: relative;
+  z-index: 1;
+  padding-bottom: 6cqw;
+}
+
+/* heading */
+.baby-sec__head {
+  text-align: center;
+  padding: 7cqw 14cqw 4cqw;
+}
+
+.baby-sec__eyebrow {
+  margin: 0;
+  color: #2D2D2F;
+font-family: Inter, sans-serif;
+font-weight: 500;
+font-size: clamp(8.6px, 2.54vw, 10px);
+text-align: center;
+}
+
+.baby-sec__title {
+  margin: 0.6cqw 0 0;
+  color: #2A0227;
+font-family: "Playfair Display", serif;
+font-weight: 700;
+font-size: clamp(21.48px, 6.36vw, 25px);
+}
+
+.baby-sec__subtitle {
+  margin: 1.4cqw 0 0;
+color: #2D2D2F;
+font-family: Inter, sans-serif;
+font-weight: 500;
+font-size: clamp(6.88px, 2.04vw, 8px);
+text-align: center;
+}
+
+/* 2 x 2 grid */
+.baby-sec__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(11.18px, 3.31vw, 13px);
+  padding: 0 4cqw;
+}
+
+/* ================================================================== */
+/* BabyCelebrationCard                                                 */
+/* ================================================================== */
+.baby-card {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(4.3px, 1.27vw, 5px);
+  border-top-left-radius: clamp(25.77px, 7.63vw, 30px);
+  border-top-right-radius: clamp(25.77px, 7.63vw, 30px);
+  border-bottom-right-radius: clamp(17.18px, 5.09vw, 20px);
+  border-bottom-left-radius: clamp(17.18px, 5.09vw, 20px);
+  background: #fff;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 4px 14px rgba(120, 80, 140, 0.14);
+}
+
+.baby-card__photo {
+  position: relative;
+  width: 100%;
+  height: clamp(97.85px, 29.01vw, 114px);
+  border-top-left-radius: clamp(25.77px, 7.63vw, 30px);
+  border-top-right-radius: clamp(25.77px, 7.63vw, 30px);
+  border-bottom-right-radius: clamp(25.77px, 7.63vw, 30px);
+  border-bottom-left-radius: clamp(28.35px, 8.4vw, 33px);
+  overflow: hidden;
+  background: #f1e9f3;
+}
+
+.baby-card__img {
+  object-fit: cover;
+}
+
+.baby-card__body {
+  display: flex;
+  flex-direction: row;
+  gap: clamp(5.16px, 1.53vw, 6px);
+  padding: 4cqw 1cqw 1cqw;
+}
+
+/* gol coloured icon (image) */
+.baby-card__icon {
+  position: relative;
+  display: block;
+  width: clamp(32.68px, 9.67vw, 38px);
+height: clamp(32.68px, 9.67vw, 38px);
+}
+
+.baby-card__icon-img {
+  object-fit: contain;
+}
+
+/* title + subtitle ke saath arrow */
+.baby-card__row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2cqw;
+}
+
+.baby-card__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.baby-card__title {
+  margin: 0;
+ color: #10172D;
+font-family: Inter, sans-serif;
+font-weight: 600;
+font-size: clamp(10.32px, 3.05vw, 12px);
+}
+
+.baby-card__subtitle {
+  margin: 1cqw 0 0;
+ color: #636363;
+font-family: Inter, sans-serif;
+font-weight: 400;
+line-height: clamp(11px, 3.26vw, 12.8px);
+font-size: clamp(8.6px, 2.54vw, 10px);
+}
+
+/* gol arrow button */
+.baby-card__arrow {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12cqw;
+  height: 12cqw;
+  padding: 2.5cqw;
+  border-radius: 50%;
+  color: var(--baby-color);
+  background: color-mix(in srgb, var(--baby-color) 16%, white);
+}

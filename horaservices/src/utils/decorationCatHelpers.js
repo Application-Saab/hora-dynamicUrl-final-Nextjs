@@ -52,6 +52,27 @@ export function getSubCategory(catValue) {
   if (catValue === "mandap-decoration") {
     return "MandapDecoration";
   }
+  if (catValue === "wedding-decoration") {
+    return "Wedding";
+  }
+   if (catValue === "wedding-car-decoration") {
+    return "WeddingCarDecoration";
+  }
+    if (catValue === "annaprashan-decoration") {
+    return "AnnaprashanDecoration";
+  }
+    if (catValue === "haldi-decoration") {
+    return "HaldiDecoration ";
+  }
+    if (catValue === "mehendi-decoration") {
+    return "MehendiDecoration";
+  }
+    if (catValue === "baptism-decoration") {
+    return "BaptismDecoration";
+  }
+    if (catValue === "name-reveal-decoration") {
+    return "NameRevealDecoration";
+  }
 
   const parts = catValue.split("-");
   return parts

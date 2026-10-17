@@ -31,6 +31,7 @@ export const GET_DECORATION_CAT_ID = "/api/meals/idByTag?tag=";
 export const GET_DECORATION_CAT_ITEM = "/api/Decoration/searchByTag/";
 export const GET_DECORATION_DETAILS = "/api/order/order_details_decoration";
 export const GET_DECORATION_BY_NAME = "/api/Decoration/searchByName/";
+export const GET_DECORATION_BY_ID = "/api/Decoration/details/";
 export const GET_FOOD_DELIVERY_DETAILS =
   "/api/order/order_details_food_delivery";
 export const GET_PHOTOGRAPHY_BY_TAG = "/api/photography/searchByTag/"
@@ -68,6 +69,7 @@ export const GET_ALL_EVENT_HUB="/api/customer/event/event-invites-and-capsules"
 export const GET_USER_BY_PHONE = "/api/user/user-details-by-phone";
 export const UPDATE_USER_BY_ID = "/api/user/user-details";
 export const UPDATE_USER_AVATAR_BY_ID = "/api/user/user-avatar";
+export const GET_PHOTOGRAPHY_PRODUCT_BY_ID = "/api/photography/details/"
 // Chat Routes
 
 export const GET_CHAT_ROOMS = "/api/customer/event/chat/chatrooms/user";
