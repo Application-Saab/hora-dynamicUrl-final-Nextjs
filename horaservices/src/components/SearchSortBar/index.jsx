@@ -198,9 +198,22 @@ function SearchDropdown({
 
   const matchingCategories = useMemo(() => {
     if (!normalizedQuery) return [];
-    return (searchCategoryList || []).filter((c) =>
+    const matched = (searchCategoryList || []).filter((c) =>
       c.label?.toLowerCase().includes(normalizedQuery),
     );
+    const starts = (c) =>
+      c.label.toLowerCase().startsWith(normalizedQuery) ? 0 : 1;
+    const byStart = (a, b) => starts(a) - starts(b);
+
+    const themes = matched.filter((c) => c.kind === "theme").sort(byStart);
+    const others = matched.filter((c) => c.kind !== "theme").sort(byStart);
+
+    const out = [];
+    while (themes.length || others.length) {
+      if (others.length) out.push(others.shift());
+      if (themes.length) out.push(themes.shift());
+    }
+    return out;
   }, [searchCategoryList, normalizedQuery]);
 
   const matchingProducts = useMemo(() => {
@@ -366,6 +379,8 @@ export default function SearchSortBar({
   initialQuery = "",
   designTypes = [],
   onApplyFilters, // ({ sortOption, designTypes }) => void  (ek saath apply)
+  onQueryChange, // (value) => void  -- har keystroke par (global search ke liye)
+  onSubmitSearch, 
 }) {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [query, setQuery] = useState(initialQuery);
@@ -537,13 +552,16 @@ export default function SearchSortBar({
     const value = e.target.value;
     setQuery(value);
     setIsDropdownOpen(value.trim().length > 0);
+    onQueryChange?.(value); // NEW: parent ko har keystroke par batao
   };
 
   const handleInputKeyDown = (e) => {
     if (e.key === "Enter") {
+      const typed = e.currentTarget.value.trim(); // NEW: blur se pehle value le lo
       commitSearch();
       setIsDropdownOpen(false);
       e.currentTarget.blur();
+      onSubmitSearch?.(typed); // NEW
     }
   };
 
@@ -552,6 +570,7 @@ export default function SearchSortBar({
     setIsDropdownOpen(false);
     setQuery("");
     onSearchChange?.("");
+    onQueryChange?.(""); // NEW: parent ka query bhi clear
 
     // NOTE: Filters yahan reset nahi karte. Category/product ke href mein
     // filters ka query nahi jaata, to naye URL par parent ka URL->state sync
