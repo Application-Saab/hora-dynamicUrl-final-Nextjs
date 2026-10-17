@@ -3,6 +3,11 @@ import {
   normalizeCatValue,
 } from "@/pages/photography/[catValue]/index.jsx";
 import { photographyCategoryPageTopBannerHeading } from "./photoCategories";
+import {
+  getPhotographyLandingSchema,
+  getPhotographyCategoryBreadcrumbSchema,
+  getPhotographyFAQSchema,
+} from "./schema";
 
 const SITE = "https://horaservices.com";
 
@@ -113,6 +118,7 @@ export function SeoMain({ city, locality, scriptTag }) {
       <meta property="og:description" content={ogDescription} />
       <meta property="og:url" content={canonical} />
       <meta property="og:type" content="website" />
+      <meta property="og:locale" content="en_IN" />
       <meta property="og:image" content={ogImage} />
 
       <meta name="twitter:card" content="summary_large_image" />
@@ -129,6 +135,18 @@ export function SeoMain({ city, locality, scriptTag }) {
           }}
         />
       )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(getPhotographyLandingSchema(city)),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(getPhotographyFAQSchema()),
+        }}
+      />
     </Head>
   );
 }
@@ -182,6 +200,7 @@ export function SeoCategory({ city, locality, catValue, seoData, scriptTag }) {
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonical} />
       <meta property="og:type" content="website" />
+      <meta property="og:locale" content="en_IN" />
       {bannerUrl ? <meta property="og:image" content={bannerUrl} /> : null}
 
       <meta name="twitter:card" content="summary_large_image" />
@@ -217,6 +236,20 @@ export function SeoCategory({ city, locality, catValue, seoData, scriptTag }) {
             ...(bannerUrl ? { image: [bannerUrl] } : {}),
             url: canonical,
           }),
+        }}
+      />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(getPhotographyCategoryBreadcrumbSchema(catValue, city || locality)),
+        }}
+      />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(getPhotographyFAQSchema(catValue)),
         }}
       />
 
@@ -297,7 +330,8 @@ export function SeoWork({
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonical} />
-      <meta property="og:type" content="website" />
+      <meta property="og:type" content="product" />
+      <meta property="og:locale" content="en_IN" />
       <meta property="og:image" content={ogImage} />
 
       <meta name="twitter:card" content="summary_large_image" />
@@ -314,6 +348,12 @@ export function SeoWork({
           }}
         />
       )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(getPhotographyFAQSchema(catValue)),
+        }}
+      />
     </Head>
   );
 }
