@@ -41,6 +41,8 @@ import weddingBannerImg from "@/assets/Wedding_banner.webp";
 import PremiumBannerImg from "@/assets/priumum_banner.webp";
 import BirthdayBannerImg from "@/assets/Birthday_magical_banner.webp";
 import Decorationseodata from "@/utils/Decorationseodata.json";
+import DecorationBanner from "@/components/CategoryDecorationBanner";
+import { getBalloonDecorationH1 } from "@/utils/balloonDecorationH1";
 import { getBalloonDecorationSeo } from "@/utils/balloonDecorationSeo";
 import haldiImg from "@/assets/trending-haldi.webp";
 import mehandiImg from "@/assets/trending-mehandi.webp";
@@ -164,6 +166,8 @@ const Decoration = ({ city, locality }) => {
 
   const hasCityPageParam = city ? true : false;
   const pathname = router.asPath;
+  // Page H1 from the SEO sheet (main page + city hubs); null elsewhere.
+  const sheetH1 = getBalloonDecorationH1(pathname);
   const [sortOption, setSortOption] = useState("popularity");
 
   // Dropdown mein category par click ka URL (CategoryGrid jaisa hi)
@@ -395,6 +399,7 @@ const Decoration = ({ city, locality }) => {
           showSort={false}
         />
       </div>
+      {sheetH1 && <DecorationBanner title={sheetH1} />}
       {/* CIRCLE TABS */}
       <div ref={smallCardRef}>
         <SmallCardGrid
