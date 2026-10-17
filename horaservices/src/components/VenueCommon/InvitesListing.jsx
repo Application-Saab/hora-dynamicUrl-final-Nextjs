@@ -10,7 +10,6 @@ import hallIcon from "@/assets/venuelanding/halls.svg";
 import roomIcon from "@/assets/venuelanding/rooms.svg";
 import galleryIcon from "@/assets/venuelanding/galleryicon.svg";
 import Image from "next/image";
-import { useRouter } from "next/router";
 import {
   BASE_URL,
   VENUE_PUBLIC_LISTING,
@@ -20,12 +19,11 @@ import { fetchWithError } from "@/utils/fetchWithError";
 import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
 
 const BATCH_SIZE = 10;
+const WHATSAPP_PHONE = "7338584828";
 
 const getCacheKey = (eventType, venueType, guestCapacity, city) =>
   `venue-list-${JSON.stringify({ eventType, venueType, guestCapacity, city })}`;
 
-// City hai to city-scoped route, nahi to purana default route
-// City hai to city-scoped route, nahi to purana default route
 const getVenueRoute = (city) =>
   city ? `/${city.toLowerCase()}/venue-list/venue` : "/venue-list/venue";
 
@@ -56,6 +54,23 @@ const VenueList = ({
     return `${base}?${params.toString()}`;
   };
 
+  const buildWhatsappLink = (venue) => {
+    const name = venue?.venueName || "this venue";
+    const address =
+      [venue?.locality, venue?.city].filter(Boolean).join(", ") ||
+      venue?.city ||
+      "";
+    const lines = [
+      `Hi, I'm interested in *${name}*.`,
+      address ? `Address: ${address}` : null,
+      "",
+      "Please share more details and availability.",
+    ].filter(Boolean);
+
+    const message = encodeURIComponent(lines.join("\n"));
+    return `https://wa.me/91${WHATSAPP_PHONE}?text=${message}`;
+  };
+
   const [venues, setVenues] = useState(() => {
     if (Array.isArray(initialVenues)) return initialVenues;
     if (cached?.data) return cached.data;
@@ -69,15 +84,12 @@ const VenueList = ({
   });
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
   const [loadingMore, setLoadingMore] = useState(false);
-  const router = useRouter();
   const loadTimerRef = useRef(null);
-  const [imageCounts, setImageCounts] = useState({}); // { [venueId]: count }
+  const [imageCounts, setImageCounts] = useState({});
   const fetchedIdsRef = useRef(new Set());
+
   useEffect(() => {
     const key = getCacheKey(eventType, venueType, guestCapacity, city);
-
-    // 1) SSR data first paint ke liye already state me hai
-    // 2) Cache hit
     const existing = typeof window !== "undefined" ? getPageCache(key) : null;
 
     if (existing && !existing.isStale) {
@@ -87,13 +99,8 @@ const VenueList = ({
       return;
     }
 
-    // 3) Agar initialVenues diya hai aur yeh pehli matching key hai — skip first fetch once
-    // Simple approach: hamesha filters change pe fetch; SSR sirf initial state
-
     if (!existing) {
-      // Don't flash loading if we already have SSR venues in state
       if (!(Array.isArray(initialVenues) && venues.length > 0 && !existing)) {
-        // only show loading when empty
         if (venues.length === 0) setLoading(true);
       }
     }
@@ -125,8 +132,7 @@ const VenueList = ({
       cancelled = true;
     };
   }, [eventType, venueType, guestCapacity, city]);
-  // Client-side search filter — matches venue name, locality, city, or
-  // venue type against whatever the user has typed in the search box.
+
   const filteredVenues = useMemo(() => {
     const q = (search || "").trim().toLowerCase();
     if (!q) return venues;
@@ -146,13 +152,10 @@ const VenueList = ({
     });
   }, [venues, search]);
 
-  // Reset how many cards are visible whenever the search term changes
   useEffect(() => {
     setVisibleCount(BATCH_SIZE);
   }, [search]);
 
-  // Auto-load: every 1 second, load the next batch automatically —
-  // no scroll/sentinel needed.
   useEffect(() => {
     if (loading) return;
     if (visibleCount >= filteredVenues.length) return;
@@ -173,6 +176,7 @@ const VenueList = ({
       }
     };
   }, [loading, visibleCount, filteredVenues.length]);
+
   useEffect(() => {
     const displayed = filteredVenues.slice(0, visibleCount);
     const idsToFetch = displayed
@@ -198,11 +202,10 @@ const VenueList = ({
           setPageCache(cacheKey, count);
           setImageCounts((prev) => ({ ...prev, [id]: count }));
         })
-        .catch(() => {
-          // fail silently, count stays undefined
-        });
+        .catch(() => {});
     });
   }, [filteredVenues, visibleCount]);
+
   if (loading) return null;
 
   if (!venues.length) {
@@ -264,18 +267,32 @@ const VenueList = ({
             [v.locality, v.city].filter(Boolean).join(", ") || v.city || "N/A";
 
           const href = getVenueHref(v, halls);
+          const whatsappUrl = buildWhatsappLink(v);
+
           return (
-            <a
+            <div
               key={v._id}
-              type="button"
-              href={href}
               className="venue-card"
               style={{
+                position: "relative",
                 textDecoration: "none",
                 color: "inherit",
-                cursor: "pointer",
               }}
             >
+              {/* SEO ke liye primary anchor tag jo poore card ko cover karega */}
+              <a
+                href={href}
+                aria-label={v.venueName}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  zIndex: 1,
+                }}
+              />
+
               <div className="venue-card-img-wrap">
                 <img
                   src={v.venueImageUrl || "/placeholder.jpg"}
@@ -291,7 +308,7 @@ const VenueList = ({
                     height={14}
                   />
                   {imageCounts[v._id] != null
-                    ? `See Photos (+${imageCounts[v._id]})`
+                    ? `See Photos (${imageCounts[v._id]}+)`
                     : "See Photos"}
                 </span>
               </div>
@@ -338,7 +355,8 @@ const VenueList = ({
                           width={18}
                           height={18}
                         />
-                        {v.guestCapacity} - Guests
+                        {v.minGuestCapacity && `${v?.minGuestCapacity} -`}{" "}
+                        {v.guestCapacity} Guests
                       </span>,
                     );
                   }
@@ -424,9 +442,30 @@ const VenueList = ({
                   <span>Starting Price</span>
                 </p>
 
-                <span className="venue-menu-btn">View Full Package ➜</span>
+                <div className="venue-card-btn-ctn">
+                  <div>
+                    <span className="venue-menu-btn">View Package ➜</span>
+                  </div>
+                  <div>
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="check-availability-btn-venue"
+                      style={{
+                        position: "relative",
+                        zIndex: 2,
+                        display: "inline-block",
+                        textDecoration: "none",
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      Check Availability
+                    </a>
+                  </div>
+                </div>
               </div>
-            </a>
+            </div>
           );
         })}
       </div>
