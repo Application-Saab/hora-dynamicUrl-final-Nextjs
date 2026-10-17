@@ -41,6 +41,7 @@ import weddingBannerImg from "@/assets/Wedding_banner.webp";
 import PremiumBannerImg from "@/assets/priumum_banner.webp";
 import BirthdayBannerImg from "@/assets/Birthday_magical_banner.webp";
 import Decorationseodata from "@/utils/Decorationseodata.json";
+import { getBalloonDecorationSeo } from "@/utils/balloonDecorationSeo";
 import haldiImg from "@/assets/trending-haldi.webp";
 import mehandiImg from "@/assets/trending-mehandi.webp";
 import mandapImg from "@/assets/trending-mandap.webp";
@@ -295,9 +296,11 @@ const Decoration = ({ city, locality }) => {
    * Title/description har city ke liye custom.
    * ------------------------------------------------------------------ */
 
-  const pageSeo = city
-    ? citySeoData[city.toLowerCase()] || defaultSeo
-    : defaultSeo;
+  // SEO sheet copy (main page + city hubs) takes priority; cities/localities
+  // not in the sheet keep the existing per-city copy.
+  const pageSeo =
+    getBalloonDecorationSeo({ city, locality }) ||
+    (city ? citySeoData[city.toLowerCase()] || defaultSeo : defaultSeo);
   const weddingCollections = [
     { title: "Haldi Decoration", image: haldiImg, catValue: "haldi-decoration" },
     { title: "Mehandi Decoration", image: mehandiImg, catValue: "mehendi-decoration" },

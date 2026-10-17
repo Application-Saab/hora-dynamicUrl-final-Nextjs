@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { getDecorationCatOrganizationSchema } from "@/utils/schema";
 import { getPageTitleCategory, getPageMetaDescriptionCategory } from "@/utils/Decorationcatseo";
+import { getBalloonDecorationSeo } from "@/utils/balloonDecorationSeo";
 
 // ─────────────────────────────────────────────
 // SEO DATA — titles & descriptions per catValue
@@ -295,8 +296,17 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false }) => {
   const schemaOrg = getDecorationCatOrganizationSchema(catValue);
   const scriptTag = JSON.stringify(schemaOrg);
 
-  const title = getPageTitleCategory(catValue, city, locality, theme);
-  const description = getPageMetaDescriptionCategory(catValue, city, locality);
+  // SEO sheet copy (category, kids theme, city × category, city × theme)
+  // takes priority; anything not in the sheet keeps the existing copy.
+  const sheetSeo = isBooster
+    ? null
+    : getBalloonDecorationSeo({ city, locality, catValue, theme });
+
+  const title =
+    sheetSeo?.title || getPageTitleCategory(catValue, city, locality, theme);
+  const description =
+    sheetSeo?.description ||
+    getPageMetaDescriptionCategory(catValue, city, locality);
 
   // one source for canonical + og:url
   const canonicalUrl = buildDecorationCategoryCanonical({
