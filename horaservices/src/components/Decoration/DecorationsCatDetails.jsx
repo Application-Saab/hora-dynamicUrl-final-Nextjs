@@ -98,9 +98,9 @@ function DecorationsCatDetails({
   city = null,
   locality = null,
   initialCategoryDetaiils: ssrCategoryDetails = null,
-  isDirectProductPage = false
+  isDirectProductPage = false,
 }) {
-  const {selectedCitySlug, selectedCityName} = useCity();
+  const { selectedCitySlug, selectedCityName } = useCity();
   const router = useRouter();
   const [product, setProduct] = useState(initialProduct || null);
   const [loading, setLoading] = useState(!initialProduct);
@@ -202,7 +202,6 @@ function DecorationsCatDetails({
     const { catValue: urlCat, subCategory: urlSub, productName } = router.query;
 
     if (urlCat) {
-      // setCatValue(urlCat);
       setSendCategoryId(getMappedCatValue(urlCat));
     }
     if (urlSub) setSubCategory(urlSub);
@@ -244,7 +243,7 @@ function DecorationsCatDetails({
               `${BASE_URL}/api/photography/categoryNameByTagId/${tagId}`,
             );
             setPassCategoryId(categoryResp.data?.data || []);
-            setCatValue(getCategoryNameToSlug(categoryResp?.data?.data?.name))
+            setCatValue(getCategoryNameToSlug(categoryResp?.data?.data?.name));
           } catch (e) {
             console.error("SSR categoryResp:", e.message);
           }
@@ -273,16 +272,11 @@ function DecorationsCatDetails({
   useEffect(() => {
     if (initialAllProducts?.length) return;
     if (product?.categoryId) getCategoryProducts(product.categoryId);
-    // else if (catValue) getSubCatId(catValue);
   }, [product, catValue]);
 
   useEffect(() => {
     if (passCategoryId) getCategoryProducts(passCategoryId?._id);
   }, [passCategoryId]);
-
-  // useEffect(() => {
-  //   if (sendCategoryId) getSubCatId(sendCategoryId);
-  // }, [sendCategoryId]);
 
   const getCategoryProducts = async (categoryId) => {
     try {
@@ -493,24 +487,24 @@ function DecorationsCatDetails({
 
   const handleCheckout = () => {
     const totalPrice = calculateTotalPrice(product?.price);
+
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "book_now_click",
       product_name: product?.name,
     });
 
+    const selectedAddonSort = selectedAddOnProduct?.map((item) => ({
+      id: item?._id,
+      quantity: item?.quantity,
+    }));
+
     router.push({
       pathname: "/checkout",
       query: {
-        from: typeof window !== "undefined" ? window.location.pathname : "",
-        subCategory,
-        product: JSON.stringify(product || {}),
-        orderType: "decoration",
-        catValue,
-        selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
-        itemQuantities: JSON.stringify(itemQuantities),
+        productid: product?._id,
+        selectedaddonids: JSON.stringify(selectedAddonSort),
         totalAmount: totalPrice,
-        slug: product?.slug || generateSlug(product?.name),
       },
     });
   };
@@ -558,9 +552,7 @@ function DecorationsCatDetails({
   const faqScriptTag = JSON.stringify(faqSchema);
 
   if (loading && !product) {
-    return (
-      <ProductPageLoader />
-    );
+    return <ProductPageLoader />;
   }
 
   if (!product) {
@@ -596,7 +588,6 @@ function DecorationsCatDetails({
     if (cityFromUrl) parts.push(slugify(cityFromUrl));
     if (localityFromUrl) parts.push(slugify(localityFromUrl));
     parts.push("balloon-decoration");
-    // if (catValue) parts.push(catValue);
     parts.push("product");
     if (productSlug) parts.push(productSlug);
     return `${SITE}/${parts.filter(Boolean).join("/")}`;
@@ -606,277 +597,278 @@ function DecorationsCatDetails({
 
   return (
     <>
-    <div className="App" style={{ backgroundColor: "white" }}>
-      <Head>
-        <title>{`${product?.name || ""} | ${catValue.replace(/-/g, " ")}`}</title>
-        <meta
-          name="description"
-          content={`${product?.name || "Decoration"} from Hora Services – Beautiful ${catValue.replace(/-/g, " ")} decoration starting at just ₹999. Book for birthdays, anniversaries, weddings & more!`}
-        />
-        <meta
-          name="keywords"
-          content={`${product?.name || ""}, ${catValue.replace(/-/g, " ")}, balloon decoration, ${product?.name || ""} decoration price`}
-        />
-        <link rel="canonical" href={canonicalUrl} />
-        <meta
-          property="og:title"
-          content={`${product?.name || ""} | ${catValue.replace(/-/g, " ")} by Hora Services`}
-        />
-        <meta
-          property="og:description"
-          content={`Book ${product?.name || ""} decoration by Hora Services. Explore ${catValue.replace(/-/g, " ")} designs for birthdays, anniversaries, baby showers & more.`}
-        />
-        <meta
-          property="og:image"
-          content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
-        />
-        <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:type" content="website" />
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Hora Services" />
-        <link
-          rel="icon"
-          href="https://horaservices.com/api/uploads/logo-icon.png"
-          type="image/x-icon"
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: scriptTag }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: faqScriptTag }}
-        />
-      </Head>
+      <div className="App" style={{ backgroundColor: "white" }}>
+        <Head>
+          <title>{`${product?.name || ""} | ${catValue.replace(/-/g, " ")}`}</title>
+          <meta
+            name="description"
+            content={`${product?.name || "Decoration"} from Hora Services – Beautiful ${catValue.replace(/-/g, " ")} decoration starting at just ₹999. Book for birthdays, anniversaries, weddings & more!`}
+          />
+          <meta
+            name="keywords"
+            content={`${product?.name || ""}, ${catValue.replace(/-/g, " ")}, balloon decoration, ${product?.name || ""} decoration price`}
+          />
+          <link rel="canonical" href={canonicalUrl} />
+          <meta
+            property="og:title"
+            content={`${product?.name || ""} | ${catValue.replace(/-/g, " ")} by Hora Services`}
+          />
+          <meta
+            property="og:description"
+            content={`Book ${product?.name || ""} decoration by Hora Services. Explore ${catValue.replace(/-/g, " ")} designs for birthdays, anniversaries, baby showers & more.`}
+          />
+          <meta
+            property="og:image"
+            content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
+          />
+          <meta property="og:url" content={canonicalUrl} />
+          <meta property="og:type" content="website" />
+          <meta name="robots" content="index, follow" />
+          <meta name="author" content="Hora Services" />
+          <link
+            rel="icon"
+            href="https://horaservices.com/api/uploads/logo-icon.png"
+            type="image/x-icon"
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: scriptTag }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: faqScriptTag }}
+          />
+        </Head>
 
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        <div className="decDetails">
-          <div className="decDetailsLeft">
-            <div style={{ position: "relative" }}>
-              <Image
-                src={
-                  product?.featured_images?.[0]?.fileName
-                    ? `${COMPRESSED_WEBP_IMG_URL}${product.featured_images[0].fileName.split(".")[0]}.webp`
-                    : fallbackImg
-                }
-                alt={`balloon decoration ${altTagCatValue} ${product?.name || ""} ${product?.price || ""}`}
-                style={{ width: "100%", height: "auto" }}
-                width={300}
-                height={300}
-                priority
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: 3,
-                  right: 3,
-                  borderRadius: "50%",
-                  padding: 10,
-                }}
-              >
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+          <div className="decDetails">
+            <div className="decDetailsLeft">
+              <div style={{ position: "relative" }}>
                 <Image
-                  src={logo}
-                  alt="Hora Services"
-                  className="hora-watermark-image"
+                  src={
+                    product?.featured_images?.[0]?.fileName
+                      ? `${COMPRESSED_WEBP_IMG_URL}${product.featured_images[0].fileName.split(".")[0]}.webp`
+                      : fallbackImg
+                  }
+                  alt={`balloon decoration ${altTagCatValue} ${product?.name || ""} ${product?.price || ""}`}
+                  style={{ width: "100%", height: "auto" }}
+                  width={300}
+                  height={300}
+                  priority
                 />
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 3,
+                    right: 3,
+                    borderRadius: "50%",
+                    padding: 10,
+                  }}
+                >
+                  <Image
+                    src={logo}
+                    alt="Hora Services"
+                    className="hora-watermark-image"
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="decDetailsRight">
-            <div
-              style={{
-                padding: "clamp(8px, 2.5vw, 10px) clamp(8px, 2.5vw, 10px) 0",
-              }}
-            >
-              <div className="breadcrumb-row">
-                <h2 className="breadcrumb-text">
-                  <a className="breadcrumb-link" href="/">
-                    Home
-                  </a>
-                  {" > "}
-                  <a
-                    className="breadcrumb-link"
-                    href={`/balloon-decoration/${catValue}`}
-                  >
-                    {catValue
-                      .replace(/-/g, " ")
-                      .replace(/\b\w/g, (l) => l.toUpperCase())}
-                  </a>
-                  {" > "}
-                </h2>
-              </div>
+            <div className="decDetailsRight">
+              <div
+                style={{
+                  padding: "clamp(8px, 2.5vw, 10px) clamp(8px, 2.5vw, 10px) 0",
+                }}
+              >
+                <div className="breadcrumb-row">
+                  <h2 className="breadcrumb-text">
+                    <a className="breadcrumb-link" href="/">
+                      Home
+                    </a>
+                    {" > "}
+                    <a
+                      className="breadcrumb-link"
+                      href={`/balloon-decoration/${catValue}`}
+                    >
+                      {catValue
+                        .replace(/-/g, " ")
+                        .replace(/\b\w/g, (l) => l.toUpperCase())}
+                    </a>
+                    {" > "}
+                  </h2>
+                </div>
 
-              <h1 className="product-title">{product?.name}</h1>
+                <h1 className="product-title">{product?.name}</h1>
 
-              <div className="price-share-row">
-                <div className="pro-details-price">
-                  <p className="product-price">₹ {product?.price ?? 0}</p>
-                  <p className="product-old-price">
-                    ₹ {Math.floor(discountInfo?.discountedPrice || 0)}
-                  </p>
-                  <div className="product-discount">
-                    ₹ {Math.floor(discountInfo?.discountDifference || 0)} off
+                <div className="price-share-row">
+                  <div className="pro-details-price">
+                    <p className="product-price">₹ {product?.price ?? 0}</p>
+                    <p className="product-old-price">
+                      ₹ {Math.floor(discountInfo?.discountedPrice || 0)}
+                    </p>
+                    <div className="product-discount">
+                      ₹ {Math.floor(discountInfo?.discountDifference || 0)} off
+                    </div>
+                  </div>
+                  <div className="share-btn" onClick={handleShare}>
+                    <Image
+                      src={ShareIcon}
+                      alt="share"
+                      className="share-icon-img"
+                    />
                   </div>
                 </div>
-                <div className="share-btn" onClick={handleShare}>
-                  <Image
-                    src={ShareIcon}
-                    alt="share"
-                    className="share-icon-img"
+
+                <ActionButtons
+                  product={product}
+                  catValue={catValue}
+                  cityName={selectedCitySlug}
+                  similarRef={similarRef}
+                  handleCustomise={handleCustomise}
+                />
+
+                <div className="addon-container" ref={customizationRef}>
+                  <AddOnsList
+                    selectedAddOnProduct={selectedAddOnProduct}
+                    itemQuantities={itemQuantities}
+                    showAddOnmodal={showAddOnmodal}
+                    pencil={pencil}
                   />
                 </div>
               </div>
 
-              <ActionButtons
-                product={product}
-                catValue={catValue}
-                cityName={selectedCitySlug}
-                similarRef={similarRef}
-                handleCustomise={handleCustomise}
-              />
+              <div
+                style={{
+                  padding:
+                    "clamp(8px, 2.5vw, 10px) clamp(8px, 2.5vw, 10px) 0px",
+                }}
+              >
+                {getItemInclusion(product?.inclusion)}
+              </div>
 
-              <div className="addon-container" ref={customizationRef}>
-                <AddOnsList
-                  selectedAddOnProduct={selectedAddOnProduct}
+              <MakeItYoursBanner />
+
+              <div ref={addonRef}>
+                <AddonModal
+                  isOpen={isModalOpen}
+                  setIsOpen={setIsModalOpen}
+                  addOnProducts={addonData}
                   itemQuantities={itemQuantities}
-                  showAddOnmodal={showAddOnmodal}
-                  pencil={pencil}
+                  onAdd={handleAddToCartAndScrollBack}
+                  onRemove={handleRemoveFromCart}
                 />
               </div>
-            </div>
 
-            <div
-              style={{
-                padding: "clamp(8px, 2.5vw, 10px) clamp(8px, 2.5vw, 10px) 0px",
-              }}
-            >
-              {getItemInclusion(product?.inclusion)}
-            </div>
-
-            <MakeItYoursBanner />
-
-            <div ref={addonRef}>
-              <AddonModal
-                isOpen={isModalOpen}
-                setIsOpen={setIsModalOpen}
-                addOnProducts={addonData}
-                itemQuantities={itemQuantities}
-                onAdd={handleAddToCartAndScrollBack}
-                onRemove={handleRemoveFromCart}
-              />
-            </div>
-
-            <div ref={similarRef}>
-              <SimilarDecorationSlider
-                title="Similar Decorations"
-                data={similarByTheme}
-                showDiscount={true}
-                imageSize={{ width: 120, height: 120 }}
-                city={selectedCitySlug}
-                locality={locality}
-                catValue={catValue}
-                icon={StarIcon}
-                sparkleIcon={SimiliarThemes}
-                isDirectProductPage={isDirectProductPage}
-              />
-            </div>
-
-            {kidsCategories.includes(catValue?.toLowerCase()) && (
-              <div className="category-tabs-outer">
-                <CategoryTabs
-                  data={themeFilters.map((item) => ({
-                    id: item.value,
-                    name: item.label,
-                    image: item.image,
-                    value: item.value,
-                    catValue: "kids-birthday-decoration",
-                  }))}
-                  onSelect={openCatItems}
+              <div ref={similarRef}>
+                <SimilarDecorationSlider
+                  title="Similar Decorations"
+                  data={similarByTheme}
+                  showDiscount={true}
+                  imageSize={{ width: 120, height: 120 }}
                   city={selectedCitySlug}
-                  hasCityPageParam={!!selectedCitySlug}
                   locality={locality}
-                  variant="grid"
-                  catValue="kids-birthday-decoration"
-                  heading="Other Popular Themes"
-                  hasBg={true}
+                  catValue={catValue}
                   icon={StarIcon}
-                  fireIcon={fireIcon}
+                  sparkleIcon={SimiliarThemes}
                   isDirectProductPage={isDirectProductPage}
                 />
               </div>
-            )}
 
-            {levelUp1000.length > 0 && (
-              <SimilarDecorationSlider
-                title="You May Also Like This"
-                data={levelUp1000}
-                showDiscount={true}
-                city={selectedCitySlug}
-                locality={locality}
-                catValue={catValue}
-                icon={StarIcon}
-                sparkleIcon={hearticon}
-                isDirectProductPage={isDirectProductPage}
+              {kidsCategories.includes(catValue?.toLowerCase()) && (
+                <div className="category-tabs-outer">
+                  <CategoryTabs
+                    data={themeFilters.map((item) => ({
+                      id: item.value,
+                      name: item.label,
+                      image: item.image,
+                      value: item.value,
+                      catValue: "kids-birthday-decoration",
+                    }))}
+                    onSelect={openCatItems}
+                    city={selectedCitySlug}
+                    hasCityPageParam={!!selectedCitySlug}
+                    locality={locality}
+                    variant="grid"
+                    catValue="kids-birthday-decoration"
+                    heading="Other Popular Themes"
+                    hasBg={true}
+                    icon={StarIcon}
+                    fireIcon={fireIcon}
+                    isDirectProductPage={isDirectProductPage}
+                  />
+                </div>
+              )}
+
+              {levelUp1000.length > 0 && (
+                <SimilarDecorationSlider
+                  title="You May Also Like This"
+                  data={levelUp1000}
+                  showDiscount={true}
+                  city={selectedCitySlug}
+                  locality={locality}
+                  catValue={catValue}
+                  icon={StarIcon}
+                  sparkleIcon={hearticon}
+                  isDirectProductPage={isDirectProductPage}
+                />
+              )}
+
+              {levelUp2000.length > 0 && (
+                <SimilarDecorationSlider
+                  data={levelUp2000}
+                  showDiscount={true}
+                  city={selectedCitySlug}
+                  locality={locality}
+                  catValue={catValue}
+                  isDirectProductPage={isDirectProductPage}
+                />
+              )}
+
+              <WhyHoraSection />
+
+              <div ref={reviewsRef}>
+                <GoogleReviewsCard reviews={balloonreviewsproduct} />
+              </div>
+
+              <BrandBanner
+                title="Excellence Backed by Happy Customers"
+                items={brandItems}
               />
-            )}
+              <VideoTestimonial videoSrc={VideoClint} />
 
-            {levelUp2000.length > 0 && (
-              <SimilarDecorationSlider
-                data={levelUp2000}
-                showDiscount={true}
-                city={selectedCitySlug}
-                locality={locality}
-                catValue={catValue}
-                isDirectProductPage={isDirectProductPage}
-              />
-            )}
+              <div className="decorke-celebrate-banner">
+                <Image
+                  src={HowitWork}
+                  alt="Customize Your Celebration"
+                  className="decorke-banner-img"
+                />
+              </div>
 
-            <WhyHoraSection />
+              <AdditionalServices />
 
-            <div ref={reviewsRef}>
-              <GoogleReviewsCard reviews={balloonreviewsproduct} />
-            </div>
-
-            <BrandBanner
-              title="Excellence Backed by Happy Customers"
-              items={brandItems}
-            />
-            <VideoTestimonial videoSrc={VideoClint} />
-
-            <div className="decorke-celebrate-banner">
-              <Image
-                src={HowitWork}
-                alt="Customize Your Celebration"
-                className="decorke-banner-img"
-              />
-            </div>
-
-            <AdditionalServices />
-
-            <div className="tab-section-details-productpage">
-              <FAQSection faqData={faqData} />
+              <div className="tab-section-details-productpage">
+                <FAQSection faqData={faqData} />
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="confirm-button-wrapper">
-          <p style={{ fontWeight: "bold", marginBottom: 0, color: "black" }}>
-            Total: ₹ {calculateTotalPrice(Number(product?.price || 0))}
-          </p>
-          <button className="confirm-button" onClick={handleCheckout}>
-            Continue
-          </button>
+          <div className="confirm-button-wrapper">
+            <p style={{ fontWeight: "bold", marginBottom: 0, color: "black" }}>
+              Total: ₹ {calculateTotalPrice(Number(product?.price || 0))}
+            </p>
+            <button className="confirm-button" onClick={handleCheckout}>
+              Continue
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-          <div className="whatsapp-container">
-            <WhatsAppIcon
-              router={router}
-              categorySlug={getCategoryNameToSlug(passCategoryId?.name) || ""}
-              citySlugProduct = {selectedCityName}
-            />
-          </div>
+      <div className="whatsapp-container">
+        <WhatsAppIcon
+          router={router}
+          categorySlug={getCategoryNameToSlug(passCategoryId?.name) || ""}
+          citySlugProduct={selectedCityName}
+        />
+      </div>
     </>
   );
 }

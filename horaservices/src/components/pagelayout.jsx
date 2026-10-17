@@ -11,12 +11,36 @@ import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 import CitySelector from "@/components/Venue/CitySelector";
 import { CityProvider, useCity } from "@/utils/cityContext";
 import DateSelectionBottomSheet from "@/components/DateSelectionBottomSheet";
+import DateNotificationBanner from "@/components/Datenotificationbanner";
 import { BASE_URL } from "@/utils/apiconstants";
 import { DateGateProvider, useDateGate } from "@/utils/dateGateContext";
 import { fetchWithError } from "@/utils/fetchWithError";
 
 const DATE_SHEET_DELAY_MS = 30 * 1000;
+const BANNER_FIRST_DELAY_MS = 30 * 1000; 
+const BANNER_REPEAT_MS = 30 * 1000;
+const BANNER_VISIBLE_MS = 8 * 1000;
+
 const DATE_SHEET_REASK_BUFFER_DAYS = 1;
+const DATE_SHEET_SHOWN_KEY = "DATE_SHEET_SHOWN";
+
+const hasSheetBeenShown = () => {
+  try {
+    return sessionStorage.getItem(DATE_SHEET_SHOWN_KEY) === "1";
+  } catch (e) {
+    return false;
+  }
+};
+const markSheetShown = () => {
+  try {
+    sessionStorage.setItem(DATE_SHEET_SHOWN_KEY, "1");
+  } catch (e) {}
+};
+const resetSheetShown = () => {
+  try {
+    sessionStorage.removeItem(DATE_SHEET_SHOWN_KEY);
+  } catch (e) {}
+};
 
 // Safari-safe UUID generator (crypto.randomUUID needs Safari 15.4+)
 const generateUUID = () => {
@@ -119,13 +143,14 @@ const LayoutInner = ({ children }) => {
   const city = typeof rawCity === "string" ? rawCity : rawCity?.name || "";
 
   const [showDateSheet, setShowDateSheet] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
 
   const checkStarted = useRef(false);
   const dateSheetTimerRef = useRef(null);
   const futureRecheckTimerRef = useRef(null);
+  const dateConfirmedRef = useRef(false);
+  const bannerShownOnceRef = useRef(false);
 
-  // Date-sheet flow city ke wait mein nahi rukta — tracking city-resolve
-  // ab background me chalta hai aur date-sheet flow se independent hai.
   const [cityResolved] = useState(true);
 
   const isDateSheetAllowedPath = /(^|\/)(balloon-decoration|photography)(\/|$)/.test(pathname || "");
@@ -142,13 +167,17 @@ const LayoutInner = ({ children }) => {
     setIdsReady(true);
   }, []);
 
-  // Reminder-popup ab yahan se manage nahi hoti — DateSelectionBottomSheet
-  // apne confirm ke turant baad khud EventReminderPopup dikhata hai. Isse
-  // reminder guaranteed dikhega chahe date-sheet PageLayout se khule ya
-  // kisi bhi doosre entry point (jaise "Change Date" button) se.
-  // Yahan sirf date-sheet ko schedule/resolve karne ka logic bacha hai.
+  const showReminder = useCallback(() => {
+    if (!hasSheetBeenShown()) {
+      markSheetShown();
+      setShowDateSheet(true);
+    } else {
+      bannerShownOnceRef.current = true;
+      setShowBanner(true);
+    }
+  }, []);
   const checkAndSchedule = useCallback(
-    async () => {
+    async (delayMs = DATE_SHEET_DELAY_MS, keepResolved = false) => {
       if (!idsReady) return;
       if (!userId && !visitorId) return;
 
@@ -170,7 +199,7 @@ const LayoutInner = ({ children }) => {
         const eventsWithDays = events
           .map((ev) => ({
             ...ev,
-            daysLeft: daysBetween(ev.date)
+            daysLeft: daysBetween(ev.date),
           }))
           .filter((ev) => !Number.isNaN(ev.daysLeft));
 
@@ -179,13 +208,11 @@ const LayoutInner = ({ children }) => {
           .sort((a, b) => a.daysLeft - b.daysLeft);
 
         if (futureEvents.length > 0) {
+          resetSheetShown();
+          if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
           setDateResolved(true);
           setShowDateSheet(false);
-
-          // FIX 1: future event ke expire hone ka exact time nikaal ke
-          // us waqt dobara checkAndSchedule() khud ko call karega —
-          // taaki expire hote hi popup-logic fir se evaluate ho, page
-          // reload ka wait na karna pade.
+          setShowBanner(false);
           const nearestEvent = futureEvents[0];
           const msUntilExpiry = (nearestEvent.daysLeft + 1) * 24 * 60 * 60 * 1000;
 
@@ -204,34 +231,37 @@ const LayoutInner = ({ children }) => {
         if (pastEvents.length > 0) {
           const daysSinceExpiry = -pastEvents[0].daysLeft;
 
-          // FIX 2: buffer ab sirf "expiry wale din" tak — 3 din nahi
           if (daysSinceExpiry <= DATE_SHEET_REASK_BUFFER_DAYS) {
             if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
             setDateResolved(true);
             return;
           }
+          resetSheetShown();
         }
 
         if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
-        setDateResolved(false);
-        dateSheetTimerRef.current = setTimeout(() => {
-          setShowDateSheet(true);
-        }, DATE_SHEET_DELAY_MS);
+        setDateResolved(keepResolved);
+        dateSheetTimerRef.current = setTimeout(showReminder, delayMs);
       } catch (err) {
         console.error("Failed to check existing event dates:", err);
         if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
-        setDateResolved(false);
-        dateSheetTimerRef.current = setTimeout(() => {
-          setShowDateSheet(true);
-        }, DATE_SHEET_DELAY_MS);
+        setDateResolved(keepResolved);
+        dateSheetTimerRef.current = setTimeout(showReminder, delayMs);
       }
     },
-    [userId, visitorId, idsReady, setDateResolved]
+    [userId, visitorId, idsReady, setDateResolved, showReminder]
   );
 
   useEffect(() => {
     if (!isDateSheetAllowedPath) {
       setDateResolved(true);
+      // Doosre page par jaane par popup/notification/timer band.
+      // Wapas aane par: sheet is session me dikh chuki hai to seedha notification,
+      // warna popup. Tab/website band karke wapas aane par sab reset ho jata hai.
+      setShowDateSheet(false);
+      setShowBanner(false);
+      checkStarted.current = false;
+      if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
       return;
     }
 
@@ -241,13 +271,60 @@ const LayoutInner = ({ children }) => {
     if (checkStarted.current) return;
     checkStarted.current = true;
 
-    checkAndSchedule();
+    checkAndSchedule(
+      hasSheetBeenShown() ? BANNER_FIRST_DELAY_MS : DATE_SHEET_DELAY_MS
+    );
 
     return () => {
       if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
       if (futureRecheckTimerRef.current) clearTimeout(futureRecheckTimerRef.current);
     };
   }, [userId, visitorId, idsReady, checkAndSchedule, isDateSheetAllowedPath, setDateResolved, cityResolved]);
+
+  /* ---------------- Date bottom sheet handlers ---------------- */
+
+  const handleDateSheetClose = () => {
+    setShowDateSheet(false);
+    setDateResolved(true);
+
+    // Date confirm hui thi: onClose bhi chala, par ye dismiss nahi hai.
+    if (dateConfirmedRef.current) {
+      dateConfirmedRef.current = false;
+      return;
+    }
+
+    // Bina date select kiye band kiya -> top notification dikhao.
+    // Popup ke turant baad pehli notification (1 sec), uske baad har 30 sec me.
+    checkAndSchedule(
+      bannerShownOnceRef.current ? BANNER_REPEAT_MS : BANNER_FIRST_DELAY_MS,
+      true
+    );
+  };
+
+  const handleDateSheetConfirm = () => {
+    dateConfirmedRef.current = true;
+    resetSheetShown();
+    if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
+    setShowBanner(false);
+    setDateResolved(true);
+    // Date sheet band hone ke baad DateSelectionBottomSheet khud
+    // city ke hisaab se coupon (Delhi) ya invite (baaki) sheet kholta hai.
+  };
+
+  /* ---------------- Top notification handlers ---------------- */
+
+  // Notification X se band hui ya apne aap hide hui -> 30 sec baad dobara.
+  const handleBannerHide = () => {
+    setShowBanner(false);
+    checkAndSchedule(BANNER_REPEAT_MS, true);
+  };
+
+  // Notification par tap -> date bottom sheet kholo.
+  const handleBannerClick = () => {
+    if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
+    setShowBanner(false);
+    setShowDateSheet(true);
+  };
 
   const showBottomNav =
     pathname === "/wonderland" ||
@@ -272,33 +349,35 @@ const LayoutInner = ({ children }) => {
   return (
     <ConsultationPopupProvider>
       <div className="page-container container-fluid p-0">
-        <Head>
+        {/* <Head>
           <meta name="fast2sms" content="p8oFAZAbcm2E8mwWaW6YA5iS1ZYtRGJe" />
-        </Head>
+        </Head> */}
 
-        {/* City modal ab sirf venue-list route par khulti hai — CityProvider ke
-            andar isPillVisibleRoute check karke showCityModal set hota hai. */}
+        {/* City modal sirf venue-list route par khulti hai */}
         {showCityModal && (
           <CitySelector onSelect={selectCity} onDismiss={dismissCityModal} />
+        )}
+
+        {isDateSheetAllowedPath && showBanner && !showDateSheet && (
+          <DateNotificationBanner
+            durationMs={BANNER_VISIBLE_MS}
+            onClick={handleBannerClick}
+            onClose={handleBannerHide}
+            onTimeout={handleBannerHide}
+            // illustration={calendarIllustration}
+          />
         )}
 
         {isDateSheetAllowedPath && (
           <DateSelectionBottomSheet
             isOpen={showDateSheet}
-            onClose={() => {
-              setShowDateSheet(false);
-              setDateResolved(true);
-            }}
-            onConfirm={(date, apiData) => {
-              setDateResolved(true);
-              // Date sheet band hone ke baad DateSelectionBottomSheet khud
-              // city ke hisaab se coupon (Delhi) ya invite (baaki) sheet kholta hai.
-            }}
+            onClose={handleDateSheetClose}
+            onConfirm={handleDateSheetConfirm}
             userId={userId}
             visitorId={visitorId}
             pincode={pincode}
-            city={city} // 👈 new: Delhi -> ₹150 coupon, baaki -> invite
-            whatsappNumber="917338584828" // 👈 apna number daalo
+            city={city}
+            whatsappNumber="917338584828"
           />
         )}
 

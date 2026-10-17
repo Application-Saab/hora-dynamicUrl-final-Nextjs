@@ -7,6 +7,7 @@ import { fetchWithError } from "./fetchWithError";
 import { safeGetItem, safeSetItem } from "./safeStorage";
 import { slugToCityName } from "./validCities";
 import { CITY_ROUTES } from "./routeConfig";
+import { gtmPush, GTM_EVENTS } from "@/utils/citygtm";
 
 const CityContext = createContext({
   selectedCitySlug: "",
@@ -31,12 +32,10 @@ const NOT_SELECTED = "NOT_SELECTED";
 const CITY_LIST = [...new Set(Object.values(cityNameToSlug))];
 const CITY_PATH_REGEX = new RegExp(`^/(${CITY_LIST.join("|")})(?=/|$)`, "i");
 
-// Flag jo batayega ki user-city (tracking) API call life-time me ek baar ho chuki hai ya nahi.
-// Isse refresh par dubara call nahi hoga. YE PURA FLOW ROUTE-INDEPENDENT HAI — jaisa tha waisa hi.
+// Tracking (user-city) API lifetime me sirf ek baar. Route-independent.
 const CITY_API_DONE_FLAG = "cityApiCallDone";
 
-// City URL/pill/modal logic SIRF venue-list ke liye active hai.
-// Tracking API is se koi lena dena nahi rakhti — wo har page par apna kaam karti hai.
+// City URL/pill/modal logic SIRF venue-list ke liye active.
 const CITY_OPTIONAL_CHILD_ROUTES = [
   "/chef-near-me",
   "/photography/product",
@@ -46,14 +45,10 @@ const CITY_OPTIONAL_CHILD_ROUTES = [
 const isCityOptionalChildRoute = (pathname) => {
   if (!pathname) return false;
 
-  const cleanPath = pathname
-    .split("?")[0]
-    .split("#")[0]
-    .replace(/\/+$/, "");
+  const cleanPath = pathname.split("?")[0].split("#")[0].replace(/\/+$/, "");
 
   return CITY_OPTIONAL_CHILD_ROUTES.some((baseRoute) => {
     const normalizedBaseRoute = baseRoute.replace(/\/+$/, "");
-
     return cleanPath.startsWith(`${normalizedBaseRoute}/`);
   });
 };
@@ -76,7 +71,6 @@ const isRouteCityAllowed = (strippedPath) => {
   const p = strippedPath || "/";
 
   return CITY_ROUTES.some((route) => {
-    // route ke exact match ke alawa, route/xyz jaisे nested paths bhi allow honge
     const prefixRegex = new RegExp(`^${route}(/.*)?$`, "i");
     return prefixRegex.test(p);
   });
@@ -99,14 +93,8 @@ const saveCityToServer = async (cityName) => {
 
     await fetchWithError(`${BASE_URL}/api/event-dates/user-city`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId,
-        visitorId,
-        cityName,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, visitorId, cityName }),
     });
   } catch (err) {
     console.error("Failed to save city to server:", err);
@@ -200,13 +188,6 @@ export const CityProvider = ({ children }) => {
     [router]
   );
 
-  // Lazy-init: agar localStorage mein pehle se city save hai, to usse turant
-  // pick karo — isse refresh par modal ek pal ke liye bhi flash/khulta nahi.
-  // const [selectedCitySlug, setSelectedCitySlug] = useState(() => {
-  //   if (typeof window === "undefined") return "";
-  //   return safeGetItem("selectedCity") || "";
-  // });
-
   const [selectedCitySlug, setSelectedCitySlug] = useState("");
 
   useEffect(() => {
@@ -215,19 +196,12 @@ export const CityProvider = ({ children }) => {
   }, []);
 
   const [showCityModal, setShowCityModal] = useState(false);
-
-  // Batata hai ki tracking flow (background city-resolve) apna kaam kar chuka
-  // hai ya nahi. Isse pehle URL-inject/modal-open decide nahi karenge — warna
-  // refresh par galat waqt par modal flash ho sakta hai.
   const [citySourceReady, setCitySourceReady] = useState(false);
 
   /* ============================================================
-   * TRACKING FLOW — BILKUL WAISA HI, ROUTE-CHECK KE BINA
-   * (isko hath mat lagao, ye jaisa tha waisa hi chal raha hai)
+   * TRACKING FLOW — logic wahi hai, sirf GTM push add hua hai
    * ============================================================ */
   useEffect(() => {
-    // Agar pehle hi (kisi bhi previous load/refresh me) API call ho chuki hai,
-    // to sirf saved slug (agar hai) restore karo aur dubara API mat maaro.
     const alreadyDone = safeGetItem(CITY_API_DONE_FLAG);
     if (alreadyDone) {
       const savedSlug = safeGetItem("selectedCity");
@@ -250,13 +224,11 @@ export const CityProvider = ({ children }) => {
         safeSetItem("selectedCity", slug);
         setSelectedCitySlug(slug);
       } else {
-        // Response NOT_SELECTED bhi ho, tab bhi ek baar POST call karni hai.
         safeSetItem("selectedCity", NOT_SELECTED);
         setSelectedCitySlug(NOT_SELECTED);
         await saveCityToServer(NOT_SELECTED);
       }
 
-      // Ab flag set kar do — isse aage kabhi bhi (refresh pe bhi) dubara call nahi hogi.
       safeSetItem(CITY_API_DONE_FLAG, "true");
 
       if (!cancelled) setCitySourceReady(true);
@@ -311,7 +283,7 @@ export const CityProvider = ({ children }) => {
       return;
     }
 
-    // Case 1: URL already has a city (e.g. /delhi/venue-list) — treat as source of truth.
+    // Case 1: URL me city hai — wahi source of truth.
     if (match && match[1]) {
       const citySlugFromUrl = match[1].toLowerCase();
       setSelectedCitySlug(citySlugFromUrl);
@@ -320,10 +292,10 @@ export const CityProvider = ({ children }) => {
       return;
     }
 
-    // Case 2: no city in URL, tracking flow still resolving — do nothing yet.
+    // Case 2: tracking flow abhi resolve ho raha hai.
     if (!citySourceReady) return;
 
-    // Case 3: City pata hai (localStorage/state se) — URL mein silently inject karo.
+    // Case 3: city pata hai — URL me silently inject.
     if (selectedCitySlug && selectedCitySlug !== NOT_SELECTED) {
       const stripped = stripAllCitySegments(pathname);
       const newPath = `/${selectedCitySlug}${stripped === "/" ? "" : stripped}`;
@@ -335,9 +307,17 @@ export const CityProvider = ({ children }) => {
       return;
     }
 
-    // Case 4: City pata hi nahi hai — user se poochna padega.
+    // Case 4: city pata nahi — modal kholo.
     setShowCityModal(true);
   }, [pathname, isPillVisibleRoute, citySourceReady, selectedCitySlug, setUrlSilently]);
+
+  // GTM: modal sirf tab count ho jab sach me khule (false -> true transition).
+  useEffect(() => {
+    if (!showCityModal) return;
+    gtmPush(GTM_EVENTS.CITY_MODAL_VIEW, {
+      page_path: typeof window !== "undefined" ? window.location.pathname : "",
+    });
+  }, [showCityModal]);
 
   const selectCity = useCallback(
     (cityName) => {
@@ -354,18 +334,24 @@ export const CityProvider = ({ children }) => {
       }
 
       const slug = cityNameToSlug[cityName] || cityName.toLowerCase();
+
+      gtmPush(GTM_EVENTS.CITY_SELECTED, {
+        city_name: cityName,
+        city_slug: slug,
+        source: "modal",
+        page_path: pathname,
+      });
+
       safeSetItem("selectedCity", slug);
       setSelectedCitySlug(slug);
       saveCityToServer(cityName);
 
       const strippedPath = stripAllCitySegments(pathname);
 
-      // GUARD 2: only inject the city if this route is allowed to carry one.
       if (isRouteCityAllowed(strippedPath)) {
         const newPath = `/${slug}${strippedPath === "/" ? "" : strippedPath}`;
         setUrlSilently(newPath);
       }
-      // else: leave the URL exactly as it is — no city added.
     },
     [pathname, setUrlSilently]
   );
@@ -374,19 +360,24 @@ export const CityProvider = ({ children }) => {
     setShowCityModal(false);
   }, []);
 
-  // For places (e.g. Footer city links) that navigate via a plain <Link>
-  // straight to a specific city+page URL. This only keeps the selected-city
-  // state/localStorage/API in sync — it does NOT touch the URL.
+  // Footer city links ke liye: URL ko touch nahi karta, sirf state/storage/API sync.
   const syncSelectedCity = useCallback((cityName) => {
     if (!cityName) return;
 
     const slug = cityNameToSlug[cityName] || cityName.toLowerCase();
+
+    gtmPush(GTM_EVENTS.CITY_SELECTED, {
+      city_name: cityName,
+      city_slug: slug,
+      source: "footer",
+    });
+
     safeSetItem("selectedCity", slug);
     setSelectedCitySlug(slug);
     saveCityToServer(cityName);
   }, []);
 
-  const selectedCityName= slugToCityName[selectedCitySlug] || "";
+  const selectedCityName = slugToCityName[selectedCitySlug] || "";
 
   return (
     <CityContext.Provider

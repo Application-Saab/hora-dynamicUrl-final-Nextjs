@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { Search, SlidersHorizontal, ChevronRight, X } from "lucide-react";
+import { Search, SlidersHorizontal, ChevronRight, X, Check } from "lucide-react";
 import Image from "next/image";
 import "./SearchSortBar.css";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
@@ -11,11 +11,39 @@ import { trackSearch } from "@/utils/track";
 import { useRouter } from "next/router";
 import searchIcon from "@/assets/searchbar.svg";
 import closeIcon from "@/assets/sortbar.svg";
+
 const sortOptions = [
   { id: "popularity", label: "Popularity" },
   { id: "newArrival", label: "New Arrival" },
   { id: "lowToHigh", label: "Price: Low To High" },
   { id: "highToLow", label: "Price: High To Low" },
+];
+const designTypeOptions = [
+  { id: "wall", label: "Wall", apiValue: "Wall" },
+  { id: "ring", label: "Ring", apiValue: "Ring" },
+  { id: "ringFlex", label: "Ring + Flex", apiValue: "Ring + Flex" },
+  { id: "sequined", label: "Sequined", apiValue: "Sequined" },
+  { id: "uShape", label: "UShape", apiValue: "UShape" },
+  { id: "squareStand", label: "Square Stand", apiValue: "Square Stand" },
+  { id: "roomDecor", label: "Room Decor", apiValue: "Room Decor" },
+  { id: "cradle", label: "Cradle", apiValue: "Cradle" },
+  { id: "flex", label: "Flex", apiValue: "Flex" },
+  { id: "artificialFlower", label: "Artificial Flower", apiValue: "Artificial Flower" },
+  { id: "realFlower", label: "Real Flower", apiValue: "Real Flower" },
+  { id: "onWall", label: "On Wall", apiValue: "On Wall" },
+  { id: "personalizedFlexOnWall", label: "Personalized Flex On Wall", apiValue: "Personalized Flex On Wall" },
+  { id: "onRing", label: "On Ring", apiValue: "On Ring" },
+  { id: "ringPersonalizedFlex", label: "Ring + Personalised Flex", apiValue: "Ring + Personalised Flex" },
+  { id: "sequinsDesign", label: "Sequins Design", apiValue: "Sequins Design" },
+  { id: "uShapeStand", label: "U Shape Stand", apiValue: "U Shape Stand" },
+  { id: "uStandPersonalizedFlex", label: "U stand + Personalized flex", apiValue: "U stand + Personalized flex" },
+  { id: "uShapeWoodenStand", label: "U Shape Wooden stand", apiValue: "U Shape Wooden stand" },
+  { id: "canopy", label: "Canopy", apiValue: "Canopy" },
+  { id: "personalizedFlexOnStand", label: "Personalized Flex on Stand", apiValue: "Personalized Flex on Stand" },
+  { id: "multiPanelBackdrop", label: "Multi - Panel Backdrop", apiValue: "Multi - Panel Backdrop" },
+  { id: "onSquareStand", label: "On Square Stand", apiValue: "On Square Stand" },
+  { id: "carDecor", label: "Car Decor", apiValue: "Car Decor" },
+  { id: "entryArch", label: "Entry Arch", apiValue: "Entry Arch" }
 ];
 
 // ---- Typewriter placeholder ke liye tuning values ----
@@ -24,18 +52,49 @@ const DELETE_SPEED = 45; // har character delete hone ki speed (ms)
 const PAUSE_AFTER_TYPE = 1300; // word poora type hone ke baad kitni der ruke (ms)
 const PAUSE_AFTER_DELETE = 300; // word poora delete hone ke baad next word se pehle pause (ms)
 const DEFAULT_PLACEHOLDER = "Search Themes";
+const DEFAULT_SORT = "popularity"; // default sort jispe reset hoga
 
-function SortSheet({ isOpen, onClose, sortOption, onSelect }) {
+function SortSheet({
+  isOpen,
+  onClose,
+  sortOption,
+  designTypes = [],
+  onApply,
+  sortList = sortOptions,
+  designOptions = designTypeOptions,
+}) {
   const [mounted, setMounted] = useState(false);
+  // Draft: user Apply dabane tak changes sirf sheet ke andar rehte hain
+  const [draftSort, setDraftSort] = useState(sortOption);
+  const [draftDesigns, setDraftDesigns] = useState(designTypes);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Sheet khulte hi current applied values se draft reset karo
+  useEffect(() => {
+    if (isOpen) {
+      setDraftSort(sortOption);
+      setDraftDesigns(designTypes);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
   useLockBodyScroll(isOpen && mounted);
 
   // Server + pehla client render dono pe null → hydration match
   if (!mounted) return null;
+
+  const toggleDesign = (id) =>
+    setDraftDesigns((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+
+  const handleClear = () => {
+    setDraftSort(DEFAULT_SORT);
+    setDraftDesigns([]);
+  };
 
   return createPortal(
     <div
@@ -60,26 +119,75 @@ function SortSheet({ isOpen, onClose, sortOption, onSelect }) {
           className={`sort-sheet ${isOpen ? "sort-sheet-open" : ""}`}
           onClick={(e) => e.stopPropagation()}
         >
-          <h3 className="sort-title">Sort</h3>
+          <h3 className="sort-title">Sort &amp; Filter</h3>
           <hr className="sort-divider" />
-          {sortOptions.map((opt) => {
-            const isSelected = sortOption === opt.id;
-            return (
-              <div
-                key={opt.id}
-                className="sort-option-row"
-                onClick={() => onSelect?.(opt.id)}
-                role="radio"
-                aria-checked={isSelected}
-                tabIndex={0}
-              >
-                <span
-                  className={`sort-radio ${isSelected ? "sort-radio-selected" : ""}`}
-                />
-                <span className="sort-option-label">{opt.label}</span>
-              </div>
-            );
-          })}
+
+          {/* Sirf ye hissa scroll hoga; title upar aur buttons neeche fixed */}
+          <div className="sort-options-list">
+            <div className="sort-section-title">Sort By</div>
+            {sortList.map((opt) => {
+              const isSelected = draftSort === opt.id;
+              return (
+                <div
+                  key={opt.id}
+                  className="sort-option-row"
+                  onClick={() => setDraftSort(opt.id)}
+                  role="radio"
+                  aria-checked={isSelected}
+                  tabIndex={0}
+                >
+                  <span
+                    className={`sort-radio ${isSelected ? "sort-radio-selected" : ""}`}
+                  />
+                  <span className="sort-option-label">{opt.label}</span>
+                </div>
+              );
+            })}
+
+            <hr className="sort-divider sort-section-divider" />
+
+            <div className="sort-section-title">Design Type</div>
+            <div className="sort-section-sub">Select one or more designs</div>
+            {designOptions.map((opt) => {
+              const isSelected = draftDesigns.includes(opt.id);
+              return (
+                <div
+                  key={opt.id}
+                  className="sort-option-row"
+                  onClick={() => toggleDesign(opt.id)}
+                  role="checkbox"
+                  aria-checked={isSelected}
+                  tabIndex={0}
+                >
+                  <span
+                    className={`sort-checkbox ${isSelected ? "sort-checkbox-selected" : ""}`}
+                  >
+                    {isSelected && <Check size={13} strokeWidth={3.5} />}
+                  </span>
+                  <span className="sort-option-label">{opt.label}</span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="sort-footer">
+            <button
+              type="button"
+              className="sort-clear-btn"
+              onClick={handleClear}
+            >
+              Clear all
+            </button>
+            <button
+              type="button"
+              className="sort-apply-btn"
+              onClick={() =>
+                onApply?.({ sortOption: draftSort, designTypes: draftDesigns })
+              }
+            >
+              Apply
+            </button>
+          </div>
         </div>
       </div>
     </div>,
@@ -180,8 +288,8 @@ function SearchDropdown({
               type="button"
               href={getCategoryHref?.(cat) || "#"}
               className="search-category-row"
-              onClick={(e) => {
-                // tracking + close dropdown parent handle karega
+              onClick={() => {
+                // tracking + close dropdown + filter reset parent handle karega
                 onSelectCategory?.(cat);
               }}
             >
@@ -257,7 +365,7 @@ function SearchDropdown({
 }
 
 export default function SearchSortBar({
-  sortOption = "popularity",
+  sortOption = DEFAULT_SORT,
   onSortChange,
   searchCategoryList = [],
   products = [],
@@ -268,19 +376,27 @@ export default function SearchSortBar({
   getProductHref,
   getCategoryHref,
   userId = null,
+  showSort = true, // false => "Sort by" button aur Sort sheet dono nahi dikhenge
+  initialQuery = "",
+  designTypes = [],
+  onApplyFilters, // ({ sortOption, designTypes }) => void  (ek saath apply)
 }) {
   const [isSortOpen, setIsSortOpen] = useState(false);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
   const [placeholderText, setPlaceholderText] = useState(DEFAULT_PLACEHOLDER);
-  const [isFocused, setIsFocused] = useState(false); // input focus/blur track karne ke liye
+  const [isFocused, setIsFocused] = useState(false);
   const wrapperRef = useRef(null);
   const topBarRef = useRef(null);
   const placeholderRef = useRef(null);
   const route = useRouter();
 
   const pathname = route.asPath;
+
+  useEffect(() => {
+    setQuery(initialQuery || "");
+  }, [initialQuery]);
 
   const queryRef = useRef(query);
   useEffect(() => {
@@ -337,7 +453,7 @@ export default function SearchSortBar({
     return () => clearTimeout(timeoutId);
   }, [typewriterWords, query, isFocused]);
 
-  // Fixed-on-scroll behavior (unchanged) ...
+  // Fixed-on-scroll behavior
   useEffect(() => {
     const getTriggerOffset = () =>
       placeholderRef.current
@@ -366,7 +482,7 @@ export default function SearchSortBar({
     const trimmed = queryRef.current.trim();
     onSearchChange?.(trimmed);
     trackSearch({ searchTerm: trimmed, userId, pageName: pathname });
-  }, [onSearchChange, userId]);
+  }, [onSearchChange, userId, pathname]);
 
   // Close dropdown on outside click / Escape
   useEffect(() => {
@@ -394,17 +510,40 @@ export default function SearchSortBar({
     };
   }, [commitSearch]);
 
-  const handleSortSelect = (id) => {
-    const selectedOption = sortOptions.find((opt) => opt.id === id);
+  const handleApply = ({ sortOption: nextSort, designTypes: nextDesigns }) => {
+    const sortChanged = nextSort !== sortOption;
+    const designChanged = nextDesigns.join(",") !== designTypes.join(",");
+
     if (typeof window !== "undefined") {
       window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: `sort_by_${id}`,
-        sort_id: id,
-        sort_label: selectedOption?.label || "",
-      });
+
+      if (sortChanged) {
+        const selectedOption = sortOptions.find((opt) => opt.id === nextSort);
+        window.dataLayer.push({
+          event: `sort_by_${nextSort}`,
+          sort_id: nextSort,
+          sort_label: selectedOption?.label || "",
+        });
+      }
+
+      if (designChanged) {
+        window.dataLayer.push({
+          event: "design_type_filter",
+          design_type_ids: nextDesigns.join(","),
+          design_type_labels: nextDesigns
+            .map((id) => designTypeOptions.find((o) => o.id === id)?.label)
+            .filter(Boolean)
+            .join(","),
+        });
+      }
     }
-    onSortChange?.(id);
+
+    if (onApplyFilters) {
+      onApplyFilters({ sortOption: nextSort, designTypes: nextDesigns });
+    } else if (sortChanged) {
+      // purane pages (jahan sirf onSortChange diya hai) ke liye
+      onSortChange?.(nextSort);
+    }
     setIsSortOpen(false);
   };
 
@@ -422,6 +561,20 @@ export default function SearchSortBar({
     }
   };
 
+  // Category ya product select hone ke baad ka common cleanup
+  const closeAndResetAfterSelect = () => {
+    setIsDropdownOpen(false);
+    setQuery("");
+    onSearchChange?.("");
+
+    // NOTE: Filters yahan reset nahi karte. Category/product ke href mein
+    // filters ka query nahi jaata, to naye URL par parent ka URL->state sync
+    // filters ko apne aap default kar deta hai (extra router.replace / race nahi).
+
+    // Sort sheet khuli ho to band
+    setIsSortOpen(false);
+  };
+
   const handleCategoryClick = (cat) => {
     trackSearch({
       searchTerm: query,
@@ -431,9 +584,7 @@ export default function SearchSortBar({
       userId,
       pageName: pathname,
     });
-    setIsDropdownOpen(false);
-    setQuery("");
-    onSearchChange?.("");
+    closeAndResetAfterSelect();
     onCategorySelect?.(cat);
   };
 
@@ -446,9 +597,7 @@ export default function SearchSortBar({
       userId,
       pageName: pathname,
     });
-    setIsDropdownOpen(false);
-    setQuery("");
-    onSearchChange?.("");
+    closeAndResetAfterSelect();
     onProductSelect?.(product);
   };
 
@@ -460,7 +609,9 @@ export default function SearchSortBar({
         style={{ height: isFixed ? topBarRef.current?.offsetHeight || 0 : 0 }}
       />
       <div
-        className={`search-sort-top-bar ${isFixed ? "fixed" : ""}`}
+        className={`search-sort-top-bar ${isFixed ? "fixed" : ""} ${
+          showSort ? "" : "search-sort-top-bar--no-sort"
+        }`}
         ref={topBarRef}
       >
         <div className="search-box">
@@ -494,30 +645,35 @@ export default function SearchSortBar({
           />
         )}
 
-        <button
-          type="button"
-          className="sort-btn"
-          onClick={() => {
-            if (typeof window !== "undefined") {
-              window.dataLayer = window.dataLayer || [];
-              window.dataLayer.push({ event: "sort_sheet_open" });
-            }
-            setIsSortOpen(true);
-          }}
-        >
-          <Image src={closeIcon} alt="Close" className="sort-close-icon" />
-          Sort by
-        </button>
+        {showSort && (
+          <button
+            type="button"
+            className="sort-btn"
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({ event: "sort_sheet_open" });
+              }
+              setIsSortOpen(true);
+            }}
+          >
+            <Image src={closeIcon} alt="Close" className="sort-close-icon" />
+            Sort by
+          </button>
+        )}
       </div>
 
-      <SortSheet
-        isOpen={isSortOpen}
-        onClose={() => setIsSortOpen(false)}
-        sortOption={sortOption}
-        onSelect={handleSortSelect}
-      />
+      {showSort && (
+        <SortSheet
+          isOpen={isSortOpen}
+          onClose={() => setIsSortOpen(false)}
+          sortOption={sortOption}
+          designTypes={designTypes}
+          onApply={handleApply}
+        />
+      )}
     </div>
   );
 }
 
-export { sortOptions };
+export { sortOptions, designTypeOptions };

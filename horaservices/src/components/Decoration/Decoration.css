@@ -1,5 +1,5 @@
 
-@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;600;700&family=Rubik:wght@400;500;600;700&display=swap');
 .dec-landing-page {
     margin-top: 10px;
     max-width:480px;
@@ -274,4 +274,195 @@
   to {
     transform: translateY(0);
   }
+}
+
+/* container: andar ke cqw is section ki width se bante hain */
+.wed-sec {
+  container-type: inline-size;
+  position: relative;
+  max-width: 480px;
+  margin: 10px auto;
+  overflow: hidden;
+  background-color: #fdf8ec; /* image ke neeche ka cream */
+}
+
+.wed-sec__bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.wed-sec__bg-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.wed-sec__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.wed-sec__head {
+  text-align: center;
+ padding: clamp(5px, 1.78vw, 7px) 0px clamp(14px, 5.09vw, 17px);
+}
+
+.wed-sec__eyebrow {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: #D79333;
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: clamp(8.6px, 2.54vw, 10px);
+  line-height: clamp(6.74px, 1.99vw, 7.84px);
+  text-transform: uppercase;
+}
+
+.wed-sec__heart {
+  width: 12px;
+  height: 12px;
+  color: #D79333;   /* fill="currentColor" isi se rang lega */
+}
+.wed-sec__title {
+  margin: 0.4cqw 0 0;
+ color: #5E3369;
+font-family: "Abhaya Libre", serif;
+font-weight: 700;
+font-size: clamp(25.7px, 7.63vw, 30px);
+}
+
+.wed-sec__subtitle {
+  margin: clamp(4.3px, 1.27vw, 5px) 0 0;
+  font-family: Inter, sans-serif;
+font-weight: 400;
+font-size: clamp(9.43px, 2.8vw, 11px);
+color: #8A8785;
+}
+
+/* container: andar ke cqw is section ki width se bante hain */
+.couple-sec {
+  container-type: inline-size;
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+  overflow: hidden;
+  background-color: #fdf8ec; /* image ke neeche ka cream */
+}
+
+.couple-sec__bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.couple-sec__bg-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.couple-sec__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.couple-sec__head {
+  text-align: center;
+ padding: clamp(17px, 5.09vw, 20px) 0 clamp(4px, 1.27vw, 5px);
+}
+.Couple-Celebrations-box{
+margin-bottom: 15px;
+}
+.couple-sec__eyebrow {
+  margin: 0;
+font-family: Inter, sans-serif;
+font-weight: 500;
+font-style: normal;
+font-size: clamp(8.6px, 2.54vw, 10px);
+line-height: 100%;
+letter-spacing: 0%;
+text-align: center;
+  color: #2D2D2F;
+}
+
+.couple-sec__title {
+  margin: clamp(6px, 1.78vw, 7px) 0 0;
+ color: #2A0227;
+font-family: Inter, sans-serif;
+font-weight: 600;
+  text-transform: uppercase;
+font-size: clamp(15.45px, 4.58vw, 18px);
+}
+
+.couple-sec__subtitle {
+  margin: 1.4cqw 0 0;
+ color: #2D2D2F;
+font-family: Inter, sans-serif;
+font-weight: 500;
+font-style: normal;
+font-size: clamp(6.88px, 2.04vw, 8px);
+line-height: 100%;
+letter-spacing: 0%;
+text-align: center;
+}
+
+/* container: andar ke saare cqw is wrapper ki width se bante hain */
+.wa-banner {
+  position: relative;
+  container-type: inline-size;
+  width: 100%;
+  max-width: 480px;          /* apne banner ki max-width ke barabar rakhein */
+}
+
+.wa-banner__btn {
+  position: absolute;
+  left: clamp(11px, 11cqw, 11cqw);
+bottom: clamp(4.6px, 4.6cqw, 4.6cqw);
+  width: clamp(120px, 35.88vw, 155px);
+  height: clamp(23.35px, 6.95vw, 27.48px);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6cqw;
+  background: #1C7E2B;
+  color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 0.8cqw 1.6cqw rgba(58, 130, 16, 0.35);
+
+  font-family: 'Inter', sans-serif;
+font-weight: 700;
+font-style: normal;
+font-size: clamp(7.4px, 2.2vw, 8.69px);
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.wa-banner__btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 1.2cqw 2cqw rgba(58, 130, 16, 0.45);
+}
+
+.wa-banner__btn:focus-visible {
+  outline: 2px solid #599911;
+  outline-offset: 2px;
+}
+
+.wa-banner__icon {
+width: clamp(11.3px, 3.37vw, 13.3px);
+height: clamp(11.36px, 3.39vw, 13.36px);
+  flex-shrink: 0;
 }
