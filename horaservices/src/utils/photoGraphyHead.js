@@ -3,10 +3,6 @@ import {
   normalizeCatValue,
 } from "@/pages/photography/[catValue]/index.jsx";
 import { photographyCategoryPageTopBannerHeading } from "./photoCategories";
-import {
-  getPhotographyProductSchema,
-  getPhotographyBreadcrumbSchema,
-} from "@/utils/schema";
 
 const SITE = "https://horaservices.com";
 
@@ -237,7 +233,6 @@ export function SeoCategory({ city, locality, catValue, seoData, scriptTag }) {
   );
 }
 
-// eslint-disable-next-line no-unused-vars
 export function SeoWork({
   city,
   locality,
@@ -319,18 +314,6 @@ export function SeoWork({
           }}
         />
       )}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(getPhotographyProductSchema(work || {})),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(getPhotographyBreadcrumbSchema(work, catValue, city)),
-        }}
-      />
     </Head>
   );
 }
