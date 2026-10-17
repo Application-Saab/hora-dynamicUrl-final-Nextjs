@@ -262,11 +262,18 @@ const Decoration = ({ city, locality }) => {
 
   const getCategoryHref = (item) => item?.href || "#";
 
-  const getProductHref = (p) => {
-    if (!p?._catValue) return "#";
-    const slug = p.slug || p.product_slug || slugify(p.name);
-    return slug ? `${searchBase}/${p._catValue}/product/${slug}` : "#";
-  };
+ const getProductHref = (p) => {
+  if (!p) return "#";
+
+  const slug =
+    p.slug ||
+    p.product_slug ||
+    (p.name ? slugify(p.name) : "");
+  if (!slug) return "#";
+
+  // Direct product page: /balloon-decoration/product/slug
+  return `/${categorySlug}/product/${slug}`;
+};
 
   const openSearchCategory = (item) => {
     if (item?.href) router.push(item.href);
