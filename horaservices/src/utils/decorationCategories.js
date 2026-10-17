@@ -235,7 +235,7 @@ export const decCat = [
     imgAlt: "mehendi decoration",
   },
     {
-    id: "22",
+    id: "23",
     Image: "",
     name: "Haldi decoration",
     subCategory: "HaldiDecoration",
@@ -243,11 +243,27 @@ export const decCat = [
     imgAlt: "haldi decoration",
   },
     {
-    id: "22",
+    id: "24",
     Image: "",
     name: " Annaprashan decoration",
     subCategory: "AnnaprashanDecoration",
     catValue: "annaprashan-decoration",
     imgAlt: "annaprashan decoration",
+  },
+   {
+    id: "25",
+    Image: "",
+    name: "Name reveal decoration",
+    subCategory: "NameRevealDecoration",
+    catValue: "name-reveal-decoration",
+    imgAlt: "name reveal decoration",
+  },
+    {
+    id: "26",
+    Image: "",
+    name: " Baptism decoration",
+    subCategory: "BaptismDecoration",
+    catValue: "baptism-decoration",
+    imgAlt: "baptism decoration",
   },
 ];

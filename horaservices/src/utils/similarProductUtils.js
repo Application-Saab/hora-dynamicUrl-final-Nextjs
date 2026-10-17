@@ -116,7 +116,8 @@ export const getMappedCatValue = (slug) => {
     "annaprashan-decoration":"AnnaprashanDecoration",
     "haldi-decoration":"HaldiDecoration",
     "mehendi-decoration":"MehendiDecoration",
-
+    "name-reveal-decoration":"NameRevealDecoration",
+    "baptism-decoration":"BaptismDecoration"
   };
 
   return map[slug] || slug;
