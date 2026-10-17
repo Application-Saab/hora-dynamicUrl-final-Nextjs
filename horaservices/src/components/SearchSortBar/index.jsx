@@ -30,6 +30,20 @@ const designTypeOptions = [
   { id: "flex", label: "Flex", apiValue: "Flex" },
   { id: "artificialFlower", label: "Artificial Flower", apiValue: "Artificial Flower" },
   { id: "realFlower", label: "Real Flower", apiValue: "Real Flower" },
+  { id: "onWall", label: "On Wall", apiValue: "On Wall" },
+  { id: "personalizedFlexOnWall", label: "Personalized Flex On Wall", apiValue: "Personalized Flex On Wall" },
+  { id: "onRing", label: "On Ring", apiValue: "On Ring" },
+  { id: "ringPersonalizedFlex", label: "Ring + Personalised Flex", apiValue: "Ring + Personalised Flex" },
+  { id: "sequinsDesign", label: "Sequins Design", apiValue: "Sequins Design" },
+  { id: "uShapeStand", label: "U Shape Stand", apiValue: "U Shape Stand" },
+  { id: "uStandPersonalizedFlex", label: "U stand + Personalized flex", apiValue: "U stand + Personalized flex" },
+  { id: "uShapeWoodenStand", label: "U Shape Wooden stand", apiValue: "U Shape Wooden stand" },
+  { id: "canopy", label: "Canopy", apiValue: "Canopy" },
+  { id: "personalizedFlexOnStand", label: "Personalized Flex on Stand", apiValue: "Personalized Flex on Stand" },
+  { id: "multiPanelBackdrop", label: "Multi - Panel Backdrop", apiValue: "Multi - Panel Backdrop" },
+  { id: "onSquareStand", label: "On Square Stand", apiValue: "On Square Stand" },
+  { id: "carDecor", label: "Car Decor", apiValue: "Car Decor" },
+  { id: "entryArch", label: "Entry Arch", apiValue: "Entry Arch" }
 ];
 
 // ---- Typewriter placeholder ke liye tuning values ----
