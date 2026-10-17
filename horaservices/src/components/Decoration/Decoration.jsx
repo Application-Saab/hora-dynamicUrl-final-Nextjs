@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import Head from "next/head";
 import { getDecorationOrganizationSchema } from "../../utils/schema";
 import dynamic from "next/dynamic";
@@ -10,20 +10,12 @@ import whypeople1 from "../../assets/whypeople1.jpg";
 import whypeople2 from "../../assets/whypeople2.jpg";
 import whypeople3 from "../../assets/whypeople3.jpg";
 import whypeople4 from "../../assets/whypeople4.jpg";
-import Banner1 from "../../assets/decbanner3.webp";
-import Banner2 from "../../assets/decbanner2.webp";
-import Banner3 from "../../assets/decbanner1.webp";
 import Kidsbirthday from "../../assets/kidsBirthdayIMG.webp";
 import BabyWelcome from "../../assets/BabyWelcomeIMG.webp";
 import Anniversary from "../../assets/AnniversaryIMG.webp";
-import arrowIcon from "../../assets/arrow-down.svg";
-import CategoryTabs from "@/components/CategoryTabs";
 import { balloonreviewsproduct } from "@/utils/balloonReviews";
 import SmallCardGrid from "@/components/SmallCardGrid";
 import CategoryGrid from "@/components/CategoryGrid";
-import DecorGrid from "@/components/DecorGrid";
-import WhyHoraIMG from "../../assets/WhyHoraIMG.webp";
-import DecorationBannerIMG from "../../assets/DecorationBannerIMG.webp";
 import decorCollageIMG from "../../assets/decorCollageIMG.webp";
 import BrandBannerIMG from "../../assets/BrandBannerIMG.webp";
 import HappyCustomerIMG from "../../assets/HappyCustomerIMG.jpg";
@@ -31,15 +23,8 @@ import GoogleRatingIMG from "../../assets/GoogleRatingIMG4.png";
 import SocialMediaIMG from "../../assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "../../assets/TpBrandsIMG.png";
 import BrandBanner from "@/components/BrandBanner";
-import decorationWedding from "@/assets/decorationwedding.webp";
-import decorationBridetobe from "@/assets/decorationBride-tobe.webp";
-import decorationhaldi from "@/assets/decorationhaldi-Mhendi.webp";
-import Engagementdecoration from "@/assets/engament.webp";
-import bannerImg from "@/assets/Banner.webp";
 import whatsappbanner from "@/assets/Whatsaap_banner.webp";
 import weddingBannerImg from "@/assets/Wedding_banner.webp";
-import PremiumBannerImg from "@/assets/priumum_banner.webp";
-import BirthdayBannerImg from "@/assets/Birthday_magical_banner.webp";
 import Decorationseodata from "@/utils/Decorationseodata.json";
 import { getBalloonDecorationSeo } from "@/utils/balloonDecorationSeo";
 import haldiImg from "@/assets/trending-haldi.webp";
@@ -51,10 +36,9 @@ import sangeetImg from "@/assets/trending-sangeet.webp";
 import engagementImg from "@/assets/trending-engagement.webp";
 import firstNightImg from "@/assets/trending-first-night.webp";
 import weddingBg from "@/assets/weddingbackground_image.webp";
-import { CalendarHeart, Flower2, Camera, Sparkles, PartyPopper, Star } from "lucide-react";
-import anniversaryBg from "@/assets/Anniversaary.webp";   // pink background
-import firstNightBg from "@/assets/Firts_night.webp";     // purple background
-import anniversaryPhoto from "@/assets/AnniversaaryImage.webp";   // apni photo
+import anniversaryBg from "@/assets/Anniversaary.webp";
+import firstNightBg from "@/assets/Firts_night.webp";
+import anniversaryPhoto from "@/assets/AnniversaaryImage.webp";
 import firstNightPhoto from "@/assets/FirstnightImage.webp";
 import coupleBgBanner from "@/assets/COUPLE_CELEBRATIONS_Bg_banner.webp";
 import whatsappIcon from "@/assets/whatsapp-icon.png";
@@ -66,20 +50,12 @@ import beautifulDecor from "@/assets/beautiful-decor.svg";
 import romanticAmbience from "@/assets/romantic-ambience.svg";
 import memorableMoment from "@/assets/memorable-moment.svg";
 import firstNightDivider from "@/assets/divider-nightheart.svg";
-
-const BannerSlider = dynamic(() => import("@/components/BannerSlider"));
-const DecorSlider = dynamic(() => import("@/components/DecorSlider"));
-const ProductSliderSection = dynamic(
-  () => import("@/components/ProductSliderSection"),
-);
-const ReviewSlider = dynamic(() => import("@/components/ReviewSection"));
 import {
   birthdayData,
   BabyShowerData,
   AnniversaryData,
   PremiumData,
 } from "../../utils/DecorationData.js";
-// import { usePathname } from "next/navigation";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 import GoogleReviewsCard from "@/components/PhotoGalleryPose/GoogleReviewsCard";
@@ -89,8 +65,6 @@ import WeddingBanner from "../WeddingBanner";
 import TrendingSlider from "../TrendingSlider";
 import CelebrationCard from "../CelebrationCard";
 import BabyCelebrationCard from "../BabyCelebrationCard";
-
-
 import babyBgBanner from "@/assets/baby-bg-banner.webp";
 import babyShowerPhoto from "@/assets/baby-shower.webp";
 import babyWelcomePhoto from "@/assets/baby-welcome.webp";
@@ -105,55 +79,91 @@ import BirthdayBanner from "../Birthdaybanner";
 import BirthdayMagicalBanner from "../Birthdaymagicalbanner";
 import { smallCardCategories } from "@/utils/smallCardCategories";
 
+/* ---- GLOBAL SEARCH imports ---- */
+import axiosApi from "@/utils/axiosApi";
+import {
+  BASE_URL,
+  GET_DECORATION_CAT_ID,
+  GET_DECORATION_CAT_ITEM,
+} from "@/utils/apiconstants";
+import { NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
+
+const DecorSlider = dynamic(() => import("@/components/DecorSlider"));
+const ProductSliderSection = dynamic(
+  () => import("@/components/ProductSliderSection"),
+);
+
 const stats = [
-  {
-    icon: whypeople1,
-    number: "20k",
-    label: "Balloon Designs In Stock",
-  },
-  {
-    icon: whypeople2,
-    number: "45+",
-    label: "Decorations Themes",
-  },
-  {
-    icon: whypeople3,
-    number: "15M",
-    label: "Satisfied Customers",
-  },
-  {
-    icon: whypeople4,
-    number: "10k",
-    label: "Completed Decoration",
-  },
+  { icon: whypeople1, number: "20k", label: "Balloon Designs In Stock" },
+  { icon: whypeople2, number: "45+", label: "Decorations Themes" },
+  { icon: whypeople3, number: "15M", label: "Satisfied Customers" },
+  { icon: whypeople4, number: "10k", label: "Completed Decoration" },
 ];
 
 const brandItems = [
-  {
-    img: HappyCustomerIMG,
-    alt: "Happy Customers",
-    bold: "1L+ HAPPY",
-    sub: "CUSTOMERS",
-  },
-  {
-    img: GoogleRatingIMG,
-    alt: "Google Rating",
-    bold: "4.8+ GOOGLE",
-    sub: "RATING",
-  },
-  {
-    img: SocialMediaIMG,
-    alt: "Social Media",
-    bold: "OUR",
-    sub: "SOCIAL MEDIA",
-  },
-  {
-    img: TopBrandIMg,
-    alt: "Top Brands",
-    bold: "TOP BRANDS",
-    sub: "PARTNERED",
-  },
+  { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
+  { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
+  { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
+  { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
 ];
+
+const slugify = (val) =>
+  String(val || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+
+/* ------------------------------------------------------------------ *
+ * GLOBAL SEARCH DATA (module level => sirf ek baar banta hai)
+ * ------------------------------------------------------------------ */
+const toTitle = (s) =>
+  String(s || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/\b\w/g, (m) => m.toUpperCase());
+
+// decCat me duplicate, trailing space, capital `Image` aur uppercase catValue
+// ho sakte hain -- sab yahan saaf ho jaate hain.
+const SEARCH_CATEGORIES = (() => {
+  const seen = new Set();
+  return decCat.reduce((acc, c) => {
+    const catValue = String(c.catValue || "").trim().toLowerCase();
+    if (!catValue || seen.has(catValue)) return acc;
+    seen.add(catValue);
+    acc.push({
+      name: toTitle(c.name),
+      catValue,
+      subCategory: String(c.subCategory || "").trim(),
+      image: String(c.image || c.Image || "").trim(),
+    });
+    return acc;
+  }, []);
+})();
+
+const SEARCH_THEMES = [
+  ...themeFilters.map((t) => ({ ...t, cat: "kids-birthday-decoration" })),
+  ...NamingCeremonyThemes.map((t) => ({
+    ...t,
+    cat: "naming-ceremony-decoration",
+  })),
+];
+
+// category ki id ek baar fetch hoti hai, phir cache
+const catIdCache = {};
+const getCatId = async (c) => {
+  if (catIdCache[c.catValue]) return catIdCache[c.catValue];
+  if (!c.subCategory) return null;
+  try {
+    const res = await axiosApi.get(
+      BASE_URL + GET_DECORATION_CAT_ID + c.subCategory,
+    );
+    const id = res.data?.data?._id || null;
+    if (id) catIdCache[c.catValue] = id;
+    return id;
+  } catch {
+    return null;
+  }
+};
 
 const Decoration = ({ city, locality }) => {
   const smallCardRef = useRef(null);
@@ -164,27 +174,128 @@ const Decoration = ({ city, locality }) => {
 
   const hasCityPageParam = city ? true : false;
   const pathname = router.asPath;
-  const [sortOption, setSortOption] = useState("popularity");
 
-  // Dropdown mein category par click ka URL (CategoryGrid jaisa hi)
-  const getCategoryHref = (cat) => {
-    let path = "";
-    if (city) path += `/${city.toLowerCase()}`;
-    if (locality) path += `/${locality.toLowerCase()}`;
-    return `${path}/${categorySlug}/${cat.catValue}`;
-  };
-  // Search dropdown aur typewriter placeholder isi list se chalte hain
-  const searchCategoryList = smallCardCategories.map((c) => ({
-    id: c.catValue,
-    label: c.name,
-    image: c.image,
-    catValue: c.catValue,
-  }));
   const categorySlug = useMemo(
     () => getCategorySlugFromPath(pathname, city, locality),
     [pathname, city, locality],
   );
+
+  /* ---------------- GLOBAL SEARCH ---------------- */
+  const searchBase = `${city ? "/" + String(city).toLowerCase() : ""}${
+    locality ? "/" + String(locality).toLowerCase() : ""
+  }/${categorySlug}`;
+
+  // Category + Theme list (local data, turant match hoti hai)
+  const searchCategoryList = useMemo(() => {
+    const localImages = smallCardCategories.reduce((m, c) => {
+      m[c.catValue] = c.image;
+      return m;
+    }, {});
+
+    const cats = SEARCH_CATEGORIES.map((c) => ({
+      id: `cat-${c.catValue}`,
+      kind: "category",
+      label: c.name,
+      image: c.image || localImages[c.catValue] || undefined,
+      href: `${searchBase}/${c.catValue}`,
+    }));
+
+    const themes = SEARCH_THEMES.map((t) => {
+      const value = String(t.value).trim();
+      return {
+        id: `theme-${t.cat}-${value}`,
+        kind: "theme",
+        label: `${String(t.label).trim()} Theme`,
+        image: t.image,
+        href: `${searchBase}/${t.cat}/${value}`,
+      };
+    });
+
+    return [...cats, ...themes];
+  }, [searchBase]);
+
+  // Products: backend se live (debounced)
+  const [searchProducts, setSearchProducts] = useState([]);
+  const searchReq = useRef(0);
+  const searchTimer = useRef(null);
+  useEffect(() => () => clearTimeout(searchTimer.current), []);
+
+  const handleQueryChange = (value) => {
+    const term = String(value || "").trim();
+    clearTimeout(searchTimer.current);
+    const id = ++searchReq.current;
+
+    if (term.length < 2) {
+      setSearchProducts([]);
+      return;
+    }
+
+    searchTimer.current = setTimeout(async () => {
+      const t = term.toLowerCase();
+      // jo categories typed word se match karti hain wo pehle, max 8
+      const cats = [...SEARCH_CATEGORIES]
+        .sort((a, b) => {
+          const sa = `${a.name} ${a.catValue}`.toLowerCase().includes(t) ? 0 : 1;
+          const sb = `${b.name} ${b.catValue}`.toLowerCase().includes(t) ? 0 : 1;
+          return sa - sb;
+        })
+        .slice(0, 8);
+
+      const results = await Promise.allSettled(
+        cats.map(async (c) => {
+          const catId = await getCatId(c);
+          if (!catId) return [];
+          const url = `${BASE_URL + GET_DECORATION_CAT_ITEM}v3/${catId}?limit=6&page=1&search=${encodeURIComponent(term)}`;
+          const res = await axiosApi.get(url);
+          return (res.data?.data || []).map((p) => ({
+            ...p,
+            _catValue: c.catValue,
+          }));
+        }),
+      );
+
+      if (id !== searchReq.current) return; // purani request ignore
+      setSearchProducts(
+        results.flatMap((r) => (r.status === "fulfilled" ? r.value : [])),
+      );
+    }, 300);
+  };
+
+  const getCategoryHref = (item) => item?.href || "#";
+
+ const getProductHref = (p) => {
+  if (!p) return "#";
+
+  const slug =
+    p.slug ||
+    p.product_slug ||
+    (p.name ? slugify(p.name) : "");
+  if (!slug) return "#";
+
+  // Direct product page: /balloon-decoration/product/slug
+  return `/${categorySlug}/product/${slug}`;
+};
+
+  const openSearchCategory = (item) => {
+    if (item?.href) router.push(item.href);
+  };
+
+  // Enter dabane par: sabse relevant category ke search page par
+  const handleSearchSubmit = (q) => {
+    const text = String(q || "").trim();
+    if (!text) return;
+    const lower = text.toLowerCase();
+    const catValue =
+      searchProducts[0]?._catValue ||
+      SEARCH_CATEGORIES.find((c) =>
+        `${c.name} ${c.catValue}`.toLowerCase().includes(lower),
+      )?.catValue ||
+      "birthday-decoration";
+    router.push(`${searchBase}/${catValue}?search=${encodeURIComponent(text)}`);
+  };
+
   const { citySeoData, defaultSeo } = Decorationseodata;
+
   const cardsData = [
     {
       image: Kidsbirthday,
@@ -210,77 +321,9 @@ const Decoration = ({ city, locality }) => {
     },
   ];
 
-  const smallCards = [
-    {
-      image: decorationhaldi,
-      title: "Haldi-Mehandi",
-      link: `/${categorySlug}/haldi-mehendi-decoration`,
-      categoryName: "Haldi Mhendi",
-      subCategory: "Haldi-Mehandi",
-      catValue: "haldi-mehendi-decoration",
-      imgAlt: "Haldi Mehendi Decoration",
-    },
-    {
-      image: decorationBridetobe,
-      title: "Bride To-be",
-      link: `/${categorySlug}/bachelorette-decoration`,
-      categoryName: "bachelorette",
-      subCategory: "bachelorette",
-      catValue: "bachelorette-decoration",
-      imgAlt: "Bride to be Decoration",
-    },
-    {
-      image: Engagementdecoration,
-      title: "Engagement",
-      link: `/${categorySlug}/engagement-decoration`,
-      categoryName: "engagement",
-      subCategory: "engagement",
-      catValue: "engagement-decoration",
-      imgAlt: "Engagement Decoration",
-    },
-  ];
-
-  const largeCard = {
-    image: decorationWedding,
-    title: "Wedding",
-    description: "DECORATIONS",
-    link: `/${categorySlug}/wedding-decoration`,
-    catValue: "wedding-decoration",
-  };
-
-  const handleWhatsApp = () => {
-    trackWAClicks();
-    const phoneNumber = "7338584828";
-    const message = encodeURIComponent("I want to customize a decoration");
-    if (typeof window !== "undefined") {
-      window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
-    }
-  };
-  const handleSeeMoreClick = () => {
-    setTimeout(() => {
-      smallCardRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100); // small delay ensures it's rendered first
-  };
   const reviewsRef = useRef(null);
-  const openCatItems = (item) => {
-    if (!item?.catValue) return;
 
-    const path = hasCityPageParam
-      ? `/${city.toLowerCase()}/${categorySlug}/${item.catValue}`
-      : `/${categorySlug}/${item.catValue}`;
-
-    router.push(path);
-  };
-
-  const bannerImages = [Banner1, Banner2, Banner3];
-
-  const SITE = "https://horaservices.com";
-  const slugify = (val) =>
-    String(val || "")
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, "-");
-
+   const SITE = "https://horaservices.com";
   const citySlug = city ? slugify(city) : "";
   const localitySlug = locality ? slugify(locality) : "";
 
@@ -291,16 +334,12 @@ const Decoration = ({ city, locality }) => {
         ? `${SITE}/${citySlug}/balloon-decoration`
         : `${SITE}/balloon-decoration`;
 
-  /* ------------------------------------------------------------------
-   * PER-CITY SEO COPY (from SEO-WORK-DECORATION-LANDING)
-   * Title/description har city ke liye custom.
-   * ------------------------------------------------------------------ */
-
   // SEO sheet copy (main page + city hubs) takes priority; cities/localities
   // not in the sheet keep the existing per-city copy.
   const pageSeo =
     getBalloonDecorationSeo({ city, locality }) ||
     (city ? citySeoData[city.toLowerCase()] || defaultSeo : defaultSeo);
+
   const weddingCollections = [
     { title: "Haldi Decoration", image: haldiImg, catValue: "haldi-decoration" },
     { title: "Mehandi Decoration", image: mehandiImg, catValue: "mehendi-decoration" },
@@ -322,6 +361,7 @@ const Decoration = ({ city, locality }) => {
     : "Hi, how can we help in your balloon decor services";
 
   const waLink = `https://wa.me/917338584828?text=${encodeURIComponent(waMessage)}`;
+
   return (
     <div className="dec-landing-page">
       <Head>
@@ -340,7 +380,6 @@ const Decoration = ({ city, locality }) => {
           }
         />
 
-        {/* ✅ CANONICAL — city+locality aware */}
         <link rel="canonical" href={canonicalUrl} />
 
         <meta name="robots" content="index, follow" />
@@ -368,7 +407,6 @@ const Decoration = ({ city, locality }) => {
           content="balloon decoration, birthday decoration, wedding decoration, baby shower decoration"
         />
 
-        {/* ✅ og:url = same as canonical */}
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
 
@@ -376,25 +414,24 @@ const Decoration = ({ city, locality }) => {
       </Head>
 
       <div className="top-slider">
-        {/* <Banner
-  image={bannerImg}
-  alt="Your Celebrations, Our Commitment"
-  border="1px solid #97538C"   // yahan se border bheja
-/> */}
         <div className="page-width">
           <HoraBanner />
         </div>
+
+        {/* GLOBAL SEARCH: category + theme + product */}
         <SearchSortBar
-          sortOption={sortOption}
-          onSortChange={setSortOption}
           searchCategoryList={searchCategoryList}
-          products={[]}
+          products={searchProducts}
           categoryType="decoration"
+          onCategorySelect={openSearchCategory}
+          onQueryChange={handleQueryChange}
+          onSubmitSearch={handleSearchSubmit}
           getCategoryHref={getCategoryHref}
-          getProductHref={() => "#"}
+          getProductHref={getProductHref}
           showSort={false}
         />
       </div>
+
       {/* CIRCLE TABS */}
       <div ref={smallCardRef}>
         <SmallCardGrid
@@ -409,8 +446,8 @@ const Decoration = ({ city, locality }) => {
       <div className="CategoryGrid-outer">
         <CategoryGrid cardsData={cardsData} city={city} locality={locality} />
       </div>
+
       <section className="wed-sec">
-        {/* background image */}
         <div className="wed-sec__bg" aria-hidden="true">
           <Image
             src={weddingBg}
@@ -421,7 +458,6 @@ const Decoration = ({ city, locality }) => {
         </div>
 
         <div className="wed-sec__inner">
-          {/* heading */}
           <div className="wed-sec__head">
             <p className="wed-sec__eyebrow">
               <svg
@@ -440,7 +476,6 @@ const Decoration = ({ city, locality }) => {
             </p>
           </div>
 
-          {/* ye dono background ke upar aayenge */}
           <WeddingBanner
             image={weddingBannerImg}
             href={`/${categorySlug}/wedding-decoration`}
@@ -481,14 +516,6 @@ const Decoration = ({ city, locality }) => {
           <span>Chat Now on WhatsApp</span>
         </a>
       </div>
-      {/* <DecorGrid
-        largeCard={largeCard}
-        smallCards={smallCards}
-        city={city}
-        hasCityPageParam={hasCityPageParam}
-        decCat={decCat}
-        locality={locality}
-      /> */}
 
       <section className="why-people-love-us">
         <div className="page-width">
@@ -501,8 +528,7 @@ const Decoration = ({ city, locality }) => {
                   alt={item.label}
                   width={70}
                   height={50}
-                />{" "}
-                {/* IMAGE */}
+                />
                 <h3>{item.number}</h3>
                 <p>{item.label}</p>
               </div>
@@ -510,9 +536,11 @@ const Decoration = ({ city, locality }) => {
           </div>
         </div>
       </section>
+
       <div className="page-width">
         <BirthdayBanner href={`/${categorySlug}/birthday-decoration`} />
       </div>
+
       <DecorSlider
         title="Premium Birthday Decorations"
         catValue="premium-decoration"
@@ -525,9 +553,11 @@ const Decoration = ({ city, locality }) => {
         decCat={decCat}
         locality={locality}
       />
+
       <div className="page-width">
         <BirthdayMagicalBanner href={`/${categorySlug}/birthday-decoration`} />
       </div>
+
       <ProductSliderSection
         title="Birthday Decoration"
         data={birthdayData}
@@ -554,8 +584,8 @@ const Decoration = ({ city, locality }) => {
           </section>
         </div>
       </div>
+
       <section className="couple-sec">
-        {/* background image */}
         <div className="couple-sec__bg" aria-hidden="true">
           <Image
             src={coupleBgBanner}
@@ -566,7 +596,6 @@ const Decoration = ({ city, locality }) => {
         </div>
 
         <div className="couple-sec__inner">
-          {/* heading */}
           <div className="couple-sec__head">
             <p className="couple-sec__eyebrow">Made for beautiful Moments</p>
             <h2 className="couple-sec__title">Couple Celebrations</h2>
@@ -577,14 +606,14 @@ const Decoration = ({ city, locality }) => {
 
           <div className="Couple-Celebrations-box">
             <CelebrationCard
-              href={`/${categorySlug}/anniversary-decoration`}          // TODO: sahi link
+              href={`/${categorySlug}/anniversary-decoration`}
               bg={anniversaryBg}
               photo={anniversaryPhoto}
               photoAlt="Anniversary decoration"
               imageSide="left"
               title="Anniversary"
-              subtitle="Celebrate your love with a beautiful setup."   // TODO: design wala text
-              accent="#c4405f"                          // TODO: design ka rang
+              subtitle="Celebrate your love with a beautiful setup."
+              accent="#c4405f"
               titleColor="#c4405f"
               divider={anniversaryDivider}
               features={[
@@ -594,16 +623,15 @@ const Decoration = ({ city, locality }) => {
               ]}
             />
 
-            {/* ===== First Night ===== */}
             <CelebrationCard
-              href={`/${categorySlug}/first-night-decoration`}           // TODO: sahi link
+              href={`/${categorySlug}/first-night-decoration`}
               bg={firstNightBg}
               photo={firstNightPhoto}
               photoAlt="First night decoration"
               imageSide="right"
               title="First Night"
-              subtitle="Make your first night truly special."          // TODO: design wala text
-              accent="#764C9E"                          // TODO: design ka rang
+              subtitle="Make your first night truly special."
+              accent="#764C9E"
               titleColor="#764C9E"
               divider={firstNightDivider}
               features={[
@@ -615,6 +643,7 @@ const Decoration = ({ city, locality }) => {
           </div>
         </div>
       </section>
+
       <DecorSlider
         title="Anniversary Decoration"
         catValue="anniversary-decoration"
@@ -703,11 +732,13 @@ const Decoration = ({ city, locality }) => {
           className="decorationBanner-image"
         />
       </section>
+
       <BrandBanner
         title="Excellence Backed by Happy Customers"
         items={brandItems}
       />
-      <div ref={reviewsRef} style={{ margin: " 10px 0px" }}>
+
+      <div ref={reviewsRef} style={{ margin: "10px 0px" }}>
         <GoogleReviewsCard reviews={balloonreviewsproduct} />
       </div>
     </div>
