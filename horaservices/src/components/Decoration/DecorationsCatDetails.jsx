@@ -164,7 +164,7 @@ function DecorationsCatDetails({
   const similarRef = useRef(null);
   const addonRef = useRef(null);
   const reviewsRef = useRef(null);
-
+  const shareFileRef = useRef(null);
   const altTagCatValue = (catValue || "").replace(/-/g, " ");
   const kidsCategories = ["kids-birthday-decoration", "kidsbirthday"];
 
@@ -319,7 +319,7 @@ function DecorationsCatDetails({
         setSelectedAddOnProduct(parsed.selectedAddOnProduct || []);
         setItemQuantities(parsed.itemQuantities || {});
       }
-    } catch (e) {}
+    } catch (e) { }
   }, [product?._id]);
 
   useEffect(() => {
@@ -329,7 +329,7 @@ function DecorationsCatDetails({
         `addons_${product._id}`,
         JSON.stringify({ selectedAddOnProduct, itemQuantities }),
       );
-    } catch (e) {}
+    } catch (e) { }
   }, [selectedAddOnProduct, itemQuantities, product?._id]);
 
   // Fetch addon details — SSR data ho to skip
@@ -450,7 +450,36 @@ function DecorationsCatDetails({
       [item.title]: (itemQuantities[item.title] || 0) + 1,
     });
   };
+  useEffect(() => {
+    const fileName = product?.featured_images?.[0]?.fileName;
+    if (!fileName) {
+      shareFileRef.current = null;
+      return;
+    }
+    const imageUrl = `${COMPRESSED_WEBP_IMG_URL}${fileName.split(".")[0]}.webp`;
+    let cancelled = false;
 
+    (async () => {
+      try {
+        const res = await fetch(imageUrl);
+        if (!res.ok) return;
+        const blob = await res.blob();
+        if (cancelled) return;
+        const ext = blob.type.split("/")[1] || "webp";
+        shareFileRef.current = new File(
+          [blob],
+          `${generateSlug(product.name) || "product"}.${ext}`,
+          { type: blob.type },
+        );
+      } catch (e) {
+        shareFileRef.current = null; // CORS fail -> link-only share
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [product?._id]);
   const handleRemoveFromCart = (item) => {
     const updated = [...selectedAddOnProduct];
     const idx = updated.findIndex((a) => a.title === item.title);
@@ -509,16 +538,33 @@ function DecorationsCatDetails({
     });
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const cleanUrl = window.location.origin + window.location.pathname;
-    if (navigator.share) {
-      navigator.share({
-        title: product?.name || "Hora Services",
-        url: cleanUrl,
-      });
-    } else {
-      navigator.clipboard.writeText(cleanUrl);
-      alert("Link copied!");
+    const title = product?.name || "Hora Services";
+    const file = shareFileRef.current;
+
+    try {
+      if (navigator.share) {
+        if (file && navigator.canShare?.({ files: [file] })) {
+          try {
+            await navigator.share({
+              title,
+              text: `${title}\n${cleanUrl}`,
+              files: [file],
+            });
+            return;
+          } catch (e) {
+            if (e?.name === "AbortError") return; // user ne cancel kiya
+            console.error("Image share failed, falling back:", e);
+          }
+        }
+        await navigator.share({ title, text: title, url: cleanUrl });
+      } else {
+        await navigator.clipboard.writeText(cleanUrl);
+        alert("Link copied!");
+      }
+    } catch (e) {
+      if (e?.name !== "AbortError") console.error(e);
     }
   };
 
@@ -594,12 +640,18 @@ function DecorationsCatDetails({
   };
 
   const canonicalUrl = buildProductCanonical();
-
+  const productImageUrl = (() => {
+    const fileName = product?.featured_images?.[0]?.fileName;
+    if (!fileName) return "https://horaservices.com/api/uploads/attachment-1706520980436.png"; // fallback
+    const url = `${COMPRESSED_WEBP_IMG_URL}${fileName.split(".")[0]}.webp`;
+    return url.startsWith("http") ? url : `${SITE}${url.startsWith("/") ? "" : "/"}${url}`;
+  })();
   return (
     <>
       <div className="App" style={{ backgroundColor: "white" }}>
         <Head>
           <title>{`${product?.name || ""} | ${catValue.replace(/-/g, " ")}`}</title>
+
           <meta
             name="description"
             content={`${product?.name || "Decoration"} from Hora Services – Beautiful ${catValue.replace(/-/g, " ")} decoration starting at just ₹999. Book for birthdays, anniversaries, weddings & more!`}
@@ -608,28 +660,52 @@ function DecorationsCatDetails({
             name="keywords"
             content={`${product?.name || ""}, ${catValue.replace(/-/g, " ")}, balloon decoration, ${product?.name || ""} decoration price`}
           />
+          <meta name="robots" content="index, follow" />
+          <meta name="author" content="Hora Services" />
           <link rel="canonical" href={canonicalUrl} />
+
+          {/* Open Graph */}
           <meta
+            key="og:title"
             property="og:title"
             content={`${product?.name || ""} | ${catValue.replace(/-/g, " ")} by Hora Services`}
           />
           <meta
+            key="og:description"
             property="og:description"
             content={`Book ${product?.name || ""} decoration by Hora Services. Explore ${catValue.replace(/-/g, " ")} designs for birthdays, anniversaries, baby showers & more.`}
           />
+          <meta key="og:image" property="og:image" content={productImageUrl} />
           <meta
-            property="og:image"
-            content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
+            key="og:image:secure_url"
+            property="og:image:secure_url"
+            content={productImageUrl}
           />
-          <meta property="og:url" content={canonicalUrl} />
-          <meta property="og:type" content="website" />
-          <meta name="robots" content="index, follow" />
-          <meta name="author" content="Hora Services" />
+          <meta
+            key="og:image:alt"
+            property="og:image:alt"
+            content={product?.name || "Hora Services"}
+          />
+          <meta key="og:url" property="og:url" content={canonicalUrl} />
+          <meta key="og:type" property="og:type" content="website" />
+          <meta key="og:site_name" property="og:site_name" content="Hora Services" />
+
+          {/* Twitter */}
+          <meta key="twitter:card" name="twitter:card" content="summary_large_image" />
+          <meta
+            key="twitter:title"
+            name="twitter:title"
+            content={`${product?.name || ""} | ${catValue.replace(/-/g, " ")} by Hora Services`}
+          />
+          <meta key="twitter:image" name="twitter:image" content={productImageUrl} />
+
           <link
             rel="icon"
             href="https://horaservices.com/api/uploads/logo-icon.png"
             type="image/x-icon"
           />
+
+          {/* Structured data */}
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: scriptTag }}
