@@ -65,7 +65,7 @@ const CategoryGrid = ({ cardsData = [], city = "", locality = "" }) => {
                       src={card.image}
                       alt={card.title}
                       fill
-                      sizes="(max-width: 768px) 60vw, 400px"
+                      sizes="(max-width: 768px) 60vw, 300px"
                       style={{ objectFit: "cover" }}
                     />
                   </div>
@@ -98,9 +98,16 @@ const CategoryGrid = ({ cardsData = [], city = "", locality = "" }) => {
                     {card.subtitle && <p>{card.subtitle}</p>}
 
                     {card.catValue && (
-                       <span className="category-grid__button">
-                            View more <Image src={arrowIcon} alt="" className="category-grid__arrow" />
-                       </span>
+                      <span className="category-grid__button">
+                        View more
+                        <Image
+                          src={arrowIcon}
+                          alt=""
+                          aria-hidden="true"
+                          unoptimized
+                          className="category-grid__arrow"
+                        />
+                      </span>
                     )}
                   </div>
                 </a>

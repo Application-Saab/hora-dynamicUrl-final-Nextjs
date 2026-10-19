@@ -3,7 +3,8 @@
 /* Container: andar ke saare cqw isi ki width se bante hain */
 .category-grid-wrap {
   container-type: inline-size;
-  max-width: 600px;
+  width: 100%;
+  max-width: 480px;
   margin: 10px auto 0;
 }
 
@@ -76,36 +77,39 @@
   z-index: 1;
 }
 
-/* ---------- Text ---------- */
+/* ---------- Text (ab cqw mein: container ke saath scale hota hai) ---------- */
 .category-grid__content h3 {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 2.3em; /* 1 ya 2 line, dono mein height same */
   margin: 0 0 1.2cqw;
- color: #571B51;
-font-family: "Roboto Slab", serif;
-font-weight: 900;
-font-size: clamp(11.8px, 3.49vw, 13.73px);
-text-align: center;
+  color: #571b51;
+  font-family: "Roboto Slab", serif;
+  font-weight: 700;
+  font-size: 3.2cqw; /* 13.73px @ 430px */
+  line-height: 1.25;
+  text-align: center;
   text-wrap: balance;
 }
 
 .category-grid__content p {
   margin: -0.4cqw 0 2.4cqw;
-color: #000000B2;
-font-family: "Roboto Slab", serif;
-font-weight: 400;
-font-size: clamp(11.18px, 3.31vw, 13px);
-line-height: clamp(23.08px, 6.83vw, 26.85px);
-  text-transform: uppercase;
   color: #555;
+  font-family: "Roboto Slab", serif;
+  font-weight: 400;
+  font-size: 3cqw; /* 13px @ 430px */
+  line-height: 6.2cqw; /* 26.85px @ 430px */
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
 /* ---------- Button ---------- */
 .category-grid__button {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
   background: #8b4c84;
   color: #fff;
   font-family: "Inter", sans-serif;
@@ -120,9 +124,11 @@ line-height: clamp(23.08px, 6.83vw, 26.85px);
 }
 
 .category-grid__arrow {
-  width: 16px;
-  height: 16px;
+  width: 1.05em;
+  height: auto;
+  flex: none;
 }
+
 .category-grid__card:hover .category-grid__button {
   opacity: 0.85;
   transform: translateY(-1px);
@@ -134,7 +140,7 @@ line-height: clamp(23.08px, 6.83vw, 26.85px);
 }
 
 .category-grid__card--tall .category-grid__content h3 {
- font-size: clamp(19px, 5.6vw, 22px);
+  font-size: 5.1cqw; 
   margin: 0 0 1.2cqw;
 }
 
