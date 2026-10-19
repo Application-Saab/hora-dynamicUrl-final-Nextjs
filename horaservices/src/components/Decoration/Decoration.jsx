@@ -460,21 +460,22 @@ const Decoration = ({ city, locality }) => {
         </div>
       </section>
 
-      <div className="wa-banner">
+
+      <a
+        className="wa-banner"
+        href={waLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat now on WhatsApp"
+        onClick={trackWAClicks}
+      >
         <Banner
           image={whatsappbanner}
           alt="Your Celebrations, Our Commitment"
           border="1px solid #599911"
         />
 
-        <a
-          className="wa-banner__btn"
-          href={waLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Chat now on WhatsApp"
-          onClick={trackWAClicks}
-        >
+        <span className="wa-banner__btn">
           <Image
             src={whatsappIcon}
             alt=""
@@ -484,8 +485,9 @@ const Decoration = ({ city, locality }) => {
             className="wa-banner__icon"
           />
           <span>Chat Now on WhatsApp</span>
-        </a>
-      </div>
+        </span>
+      </a>
+
       {/* <DecorGrid
         largeCard={largeCard}
         smallCards={smallCards}
