@@ -218,51 +218,15 @@ const CustomersReviews = ({ allReviewsData = [] }) => {
   return (
     <>
       <Head>
-        <title>Ratings &amp; Reviews | HORA Services</title>
+        <title>Ratings & Reviews | HORA Services</title>
         <meta
           name="description"
-          content="Read verified customer reviews for HORA Services. 4.8/5 average rating from 5,600+ reviews across decoration, photography, catering and event services in 7+ cities."
+          content="Read verified customer reviews for HORA Services. 4.7/5 average rating from 10,000+ reviews across decoration, chef, catering and event services in 20+ cities."
         />
         <meta name="robots" content="index, follow" />
-        <meta name="author" content="Hora Services" />
-        <link rel="canonical" href="https://horaservices.com/reviews" />
-        <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
-
-        {/* Open Graph */}
-        <meta property="og:title" content="Ratings &amp; Reviews | HORA Services" />
-        <meta
-          property="og:description"
-          content="5,600+ verified customer reviews for Hora Services. 4.8/5 average rating across decoration, photography, catering and event services."
-        />
-        <meta property="og:url" content="https://horaservices.com/reviews" />
-        <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1711520474508.png" />
-        <meta property="og:site_name" content="Hora Services" />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Ratings &amp; Reviews | HORA Services" />
-        <meta name="twitter:description" content="5,600+ verified customer reviews for Hora Services. 4.8/5 average rating." />
-        <meta name="twitter:image" content="https://horaservices.com/api/uploads/attachment-1711520474508.png" />
-
-        {/* AggregateRating Schema */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "Hora Services",
-              "url": "https://horaservices.com",
-              "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "4.8",
-                "bestRating": "5",
-                "worstRating": "1",
-                "reviewCount": "5600"
-              }
-            }),
-          }}
+        <link
+          rel="canonical"
+          href="https://horaservices.com/reviews"
         />
       </Head>
 
