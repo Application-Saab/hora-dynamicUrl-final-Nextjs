@@ -337,3 +337,228 @@ export const getDecorationProductOrganizationSchema = (product) => ({
       }
     ]
   });
+
+// ── Photography: Landing Page LocalBusiness (city-aware) ──────
+export const getPhotographyLandingSchema = (city) => {
+  const cityName = city
+    ? String(city).replace(/\b\w/g, (c) => c.toUpperCase())
+    : null;
+  return {
+    "@context": "https://schema.org",
+    "@type": ["Organization", "LocalBusiness"],
+    "name": cityName ? `Hora Photography – ${cityName}` : "Hora Photography",
+    "url": cityName
+      ? `https://horaservices.com/${city.toLowerCase()}/photography`
+      : "https://horaservices.com/photography",
+    "logo": "https://horaservices.com/api/uploads/logo-icon.png",
+    "telephone": "+917338584828",
+    "email": "info@horaservices.com",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Salarpuria Symbiosis, Bannerghatta Main Rd",
+      "addressLocality": "Bengaluru",
+      "addressRegion": "Karnataka",
+      "postalCode": "560076",
+      "addressCountry": "IN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 12.9010,
+      "longitude": 77.5961
+    },
+    "image": [
+      "https://horaservices.com/api/uploads/attachment-1706520980436.png",
+      "https://horaservices.com/api/uploads/attachment-1711520474508.png",
+      "https://horaservices.com/api/uploads/attachment-1706459457063.png"
+    ],
+    "description": cityName
+      ? `Book professional photographers in ${cityName} for birthdays, weddings, baby showers, maternity and corporate events. 100+ verified photographers. Starting ₹3500.`
+      : "Book professional photographers across India for birthdays, weddings, baby showers, maternity and corporate events. 100+ verified photographers. Starting ₹3500.",
+    "areaServed": cityName
+      ? { "@type": "City", "name": cityName }
+      : ["Bengaluru", "Delhi", "Mumbai", "Hyderabad", "Chennai", "Pune", "Kolkata"],
+    "sameAs": [
+      "https://www.facebook.com/people/Hora/61550111701616/",
+      "https://www.instagram.com/horaservices/",
+      "https://www.youtube.com/channel/UCj5gMUjptHut0aGYHxCbE5g",
+      "https://horaservices.com"
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "5600"
+    },
+    "priceRange": "₹₹",
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+      "opens": "09:00",
+      "closes": "21:00"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Photography Packages",
+      "itemListElement": [
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Birthday Photography" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Wedding Photography" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Maternity Photography" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Baby Shower Photography" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Anniversary Photography" } }
+      ]
+    }
+  };
+};
+
+// ── Photography: Category BreadcrumbList ──────────────────────
+export const getPhotographyCategoryBreadcrumbSchema = (catValue, city) => {
+  const catLabel = (catValue || "Photography")
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+  const citySlug = city ? String(city).toLowerCase().replace(/\s+/g, "-") : null;
+  const catUrl = citySlug
+    ? `https://horaservices.com/${citySlug}/photography/${catValue}`
+    : `https://horaservices.com/photography/${catValue}`;
+  const photoUrl = citySlug
+    ? `https://horaservices.com/${citySlug}/photography`
+    : "https://horaservices.com/photography";
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://horaservices.com" },
+      { "@type": "ListItem", "position": 2, "name": "Photography", "item": photoUrl },
+      { "@type": "ListItem", "position": 3, "name": catLabel, "item": catUrl }
+    ]
+  };
+};
+
+// ── Photography: FAQPage schema (per category) ────────────────
+const PHOTOGRAPHY_FAQS = {
+  "birthday-photography": [
+    { q: "How much does a birthday photoshoot cost?", a: "Birthday photoshoot packages at Hora Services start from ₹3,500, including a 1-hour session and 50+ edited digital photos. Price varies by duration and package." },
+    { q: "Can I book a birthday photographer at home?", a: "Yes, Hora photographers come to your home, venue or any outdoor location of your choice across 17+ cities in India." },
+    { q: "How many edited photos do I get?", a: "Depending on the package, you receive between 50 and 200+ edited digital photos. Your gallery is delivered online within 5–7 working days." },
+    { q: "Are female photographers available for birthday shoots?", a: "Yes, female birthday photographers are available on request in most cities. Please mention your preference at the time of booking." }
+  ],
+  "wedding-photography": [
+    { q: "What is the cost of wedding photography at Hora?", a: "Wedding photography packages at Hora Services start from ₹8,000 for a half-day shoot. Full-day and multi-day wedding packages are also available." },
+    { q: "Do you provide candid and cinematic wedding coverage?", a: "Yes, Hora offers candid photography, cinematic videography, traditional coverage and pre-wedding shoots, all bookable online." },
+    { q: "How soon will we receive our wedding photos?", a: "Edited wedding photos are typically delivered within 15–20 working days after the event via an online gallery." },
+    { q: "Is pre-wedding photography included?", a: "Pre-wedding shoots can be booked separately or added to a wedding package. Browse pre-wedding photography packages on Hora Services." }
+  ],
+  "maternity-photography": [
+    { q: "When is the best time for a maternity photoshoot?", a: "The ideal time for a maternity photoshoot is between 28 and 36 weeks of pregnancy, when the baby bump is prominent and the mother is most comfortable." },
+    { q: "Can my partner and family be included in the maternity shoot?", a: "Yes, partners, children and family members are always welcome in maternity photoshoots. Let us know your preference when booking." },
+    { q: "What should I wear for a maternity photoshoot?", a: "Hora's photographers will advise on outfits and props. Flowy dresses and fitted tops are popular choices. Colour themes can be discussed in advance." },
+    { q: "How much does a maternity photoshoot cost?", a: "Maternity photoshoot packages at Hora start from ₹3,500 for a studio or at-home session with edited photos delivered digitally." }
+  ],
+  "anniversary-photography": [
+    { q: "How much does an anniversary photoshoot cost?", a: "Anniversary photoshoot packages at Hora Services start from ₹3,500, including a 1-hour session and 50+ edited digital photos." },
+    { q: "Can Hora set up a surprise anniversary photoshoot?", a: "Yes, surprise setup and photography sessions for anniversaries are available. Contact our team when booking to arrange a surprise shoot." },
+    { q: "Is outdoor couple photography available for anniversaries?", a: "Yes, outdoor locations including gardens, cafes, rooftops and landmarks are available for anniversary photoshoots across all supported cities." },
+    { q: "Can decoration be added to the anniversary photoshoot?", a: "Yes, balloon and floral decoration setups can be combined with the photography booking for a complete anniversary experience." }
+  ],
+  "baby-shower-photography": [
+    { q: "Can Hora combine baby shower decoration with photography?", a: "Yes, Hora offers combined baby shower decoration and photography packages. Book both services together for a seamless, hassle-free experience." },
+    { q: "How far in advance should I book a baby shower photographer?", a: "We recommend booking at least 7–10 days in advance, though last-minute bookings are also accepted subject to photographer availability." },
+    { q: "Are themed baby shower photoshoots available?", a: "Yes, themed setups including floral, pastel and baby animal themes can be arranged for the photoshoot session." }
+  ],
+  "new-born-baby-photography": [
+    { q: "Is newborn photography safe for the baby?", a: "Yes, Hora's newborn photographers are trained in baby-safe posing and handling. All setups use baby-safe materials and gentle lighting." },
+    { q: "What is the best age for a newborn photoshoot?", a: "Newborn photoshoots are best done within the first 5–14 days after birth, when babies sleep deeply and are most flexible for posed shots." },
+    { q: "Where does the newborn photoshoot take place?", a: "Hora newborn photographers come to your home for a comfortable, familiar environment, or studio sessions can also be arranged." }
+  ],
+  "engagement-photography": [
+    { q: "Can Hora combine an engagement shoot with ring ceremony photography?", a: "Yes, Hora photographers cover both the ring ceremony and a standalone couple engagement shoot in a single booking." },
+    { q: "What locations are available for engagement photoshoots?", a: "Indoor studio, outdoor garden, rooftop, beach and heritage location shoots are all available depending on your city." },
+    { q: "How much does an engagement photoshoot cost?", a: "Engagement photoshoot packages at Hora start from ₹3,500, including an edited digital photo gallery delivered online." }
+  ],
+  "house-warming-photography": [
+    { q: "Do you cover griha pravesh and gruhapravesam ceremonies?", a: "Yes, Hora photographers cover all housewarming ceremonies including Griha Pravesh, Gruhapravesam and Vastu Pooja in all supported cities." },
+    { q: "How many hours does a housewarming photography session last?", a: "A standard housewarming photography session lasts 1.5 to 3 hours depending on the size of the ceremony and the package chosen." },
+    { q: "Can I book a videographer along with the photographer?", a: "Yes, video coverage can be added to any photography package at the time of booking." }
+  ],
+  "corporate-photography": [
+    { q: "What types of corporate events does Hora cover?", a: "Hora covers office parties, team outings, award nights, conferences, product launches, and corporate headshots across all major cities." },
+    { q: "Can I get same-day delivery of edited corporate photos?", a: "Express delivery of a curated set of edited corporate photos within 24 hours is available for select packages. Please confirm at the time of booking." },
+    { q: "Is bulk booking available for corporate photography?", a: "Yes, bulk and recurring corporate photography packages are available. Contact the Hora team for custom pricing for regular events." }
+  ],
+  "bachelorette-photography": [
+    { q: "Can Hora provide props and setups for bachelorette photoshoots?", a: "Yes, fun props, balloon setups and photo booth experiences are available as add-ons for bachelorette photoshoots." },
+    { q: "How much does a bachelorette photoshoot cost?", a: "Bachelorette photoshoot packages start from ₹3,500 for a 1-hour session. Group and multi-location packages are also available." }
+  ],
+  "naming-ceremony-photography": [
+    { q: "Do you cover annaprashan and cradle ceremony photography?", a: "Yes, Hora photographers cover naming ceremonies, annaprashan, barasala, cradle ceremonies, baptism and christening events across India." },
+    { q: "How many photos are delivered from a naming ceremony shoot?", a: "You will receive 100–200 edited digital photos depending on the package, delivered via an online gallery within 5–7 working days." }
+  ],
+  "welcome-baby-photography": [
+    { q: "Can I book a welcome baby photoshoot at home?", a: "Yes, Hora photographers come to your home for welcome baby shoots, creating a comfortable and familiar environment for both baby and parents." },
+    { q: "What is included in a welcome baby photography package?", a: "Packages include the photographer visit, edited digital photos and an online gallery. Props and themed setups can be added as add-ons." }
+  ]
+};
+
+const DEFAULT_PHOTOGRAPHY_FAQS = [
+  { q: "How much does it cost to hire a photographer?", a: "Photography packages at Hora Services start from ₹3,500 for a 1-hour session. Prices vary based on duration, event type and package selected." },
+  { q: "Can I book a photographer at home?", a: "Yes, Hora photographers come to your home, venue or any outdoor location across 17+ cities in India." },
+  { q: "How do I book a photographer online?", a: "Choose your occasion and package, select your city, and confirm with a small advance. Booking takes a few minutes and same-day slots are often available." },
+  { q: "When will I receive my edited photos?", a: "Edited photos are delivered via an online gallery within 5–7 working days of your event." },
+  { q: "Are female photographers available?", a: "Yes, female photographers are available on request in all supported cities. Please mention your preference at the time of booking." }
+];
+
+export const getPhotographyFAQSchema = (catValue) => {
+  const faqs = (catValue && PHOTOGRAPHY_FAQS[catValue]) || DEFAULT_PHOTOGRAPHY_FAQS;
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(({ q, a }) => ({
+      "@type": "Question",
+      "name": q,
+      "acceptedAnswer": { "@type": "Answer", "text": a }
+    }))
+  };
+};
+
+// ── Photography: Product schema (Product + Offer + AggregateRating) ──
+export const getPhotographyProductSchema = (work, city) => {
+  if (!work) return null;
+  const cityName = city
+    ? String(city).replace(/\b\w/g, (c) => c.toUpperCase())
+    : null;
+  const imageUrl = work.featured_image
+    ? `https://horaservices.com/api/uploads/compressed_webp/${String(work.featured_image).split(".")[0]}.webp`
+    : "https://horaservices.com/api/uploads/attachment-1706520980436.png";
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": work.name,
+    "image": [imageUrl],
+    "description": cityName
+      ? `Book ${work.name} photography in ${cityName}. Professional photographers, edited photos delivered online. Starting ₹${work.price || 3500}.`
+      : `Book ${work.name} photography across India. Professional photographers, edited photos delivered online. Starting ₹${work.price || 3500}.`,
+    "brand": {
+      "@type": "Brand",
+      "name": "Hora Services"
+    },
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "INR",
+      "price": String(work.price || 3500),
+      "priceValidUntil": "2027-12-31",
+      "availability": "https://schema.org/InStock",
+      "url": cityName
+        ? `https://horaservices.com/${city.toLowerCase()}/photography/product/${work.slug || work._id}`
+        : `https://horaservices.com/photography/product/${work.slug || work._id}`,
+      "seller": {
+        "@type": "Organization",
+        "name": "Hora Services"
+      }
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "5600",
+      "bestRating": "5",
+      "worstRating": "1"
+    }
+  };
+};

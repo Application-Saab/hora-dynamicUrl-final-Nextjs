@@ -495,7 +495,7 @@ const ProductDetails = ({
         <ul className="inclusion-list">
           {inclusionItems.map((item, index) => (
             <li key={index} className="inclusionstyle">
-              <Image src={checkImage} alt="Info" />
+              <Image src={checkImage} alt="Package inclusion checkmark" />
               {item.trim()}
             </li>
           ))}
@@ -574,6 +574,7 @@ const ProductDetails = ({
           city={city}
           locality={locality}
           work={work}
+          catValue={catValue}
           scriptTag={scriptTag}
         />
 
@@ -741,17 +742,17 @@ const ProductDetails = ({
               <h2 className="whyHoraHeading">Why Hora Photography</h2>
               <div className="whyHoraSecInner">
                 <div className="whyHoraSecBox">
-                  <Image src={PROFESSIONALPHOTOGRAPHERS} alt="buy-now" />
+                  <Image src={PROFESSIONALPHOTOGRAPHERS} alt="Professional photographers verified by Hora" />
                   <p className="whyHoraSubheading">
                     PROFESSIONAL PHOTOGRAPHERS
                   </p>
                 </div>
                 <div className="whyHoraSecBox">
-                  <Image src={SECURESTORAGE} alt="buy-now" />
+                  <Image src={SECURESTORAGE} alt="Secure lifetime photo storage on Hora" />
                   <p className="whyHoraSubheading">SECURE STORAGE</p>
                 </div>
                 <div className="whyHoraSecBox">
-                  <Image src={SUPPORT} alt="buy-now" />
+                  <Image src={SUPPORT} alt="24/7 customer support for photography bookings" />
                   <p className="whyHoraSubheading">27/7 SUPPORT</p>
                 </div>
               </div>
