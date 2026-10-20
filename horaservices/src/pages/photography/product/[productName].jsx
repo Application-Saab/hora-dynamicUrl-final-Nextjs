@@ -574,6 +574,7 @@ const ProductDetails = ({
           city={city}
           locality={locality}
           work={work}
+          catValue={catValue}
           scriptTag={scriptTag}
         />
 

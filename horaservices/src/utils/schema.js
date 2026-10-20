@@ -517,3 +517,48 @@ export const getPhotographyFAQSchema = (catValue) => {
     }))
   };
 };
+
+// ── Photography: Product schema (Product + Offer + AggregateRating) ──
+export const getPhotographyProductSchema = (work, city) => {
+  if (!work) return null;
+  const cityName = city
+    ? String(city).replace(/\b\w/g, (c) => c.toUpperCase())
+    : null;
+  const imageUrl = work.featured_image
+    ? `https://horaservices.com/api/uploads/compressed_webp/${String(work.featured_image).split(".")[0]}.webp`
+    : "https://horaservices.com/api/uploads/attachment-1706520980436.png";
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": work.name,
+    "image": [imageUrl],
+    "description": cityName
+      ? `Book ${work.name} photography in ${cityName}. Professional photographers, edited photos delivered online. Starting ₹${work.price || 3500}.`
+      : `Book ${work.name} photography across India. Professional photographers, edited photos delivered online. Starting ₹${work.price || 3500}.`,
+    "brand": {
+      "@type": "Brand",
+      "name": "Hora Services"
+    },
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "INR",
+      "price": String(work.price || 3500),
+      "priceValidUntil": "2027-12-31",
+      "availability": "https://schema.org/InStock",
+      "url": cityName
+        ? `https://horaservices.com/${city.toLowerCase()}/photography/product/${work.slug || work._id}`
+        : `https://horaservices.com/photography/product/${work.slug || work._id}`,
+      "seller": {
+        "@type": "Organization",
+        "name": "Hora Services"
+      }
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "5600",
+      "bestRating": "5",
+      "worstRating": "1"
+    }
+  };
+};
