@@ -7,6 +7,7 @@ import {
   getPhotographyLandingSchema,
   getPhotographyCategoryBreadcrumbSchema,
   getPhotographyFAQSchema,
+  getPhotographyProductSchema,
 } from "./schema";
 
 const SITE = "https://horaservices.com";
@@ -345,6 +346,14 @@ export function SeoWork({
           dangerouslySetInnerHTML={{
             __html:
               typeof scriptTag === "string" ? scriptTag : JSON.stringify(scriptTag),
+          }}
+        />
+      )}
+      {work && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(getPhotographyProductSchema(work, city)),
           }}
         />
       )}
