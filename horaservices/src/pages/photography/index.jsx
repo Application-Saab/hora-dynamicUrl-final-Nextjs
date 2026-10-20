@@ -75,6 +75,14 @@ const PhotographyIndexPage = ({ city, locality, initialPackages }) => {
         <meta property="og:description" content={seo.description} />
         <meta property="og:url" content={pageUrl} />
         <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1711520474508.png" />
+        <meta property="og:site_name" content="Hora Services" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={seo.title} />
+        <meta name="twitter:description" content={seo.description} />
+        <meta name="twitter:image" content="https://horaservices.com/api/uploads/attachment-1711520474508.png" />
+        <meta name="author" content="Hora Services" />
+        <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: scriptTag }}

@@ -25,6 +25,7 @@ import "@/components/CategoryTabs/CategoryTabs.css";
 
 import {
   getDecorationProductOrganizationSchema,
+  getDecorationBreadcrumbSchema,
   getProductFAQSchemaProductDetails,
 } from "@/utils/schema";
 import {
@@ -550,6 +551,13 @@ function DecorationsCatDetails({
   const scriptTag = JSON.stringify(schemaOrg);
   const faqSchema = getProductFAQSchemaProductDetails(product || {});
   const faqScriptTag = JSON.stringify(faqSchema);
+  const breadcrumbSchema = getDecorationBreadcrumbSchema(
+    product,
+    catValue,
+    city || null,
+    locality || null
+  );
+  const breadcrumbScriptTag = JSON.stringify(breadcrumbSchema);
 
   if (loading && !product) {
     return <ProductPageLoader />;
@@ -619,10 +627,34 @@ function DecorationsCatDetails({
           />
           <meta
             property="og:image"
-            content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
+            content={
+              product?.featured_image ||
+              product?.image ||
+              "https://horaservices.com/api/uploads/attachment-1706520980436.png"
+            }
           />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
           <meta property="og:url" content={canonicalUrl} />
           <meta property="og:type" content="website" />
+          <meta property="og:site_name" content="Hora Services" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta
+            name="twitter:title"
+            content={`${product?.name || ""} | ${catValue.replace(/-/g, " ")} by Hora Services`}
+          />
+          <meta
+            name="twitter:description"
+            content={`Book ${product?.name || ""} decoration by Hora Services. Explore ${catValue.replace(/-/g, " ")} designs for birthdays, anniversaries, baby showers & more.`}
+          />
+          <meta
+            name="twitter:image"
+            content={
+              product?.featured_image ||
+              product?.image ||
+              "https://horaservices.com/api/uploads/attachment-1706520980436.png"
+            }
+          />
           <meta name="robots" content="index, follow" />
           <meta name="author" content="Hora Services" />
           <link
@@ -637,6 +669,10 @@ function DecorationsCatDetails({
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: faqScriptTag }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: breadcrumbScriptTag }}
           />
         </Head>
 
