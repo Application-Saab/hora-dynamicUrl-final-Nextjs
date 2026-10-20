@@ -20,7 +20,8 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  white-space: nowrap;
+  white-space: inherit;
+  text-align: center;
 }
 
 .decorationBanner-star,

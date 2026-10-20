@@ -423,15 +423,18 @@ text-align: center;
   container-type: inline-size;
   width: 100%;
   max-width: 480px;          /* apne banner ki max-width ke barabar rakhein */
+   display: block;
+    text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
 
 .wa-banner__btn {
   position: absolute;
   left: clamp(11px, 11cqw, 11cqw);
-bottom: clamp(4.6px, 4.6cqw, 4.6cqw);
+  bottom: clamp(4.6px, 4.6cqw, 4.6cqw);
   width: clamp(120px, 35.88vw, 155px);
   height: clamp(23.35px, 6.95vw, 27.48px);
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -442,9 +445,9 @@ bottom: clamp(4.6px, 4.6cqw, 4.6cqw);
   box-shadow: 0 0.8cqw 1.6cqw rgba(58, 130, 16, 0.35);
 
   font-family: 'Inter', sans-serif;
-font-weight: 700;
-font-style: normal;
-font-size: clamp(7.4px, 2.2vw, 8.69px);
+  font-weight: 700;
+  font-style: normal;
+  font-size: clamp(7.4px, 2.2vw, 8.69px);
   text-decoration: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;

@@ -36,6 +36,7 @@ import SeoHead from "@/utils/SeoHead";
 import ThemeSelector, { themes as priceThemes } from "@/components/Themeselector";
 import SearchSortBar, { designTypeOptions } from "@/components/SearchSortBar";
 import DecorationBanner from "@/components/CategoryDecorationBanner";
+import { getBalloonDecorationH1 } from "@/utils/balloonDecorationH1";
 import DecorationCatDescriptionData, {
   buildCityLinksHtml,
   buildThemeLinksHtml,
@@ -867,7 +868,10 @@ const DecorationCatPage = ({
           {!isThemePage && (
             <>
               <section>
-                <DecorationBanner category={normalizedCat} />
+                <DecorationBanner
+                  category={normalizedCat}
+                  title={getBalloonDecorationH1(pathname)}
+                />
               </section>
 
               {/* ✅ Theme route (/hero etc.) par search/sort bar aur price selector nahi */}
@@ -1199,7 +1203,8 @@ const DecorationCatPage = ({
                         !showAll && index >= 2 ? "category-item--hidden" : ""
                       }`}
                     >
-                      <h1>{item.title}</h1>
+                      {/* h2: the page's single H1 is the banner above */}
+                      <h2>{item.title}</h2>
                       <div
                         className="item-content"
                         dangerouslySetInnerHTML={{ __html: item.htmlContent }}

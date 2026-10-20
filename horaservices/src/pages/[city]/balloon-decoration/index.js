@@ -6,6 +6,7 @@ import {
   isValidCitySlug,
   getCityNameFromSlug,
 } from "../../../utils/validCities";
+import { getBalloonDecorationSeo } from "@/utils/balloonDecorationSeo";
 
 export async function getServerSideProps(context) {
   const citySlug = context.params?.city?.toLowerCase();
@@ -28,16 +29,23 @@ export default function BalloonDecorationCityPage({
   city,
   citySlug,
 }) {
+  // SEO sheet copy for this city hub (falls back to the existing copy).
+  const sheetSeo = getBalloonDecorationSeo({ city: citySlug });
+
   return (
     <>
       <Head>
         <title>
-          {`HORA Decorations in ${city} | Balloon & Flower Decorations for Birthdays, Weddings, Baby Showers & More – Starting at ₹1199`}
+          {sheetSeo?.title ||
+            `HORA Decorations in ${city} | Balloon & Flower Decorations for Birthdays, Weddings, Baby Showers & More – Starting at ₹1199`}
         </title>
 
         <meta
           name="description"
-          content={`📸 Capture Every Moment in ${city}! ✨ HORA Decorations — Professional Balloon & Flower decorators for birthdays, weddings, baby showers & more.`}
+          content={
+            sheetSeo?.description ||
+            `📸 Capture Every Moment in ${city}! ✨ HORA Decorations — Professional Balloon & Flower decorators for birthdays, weddings, baby showers & more.`
+          }
         />
 
         <meta

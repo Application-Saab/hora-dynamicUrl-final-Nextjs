@@ -41,6 +41,9 @@ import weddingBannerImg from "@/assets/Wedding_banner.webp";
 import PremiumBannerImg from "@/assets/priumum_banner.webp";
 import BirthdayBannerImg from "@/assets/Birthday_magical_banner.webp";
 import Decorationseodata from "@/utils/Decorationseodata.json";
+import DecorationBanner from "@/components/CategoryDecorationBanner";
+import { getBalloonDecorationH1 } from "@/utils/balloonDecorationH1";
+import { getBalloonDecorationSeo } from "@/utils/balloonDecorationSeo";
 import haldiImg from "@/assets/trending-haldi.webp";
 import mehandiImg from "@/assets/trending-mehandi.webp";
 import mandapImg from "@/assets/trending-mandap.webp";
@@ -163,6 +166,8 @@ const Decoration = ({ city, locality }) => {
 
   const hasCityPageParam = city ? true : false;
   const pathname = router.asPath;
+  // Page H1 from the SEO sheet (main page + city hubs); null elsewhere.
+  const sheetH1 = getBalloonDecorationH1(pathname);
   const [sortOption, setSortOption] = useState("popularity");
 
   // Dropdown mein category par click ka URL (CategoryGrid jaisa hi)
@@ -295,9 +300,11 @@ const Decoration = ({ city, locality }) => {
    * Title/description har city ke liye custom.
    * ------------------------------------------------------------------ */
 
-  const pageSeo = city
-    ? citySeoData[city.toLowerCase()] || defaultSeo
-    : defaultSeo;
+  // SEO sheet copy (main page + city hubs) takes priority; cities/localities
+  // not in the sheet keep the existing per-city copy.
+  const pageSeo =
+    getBalloonDecorationSeo({ city, locality }) ||
+    (city ? citySeoData[city.toLowerCase()] || defaultSeo : defaultSeo);
   const weddingCollections = [
     { title: "Haldi Decoration", image: haldiImg, catValue: "haldi-decoration" },
     { title: "Mehandi Decoration", image: mehandiImg, catValue: "mehendi-decoration" },
@@ -392,6 +399,7 @@ const Decoration = ({ city, locality }) => {
           showSort={false}
         />
       </div>
+      {sheetH1 && <DecorationBanner title={sheetH1} />}
       {/* CIRCLE TABS */}
       <div ref={smallCardRef}>
         <SmallCardGrid
@@ -452,21 +460,22 @@ const Decoration = ({ city, locality }) => {
         </div>
       </section>
 
-      <div className="wa-banner">
+
+      <a
+        className="wa-banner"
+        href={waLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat now on WhatsApp"
+        onClick={trackWAClicks}
+      >
         <Banner
           image={whatsappbanner}
           alt="Your Celebrations, Our Commitment"
           border="1px solid #599911"
         />
 
-        <a
-          className="wa-banner__btn"
-          href={waLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Chat now on WhatsApp"
-          onClick={trackWAClicks}
-        >
+        <span className="wa-banner__btn">
           <Image
             src={whatsappIcon}
             alt=""
@@ -476,8 +485,9 @@ const Decoration = ({ city, locality }) => {
             className="wa-banner__icon"
           />
           <span>Chat Now on WhatsApp</span>
-        </a>
-      </div>
+        </span>
+      </a>
+
       {/* <DecorGrid
         largeCard={largeCard}
         smallCards={smallCards}
