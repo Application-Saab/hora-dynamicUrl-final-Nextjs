@@ -23,6 +23,8 @@ import VenueCategoryPills from "@/components/VenueCategoryPills";
 import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
 import VenueNameOverlay from "@/components/VenueNameOverlay";
 import Head from "next/head";
+import FAQSection from "../FAQSection";
+import TermsModal from "./TermsModal";
 
 const VenuePage = ({
   city: propCity = null,
@@ -38,6 +40,7 @@ const VenuePage = ({
   // SSR data ko seedha state mein daalo
   const [eventDetails, setEventDetails] = useState(initialEventDetails);
   const [venuePackages, setVenuePackages] = useState(initialPackages || []);
+  console.log('%c [ venuePackages ]', 'font-size:13px; background:pink; color:#bf2c9f;', venuePackages)
   const [venueCategories, setVenueCategories] = useState(
     initialCategories || [],
   );
@@ -52,6 +55,7 @@ const VenuePage = ({
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [pushRsvpClick, setPushRsvpClick] = useState(false);
   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
+  const [openTerms, setOpenTerms] = useState(false);
 
   const {} = useRsvpStatus(venueId, skipRsvpCheck);
   const { data } = useApi(`${GET_VENUE_CATEGORIES_LIST}`, "get");
@@ -394,6 +398,20 @@ Please share more details and availability.`;
             </div>
           )}
 
+          {eventDetails?.termsAndConditionsHtml && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: "16px",
+                marginBottom: "10px",
+              }}
+            >
+              <button className="view-terms-btn" type="button" onClick={() => setOpenTerms(true)}>Terms & Condition</button>
+            </div>
+          )}
+
           <div className="venue-tax-note">
             <span className="venue-tax-line" />
             <span className="venue-tax-text">* Included All Plus Taxes *</span>
@@ -422,6 +440,7 @@ Please share more details and availability.`;
               venueImageUrl={eventDetails?.venueImageUrl}
             />
           </div>
+          <FAQSection faqData={eventDetails?.faqs} />
         </div>
       </div>
 
@@ -432,6 +451,12 @@ Please share more details and availability.`;
           categories={venueCategories}
         />
       )}
+
+      <TermsModal
+        show={openTerms}
+        onHide={() => setOpenTerms(false)}
+        htmlContent={eventDetails?.termsAndConditionsHtml}
+      />
 
       <LoginModal
         isOpen={showGuestLoginModal}
