@@ -345,4 +345,427 @@ export const CityPhotographyLandingPage = {
       },
     ],
   },
+
+  chennai: {
+    city: "Chennai",
+    slug: "/chennai/photography",
+    metaTitle: "Photographers in Chennai, Hire by the Hour or Event | HORA",
+    metaDescription:
+      "Book verified photographers in Chennai for birthdays, weddings, maternity and corporate events. Fixed pricing, edited photos delivered in 24 hours.",
+    heading: "Hire a Photographer in Chennai for Any Occasion",
+    intro:
+      "Chennai moves at its own pace, and so do its celebrations. Whether it's a traditional naming ceremony in a sabha, a corporate conference in a hotel in OMR, or a maternity shoot at home in Adyar, HORA connects you with a verified local photographer who understands the city's culture and light. Book by the hour or for the full event — someone arrives without the usual negotiation.",
+    homeHeading: "Straightforward photography, no negotiations",
+    homeParagraphs: [
+      "Most Chennai bookings begin when someone searches for a photographer and ends up spending two days comparing quotes over WhatsApp. HORA removes that entirely. Every package shows its price and sample work upfront. Book online, confirm the slot, and a verified photographer shows up at your venue — whether that's Anna Nagar, Velachery, Porur or Sholinganallur.",
+      "The city books a lot of naming ceremonies, half-saree functions and first birthday shoots — each one has a specific feel, and our photographers are familiar with what families here expect. Need a female photographer for a maternity or baby shoot? Just mention it at booking. Wedding photography in Chennai and pre-wedding shoots are covered on their own pages with full packages.",
+    ],
+    outdoorHeading: "Outdoor shoot spots in Chennai",
+    outdoorText:
+      "For portrait and couple sessions, Marina Beach early morning, Elliot's Beach in Besant Nagar, and the ECR stretch near Kovalam work well. The light is softest from October to February when the humidity drops.",
+    faqHeading: "Chennai FAQs",
+    faqs: [
+      {
+        question: "Can I hire a photographer in Chennai for just a few hours?",
+        answer:
+          "Yes, one hour is the minimum. Most birthday shoots and naming ceremonies in Chennai run two to three hours — book exactly what you need.",
+      },
+      {
+        question: "Do you cover venues in OMR, Anna Nagar and Velachery?",
+        answer:
+          "Yes. Our photographers cover all major areas including Anna Nagar, T. Nagar, Adyar, Velachery, OMR, Porur and Sholinganallur.",
+      },
+      {
+        question: "How soon are edited photos delivered?",
+        answer:
+          "You receive a web gallery link within 24 hours. Color-corrected photos are included in every package; additional edits are ₹70 per photo.",
+      },
+      {
+        question: "Is a female photographer available in Chennai?",
+        answer:
+          "Yes. Mention it at booking and we'll assign a female photographer for your maternity, newborn or intimate celebration shoot.",
+      },
+      {
+        question: "Where are the best outdoor spots for a shoot in Chennai?",
+        answer:
+          "Marina Beach and Elliot's Beach for sea backdrops; the French Quarter in Puducherry (a 90-minute drive) for something more atmospheric.",
+      },
+    ],
+  },
+
+  kolkata: {
+    city: "Kolkata",
+    slug: "/kolkata/photography",
+    metaTitle: "Photographers in Kolkata, Hire for Events & Shoots | HORA",
+    metaDescription:
+      "Book verified photographers in Kolkata for puja celebrations, weddings, birthdays, maternity and corporate events. Fixed pricing, 24-hour delivery.",
+    heading: "Hire a Verified Photographer in Kolkata",
+    intro:
+      "Kolkata takes its celebrations seriously — from a Durga Puja pandal shoot to a Pujo-eve family portrait, from a wedding in Behala to a first birthday in Salt Lake. HORA makes it easy to book a verified local photographer without the usual rounds of calls and bargaining. Fixed price, sample work upfront, and someone who knows the city turns up.",
+    homeHeading: "Celebrating in Kolkata, properly documented",
+    homeParagraphs: [
+      "The city has no shortage of photographers, but finding one who turns up on time, knows the venue and delivers clean edited photos is harder than it should be. HORA solves that: every photographer on the platform is verified, every package price is shown before you book. Whether it's a flat in Ballygunge, a community hall in Dum Dum, or an office in the CBD, we'll send someone appropriate.",
+      "Kolkata books a lot of adda sessions, rice ceremonies, thread ceremonies and intimate home celebrations alongside the big wedding bookings. One hour is fine for a quick cake-cutting or a Poila Baisakh family portrait. For weddings and pre-wedding shoots, dedicated pages carry the full packages.",
+    ],
+    outdoorHeading: "Outdoor shoot spots in Kolkata",
+    outdoorText:
+      "Victoria Memorial and the surrounding Maidan are the classics; the ghats at Belur Math and Dakshineswar work beautifully at sunrise. Prinsep Ghat and the old Armenians Street area in North Kolkata give a very different architectural mood. Winter — November to February — is the best season.",
+    faqHeading: "Kolkata FAQs",
+    faqs: [
+      {
+        question: "Can I hire a photographer for a short Puja celebration?",
+        answer:
+          "Absolutely. One hour is the minimum booking. Many Kolkata clients book for a Saraswati Puja at home or a quick Diwali gathering — we cover exactly that.",
+      },
+      {
+        question: "Do you cover areas like Salt Lake, Behala and Dum Dum?",
+        answer:
+          "Yes. Our photographers cover Salt Lake, New Town, Behala, Dum Dum, Ballygunge, Jadavpur, Howrah and surrounding areas.",
+      },
+      {
+        question: "How soon will photos be delivered?",
+        answer:
+          "A web gallery link is sent within 24 hours of the shoot. All photos are color-corrected; selective edits are available at ₹70 per photo.",
+      },
+      {
+        question: "Is a female photographer available in Kolkata?",
+        answer:
+          "Yes, mention it at booking and we'll arrange one for your maternity, baby or intimate shoot.",
+      },
+      {
+        question: "Where are good outdoor locations for couple shoots in Kolkata?",
+        answer:
+          "Victoria Memorial, Prinsep Ghat, Belur Math and the bylanes of North Kolkata near Shyambazar. Golden-hour light here is exceptionally warm in winter.",
+      },
+    ],
+  },
+
+  lucknow: {
+    city: "Lucknow",
+    slug: "/lucknow/photography",
+    metaTitle: "Photographers in Lucknow for Events & Weddings | HORA",
+    metaDescription:
+      "Book verified photographers in Lucknow for weddings, birthdays, maternity, corporate events and more. Fixed packages, edited photos in 24 hours.",
+    heading: "Book a Photographer in Lucknow for Any Event",
+    intro:
+      "Lucknow does hospitality like no other city, and its celebrations deserve to be captured properly. Whether it's a mehndi function in Gomti Nagar, a corporate event on Hazratganj, a kids' birthday in Aliganj or a maternity shoot at home in Alambagh — HORA connects you with a verified local photographer at a fixed price with no calls or quotes to chase.",
+    homeHeading: "Nawabi city, professional photography",
+    homeParagraphs: [
+      "Lucknow's event scene ranges from intimate home mehndis and aqiqa ceremonies to large banquet-hall weddings. The city also books a lot of corporate photography for the growing tech and government sector around Vibhuti Khand. Wherever the event is, our photographers travel to you — Hazratganj, Indira Nagar, Gomti Nagar, Aliganj, Mahanagar or Alambagh.",
+      "A single hour is enough for a cake-cutting or an office farewell portrait. Wedding photography and pre-wedding shoots in Lucknow have their own full-package pages.",
+    ],
+    outdoorHeading: "Outdoor shoot spots in Lucknow",
+    outdoorText:
+      "Bara Imambara, Rumi Darwaza and the British Residency ruins give Lucknow its architectural character for pre-wedding and portrait sessions. Janeshwar Mishra Park is popular for natural backdrops. Best light: October to February.",
+    faqHeading: "Lucknow FAQs",
+    faqs: [
+      {
+        question: "Do you cover photographers in Gomti Nagar and Hazratganj?",
+        answer:
+          "Yes. We cover Gomti Nagar, Hazratganj, Indira Nagar, Aliganj, Mahanagar, Alambagh, Vikas Nagar and other areas.",
+      },
+      {
+        question: "Can I book a photographer for a mehndi or aqiqa ceremony?",
+        answer:
+          "Yes. We regularly cover mehndi functions, aqiqa ceremonies, naming ceremonies and other traditional Lucknow celebrations.",
+      },
+      {
+        question: "How quickly are photos delivered?",
+        answer:
+          "Within 24 hours. You receive a permanent web gallery link with color-corrected photos.",
+      },
+      {
+        question: "Is a female photographer available in Lucknow?",
+        answer:
+          "Yes, available on request at booking for maternity, newborn or ladies-only events.",
+      },
+      {
+        question: "Which are the best outdoor shoot spots in Lucknow?",
+        answer:
+          "Bara Imambara, Rumi Darwaza and the Residency for heritage backdrops; Janeshwar Mishra Park for greenery.",
+      },
+    ],
+  },
+
+  kanpur: {
+    city: "Kanpur",
+    slug: "/kanpur/photography",
+    metaTitle: "Photographers in Kanpur for All Events | HORA",
+    metaDescription:
+      "Book verified photographers in Kanpur for birthdays, weddings, maternity, corporate events. Fixed pricing, professional photographers, 24-hour delivery.",
+    heading: "Hire a Verified Photographer in Kanpur",
+    intro:
+      "Kanpur may be known for its industry, but the city celebrates in style — from large banquet weddings in Swaroop Nagar to intimate home birthday shoots in Civil Lines. HORA brings you verified photographers at fixed prices, so you spend less time finding someone and more time enjoying the event.",
+    homeHeading: "Photography that matches Kanpur's energy",
+    homeParagraphs: [
+      "The city's events range from factory inauguration shoots for industrialists to college farewell portraits and kids' birthday parties. Our photographers cover Swaroop Nagar, Armapur, Civil Lines, Kidwai Nagar, Govind Nagar and Kakadeo — wherever the celebration is happening.",
+      "Book by the hour for shorter events or choose a full-event package for weddings and functions. Wedding photography in Kanpur has its own page with packages tailored for the city.",
+    ],
+    outdoorHeading: "Outdoor shoot spots in Kanpur",
+    outdoorText:
+      "The Allen Forest and its lake area, Phool Bagh and the Ganges ghats near Bithoor offer the best natural and heritage backdrops for portrait and couple sessions.",
+    faqHeading: "Kanpur FAQs",
+    faqs: [
+      {
+        question: "Which areas of Kanpur do you cover?",
+        answer:
+          "Civil Lines, Swaroop Nagar, Govind Nagar, Kidwai Nagar, Armapur, Kakadeo and surrounding areas.",
+      },
+      {
+        question: "Can I hire a photographer just for a birthday in Kanpur?",
+        answer:
+          "Yes, one hour is the minimum. Most birthday bookings in Kanpur run two to three hours.",
+      },
+      {
+        question: "How soon are edited photos delivered?",
+        answer:
+          "Within 24 hours. You get a permanent web gallery link with color-corrected photos.",
+      },
+      {
+        question: "Are female photographers available?",
+        answer:
+          "Yes, on request at booking for maternity or ladies-only events.",
+      },
+      {
+        question: "What are good outdoor shoot spots in Kanpur?",
+        answer:
+          "Allen Forest, Phool Bagh and Bithoor ghats on the Ganges.",
+      },
+    ],
+  },
+
+  indore: {
+    city: "Indore",
+    slug: "/indore/photography",
+    metaTitle: "Photographers in Indore for Events & Weddings | HORA",
+    metaDescription:
+      "Book verified photographers in Indore for weddings, birthdays, maternity shoots, corporate events. Fixed pricing, photos delivered in 24 hours.",
+    heading: "Book a Photographer in Indore for Any Occasion",
+    intro:
+      "Indore's food scene gets the press, but its celebrations deserve equal attention. From weddings at farmhouses near Bypass Road to birthday shoots in Vijay Nagar apartments, HORA connects you with a verified local photographer at a fixed price. No negotiations, no surprises — just a photographer who turns up and delivers.",
+    homeHeading: "Indore celebrates well — document it properly",
+    homeParagraphs: [
+      "The city has a strong culture of large joint-family celebrations: ring ceremonies, sangeet nights, holika dahan portraits and new-year parties. Our photographers know Vijay Nagar, Palasia, Scheme 54, MR-9, Rajwada and Rau well enough to reach you without GPS confusion.",
+      "One hour is plenty for a quick cake-cutting or a corporate headshot session. Wedding photography in Indore has its own package page.",
+    ],
+    outdoorHeading: "Outdoor shoot spots in Indore",
+    outdoorText:
+      "Rajwada Palace and Lal Bagh Palace are the architectural favourites. Pipliyapala Regional Park and Sirpur Lake offer natural backdrops with good light in the morning. October to February is ideal.",
+    faqHeading: "Indore FAQs",
+    faqs: [
+      {
+        question: "Do you cover photographers in Vijay Nagar and Palasia?",
+        answer:
+          "Yes. We cover Vijay Nagar, Palasia, Scheme 54, MR-9, Rajwada area, Rau and surrounding areas.",
+      },
+      {
+        question: "Can I book a photographer for a sangeet or ring ceremony?",
+        answer:
+          "Yes. We regularly cover sangeet nights, ring ceremonies, holika celebrations and other events.",
+      },
+      {
+        question: "How quickly are photos delivered?",
+        answer:
+          "Within 24 hours via a permanent web gallery link. All photos are color-corrected.",
+      },
+      {
+        question: "Is a female photographer available in Indore?",
+        answer:
+          "Yes, on request at booking for maternity, newborn or ladies-only functions.",
+      },
+      {
+        question: "Best outdoor locations in Indore for a shoot?",
+        answer:
+          "Rajwada Palace, Lal Bagh Palace and Pipliyapala Park are the top picks.",
+      },
+    ],
+  },
+
+  surat: {
+    city: "Surat",
+    slug: "/surat/photography",
+    metaTitle: "Photographers in Surat for Events & Functions | HORA",
+    metaDescription:
+      "Book verified photographers in Surat for weddings, birthdays, maternity, garba nights and corporate events. Fixed pricing, 24-hour photo delivery.",
+    heading: "Hire a Photographer in Surat for Any Event",
+    intro:
+      "Surat has one of the most vibrant celebration cultures in India — from garba nights and diamond merchant functions to large Gujarati weddings and baby-shower bhojan ceremonies. HORA's verified photographers cover the entire city at fixed prices, so you can book online and focus on the event.",
+    homeHeading: "Surat's celebrations, beautifully documented",
+    homeParagraphs: [
+      "The city books a lot of garba photography during Navratri, corporate events for the textile and diamond trade, engagement ceremonies and birthday shoots. Whether the event is in Adajan, Vesu, Piplod, Athwa or City Light area, our photographers reach you without fuss.",
+      "Book by the hour for shorter functions or choose a full wedding package. Wedding photography and maternity shoots in Surat have their own pages with tailored packages.",
+    ],
+    outdoorHeading: "Outdoor shoot spots in Surat",
+    outdoorText:
+      "Dumas Beach and Hazira coastal stretch are popular for couple and pre-wedding sessions. SNDT College grounds and Gopi Talav area also work well for portraits. Best season: November to February.",
+    faqHeading: "Surat FAQs",
+    faqs: [
+      {
+        question: "Do you cover photographers for garba and Navratri events?",
+        answer:
+          "Yes. We regularly book photographers for garba nights, Navratri celebrations, engagement ceremonies and functions.",
+      },
+      {
+        question: "Which areas of Surat do you cover?",
+        answer:
+          "Adajan, Vesu, Piplod, Athwa, City Light, Althan, Pal and surrounding areas.",
+      },
+      {
+        question: "How soon are edited photos delivered?",
+        answer:
+          "Within 24 hours via a permanent web gallery link with color-corrected photos.",
+      },
+      {
+        question: "Is a female photographer available in Surat?",
+        answer:
+          "Yes, available on request at booking for maternity or ladies-only events.",
+      },
+      {
+        question: "Best outdoor shoot locations near Surat?",
+        answer:
+          "Dumas Beach, Hazira coastal strip and SNDT College grounds are popular choices.",
+      },
+    ],
+  },
+
+  bhopal: {
+    city: "Bhopal",
+    slug: "/bhopal/photography",
+    metaTitle: "Photographers in Bhopal for All Events | HORA",
+    metaDescription:
+      "Book verified photographers in Bhopal for weddings, birthdays, maternity, corporate events. Fixed packages, professional photographers, photos in 24 hours.",
+    heading: "Book a Verified Photographer in Bhopal",
+    intro:
+      "Bhopal's twin lakes and walled-city architecture give it a character few Indian cities match — and that translates beautifully into photography. Whether it's a wedding at a resort in Kolar Road, a birthday at home in Arera Colony, or a corporate shoot near DB City, HORA sends a verified local photographer at a fixed price.",
+    homeHeading: "City of lakes, city of memorable moments",
+    homeParagraphs: [
+      "Bhopal's events range from traditional Bhopal-style weddings in walled-city venues to modern corporate functions in the new parts of the city. Our photographers cover Arera Colony, MP Nagar, Kolar Road, Habibganj, Shahpura and Berasia Road without issue.",
+      "Book by the hour for shorter events — a cake-cutting or a team farewell. Larger wedding and maternity packages are on their own pages.",
+    ],
+    outdoorHeading: "Outdoor shoot spots in Bhopal",
+    outdoorText:
+      "Upper Lake (Bada Talab) is the city's best-known backdrop, especially at golden hour. Van Vihar National Park offers forest settings; the old Shaukat Mahal and Gohar Mahal in the walled city provide heritage textures.",
+    faqHeading: "Bhopal FAQs",
+    faqs: [
+      {
+        question: "Which areas of Bhopal do you cover?",
+        answer:
+          "Arera Colony, MP Nagar, Kolar Road, Habibganj, Shahpura, Berasia Road, Karond and surrounding areas.",
+      },
+      {
+        question: "Can I book for a short birthday or cake-cutting shoot?",
+        answer:
+          "Yes. One hour is the minimum. Many Bhopal bookings are 1–2 hours for intimate home celebrations.",
+      },
+      {
+        question: "How soon are photos delivered?",
+        answer:
+          "Within 24 hours. You receive a permanent web gallery link with color-corrected photos.",
+      },
+      {
+        question: "Is a female photographer available in Bhopal?",
+        answer:
+          "Yes, on request at booking for maternity, baby or ladies-only events.",
+      },
+      {
+        question: "Best outdoor locations for shoots in Bhopal?",
+        answer:
+          "Upper Lake at golden hour, Van Vihar for forest settings, and the old walled city for heritage backdrops.",
+      },
+    ],
+  },
+
+  goa: {
+    city: "Goa",
+    slug: "/goa/photography",
+    metaTitle: "Photographers in Goa for Weddings & Events | HORA",
+    metaDescription:
+      "Book verified photographers in Goa for beach weddings, pre-wedding shoots, maternity, birthdays and corporate events. Fixed pricing, 24-hour delivery.",
+    heading: "Book a Photographer in Goa — Beaches, Weddings and More",
+    intro:
+      "Goa's light is the envy of every photographer in India. Whether it's a beach wedding in North Goa, a pre-wedding shoot on the backwaters near Panjim, a birthday villa shoot in Calangute, or a corporate team offsite in South Goa — HORA connects you with a verified local photographer who knows where to place you and when to shoot for the best light.",
+    homeHeading: "Goa's golden light, documented properly",
+    homeParagraphs: [
+      "Goa is one of the most-booked destinations for pre-wedding sessions and destination weddings in India. It's also where families hold birthday villa parties, baby shower shoots by the pool, and post-wedding portrait sessions in the lanes of Fontainhas. Our photographers cover the full state — Calangute, Baga, Anjuna, Vagator, Mapusa, Panjim, Margao, Colva and beyond.",
+      "A beach session needs the right hour — our photographers know the tides and light windows. Mention the vibe you're going for and they'll suggest locations. Destination wedding packages are on their own page.",
+    ],
+    outdoorHeading: "Shoot locations in Goa",
+    outdoorText:
+      "Arambol and Vagator beaches in the north have dramatic rocky backdrops. Palolem in South Goa is calmer. Fontainhas (Latin Quarter, Panjim) for Portuguese architecture. Chorao Island backwaters for a misty, private feel. Golden hour is 45 minutes before sunset on any west-facing beach.",
+    faqHeading: "Goa FAQs",
+    faqs: [
+      {
+        question: "Do you cover destination wedding photography in Goa?",
+        answer:
+          "Yes. We have dedicated packages for destination weddings across North and South Goa. Visit the wedding photography page for full details.",
+      },
+      {
+        question: "Can I book a photographer for a pre-wedding shoot in Goa?",
+        answer:
+          "Yes. Pre-wedding shoots are one of our most popular Goa bookings. Packages are on the pre-wedding photography page.",
+      },
+      {
+        question: "What time is best for a beach shoot in Goa?",
+        answer:
+          "An hour before sunset (golden hour) or in the early morning when beaches are empty. Your photographer will advise based on the location.",
+      },
+      {
+        question: "Do you cover South Goa locations like Palolem and Margao?",
+        answer:
+          "Yes. We cover the whole state — North Goa (Calangute, Baga, Vagator, Mapusa) and South Goa (Margao, Palolem, Colva, Benaulim).",
+      },
+      {
+        question: "Are female photographers available in Goa?",
+        answer:
+          "Yes, on request at booking for maternity, baby or ladies-only sessions.",
+      },
+    ],
+  },
+
+  pune: {
+    city: "Pune",
+    slug: "/pune/photography",
+    metaTitle: "Photographers in Pune for Events & Weddings | HORA",
+    metaDescription:
+      "Book verified photographers in Pune for birthdays, weddings, maternity, corporate events and Ganpati celebrations. Fixed pricing, 24-hour delivery.",
+    heading: "Hire a Verified Photographer in Pune for Any Event",
+    intro:
+      "Pune's mix of students, IT professionals and old Puneri families makes for a diverse events calendar — from tech company townhalls in Hinjewadi to Ganpati celebrations in Peth areas, from maternity shoots in Koregaon Park to destination wedding prep sessions in Lonavala. HORA has a verified photographer for every occasion, at a fixed price you see before booking.",
+    homeHeading: "Pune events, professionally photographed",
+    homeParagraphs: [
+      "The city's event culture spans college fests, corporate offsites, Ganeshotsav pandal shoots, ring ceremonies and intimate home birthdays. Whether the event is in Kothrud, Hinjewadi, Baner, Koregaon Park, Aundh, Viman Nagar or Hadapsar, our photographers reach you.",
+      "Book by the hour for shorter events or pick a full package for weddings and functions. Wedding photography and maternity shoots in Pune have their own pages.",
+    ],
+    outdoorHeading: "Outdoor shoot spots in Pune",
+    outdoorText:
+      "Shaniwar Wada and Aga Khan Palace for heritage backdrops. Pashan Lake and Sinhagad Fort road for nature sessions. Mulshi Dam and the Sahyadri hillside nearby for dramatic scenic backdrops. October to February gives the best weather.",
+    faqHeading: "Pune FAQs",
+    faqs: [
+      {
+        question: "Do you cover photographers in Hinjewadi and Baner?",
+        answer:
+          "Yes. We cover Hinjewadi, Baner, Aundh, Kothrud, Koregaon Park, Viman Nagar, Hadapsar, Wakad, Kharadi and surrounding areas.",
+      },
+      {
+        question: "Can I book a photographer for a Ganpati celebration?",
+        answer:
+          "Yes. Ganeshotsav shoots are popular HORA bookings in Pune. Book by the hour for a pandal or home puja.",
+      },
+      {
+        question: "How soon are edited photos delivered?",
+        answer:
+          "Within 24 hours via a permanent web gallery link. All photos color-corrected; selective edits at ₹70/photo.",
+      },
+      {
+        question: "Is a female photographer available in Pune?",
+        answer:
+          "Yes, on request at booking for maternity, baby or ladies-only events.",
+      },
+      {
+        question: "What are the best outdoor shoot spots in Pune?",
+        answer:
+          "Shaniwar Wada, Aga Khan Palace, Pashan Lake and the Sinhagad Fort road for nature and heritage backdrops.",
+      },
+    ],
+  },
 };

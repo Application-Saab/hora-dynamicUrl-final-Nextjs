@@ -168,7 +168,7 @@ const PhotographyLanding = ({
       {/* Suggested poses banner */}
       <div className="suggested-poses">
         <div className="suggested-poses-section">
-          <Image src={PhotoBanner} alt="Camera Holding" className="suggested-image" />
+          <Image src={PhotoBanner} alt="Professional photographer with DSLR camera ready for your event" className="suggested-image" />
         </div>
       </div>
 
@@ -190,7 +190,7 @@ const PhotographyLanding = ({
               <div className="TextBackground">
                 <p>{pose.title}</p>
                 <span className="pose-arrow">
-                  <Image src={arrowIcon} alt="arrow" />
+                  <Image src={arrowIcon} alt="View photography gallery" />
                 </span>
               </div>
             </a>

@@ -29,8 +29,13 @@ import PhotoPackageGrid from "@/components/PhotoPackageGrid";
 import ChooseYourMoment from "@/components/Chooseyourmoment";
 import DecorationBanner from "@/components/CategoryDecorationBanner";
 import PhotographyCardSkeleton from "@/components/PhotographyCardSkeleton";
+import FAQSection from "@/components/FAQSection";
+import PhotographyCategoryDescription from "@/components/PhotographyCategoryDescription";
+import PhotographyHowItWorks from "@/components/PhotographyHowItWorks";
 import { isValidPhotographyCategorySlug } from "@/utils/routeConfig";
 import PhotoGalleryEmbed from "@/components/Photography/PhotoGalleryEmbed";
+import { photographyCategoryFAQData } from "@/utils/Photographyfaqdatalanding";
+import { getPhotographyCategoryDescription } from "@/utils/photographyCategoryDescriptions";
 
 // ---------- constants / helpers (same as before) ----------
 const isWeddingCategory = (category) => {
@@ -485,7 +490,7 @@ export default function CatValuePage({
             <div className="suggested-poses-section">
               <Image
                 src={PhotoBanner}
-                alt="Camera Holding"
+                alt="Professional photographer with DSLR camera ready for your event"
                 className="suggested-image"
               />
             </div>
@@ -502,6 +507,30 @@ export default function CatValuePage({
           />
         </div>
       )}
+
+      {(() => {
+        const catDescription = getPhotographyCategoryDescription(catValue);
+        const catLabel = title
+          ? String(title).replace(/\b\w/g, (c) => c.toUpperCase())
+          : String(catValue || "").replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+        return catDescription ? (
+          <PhotographyCategoryDescription
+            description={catDescription}
+            catLabel={catLabel}
+            city={city}
+          />
+        ) : null;
+      })()}
+
+      <div style={{ maxWidth: "480px", margin: "auto" }}>
+        <PhotographyHowItWorks />
+        <div className="tab-section-details-productpage">
+          <FAQSection
+            faqData={photographyCategoryFAQData(catValue)}
+            heading="Frequently Asked Questions"
+          />
+        </div>
+      </div>
     </div>
   );
 }
