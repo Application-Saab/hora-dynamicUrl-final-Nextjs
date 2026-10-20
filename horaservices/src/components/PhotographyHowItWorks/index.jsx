@@ -1,5 +1,4 @@
-
-import "./PhotographyHowItWorks.css";
+import styles from "./PhotographyHowItWorks.module.css";
 
 const PHOTOGRAPHY_STEPS = [
   {
@@ -31,40 +30,22 @@ const PHOTOGRAPHY_STEPS = [
  */
 const PhotographyHowItWorks = () => {
   return (
-    <section
-      className="photography-how-it-works"
-      aria-label="How HORA photography booking works"
-    >
-      <div className="photography-how-it-works__inner">
-        <h2 className="photography-how-it-works__heading">
-          How It Works
-        </h2>
-
-        <p className="photography-how-it-works__subheading">
+    <section className={styles.wrapper} aria-label="How HORA photography booking works">
+      <div className={styles.inner}>
+        <h2 className={styles.heading}>How It Works</h2>
+        <p className={styles.subheading}>
           Book a professional photographer in 4 simple steps
         </p>
 
-        <div className="photography-how-it-works__steps">
+        <div className={styles.steps}>
           {PHOTOGRAPHY_STEPS.map((item) => (
-            <div
-              key={item.step}
-              className="photography-how-it-works__step"
-            >
-              <div
-                className="photography-how-it-works__step-number"
-                aria-hidden="true"
-              >
+            <div key={item.step} className={styles.step}>
+              <div className={styles.stepNumber} aria-hidden="true">
                 {item.step}
               </div>
-
-              <div className="photography-how-it-works__step-content">
-                <h3 className="photography-how-it-works__step-title">
-                  {item.title}
-                </h3>
-
-                <p className="photography-how-it-works__step-desc">
-                  {item.desc}
-                </p>
+              <div className={styles.stepContent}>
+                <h3 className={styles.stepTitle}>{item.title}</h3>
+                <p className={styles.stepDesc}>{item.desc}</p>
               </div>
             </div>
           ))}

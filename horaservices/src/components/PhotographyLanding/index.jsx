@@ -190,7 +190,7 @@ const PhotographyLanding = ({
               <div className="TextBackground">
                 <p>{pose.title}</p>
                 <span className="pose-arrow">
-                  <Image src={arrowIcon}  alt="View photography gallery" />
+                  <Image src={arrowIcon} alt="View photography gallery" />
                 </span>
               </div>
             </a>

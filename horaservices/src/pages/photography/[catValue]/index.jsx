@@ -9,14 +9,6 @@ import PhotoBanner from "@/assets/PhotoBanner.jpg";
 import PreWeddingImg from "@/assets/pre-wedding.webp";
 import HaldiMahandiImg from "@/assets/haldi-mahandi.webp";
 import Weddings from "@/assets/wedding.webp";
-import { photographyCategoryDescriptions } from "@/utils/Photographydescription";
-import SectionDescription from "@/components/Description";
-import FAQSection from "@/components/FAQSection";
-import PhotographyHowItWorks from "@/components/PhotographyHowItWorks";
-import {
-  photographyCategoryFAQData,
-} from "@/utils/PhotographyPagesfaqdata";
-
 
 import {
   BASE_URL,
@@ -37,8 +29,13 @@ import PhotoPackageGrid from "@/components/PhotoPackageGrid";
 import ChooseYourMoment from "@/components/Chooseyourmoment";
 import DecorationBanner from "@/components/CategoryDecorationBanner";
 import PhotographyCardSkeleton from "@/components/PhotographyCardSkeleton";
+import FAQSection from "@/components/FAQSection";
+import PhotographyCategoryDescription from "@/components/PhotographyCategoryDescription";
+import PhotographyHowItWorks from "@/components/PhotographyHowItWorks";
 import { isValidPhotographyCategorySlug } from "@/utils/routeConfig";
 import PhotoGalleryEmbed from "@/components/Photography/PhotoGalleryEmbed";
+import { photographyCategoryFAQData } from "@/utils/Photographyfaqdatalanding";
+import { getPhotographyCategoryDescription } from "@/utils/photographyCategoryDescriptions";
 
 // ---------- constants / helpers (same as before) ----------
 const isWeddingCategory = (category) => {
@@ -111,7 +108,6 @@ export async function getServerSideProps(context) {
   let catId = null;
   let products = [];
   let error = "";
-
 
   if (effectiveCatValue) {
     try {
@@ -204,8 +200,6 @@ export default function CatValuePage({
 
   const content = seoData?.[effectiveCatValue] || {};
   const title = content.h1 || effectiveCatValue?.replace(/-/g, " ");
-  const photographyDescription =
-  photographyCategoryDescriptions?.[effectiveCatValue] || null;
   const intro = content.description || "";
   const words = intro.split(" ");
   const firstLine = words.slice(0, 8).join(" ");
@@ -514,23 +508,29 @@ export default function CatValuePage({
         </div>
       )}
 
-    {photographyDescription && (
-    <SectionDescription
-      title="Photography Guide"
-      intro={photographyDescription.intro}
-      sections={photographyDescription.sections}
-      closingCta={photographyDescription.closingCta}
-    />
-  )}
+      {(() => {
+        const catDescription = getPhotographyCategoryDescription(catValue);
+        const catLabel = title
+          ? String(title).replace(/\b\w/g, (c) => c.toUpperCase())
+          : String(catValue || "").replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+        return catDescription ? (
+          <PhotographyCategoryDescription
+            description={catDescription}
+            catLabel={catLabel}
+            city={city}
+          />
+        ) : null;
+      })()}
 
-
-    <div style={{ maxWidth: "480px", margin: "auto" }}>
-      <PhotographyHowItWorks />
-    <FAQSection
-  faqData={photographyCategoryFAQData(effectiveCatValue)}
-  heading="Frequently Asked Questions"
-/>
-</div>
+      <div style={{ maxWidth: "480px", margin: "auto" }}>
+        <PhotographyHowItWorks />
+        <div className="tab-section-details-productpage">
+          <FAQSection
+            faqData={photographyCategoryFAQData(catValue)}
+            heading="Frequently Asked Questions"
+          />
+        </div>
+      </div>
     </div>
   );
 }

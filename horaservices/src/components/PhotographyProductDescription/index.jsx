@@ -1,8 +1,8 @@
-
-import "./PhotographyProductDescription.css";
+import styles from "./PhotographyProductDescription.module.css";
 
 /**
  * Maps common inclusion keywords to plain-language explanations.
+ * Each matched item gets a short explanatory line shown below the bullet.
  */
 const INCLUSION_EXPLANATIONS = {
   "edited photo": "Professional colour correction and basic retouching applied to your best shots. Ready to print or share as-is.",
@@ -35,42 +35,52 @@ const INCLUSION_EXPLANATIONS = {
   "team photo": "Group portrait of the full team or department, typically with a consistent background and uniform lighting.",
 };
 
+/**
+ * Parse inclusions HTML string into an array of clean string items.
+ * Mirrors the parsing logic in getItemInclusion on the product page.
+ */
 const parseInclusions = (inclusion) => {
   if (!Array.isArray(inclusion) || inclusion.length === 0) return [];
-
   const htmlString = inclusion[0];
   const withoutTags = htmlString.replace(/<[^>]*>/g, "");
   const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, " ");
-
-  return withoutSpecialChars
-    .split("<div>")
+  const statements = withoutSpecialChars.split("<div>");
+  return statements
     .flatMap((statement) =>
-      statement.split("-").filter((item) => item.trim() !== "")
+      statement.split("-").filter((item) => item.trim() !== ""),
     )
     .map((item) => item.trim())
     .filter(Boolean);
 };
 
+/**
+ * Find the best matching explanation for an inclusion item.
+ */
 const findExplanation = (item) => {
   const lower = item.toLowerCase();
-
   for (const [keyword, explanation] of Object.entries(INCLUSION_EXPLANATIONS)) {
     if (lower.includes(keyword)) return explanation;
   }
-
   return null;
 };
 
+/**
+ * PhotographyProductDescription
+ *
+ * Renders below the inclusions section on the product page.
+ * Shows each inclusion with a plain-language explanation of what it means.
+ *
+ * Props:
+ *   work: the photography product object (needs work.inclusion, work.name)
+ *   city: string | null
+ *   catValue: string | null
+ */
 const PhotographyProductDescription = ({ work, city, catValue }) => {
   if (!work) return null;
 
   const inclusions = parseInclusions(work.inclusion);
-
   const explainedItems = inclusions
-    .map((item) => ({
-      item,
-      explanation: findExplanation(item),
-    }))
+    .map((item) => ({ item, explanation: findExplanation(item) }))
     .filter(({ explanation }) => explanation !== null);
 
   if (explainedItems.length === 0) return null;
@@ -78,35 +88,22 @@ const PhotographyProductDescription = ({ work, city, catValue }) => {
   const cityLabel = city
     ? ` in ${String(city).replace(/\b\w/g, (c) => c.toUpperCase())}`
     : "";
-
   const packageName = work.name || "This Package";
 
   return (
-    <section
-      className="photography-product-description"
-      aria-label={`What's included in ${packageName}`}
-    >
-      <h2 className="photography-product-description__title">
+    <section className={styles.wrapper} aria-label={`What's included in ${packageName}`}>
+      <h2 className={styles.title}>
         What&apos;s included{cityLabel} — explained
       </h2>
-
-      <p className="photography-product-description__subtitle">
+      <p className={styles.subtitle}>
         Here&apos;s what each item in this package actually means for your shoot.
       </p>
 
-      <div className="photography-product-description__list">
+      <div className={styles.list}>
         {explainedItems.map(({ item, explanation }, idx) => (
-          <div
-            key={`${item}-${idx}`}
-            className="photography-product-description__item"
-          >
-            <div className="photography-product-description__item-label">
-              {item}
-            </div>
-
-            <div className="photography-product-description__item-explanation">
-              {explanation}
-            </div>
+          <div key={idx} className={styles.item}>
+            <div className={styles.itemLabel}>{item}</div>
+            <div className={styles.itemExplanation}>{explanation}</div>
           </div>
         ))}
       </div>

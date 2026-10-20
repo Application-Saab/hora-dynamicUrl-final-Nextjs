@@ -1,4 +1,4 @@
-import "./PhotographyComparison.css";
+import styles from "./PhotographyComparison.module.css";
 
 const COMPARISON_ROWS = [
   {
@@ -38,51 +38,35 @@ const COMPARISON_ROWS = [
   },
 ];
 
+/**
+ * PhotographyComparison
+ * "HORA vs hiring a freelance photographer" table.
+ * Used on the photography landing page.
+ */
 const PhotographyComparison = () => {
   return (
     <section
-      className="photography-comparison"
+      className={styles.wrapper}
       aria-label="HORA photography vs freelance photographer comparison"
     >
-      <div className="photography-comparison__inner">
-        <h2 className="photography-comparison__heading">
+      <div className={styles.inner}>
+        <h2 className={styles.heading}>
           Why book through HORA?
         </h2>
-
-        <p className="photography-comparison__subheading">
+        <p className={styles.subheading}>
           How we compare to hiring a freelance photographer directly
         </p>
 
-        <div
-          className="photography-comparison__table"
-          role="table"
-          aria-label="Comparison table"
-        >
+        <div className={styles.table} role="table" aria-label="Comparison table">
           {/* Header */}
-          <div
-            className="photography-comparison__header-row"
-            role="row"
-          >
-            <div
-              className="photography-comparison__header-aspect"
-              role="columnheader"
-            >
+          <div className={styles.headerRow} role="row">
+            <div className={styles.headerAspect} role="columnheader">
               &nbsp;
             </div>
-
-            <div
-              className="photography-comparison__header-cell photography-comparison__hora-header"
-              role="columnheader"
-            >
-              <span className="photography-comparison__hora-tag">
-                HORA
-              </span>
+            <div className={`${styles.headerCell} ${styles.horaHeader}`} role="columnheader">
+              <span className={styles.horaTag}>HORA</span>
             </div>
-
-            <div
-              className="photography-comparison__header-cell photography-comparison__freelancer-header"
-              role="columnheader"
-            >
+            <div className={`${styles.headerCell} ${styles.freelancerHeader}`} role="columnheader">
               Freelancer
             </div>
           </div>
@@ -90,38 +74,18 @@ const PhotographyComparison = () => {
           {/* Rows */}
           {COMPARISON_ROWS.map((row, idx) => (
             <div
-              key={row.aspect}
-              className={`photography-comparison__row ${
-                idx % 2 === 0
-                  ? "photography-comparison__row-alt"
-                  : ""
-              }`}
+              key={idx}
+              className={`${styles.row} ${idx % 2 === 0 ? styles.rowAlt : ""}`}
               role="row"
             >
-              <div
-                className="photography-comparison__aspect"
-                role="rowheader"
-              >
+              <div className={styles.aspect} role="rowheader">
                 {row.aspect}
               </div>
-
-              <div
-                className="photography-comparison__cell photography-comparison__hora-cell"
-                role="cell"
-              >
-                <span
-                  className="photography-comparison__check-icon"
-                  aria-hidden="true"
-                >
-                  ✓
-                </span>
+              <div className={`${styles.cell} ${styles.horaCell}`} role="cell">
+                <span className={styles.checkIcon} aria-hidden="true">✓</span>
                 {row.hora}
               </div>
-
-              <div
-                className="photography-comparison__cell photography-comparison__freelancer-cell"
-                role="cell"
-              >
+              <div className={`${styles.cell} ${styles.freelancerCell}`} role="cell">
                 {row.freelancer}
               </div>
             </div>
