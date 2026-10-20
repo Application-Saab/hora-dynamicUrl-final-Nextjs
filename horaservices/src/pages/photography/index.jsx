@@ -6,6 +6,7 @@ import PhotographyLanding, {
 import PhotographyCityLanding from "@/components/photographyseoCommon/PhotographyCityLanding";
 import PhotographyHowItWorks from "@/components/PhotographyHowItWorks";
 import PhotographyComparison from "@/components/PhotographyComparison";
+import PhotographyPortfolio from "@/components/PhotographyPortfolio";
 import { CityPhotographyLandingPage } from "@/utils/Cityphotographylandingpage";
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
 import { SeoMain } from "@/utils/photoGraphyHead";
@@ -91,6 +92,7 @@ const PhotographyIndexPage = ({ city, locality, initialPackages }) => {
       <div style={{ maxWidth: "480px", margin: "auto" }}>
         <PhotographyHowItWorks />
         <PhotographyComparison />
+        <PhotographyPortfolio />
         <SectionDescription sections={photographyDescription} />
 
         <div className="tab-section-details-productpage">
