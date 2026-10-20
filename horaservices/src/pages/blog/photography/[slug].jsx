@@ -1,10 +1,10 @@
-
 import Head from "next/head";
 import Link from "next/link";
 import {
   getPhotographyBlogArticle,
+  getAllPhotographyBlogArticles,
 } from "@/utils/photographyBlogData";
-import "./PhotographyBlogArticle.css";
+import styles from "./PhotographyBlogArticle.module.css";
 
 // ---------- SSR ----------
 export async function getServerSideProps({ params }) {
@@ -77,118 +77,61 @@ export default function PhotographyBlogArticle({ article }) {
         <title>{metaTitle}</title>
         <meta name="description" content={metaDescription} />
         <link rel="canonical" href={canonicalUrl} />
-
         <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={metaDescription} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={canonicalUrl} />
-        <meta
-          property="article:published_time"
-          content={publishedDate}
-        />
-
+        <meta property="article:published_time" content={publishedDate} />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(blogSchema),
-          }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
         />
       </Head>
 
-      <main className="photography-article">
-        <article className="photography-article__content">
+      <main className={styles.main}>
+        <article className={styles.article}>
+
           {/* Breadcrumb */}
-          <nav
-            className="photography-article__breadcrumb"
-            aria-label="Breadcrumb"
-          >
+          <nav className={styles.breadcrumb} aria-label="Breadcrumb">
             <Link href="/photography">Photography</Link>
-
             <span aria-hidden="true"> / </span>
-
             <Link href="/blog/photography">Blog</Link>
-
             {categorySlug && (
               <>
                 <span aria-hidden="true"> / </span>
-
-                <Link href={`/photography/${categorySlug}`}>
-                  {category}
-                </Link>
+                <Link href={`/photography/${categorySlug}`}>{category}</Link>
               </>
             )}
           </nav>
 
           {/* Header */}
-          <header className="photography-article__header">
-            <div className="photography-article__meta-row">
-              <span className="photography-article__category">
-                {category}
-              </span>
-
-              <span
-                className="photography-article__dot"
-                aria-hidden="true"
-              >
-                ·
-              </span>
-
-              <span className="photography-article__reading-time">
-                {readingTime} min read
-              </span>
-
-              <span
-                className="photography-article__dot"
-                aria-hidden="true"
-              >
-                ·
-              </span>
-
-              <time
-                dateTime={publishedDate}
-                className="photography-article__date"
-              >
+          <header className={styles.header}>
+            <div className={styles.metaRow}>
+              <span className={styles.category}>{category}</span>
+              <span className={styles.dot} aria-hidden="true">·</span>
+              <span className={styles.readingTime}>{readingTime} min read</span>
+              <span className={styles.dot} aria-hidden="true">·</span>
+              <time dateTime={publishedDate} className={styles.date}>
                 {formattedDate}
               </time>
             </div>
-
-            <h1 className="photography-article__title">
-              {title}
-            </h1>
-
-            <p className="photography-article__excerpt">
-              {excerpt}
-            </p>
+            <h1 className={styles.title}>{title}</h1>
+            <p className={styles.excerpt}>{excerpt}</p>
           </header>
 
           {/* Body */}
-          <div className="photography-article__body">
+          <div className={styles.body}>
             {sections.map((section, idx) => (
-              <section
-                key={idx}
-                className="photography-article__section"
-              >
-                <h2 className="photography-article__section-heading">
-                  {section.heading}
-                </h2>
-
-                <p className="photography-article__section-body">
-                  {section.body}
-                </p>
+              <section key={idx} className={styles.section}>
+                <h2 className={styles.sectionHeading}>{section.heading}</h2>
+                <p className={styles.sectionBody}>{section.body}</p>
               </section>
             ))}
 
-            {/* CTA */}
             {closingCta && (
-              <div className="photography-article__cta">
-                <p className="photography-article__cta-text">
-                  {closingCta}
-                </p>
-
-                <Link
-                  href="/photography"
-                  className="photography-article__cta-button"
-                >
+              <div className={styles.cta}>
+                <p className={styles.ctaText}>{closingCta}</p>
+                <Link href="/photography" className={styles.ctaButton}>
                   Browse photography packages →
                 </Link>
               </div>
@@ -196,11 +139,8 @@ export default function PhotographyBlogArticle({ article }) {
           </div>
 
           {/* Back link */}
-          <div className="photography-article__back">
-            <Link
-              href="/blog/photography"
-              className="photography-article__back-link"
-            >
+          <div className={styles.back}>
+            <Link href="/blog/photography" className={styles.backLink}>
               ← All photography articles
             </Link>
           </div>
