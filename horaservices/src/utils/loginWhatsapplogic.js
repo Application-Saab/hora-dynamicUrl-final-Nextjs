@@ -1,5 +1,7 @@
 import axiosApi from "@/utils/axiosApi";
 import cityNameToSlug from "./Citynametoslug.json";
+import { WHATSAPP_TEMPLATE_ENDPOINT } from "./apiconstants";
+import { WHATSAPP_API_TOKEN } from "./constants";
 
 /* ---------------- CONSTANTS ---------------- */
 export const WHATSAPP_BOOKING_NUMBER = "917338584828";
@@ -98,7 +100,7 @@ export const sendWelcomeMessage = async (mobile) => {
 
   try {
     await axiosApi.post(
-      "https://public.doubletick.io/whatsapp/message/template",
+      WHATSAPP_TEMPLATE_ENDPOINT,
       {
         messages: [
           {
@@ -129,7 +131,7 @@ export const sendWelcomeMessage = async (mobile) => {
         headers: {
           accept: "application/json",
           "content-type": "application/json",
-          Authorization: process.env.NEXT_PUBLIC_DOUBLETICK_KEY,
+          Authorization: WHATSAPP_API_TOKEN,
         },
       },
     );
