@@ -17,6 +17,7 @@ const STORAGE_KEYS = {
 export default function HomeContent({ isNotFound = false }) {
   const [loggedinUserId, setLoggedinUserId] = useState(null);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [hasEvents, setHasEvents] = useState(false); // NEW
 
   useEffect(() => {
     const syncLoginState = () => {
@@ -27,6 +28,7 @@ export default function HomeContent({ isNotFound = false }) {
       } else {
         setLoggedinUserId(null);
         setIsUserLoggedIn(false);
+        setHasEvents(false); // NEW: logout par reset
       }
     };
 
@@ -40,13 +42,22 @@ export default function HomeContent({ isNotFound = false }) {
     };
   }, []);
 
+  const showEventHub = isUserLoggedIn && loggedinUserId;
+
   return (
     <div className="home-wrapper">
       <HomeBanner />
       <InviteCard />
 
-      {isUserLoggedIn && loggedinUserId && <EventHub userId={loggedinUserId} />}
-      <div style={!isUserLoggedIn ? { marginTop: "10px" } : undefined}>
+      {showEventHub && (
+        <EventHub
+          userId={loggedinUserId}
+          onEventsLoaded={(count) => setHasEvents(count > 0)} // NEW
+        />
+      )}
+
+      {/* EventHub dikh raha ho tabhi margin nahi, warna 10px */}
+      <div style={!hasEvents ? { marginTop: "10px" } : undefined}>
         <PlanningCategories isNotFound={isNotFound} />
       </div>
       <VenueFinder isNotFound={isNotFound} />
