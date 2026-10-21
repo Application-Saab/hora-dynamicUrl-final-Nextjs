@@ -1,7 +1,7 @@
 import React from "react";
 import "./headerCards.css";
 
-const HeaderCardsFlashLoader = () => {
+const HeaderCardsFlashLoader = ({showButtoLoaderShow=true}) => {
   return (
     <>
 
@@ -41,6 +41,7 @@ const HeaderCardsFlashLoader = () => {
       </div>
 
       {/* ADD NEW IMAGES BUTTON SKELETON */}
+      {showButtoLoaderShow &&
       <div className="d-flex gap-2 placeholder-glow thumbnail-gallery-content">
         <span
           className="placeholder"
@@ -70,6 +71,7 @@ const HeaderCardsFlashLoader = () => {
           }}
         />
       </div>
+}
     </>
   );
 };
