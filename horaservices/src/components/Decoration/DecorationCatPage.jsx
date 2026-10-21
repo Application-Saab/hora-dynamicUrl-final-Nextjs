@@ -107,6 +107,7 @@ const DecorationCatPage = ({
   initialCatId = "",
   initialHasMore = false,
   isDirectProductPage = false,
+    categorySlug = "balloon-decoration",
 }) => {
   const router = useRouter();
   const pathname = router.asPath.split("?")[0];

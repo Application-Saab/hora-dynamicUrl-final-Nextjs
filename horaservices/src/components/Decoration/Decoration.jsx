@@ -456,6 +456,7 @@ const Decoration = ({ city, locality }) => {
             data={weddingCollections}
             city={city}
             locality={locality}
+            categorySlug="wedding"
           />
         </div>
       </section>

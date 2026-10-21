@@ -39,6 +39,7 @@ import {
   GET_ADDON_BY_ID,
   COMPRESSED_WEBP_IMG_URL,
 } from "@/utils/apiconstants";
+import { CATEGORY_CONFIG, resolveCategorySlug } from "@/utils/categoryConfig";
 import FAQSection from "@/components/FAQSection";
 import faqData from "@/utils/faqData.json";
 import CategoryTabs from "@/components/CategoryTabs/index.jsx";
@@ -59,6 +60,12 @@ import WhyHoraSection from "@/components/WhyHoraSection";
 import { useCity } from "@/utils/cityContext";
 import WhatsAppIcon from "@/app/WhatsAppIconGtm";
 import { ProductPageLoader } from "../PageLoaders/ProductPageLoader";
+
+// Category-wise reviews. Wedding ke reviews ready ho jayein to yahan add kar do.
+const REVIEWS_BY_CATEGORY = {
+  "balloon-decoration": balloonreviewsproduct,
+  // wedding: weddingreviewsproduct,
+};
 
 // ---------- helpers ----------
 const getDiscountedPrice = (price) => {
@@ -88,6 +95,9 @@ const formatProductName = (productName) => {
     .join(" ");
 };
 
+const toTitleCase = (str = "") =>
+  str.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+
 // ---------- Component (NO getServerSideProps here) ----------
 function DecorationsCatDetails({
   initialProduct = null,
@@ -99,9 +109,15 @@ function DecorationsCatDetails({
   locality = null,
   initialCategoryDetaiils: ssrCategoryDetails = null,
   isDirectProductPage = false,
+  // "balloon-decoration" ya "wedding". Prop na mile to URL se auto-detect hoga.
+  categorySlug: categorySlugProp,
 }) {
   const { selectedCitySlug, selectedCityName } = useCity();
   const router = useRouter();
+  const categorySlug = resolveCategorySlug(categorySlugProp, router.asPath);
+  const categoryConfig =
+    CATEGORY_CONFIG[categorySlug] || CATEGORY_CONFIG["balloon-decoration"];
+
   const [product, setProduct] = useState(initialProduct || null);
   const [loading, setLoading] = useState(!initialProduct);
   const [catValue, setCatValue] = useState(initialCatValue || "");
@@ -164,6 +180,13 @@ function DecorationsCatDetails({
   const similarRef = useRef(null);
   const addonRef = useRef(null);
   const reviewsRef = useRef(null);
+
+  // "balloon-decoration" -> "balloon decoration", "wedding" -> "wedding"
+  const categoryLabel = categorySlug.replace(/-/g, " ");
+  // Direct URL par catValue khali ho sakta hai, to categoryLabel use karo
+  const catLabel = catValue ? catValue.replace(/-/g, " ") : categoryLabel;
+  // Meta description me "decoration" alag se likha hai, isliye double word hatao
+  const catLabelShort = catLabel.replace(/\s*decoration$/i, "").trim();
 
   const altTagCatValue = (catValue || "").replace(/-/g, " ");
   const kidsCategories = ["kids-birthday-decoration", "kidsbirthday"];
@@ -366,7 +389,8 @@ function DecorationsCatDetails({
   // ---------- handlers ----------
   const openCatItems = (item) => {
     const catSlug = item.catSlug || item.catValue || "kids-birthday-decoration";
-    let path = `/balloon-decoration/${catSlug}`;
+    // categorySlug (balloon-decoration / wedding) use hoga
+    let path = `/${categorySlug}/${catSlug}`;
     if (item.value) path += `?theme=${encodeURIComponent(item.value)}`;
     router.push(path);
   };
@@ -587,7 +611,7 @@ function DecorationsCatDetails({
     const parts = [];
     if (cityFromUrl) parts.push(slugify(cityFromUrl));
     if (localityFromUrl) parts.push(slugify(localityFromUrl));
-    parts.push("balloon-decoration");
+    parts.push(categorySlug);
     parts.push("product");
     if (productSlug) parts.push(productSlug);
     return `${SITE}/${parts.filter(Boolean).join("/")}`;
@@ -595,27 +619,37 @@ function DecorationsCatDetails({
 
   const canonicalUrl = buildProductCanonical();
 
+  // Breadcrumb: catValue ho to /<categorySlug>/<catValue>, warna sirf /<categorySlug>
+  const breadcrumbHref = `/${categorySlug}${catValue ? `/${catValue}` : ""}`;
+  const breadcrumbText = toTitleCase(catValue || categorySlug);
+
+  const metaDescription = `${product?.name || "Decoration"} from Hora Services – Beautiful ${catLabelShort} decoration${
+    categoryConfig.startingPrice
+      ? ` starting at just ₹${categoryConfig.startingPrice}`
+      : ""
+  }. Book for birthdays, anniversaries, weddings & more!`;
+
+  const reviewsForCategory =
+    REVIEWS_BY_CATEGORY[categorySlug] || balloonreviewsproduct;
+
   return (
     <>
       <div className="App" style={{ backgroundColor: "white" }}>
         <Head>
-          <title>{`${product?.name || ""} | ${catValue.replace(/-/g, " ")}`}</title>
-          <meta
-            name="description"
-            content={`${product?.name || "Decoration"} from Hora Services – Beautiful ${catValue.replace(/-/g, " ")} decoration starting at just ₹999. Book for birthdays, anniversaries, weddings & more!`}
-          />
+          <title>{`${product?.name || ""} | ${catLabel}`}</title>
+          <meta name="description" content={metaDescription} />
           <meta
             name="keywords"
-            content={`${product?.name || ""}, ${catValue.replace(/-/g, " ")}, balloon decoration, ${product?.name || ""} decoration price`}
+            content={`${product?.name || ""}, ${catLabel}, ${categoryLabel}, ${product?.name || ""} decoration price`}
           />
           <link rel="canonical" href={canonicalUrl} />
           <meta
             property="og:title"
-            content={`${product?.name || ""} | ${catValue.replace(/-/g, " ")} by Hora Services`}
+            content={`${product?.name || ""} | ${catLabel} by Hora Services`}
           />
           <meta
             property="og:description"
-            content={`Book ${product?.name || ""} decoration by Hora Services. Explore ${catValue.replace(/-/g, " ")} designs for birthdays, anniversaries, baby showers & more.`}
+            content={`Book ${product?.name || ""} decoration by Hora Services. Explore ${catLabelShort} designs for birthdays, anniversaries, baby showers & more.`}
           />
           <meta
             property="og:image"
@@ -650,7 +684,7 @@ function DecorationsCatDetails({
                       ? `${COMPRESSED_WEBP_IMG_URL}${product.featured_images[0].fileName.split(".")[0]}.webp`
                       : fallbackImg
                   }
-                  alt={`balloon decoration ${altTagCatValue} ${product?.name || ""} ${product?.price || ""}`}
+                  alt={`${categoryLabel} ${altTagCatValue} ${product?.name || ""} ${product?.price || ""}`}
                   style={{ width: "100%", height: "auto" }}
                   width={300}
                   height={300}
@@ -686,13 +720,8 @@ function DecorationsCatDetails({
                       Home
                     </a>
                     {" > "}
-                    <a
-                      className="breadcrumb-link"
-                      href={`/balloon-decoration/${catValue}`}
-                    >
-                      {catValue
-                        .replace(/-/g, " ")
-                        .replace(/\b\w/g, (l) => l.toUpperCase())}
+                    <a className="breadcrumb-link" href={breadcrumbHref}>
+                      {breadcrumbText}
                     </a>
                     {" > "}
                   </h2>
@@ -771,6 +800,7 @@ function DecorationsCatDetails({
                   icon={StarIcon}
                   sparkleIcon={SimiliarThemes}
                   isDirectProductPage={isDirectProductPage}
+                  categorySlug={categorySlug}
                 />
               </div>
 
@@ -810,6 +840,7 @@ function DecorationsCatDetails({
                   icon={StarIcon}
                   sparkleIcon={hearticon}
                   isDirectProductPage={isDirectProductPage}
+                  categorySlug={categorySlug}
                 />
               )}
 
@@ -821,13 +852,14 @@ function DecorationsCatDetails({
                   locality={locality}
                   catValue={catValue}
                   isDirectProductPage={isDirectProductPage}
+                  categorySlug={categorySlug}
                 />
               )}
 
               <WhyHoraSection />
 
               <div ref={reviewsRef}>
-                <GoogleReviewsCard reviews={balloonreviewsproduct} />
+                <GoogleReviewsCard reviews={reviewsForCategory} />
               </div>
 
               <BrandBanner
