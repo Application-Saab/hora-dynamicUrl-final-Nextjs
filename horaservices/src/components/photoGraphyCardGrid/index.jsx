@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import "./photoGraphyCardgrid.css";
 import React from "react";
-
+import arrowImg from "@/assets/arrowicon.svg"
 const PhotoGraphyCard = ({
   src,
   title,
@@ -15,13 +15,13 @@ const PhotoGraphyCard = ({
 
   const handleViewMore = () => {
     const categoryItem = photoCat?.find(
-      (cat) => cat.subCategory === subCategory || cat.name === subCategory,
+      (cat) => cat.subCategory === subCategory || cat.name === subCategory
     );
 
     const finalSubCategory = categoryItem?.subCategory || subCategory;
     const slug = categoryItem?.slug;
 
-    if (!finalSubCategory) return;
+    if (!finalSubCategory || !slug) return;
 
     const citySlug = city?.toLowerCase();
     const localitySlug = locality?.toLowerCase();
@@ -59,18 +59,25 @@ const PhotoGraphyCard = ({
           src={src}
           alt={title}
           fill
+          sizes="(max-width: 768px) 45vw, 220px"
           className="photograpghy-image"
           priority
         />
-        <div className="imageOverlaygrid" />
-        <div className="titleWrappergrid">
-          <h2 className="titlegrid">{title}</h2>
-        </div>
       </div>
 
-      <div className="footergrid">
+      <div className="bodygrid">
+        <h2 className="titlegrid">{title}</h2>
+
         <button className="viewMoregrid" type="button">
           View more
+          <Image
+            src={arrowImg}
+            alt=""
+            width={14}
+            height={14}
+            className="arrowImggrid"
+            aria-hidden="true"
+          />
         </button>
       </div>
     </div>

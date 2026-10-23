@@ -1,7 +1,7 @@
 import Image from "next/image";
 import "./photoGraphycard.css";
 import React from "react";
-
+import arrowImg from "@/assets/arrowicon.svg";
 const PhotoGraphyCard = ({
   src,
   title,
@@ -51,22 +51,32 @@ const PhotoGraphyCard = ({
   };
 
   return (
-    <a
-      type="button"
-      href={getHref()}
-      className="photo-card"
-      onClick={handleClick}
-      style={{ cursor: "pointer" }}
-    >
+    <a href={getHref()} className="photo-card" onClick={handleClick}>
       <div className="photo-imageWrapper">
-        <Image src={src} alt={title} fill className="photo-image" priority />
-        <div className="photo-imageOverlay"></div>
-        <div className="photo-titleWrapper">
-          <h2 className="photo-title">{title}</h2>
-        </div>
+        <Image
+          src={src}
+          alt={title}
+          fill
+          sizes="(max-width: 768px) 33vw, 200px"
+          className="photo-image"
+          priority
+        />
       </div>
-      <div className="photo-footer">
-        <span className="photo-viewMore">View more</span>
+
+      <div className="photo-body">
+        <h2 className="photo-title">{title}</h2>
+
+        <span className="photo-viewMore">
+          View more
+          <Image
+            src={arrowImg}
+            alt=""
+            width={14}
+            height={14}
+            className="photo-arrowImg"
+            aria-hidden="true"
+          />
+        </span>
       </div>
     </a>
   );

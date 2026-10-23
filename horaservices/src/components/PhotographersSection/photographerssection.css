@@ -1,0 +1,134 @@
+.ph-section {
+  width: 100%;
+  padding: clamp(10px, 3vw, 20px) 0;
+}
+
+.ph-heading {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 2vw, 10px);
+  margin: 0 0 clamp(10px, 3vw, 18px);
+  padding: 0 clamp(10px, 3vw, 20px);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: clamp(22px, 6.5vw, 32px);
+  color: #97538c;
+}
+
+.ph-headingIcon {
+  font-size: clamp(22px, 6.5vw, 30px);
+  line-height: 1;
+}
+
+/* horizontal scroll row */
+.ph-list {
+  display: flex;
+  gap: clamp(8px, 3vw, 20px);
+  padding: 0 clamp(10px, 3vw, 20px) 6px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.ph-list::-webkit-scrollbar {
+  display: none;
+}
+
+.ph-card {
+  flex: 0 0 auto;
+  width: clamp(100px, 28vw, 150px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  scroll-snap-align: start;
+}
+
+.ph-avatar {
+  position: relative;
+  width: clamp(80px, 24vw, 120px);
+  height: clamp(80px, 24vw, 120px);
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #f0e3ee;
+  background: #f5f5f5;
+}
+
+.ph-avatarImg {
+  object-fit: cover;
+}
+
+.ph-name {
+  margin: clamp(6px, 1.8vw, 10px) 0 clamp(2px, 0.8vw, 4px);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: clamp(12px, 3.6vw, 16px);
+  line-height: 1.2;
+  text-align: center;
+  color: #97538c;
+  white-space: nowrap;
+}
+
+.ph-rating {
+  display: flex;
+  align-items: center;
+  gap: clamp(3px, 1vw, 5px);
+  margin-bottom: clamp(6px, 1.8vw, 10px);
+}
+
+.ph-stars {
+  display: inline-flex;
+  letter-spacing: 1px;
+}
+
+.ph-star {
+  font-size: clamp(11px, 3.2vw, 15px);
+  line-height: 1;
+  color: #d9d9d9;
+}
+
+.ph-star--on {
+  color: #f5a623;
+}
+
+.ph-ratingNum {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: clamp(11px, 3.2vw, 14px);
+  color: #333;
+}
+
+.ph-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(3px, 1vw, 6px);
+  padding: clamp(5px, 1.6vw, 8px) clamp(10px, 3.4vw, 18px);
+  border-radius: 999px;
+  background: #97538c;
+  color: #fff;
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: clamp(11px, 3.2vw, 14px);
+  line-height: 1;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+.ph-btn:hover {
+  background: #7e4375;
+}
+
+.ph-arrowImg {
+  width: clamp(10px, 3vw, 14px);
+  height: clamp(10px, 3vw, 14px);
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: brightness(0) invert(1); /* arrow image already white ho to hata dein */
+  transition: transform 0.2s ease;
+}
+
+.ph-btn:hover .ph-arrowImg {
+  transform: translateX(3px);
+}

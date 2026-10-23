@@ -28,6 +28,7 @@ import PhotoGraphyCard from "@/components/PhotoGraphyCard";
 import PhotoGraphyCardgrid from "@/components/photoGraphyCardGrid";
 import PhotographyPackageGridSlider from "@/components/PhotographyPackageGridSlider";
 import GoogleReviewsCard from "@/components/PhotoGalleryPose/GoogleReviewsCard";
+import PhotographersSection from "../PhotographersSection";
 
 const BrandBanner = dynamic(() => import("@/components/BrandBanner"));
 
@@ -131,7 +132,7 @@ const PhotographyLanding = ({
         initialProducts={initialPackages}
         isDirectProductPage={true}
       />
-
+    <PhotographersSection/>
       {/* HORA info card */}
       <div className="hora-wrap">
         <div className="hora-card">
