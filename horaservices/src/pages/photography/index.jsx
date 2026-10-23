@@ -7,6 +7,7 @@ import PhotographyLanding, {
 } from "@/components/PhotographyLanding";
 import seoData from "@/utils/photographyseodata.json";
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
+import { SeoMain } from "@/utils/photoGraphyHead";
 import { photographyFAQData } from "@/utils/PhotographyPagesfaqdata";
 import { photographyDescription } from "@/utils/Photographydescription";
 import { BASE_URL, GET_PHOTOGRAPHY_BY_TAG } from "@/utils/apiconstants.js";
@@ -62,13 +63,22 @@ export async function getServerSideProps(context) {
 
 // ---------- Page ----------
 const PhotographyIndexPage = ({ city, locality, initialPackages }) => {
-  const scriptTag = JSON.stringify(getPhotographyOrganizationSchema());
-  const seo = seoData.defaultSeo;
-  const pageUrl = "https://horaservices.com/photography";
+  // const scriptTag = JSON.stringify(getPhotographyOrganizationSchema());
+  // const seo = seoData.defaultSeo;
+  // const pageUrl = "https://horaservices.com/photography";
+  const scriptTag = getPhotographyOrganizationSchema();
+  const cityKey = city ? String(city).toLowerCase() : null;
+  const cityContent = cityKey ? CityPhotographyLandingPage[cityKey] : null;
+  // City-specific FAQs (from city data) combined with general FAQs
+  const cityFaqs = cityContent?.faqs || [];
+  const generalFaqs = photographyFAQData();
+  const combinedFaqs = cityFaqs.length > 0
+    ? [...cityFaqs, ...generalFaqs.slice(0, Math.max(0, 9 - cityFaqs.length))]
+    : generalFaqs;
 
   return (
     <>
-      <Head>
+      {/* <Head>
         <title>{seo.title}</title>
         <meta name="description" content={seo.description} />
         <meta name="robots" content="index, follow" />
@@ -81,7 +91,8 @@ const PhotographyIndexPage = ({ city, locality, initialPackages }) => {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: scriptTag }}
         />
-      </Head>
+      </Head> */}
+      <SeoMain city={city} locality={locality} scriptTag={scriptTag} />
 
       <PhotographyLanding
         city={city}
