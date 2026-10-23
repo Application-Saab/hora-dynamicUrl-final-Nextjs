@@ -3,6 +3,10 @@
 import Image from "next/image";
 import "@/components/DecorSlider/DecorSlider.css";
 import "./similardecorationslider.css";
+import {
+  resolveCategorySlug,
+  findCategorySegment,
+} from "@/utils/Categoryconfig";
 
 const getDiscountedDifference = (price) => {
   const numericPrice =
@@ -25,11 +29,15 @@ const SimilarDecorationSlider = ({
   catValue = "",
   icon,
   sparkleIcon,
-  isDirectProductPage = false
+  isDirectProductPage = false,
+  // "balloon-decoration" ya "wedding". Na mile to URL se detect hoga.
+  categorySlug: categorySlugProp,
 }) => {
-  // Build product href (same logic as pehle handleCardClick)
   const getCardHref = (item) => {
-    if (!item || !catValue) return "#";
+    if (!item) return "#";
+
+    // Direct product page (/wedding/product/<slug>) par catValue ki zaroorat nahi
+    if (!isDirectProductPage && !catValue) return "#";
 
     const rawSlug = item.slug || item.product_slug || item.name || item.title;
     if (!rawSlug) return "#";
@@ -41,37 +49,39 @@ const SimilarDecorationSlider = ({
       .replace(/\s+/g, "-")
       .replace(/-+/g, "-");
 
-    // Prefer props; fallback to URL parse (client)
     let citySeg = city || "";
     let localitySeg = locality || "";
-    let balloonSegment = "balloon-decoration";
 
-    if (typeof window !== "undefined") {
-      const parts = window.location.pathname.split("/").filter(Boolean);
-      const found = parts.find((seg) =>
-        seg.toLowerCase().startsWith("balloon-decoration")
+    const pathname =
+      typeof window !== "undefined" ? window.location.pathname : "";
+    const categorySlug = resolveCategorySlug(categorySlugProp, pathname);
+    let segment = categorySlug;
+
+    if (pathname) {
+      const parts = pathname.split("/").filter(Boolean);
+
+      const found = findCategorySegment(parts, categorySlug);
+      if (found) segment = found;
+
+      const segIndex = parts.findIndex(
+        (seg) => seg.toLowerCase() === segment.toLowerCase(),
       );
-      if (found) balloonSegment = found;
 
-      const balloonIndex = parts.findIndex(
-        (seg) => seg.toLowerCase() === balloonSegment.toLowerCase()
-      );
-
-      if (!citySeg && balloonIndex > 0) citySeg = parts[0];
-      if (!localitySeg && balloonIndex > 1) localitySeg = parts[1];
+      if (!citySeg && segIndex > 0) citySeg = parts[0];
+      if (!localitySeg && segIndex > 1) localitySeg = parts[1];
     }
 
-    if(isDirectProductPage) {
-      return `/${balloonSegment}/product/${productSlug}`
+    if (isDirectProductPage) {
+      return `/${segment}/product/${productSlug}`;
     }
 
     if (citySeg && localitySeg) {
-      return `/${citySeg}/${localitySeg}/${balloonSegment}/${catValue}/product/${productSlug}`;
+      return `/${citySeg}/${localitySeg}/${segment}/${catValue}/product/${productSlug}`;
     }
     if (citySeg) {
-      return `/${citySeg}/${balloonSegment}/${catValue}/product/${productSlug}`;
+      return `/${citySeg}/${segment}/${catValue}/product/${productSlug}`;
     }
-    return `/${balloonSegment}/${catValue}/product/${productSlug}`;
+    return `/${segment}/${catValue}/product/${productSlug}`;
   };
 
   return (
@@ -125,7 +135,7 @@ const SimilarDecorationSlider = ({
 
             return (
               <a
-                key={index}
+                key={item._id || index}
                 type="button"
                 href={getCardHref(item)}
                 className="similar-card"

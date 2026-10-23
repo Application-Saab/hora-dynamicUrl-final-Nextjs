@@ -29,7 +29,7 @@ export const smallCardCategories = [
   { name: "Baptism", image: BaptismImg, catValue: "baptism-decoration" },
   { name: "Welcome Baby", image: BabyWelcomeImg, catValue: "welcome-baby-decoration" },
   { name: "House Warming", image: HouseWarmingImg, catValue: "house-warming-decoration" },
-  { name: "First Night", image: FirstNightImg, catValue: "first-night-decoration" },
+  { name: "First Night", image: FirstNightImg, catValue: "first-night-decoration", categorySlug: "wedding-decoration", },
   { name: "Corporate Showroom", image: CorporateShowroomImg, catValue: "corporate-showrooms-decoration" },
   { name: "Festivals", image: FestivalsImg, catValue: "festivals-decoration" },
   { name: "Bachelorette", image: BacheloretteImg, catValue: "bachelorette-decoration" },
