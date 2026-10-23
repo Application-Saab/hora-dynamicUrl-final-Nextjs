@@ -171,23 +171,34 @@ const Decoration = ({ city, locality }) => {
   const [sortOption, setSortOption] = useState("popularity");
 
   // Dropdown mein category par click ka URL (CategoryGrid jaisa hi)
-  const getCategoryHref = (cat) => {
-    let path = "";
-    if (city) path += `/${city.toLowerCase()}`;
-    if (locality) path += `/${locality.toLowerCase()}`;
-    return `${path}/${categorySlug}/${cat.catValue}`;
-  };
+const getCategoryHref = (cat) => {
+  const slug = cat.categorySlug || categorySlug;
+  let path = "";
+  if (city) path += `/${city.toLowerCase()}`;
+  if (locality) path += `/${locality.toLowerCase()}`;
+  return `${path}/${slug}/${cat.catValue}`;
+};
   // Search dropdown aur typewriter placeholder isi list se chalte hain
-  const searchCategoryList = smallCardCategories.map((c) => ({
-    id: c.catValue,
-    label: c.name,
-    image: c.image,
-    catValue: c.catValue,
-  }));
-  const categorySlug = useMemo(
-    () => getCategorySlugFromPath(pathname, city, locality),
-    [pathname, city, locality],
-  );
+const searchCategoryList = smallCardCategories.map((c) => ({
+  id: c.catValue,
+  label: c.name,
+  image: c.image,
+  catValue: c.catValue,
+  categorySlug: c.categorySlug,
+}));
+const categorySlug = useMemo(
+  () => getCategorySlugFromPath(pathname, city, locality),
+  [pathname, city, locality],
+);
+
+// city/locality ke saath fixed-category link banata hai
+const buildFixedPath = (slug, catValue) => {
+  let path = "";
+  if (city) path += `/${city.toLowerCase()}`;
+  if (locality) path += `/${locality.toLowerCase()}`;
+  return `${path}/${slug}/${catValue}`;
+};
+
   const { citySeoData, defaultSeo } = Decorationseodata;
   const cardsData = [
     {
@@ -456,7 +467,7 @@ const Decoration = ({ city, locality }) => {
             data={weddingCollections}
             city={city}
             locality={locality}
-            categorySlug="wedding"
+            categorySlug="wedding-decoration"
           />
         </div>
       </section>
@@ -604,7 +615,7 @@ const Decoration = ({ city, locality }) => {
 
             {/* ===== First Night ===== */}
             <CelebrationCard
-              href={`/${categorySlug}/first-night-decoration`}           // TODO: sahi link
+              href={buildFixedPath("wedding-decoration", "first-night-decoration")}        // TODO: sahi link
               bg={firstNightBg}
               photo={firstNightPhoto}
               photoAlt="First night decoration"
