@@ -4,8 +4,10 @@ import Image from "next/image";
 import "./makeItYoursBanner.css";
 import customize from "@/assets/Customizetationbanner.webp";
 import customiseIcon from "@/assets/customiselcon.webp";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 const MakeItYoursBanner = ({  phone = "7338584828",  }) => {
   const handleWhatsAppClick = () => {
+    trackWAClicks();
     const PHONE = phone;
     const text = `Looking for a Custom Decoration? Our support team is ready to help!`;
 

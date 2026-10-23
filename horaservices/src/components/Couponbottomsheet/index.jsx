@@ -8,6 +8,7 @@ import iconValid from "@/assets/100_Vaild.svg";
 import iconPremium from "@/assets/Premimum_Quality.svg";
 import iconSupport from "@/assets/Support.svg";
 import iconWhatsapp from "@/assets/whatsapp-icon.png";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 
 /**
  * Bottom se open hone wala coupon sheet.
@@ -53,6 +54,7 @@ export default function CouponBottomSheet({
   }, [open]);
 
   const handleWhatsApp = () => {
+    trackWAClicks();
     const finalMessage =
       message ||
       `Hi! My event is approaching soon, I need help with the arrangements.\nCoupon Code - ${code}` +

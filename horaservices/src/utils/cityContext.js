@@ -130,8 +130,11 @@ const fetchCityFromServer = async () => {
     }
 
     const params = new URLSearchParams();
-    if (userId) params.append("userId", userId);
-    if (visitorId) params.append("visitorId", visitorId);
+    if (userId) {
+      params.append("userId", userId);
+    } else {
+      params.append("visitorId", visitorId);
+    } 
 
     const res = await fetchWithError(`${BASE_URL}/api/event-dates/my-events?${params.toString()}`);
 
@@ -249,7 +252,8 @@ export const CityProvider = ({ children }) => {
   const isPillVisibleRoute = isRouteCityAllowed(pathWithoutCity);
 
   useEffect(() => {
-    if (!pathname) return;
+    const handlePathCity = async () => {
+      if (!pathname) return;
 
     // ============================================================
     // CITY OPTIONAL CHILD ROUTE
@@ -288,6 +292,7 @@ export const CityProvider = ({ children }) => {
       const citySlugFromUrl = match[1].toLowerCase();
       setSelectedCitySlug(citySlugFromUrl);
       safeSetItem("selectedCity", citySlugFromUrl);
+      await saveCityToServer(citySlugFromUrl);
       setShowCityModal(false);
       return;
     }
@@ -309,6 +314,8 @@ export const CityProvider = ({ children }) => {
 
     // Case 4: city pata nahi — modal kholo.
     setShowCityModal(true);
+    }
+    handlePathCity();
   }, [pathname, isPillVisibleRoute, citySourceReady, selectedCitySlug, setUrlSilently]);
 
   // GTM: modal sirf tab count ho jab sach me khule (false -> true transition).
