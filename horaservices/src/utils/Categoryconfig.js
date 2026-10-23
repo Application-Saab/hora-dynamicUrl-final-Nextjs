@@ -1,5 +1,5 @@
 // Shared config: balloon-decoration + wedding dono ke liye
-export const SUPPORTED_CATEGORY_SLUGS = ["balloon-decoration", "wedding"];
+export const SUPPORTED_CATEGORY_SLUGS = ["balloon-decoration", "wedding-decoration"];
 export const DEFAULT_CATEGORY_SLUG = "balloon-decoration";
 
 // Category ke hisaab se alag content. Wedding ka price/reviews yahan set kar lena.

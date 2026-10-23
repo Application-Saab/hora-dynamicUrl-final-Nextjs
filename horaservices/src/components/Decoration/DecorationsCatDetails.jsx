@@ -39,7 +39,7 @@ import {
   GET_ADDON_BY_ID,
   COMPRESSED_WEBP_IMG_URL,
 } from "@/utils/apiconstants";
-import { CATEGORY_CONFIG, resolveCategorySlug } from "@/utils/categoryConfig";
+import { CATEGORY_CONFIG, resolveCategorySlug } from "@/utils/Categoryconfig";
 import FAQSection from "@/components/FAQSection";
 import faqData from "@/utils/faqData.json";
 import CategoryTabs from "@/components/CategoryTabs/index.jsx";
