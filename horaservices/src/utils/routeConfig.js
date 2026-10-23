@@ -12,7 +12,9 @@ export const DIRECT_ROUTES = [
   "/photography",
   "/venue-list",
   "/photographer-profile",
-  "/wedding"
+  "/wedding-decoration"
+  "/wonderland",
+  "/wonderlandinternational"
 ];
 
 export const CITY_ROUTES = [
