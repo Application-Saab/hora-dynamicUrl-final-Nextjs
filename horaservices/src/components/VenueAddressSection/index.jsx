@@ -2,6 +2,7 @@
 
 import React from "react";
 import "./venueaddresssection.css";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 
 const PHONE = "7338584828";
 
@@ -45,7 +46,7 @@ const VenueAddressSection = ({ eventData, hideDateAndTime }) => {
           target="_blank"
           rel="noopener noreferrer"
           className="vas-btn vas-btn--whatsapp"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => { e.stopPropagation(); trackWAClicks()}}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.68 2 12.04 2ZM12.04 20.15C10.56 20.15 9.11 19.76 7.84 19.01L7.54 18.83L4.42 19.65L5.26 16.61L5.06 16.29C4.24 14.98 3.8 13.46 3.8 11.91C3.8 7.37 7.5 3.67 12.05 3.67C14.25 3.67 16.32 4.53 17.87 6.08C19.42 7.64 20.29 9.71 20.28 11.91C20.28 16.45 16.58 20.15 12.04 20.15Z" />

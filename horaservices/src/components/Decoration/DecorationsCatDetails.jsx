@@ -59,6 +59,7 @@ import WhyHoraSection from "@/components/WhyHoraSection";
 import { useCity } from "@/utils/cityContext";
 import WhatsAppIcon from "@/app/WhatsAppIconGtm";
 import { ProductPageLoader } from "../PageLoaders/ProductPageLoader";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 
 // ---------- helpers ----------
 const getDiscountedPrice = (price) => {
@@ -372,6 +373,7 @@ function DecorationsCatDetails({
   };
 
   const handleCustomise = (type) => {
+    trackWAClicks();
     const messages = {
       "kids-birthday-decoration":
         "Hi, I want to customize a kids birthday decoration design, can you help me",

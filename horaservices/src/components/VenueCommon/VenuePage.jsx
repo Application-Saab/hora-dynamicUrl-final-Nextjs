@@ -25,6 +25,7 @@ import VenueNameOverlay from "@/components/VenueNameOverlay";
 import Head from "next/head";
 import FAQSection from "../FAQSection";
 import TermsModal from "./TermsModal";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 
 const VenuePage = ({
   city: propCity = null,
@@ -285,6 +286,7 @@ const VenuePage = ({
   const PHONE = "7338584828";
 
   const handleEnquire = () => {
+    trackWAClicks();
     const venueName = eventDetails?.venueName || "this venue";
     const location = eventDetails?.city || eventDetails?.location || "";
     const capacity = eventDetails?.guestCapacity;

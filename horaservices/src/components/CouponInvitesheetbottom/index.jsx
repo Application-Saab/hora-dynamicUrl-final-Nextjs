@@ -17,6 +17,7 @@ import iconShare from "@/assets/Share_Icon.svg";
 // Expert box icons
 import iconWhatsapp from "@/assets/whatsapp-icon.svg";
 import iconSupport from "@/assets/Support.svg";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 
 
 const FEATURES = [
@@ -64,6 +65,7 @@ export default function InviteSheet({
   }, [open]);
 
   const handleWhatsApp = () => {
+    trackWAClicks();
     const finalMessage =
       message || DEFAULT_MESSAGE + (eventDate ? `\nEvent date - ${eventDate}` : "");
 

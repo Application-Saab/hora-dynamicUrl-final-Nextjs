@@ -17,6 +17,7 @@ import Image from "next/image";
 import "../../../css/chefOrder.css";
 import { safeGetItem } from "@/utils/safeStorage";
 import Head from "next/head";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 
 const FoodDeliveryselectDate = () => {
   const router = useRouter();
@@ -248,6 +249,7 @@ const FoodDeliveryselectDate = () => {
   };
 
   const contactUsRedirection = () => {
+    trackWAClicks()
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "food_livecateringselectdatepage_need_more_info_whatsapp_click",

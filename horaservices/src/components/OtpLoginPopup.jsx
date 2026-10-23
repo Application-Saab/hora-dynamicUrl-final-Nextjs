@@ -22,6 +22,7 @@ import loginLine from "@/assets/loginline.svg";
 import { useCity } from "@/utils/cityContext";
 import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 import { resolveWhatsAppLink, sendWelcomeMessage } from "@/utils/loginWhatsapplogic";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 
 /* ---------------- SMALL INLINE ICONS ---------------- */
 const WhatsAppIcon = () => (
@@ -451,6 +452,7 @@ const OtpLogin = ({
                       href={whatsappLink}
                       target="_blank"
                       rel="noreferrer"
+                      onClick={() => trackWAClicks()}
                     >
                       <WhatsAppIcon />
                       <span className="whatsapp-text">

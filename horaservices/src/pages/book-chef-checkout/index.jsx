@@ -25,6 +25,7 @@ import OtpLoginPopup from "@/components/OtpLoginPopup";
 import {formatDate} from "../../utils/formateDate"
 import axiosApi from '@/utils/axiosApi';
 import { safeGetItem } from '@/utils/safeStorage';
+import { trackWAClicks } from '@/utils/storeWhatsappClicks';
 
 const ChefCheckout = () => {
     //   let { peopleCount, orderType, selectedDishDictionary, selectedDishPrice, selectedCount , selectedDishes } = useLocation().state || {}; // Accessing subCategory and itemName safely
@@ -182,6 +183,7 @@ useEffect(() => {
 
   
 const contactUsRedirection = () => {
+  trackWAClicks()
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     event: "book-chef-checkout_contact_us_click",

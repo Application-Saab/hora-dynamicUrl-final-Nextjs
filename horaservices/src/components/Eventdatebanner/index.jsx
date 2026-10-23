@@ -13,6 +13,7 @@ import { useDateGate } from "@/utils/dateGateContext";
 import DateSelectionBottomSheet from "../DateSelectionBottomSheet";
 import PencilEditIcon from "@/assets/pencilEdit.svg";
 import { fetchWithError } from "@/utils/fetchWithError";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -45,7 +46,7 @@ export default function EventDateBanner({
   // const [reminderVariant, setReminderVariant] = useState("planner"); // ❌ reminder band
 
   const getIds = () => {
-    const userId = userIdProp || null;
+    const userId = userIdProp || safeGetItem("userID");
 
     if (userId) {
       // Logged in — sirf userId se query karo, purana guest visitorId ignore karo
@@ -70,8 +71,11 @@ export default function EventDateBanner({
     }
 
     const params = new URLSearchParams();
-    if (userId) params.append("userId", userId);
-    if (visitorId) params.append("visitorId", visitorId);
+    if (userId){
+      params.append("userId", userId);
+    } else{
+      params.append("visitorId", visitorId);
+    }
 
     setIsLoading(true);
 
@@ -184,6 +188,7 @@ export default function EventDateBanner({
         eventTitle={eventTitle}
         eventId={eventId}
         initialDate={eventDate}
+        mode="update"
       />
     </>
   );

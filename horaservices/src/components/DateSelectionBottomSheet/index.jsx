@@ -124,6 +124,7 @@ export default function DateSelectionBottomSheet({
   eventTitle = "",
   initialDate = null,
   eventId = null,
+  mode = null,
 }) {
   useLockBodyScroll(isOpen);
 
@@ -163,7 +164,11 @@ export default function DateSelectionBottomSheet({
     if (!isOpen) return;
 
     setError(null);
-    setResolvedMode(null);
+    if (mode) {
+      setResolvedMode(mode);
+    } else {
+      setResolvedMode(null);
+    }
 
     if (initialDate) {
       const parsedInitial = parseDateSafely(initialDate);
@@ -180,17 +185,22 @@ export default function DateSelectionBottomSheet({
     setIsCheckingExisting(true);
 
     const params = new URLSearchParams();
-    if (userId) params.append("userId", userId);
-    if (visitorId) params.append("visitorId", visitorId);
+    if (userId) {
+      params.append("userId", userId);
+    } else {
+      params.append("visitorId", visitorId);
+    }
 
     fetchWithError(`${BASE_URL}/api/event-dates/my-events?${params.toString()}`)
       .then((res) => res.json())
       .then((json) => {
         if (cancelled) return;
         const events = json?.data?.eventDates || [];
-        setResolvedMode(events.length > 0 ? "add" : "create");
+        if (!mode) {
+          setResolvedMode(events.length > 0 ? "add" : "create");
+        }
         const existingDate = pickExistingEventDate(events);
-        if (existingDate) {
+        if (existingDate && !initialDate) {
           setSelectedDate(existingDate);
           setViewMonth(existingDate.getMonth());
           setViewYear(existingDate.getFullYear());
@@ -199,7 +209,7 @@ export default function DateSelectionBottomSheet({
       .catch((err) => {
         if (cancelled) return;
         console.error("Failed to check existing events:", err);
-        setResolvedMode("create");
+        if (!mode) setResolvedMode("create");
       })
       .finally(() => {
         if (!cancelled) setIsCheckingExisting(false);
@@ -208,8 +218,7 @@ export default function DateSelectionBottomSheet({
     return () => {
       cancelled = true;
     };
-  }, [isOpen, userId, visitorId]);
-
+  }, [isOpen, userId, visitorId, mode, initialDate]);
 
   const offerSheets = (
     <>
@@ -289,19 +298,26 @@ export default function DateSelectionBottomSheet({
       return;
     }
     if (!resolvedMode) {
-      setError("Couldn't determine create/add mode — please try again.");
+      setError("Couldn't determine action mode — please try again.");
       return;
     }
 
-    const endpoint =
-      resolvedMode === "add"
-        ? `${BASE_URL}/api/event-dates/add-date`
-        : `${BASE_URL}/api/event-dates`;
+    let endpoint = `${BASE_URL}/api/event-dates`;
+    let method = "POST";
+
+    if (resolvedMode === "update") {
+      endpoint = `${BASE_URL}/api/event-dates/update-date`;
+      method = "PATCH";
+    } else if (resolvedMode === "add") {
+      endpoint = `${BASE_URL}/api/event-dates/add-date`;
+      method = "PATCH";
+    }
 
     const payload = {
       ...(userId && { userId }),
       ...(visitorId && { visitorId }),
       ...(resolvedMode === "create" && pincode && { pincode }),
+      ...(resolvedMode === "update" && eventId && { eventId }),
       date: toISODateOnly(selectedDate),
       ...(eventTitle && { eventTitle }),
     };
@@ -311,7 +327,7 @@ export default function DateSelectionBottomSheet({
 
     try {
       const res = await fetchWithError(endpoint, {
-        method: resolvedMode === "add" ? "PATCH" : "POST",
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
@@ -339,10 +355,10 @@ export default function DateSelectionBottomSheet({
       );
       pushGTMEvent("event_date_popup_confirm", {
         popup_name: "event_date_selection",
-        event_date: selectedDateStr, // 2026-09-02
-        event_date_formatted: formatEventDate(selectedDate), // 2 September 2026
+        event_date: selectedDateStr,
+        event_date_formatted: formatEventDate(selectedDate),
         days_left: daysLeft,
-        mode: resolvedMode, // "create" (pehli baar) | "add" (date change/add)
+        mode: resolvedMode, // "create" | "add" | "update"
         city: resolvedCity || "",
         event_title: eventTitle || "",
         page_path: typeof window !== "undefined" ? window.location.pathname : "",
@@ -350,7 +366,6 @@ export default function DateSelectionBottomSheet({
 
       if (onConfirm) onConfirm(selectedDate, data);
 
-      // Delhi -> ₹150 coupon sheet, baaki cities -> invite sheet
       setOfferDate(selectedDate);
       setOfferSheet(getOfferType(resolvedCity, pincode));
 

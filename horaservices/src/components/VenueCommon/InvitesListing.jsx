@@ -17,6 +17,7 @@ import {
 } from "@/utils/apiconstants";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 
 const BATCH_SIZE = 10;
 const WHATSAPP_PHONE = "7338584828";
@@ -458,7 +459,7 @@ const VenueList = ({
                         display: "inline-block",
                         textDecoration: "none",
                       }}
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {e.stopPropagation(); trackWAClicks();}}
                     >
                       Check Availability
                     </a>

@@ -19,6 +19,7 @@ import FoodIcon from "../../assets/food_icon.png";
 import "../../app/homepage.css";
 import axiosApi from "@/utils/axiosApi";
 import { safeGetItem } from "@/utils/safeStorage";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 // remove later
 // import homepage_entertainment1 from '../assets/homepage_entertainment1.png';
 // import homepage_entertainment2 from '../assets/homepage_entertainment2.png';
@@ -752,6 +753,7 @@ export default function Home() {
         <Link
           href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services"
           target="_blank"
+          onClick={() => trackWAClicks()}
         >
           <Image
             className="whatappicon"
