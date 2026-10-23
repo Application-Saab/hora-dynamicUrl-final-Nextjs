@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { faqData } from "@/utils/photographyFAQData.js";
+import { faqData } from "@/utils/photographyProductPageFaqData.js";
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
 import ShareIcon from "@/assets/shareIcon.svg";
 import PROFESSIONALPHOTOGRAPHERS from "@/assets/professionalPhoto.png";
@@ -37,6 +37,7 @@ import { categoryNameToSlug } from "@/utils/Getphotocategoryurl";
 import WhatsAppIcon from "@/app/WhatsAppIconGtm";
 import { useCity } from "@/utils/cityContext";
 import { ProductPageLoader } from "@/components/PageLoaders/ProductPageLoader";
+import PhotographyProductDescription from "@/components/PhotographyProductDescription";
 
 // ---------- helpers ----------
 const getDiscountedPrice = (price = 0) => {
@@ -737,6 +738,12 @@ const ProductDetails = ({
                 title="Add-ons"
               />
             </div>
+
+             <PhotographyProductDescription
+              work={work}
+              city={city}
+              catValue={catValue}
+            />
 
             <div className="whyHoraSec">
               <h2 className="whyHoraHeading">Why Hora Photography</h2>

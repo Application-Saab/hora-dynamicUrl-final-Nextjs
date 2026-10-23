@@ -7,10 +7,12 @@ import PhotographyLanding, {
 } from "@/components/PhotographyLanding";
 import seoData from "@/utils/photographyseodata.json";
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
-import { photographyFAQData } from "@/utils/Photographyfaqdatalanding";
-import { photographyDescription } from "@/utils/Photographydescriptionlanding";
+import { photographyFAQData } from "@/utils/PhotographyPagesfaqdata";
+import { photographyDescription } from "@/utils/Photographydescription";
 import { BASE_URL, GET_PHOTOGRAPHY_BY_TAG } from "@/utils/apiconstants.js";
 import axiosApi from "@/utils/axiosApi";
+import PhotographyHowItWorks from "@/components/PhotographyHowItWorks";
+import PhotographyComparison from "@/components/PhotographyComparison";
 
 const getDiscountedPrice = (price = 0) => {
   const discountedPrice = price / 0.78;
@@ -86,6 +88,9 @@ const PhotographyIndexPage = ({ city, locality, initialPackages }) => {
         locality={locality}
         initialPackages={initialPackages}
       />
+     
+      <PhotographyComparison/>
+      <PhotographyHowItWorks />
 
       <div style={{ maxWidth: "480px", margin: "auto" }}>
         <SectionDescription sections={photographyDescription} />

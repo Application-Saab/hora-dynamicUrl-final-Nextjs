@@ -10,7 +10,7 @@ import { anniversaryDecorationDescription } from "./Anniversarydecorationdescrip
 import { anniversaryDecorationFAQData } from "./Anniversarydecorationdescription";
 import { weddingDecorationDescription } from "./Weddingdecorationdescription";
 import { weddingDecorationFAQData } from "./WeddingDecorationFAQData";
-import { faqData } from "./photographyFAQData";
+import { faqData } from "./photographyProductPageFaqData";
 
 export const decorationCategoryContent = {
   "birthday-decoration": {
