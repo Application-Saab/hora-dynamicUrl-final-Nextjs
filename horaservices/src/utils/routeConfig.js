@@ -24,7 +24,7 @@ export const CITY_ROUTES = [
   "/balloon-decoration-google-ads",
   "/balloon-decoration-instagram",
   "/balloon-decoration-youtube",
-  "/wedding"
+  "/wedding-decoration"
 ];
 
 export const CITY_LOCALITY_ROUTES = [
@@ -32,7 +32,7 @@ export const CITY_LOCALITY_ROUTES = [
   "/balloon-decoration",
   "/chef-near-me",
   "/photography",
-  "/wedding"
+  "/wedding-decoration"
 ];
 
 export const normalizeRoutePath = (pathname = "") => {
