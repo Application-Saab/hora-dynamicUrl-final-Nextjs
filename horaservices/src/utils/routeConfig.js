@@ -12,7 +12,7 @@ export const DIRECT_ROUTES = [
   "/photography",
   "/venue-list",
   "/photographer-profile",
-  "/wedding-decoration"
+  "/wedding-decoration",
   "/wonderland",
   "/wonderlandinternational"
 ];
