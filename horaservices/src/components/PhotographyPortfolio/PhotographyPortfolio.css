@@ -1,0 +1,133 @@
+
+.photography-portfolio {
+  padding: 28px 16px 32px;
+  max-width: 480px;
+  margin: 0 auto;
+  border-top: 1px solid #f0f0f0;
+}
+
+.photography-portfolio__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.photography-portfolio__heading {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.photography-portfolio__subheading {
+  font-size: 0.88rem;
+  color: #666;
+  margin: -12px 0 0;
+  line-height: 1.5;
+}
+
+.photography-portfolio__grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.photography-portfolio__card {
+  border-radius: 10px;
+  border: 1px solid #ebebeb;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* Image placeholder */
+.photography-portfolio__image-placeholder {
+  width: 100%;
+  height: 160px;
+  background: linear-gradient(135deg, #f5f0e8 0%, #e8e0d0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photography-portfolio__placeholder-label {
+  font-size: 2.5rem;
+  opacity: 0.4;
+}
+
+.photography-portfolio__card-body {
+  padding: 14px 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.photography-portfolio__card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.photography-portfolio__category {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #e0b84d;
+}
+
+.photography-portfolio__location {
+  font-size: 0.72rem;
+  color: #999;
+}
+
+.photography-portfolio__card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.photography-portfolio__card-desc {
+  font-size: 0.82rem;
+  color: #555;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.photography-portfolio__highlights {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.photography-portfolio__highlight {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: #444;
+  background: #f5f5f5;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+.photography-portfolio__check-mark {
+  color: #57a64a;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+@media (min-width: 768px) {
+  .photography-portfolio__heading {
+    font-size: 1.25rem;
+  }
+
+  .photography-portfolio__card-title {
+    font-size: 1rem;
+  }
+}

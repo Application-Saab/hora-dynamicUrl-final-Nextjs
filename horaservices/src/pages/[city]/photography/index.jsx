@@ -9,16 +9,19 @@ import cityData from "@/utils/cityData";
 import { BASE_URL, GET_PHOTOGRAPHY_BY_TAG } from "@/utils/apiconstants.js";
 import axiosApi from "@/utils/axiosApi";
 import seoData from "@/utils/photographyseodata.json";
+import PhotographyPortfolio from "@/components/PhotographyPortfolio";
 
 import FAQSection from "@/components/FAQSection";
 import SectionDescription from "@/components/Description";
 import LocalitiesSection from "@/components/LocalitiesSection";
 import PhotographyCityLanding from "@/components/photographyseoCommon/PhotographyCityLanding";
+import PhotographyHowItWorks from "@/components/PhotographyHowItWorks";
+import PhotographyComparison from "@/components/PhotographyComparison";
 
 import "../../../app/homepage.css";
 import { getCityNameFromSlug, isValidCitySlug } from "@/utils/validCities";
-import { photographyDescription } from "@/utils/Photographydescriptionlanding";
-import { photographyFAQData } from "@/utils/Photographyfaqdatalanding";
+import { photographyDescription } from "@/utils/Photographydescription";
+import { photographyFAQData } from "@/utils/PhotographyPagesfaqdata";
 import { CityPhotographyLandingPage } from "@/utils/Cityphotographylandingpage";
 
 const getDiscountedPrice = (price = 0) => {
@@ -164,6 +167,12 @@ const PhotographyCityPage = ({
         citySlug={citySlug}
         href="/photography"
       />
+
+      <PhotographyComparison/>
+
+      <PhotographyHowItWorks />
+
+         {/* <PhotographyPortfolio /> */}
 
       <PhotographyCityLanding key={`landing-${city}`} data={cityLanding} />
 

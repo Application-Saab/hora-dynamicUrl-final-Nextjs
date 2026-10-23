@@ -37,6 +37,7 @@ const TrendingSlider = ({
   data = [],
   city = "",
   locality = "",
+  categorySlug: categorySlugProp = "",
 }) => {
   const pathname = usePathname();
   const scrollerRef = useRef(null);
@@ -48,7 +49,9 @@ const TrendingSlider = ({
     if (item?.link) return item.link;
     if (!item?.catValue) return "/";
 
-    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+    // ✅ prop diya ho to wahi, warna pathname se nikalo
+    const categorySlug =
+      categorySlugProp || getCategorySlugFromPath(pathname, city, locality);
 
     let path = "";
     if (city) path += `/${city.toLowerCase()}`;
@@ -92,69 +95,69 @@ const TrendingSlider = ({
 
   return (
     <section className="trend-outer">
-        <div className="trend-container">
-          <div className="trend-viewport">
-            <h2 className="trend-title">{title}</h2>
+      <div className="trend-container">
+        <div className="trend-viewport">
+          <h2 className="trend-title">{title}</h2>
 
-            <div className="trend-slider">
-              <div
-                className="trend-grid"
-                ref={scrollerRef}
-                onScroll={updateArrows}
-              >
-                {data.map((item, index) => (
-                  <a
-                    key={item.catValue || index}
-                    href={buildPath(item)}
-                    className="trend-card"
-                    onClick={() => handleClick(item)}
-                  >
-                    <div className="trend-card__img">
-                      <Image
-                        src={item.image}
-                        alt={item.alt || item.title}
-                        fill
-                        sizes="(max-width: 600px) 30vw, 180px"
-                        style={{ objectFit: "cover" }}
-                      />
-                    </div>
-                    <div className="trend-card__foot">
-                      <span className="trend-card__name">{item.title}</span>
-                      <span className="trend-card__go">
-                        <GoArrowIcon />
-                      </span>
-                    </div>
-                  </a>
-                ))}
-              </div>
-
-              {/* scroll arrows: har row ki image ke beech mein */}
-              {[1, 2].map((row) => (
-                <span key={row}>
-                  {canPrev && (
-                    <button
-                      type="button"
-                      aria-label="Previous"
-                      className={`trend-arrow trend-arrow--prev trend-arrow--row${row}`}
-                      onClick={() => scrollByPage(-1)}
-                    >
-                      <ChevronIcon />
-                    </button>
-                  )}
-                  {canNext && (
-                    <button
-                      type="button"
-                      aria-label="Next"
-                      className={`trend-arrow trend-arrow--next trend-arrow--row${row}`}
-                      onClick={() => scrollByPage(1)}
-                    >
-                      <ChevronIcon />
-                    </button>
-                  )}
-                </span>
+          <div className="trend-slider">
+            <div
+              className="trend-grid"
+              ref={scrollerRef}
+              onScroll={updateArrows}
+            >
+              {data.map((item, index) => (
+                <a
+                  key={item.catValue || index}
+                  href={buildPath(item)}
+                  className="trend-card"
+                  onClick={() => handleClick(item)}
+                >
+                  <div className="trend-card__img">
+                    <Image
+                      src={item.image}
+                      alt={item.alt || item.title}
+                      fill
+                      sizes="(max-width: 600px) 30vw, 180px"
+                      style={{ objectFit: "cover" }}
+                    />
+                  </div>
+                  <div className="trend-card__foot">
+                    <span className="trend-card__name">{item.title}</span>
+                    <span className="trend-card__go">
+                      <GoArrowIcon />
+                    </span>
+                  </div>
+                </a>
               ))}
             </div>
+
+            {/* scroll arrows: har row ki image ke beech mein */}
+            {[1, 2].map((row) => (
+              <span key={row}>
+                {canPrev && (
+                  <button
+                    type="button"
+                    aria-label="Previous"
+                    className={`trend-arrow trend-arrow--prev trend-arrow--row${row}`}
+                    onClick={() => scrollByPage(-1)}
+                  >
+                    <ChevronIcon />
+                  </button>
+                )}
+                {canNext && (
+                  <button
+                    type="button"
+                    aria-label="Next"
+                    className={`trend-arrow trend-arrow--next trend-arrow--row${row}`}
+                    onClick={() => scrollByPage(1)}
+                  >
+                    <ChevronIcon />
+                  </button>
+                )}
+              </span>
+            ))}
           </div>
+        </div>
       </div>
     </section>
   );
