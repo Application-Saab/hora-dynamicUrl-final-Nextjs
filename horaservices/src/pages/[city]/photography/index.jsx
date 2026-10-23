@@ -9,6 +9,7 @@ import cityData from "@/utils/cityData";
 import { BASE_URL, GET_PHOTOGRAPHY_BY_TAG } from "@/utils/apiconstants.js";
 import axiosApi from "@/utils/axiosApi";
 import seoData from "@/utils/photographyseodata.json";
+import PhotographyPortfolio from "@/components/PhotographyPortfolio";
 
 import FAQSection from "@/components/FAQSection";
 import SectionDescription from "@/components/Description";
@@ -170,6 +171,8 @@ const PhotographyCityPage = ({
       <PhotographyComparison/>
 
       <PhotographyHowItWorks />
+
+         {/* <PhotographyPortfolio /> */}
 
       <PhotographyCityLanding key={`landing-${city}`} data={cityLanding} />
 

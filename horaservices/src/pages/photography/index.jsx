@@ -14,6 +14,7 @@ import { BASE_URL, GET_PHOTOGRAPHY_BY_TAG } from "@/utils/apiconstants.js";
 import axiosApi from "@/utils/axiosApi";
 import PhotographyHowItWorks from "@/components/PhotographyHowItWorks";
 import PhotographyComparison from "@/components/PhotographyComparison";
+import PhotographyPortfolio from "@/components/PhotographyPortfolio";
 
 const getDiscountedPrice = (price = 0) => {
   const discountedPrice = price / 0.78;
@@ -102,6 +103,7 @@ const PhotographyIndexPage = ({ city, locality, initialPackages }) => {
      
       <PhotographyComparison/>
       <PhotographyHowItWorks />
+        {/* <PhotographyPortfolio /> */}
 
       <div style={{ maxWidth: "480px", margin: "auto" }}>
         <SectionDescription sections={photographyDescription} />
