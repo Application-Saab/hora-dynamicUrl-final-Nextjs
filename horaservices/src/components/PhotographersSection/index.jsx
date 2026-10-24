@@ -1,16 +1,24 @@
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
 import "./photographerssection.css";
-import React from "react";
-import arrowImg from "@/assets/arrowicon.svg"
-// Abhi static data, baad me API se aayega
-const STATIC_PHOTOGRAPHERS = [
-  { id: 1, name: "Yash Parmar", rating: 4.9, image: "/images/photographers/yash.jpg", slug: "yash-parmar" },
-  { id: 2, name: "Vijay Mehta", rating: 4.9, image: "/images/photographers/vijay.jpg", slug: "vijay-mehta" },
-  { id: 3, name: "Arjun Thakur", rating: 4.9, image: "/images/photographers/arjun.jpg", slug: "arjun-thakur" },
-  { id: 4, name: "Kish Jain", rating: 4.8, image: "/images/photographers/kish.jpg", slug: "kish-jain" },
-  { id: 5, name: "Rohit Sharma", rating: 4.7, image: "/images/photographers/rohit.jpg", slug: "rohit-sharma" },
-];
+import arrowImg from "@/assets/arrowicon.svg";
+
+const API_URL = "https://horaservices.com/api/users/get-suppliers";
+const S3_PROFILE_BASE =
+  "https://photography-hora.s3.eu-north-1.amazonaws.com/user-profile";
+const FALLBACK_AVATAR = "/images/photographers/default.jpg"; // public folder me rakhna
+const DEFAULT_CITY = "bangalore";
+
+const toCitySlug = (city) =>
+  (city || DEFAULT_CITY).toString().trim().toLowerCase().replace(/\s+/g, "-");
+
+const getAvatarUrl = (id) =>
+  id ? `${S3_PROFILE_BASE}/${id}/${id}/avatar.webp` : FALLBACK_AVATAR;
+
+const getDisplayName = (s) =>
+  (s?.name || `${s?.firstName || ""} ${s?.lastName || ""}`).trim() ||
+  "Photographer";
 
 const Stars = ({ rating }) => {
   const full = Math.floor(rating);
@@ -28,36 +36,80 @@ const Stars = ({ rating }) => {
   );
 };
 
-const PhotographerCard = ({ name, rating, image, slug }) => (
-  <div className="ph-card">
-    <div className="ph-avatar">
-      <Image
-        src={image}
-        alt={name}
-        fill
-        sizes="(max-width: 768px) 25vw, 120px"
-        className="ph-avatarImg"
-      />
+const PhotographerCard = ({ name, rating, image, href }) => {
+  const [src, setSrc] = useState(image);
+
+  return (
+    <div className="ph-card">
+      <div className="ph-avatar">
+        <img
+          src={src}
+          alt={name}
+          loading="lazy"
+          className="ph-avatarImg"
+          onError={() => {
+            if (src !== FALLBACK_AVATAR) setSrc(FALLBACK_AVATAR);
+          }}
+        />
+      </div>
+
+      <h3 className="ph-name">{name}</h3>
+      {rating ? <Stars rating={rating} /> : null}
+
+      <Link href={href} className="ph-btn">
+        View Profile
+        <Image
+          src={arrowImg}
+          alt=""
+          width={14}
+          height={14}
+          className="ph-arrowImg"
+          aria-hidden="true"
+        />
+      </Link>
     </div>
+  );
+};
 
-    <h3 className="ph-name">{name}</h3>
-    <Stars rating={rating} />
-
-    <Link href={`/photographer/${slug}`} className="ph-btn">
-      View Profile
-      <Image
-        src={arrowImg}
-        alt=""
-        width={14}
-        height={14}
-        className="ph-arrowImg"
-        aria-hidden="true"
-      />
-    </Link>
+const CardSkeleton = () => (
+  <div className="ph-card ph-card--skeleton" aria-hidden="true">
+    <div className="ph-avatar" />
+    <div className="ph-name">&nbsp;</div>
   </div>
 );
 
-const PhotographersSection = ({ photographers = STATIC_PHOTOGRAPHERS }) => {
+const PhotographersSection = ({ city = null }) => {
+  const [photographers, setPhotographers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    (async () => {
+      try {
+        const res = await fetch(API_URL, { signal: controller.signal });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+
+        // Sirf wahi hataye jinki _id nahi hai (link nahi ban sakta). Baaki sab dikhenge.
+        const list = (json?.data || []).filter((s) => s?._id);
+        setPhotographers(list);
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          console.error("Photographers fetch failed:", err);
+        }
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    })();
+
+    return () => controller.abort();
+  }, []);
+
+  const citySlug = toCitySlug(city);
+
+  if (!loading && photographers.length === 0) return null;
+
   return (
     <section className="ph-section">
       <h2 className="ph-heading">
@@ -66,9 +118,17 @@ const PhotographersSection = ({ photographers = STATIC_PHOTOGRAPHERS }) => {
       </h2>
 
       <div className="ph-list">
-        {photographers.map((p) => (
-          <PhotographerCard key={p.id} {...p} />
-        ))}
+        {loading
+          ? Array.from({ length: 4 }).map((_, i) => <CardSkeleton key={i} />)
+          : photographers.map((p) => (
+              <PhotographerCard
+                key={p._id}
+                name={getDisplayName(p)}
+                rating={p.rating}
+                image={getAvatarUrl(p._id)}
+                href={`/${citySlug}/photographerprofile/${p._id}`}
+              />
+            ))}
       </div>
     </section>
   );

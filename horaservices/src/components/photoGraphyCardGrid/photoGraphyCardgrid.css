@@ -21,9 +21,10 @@
 
 .imageWrappergrid {
   position: relative;
-  width: 100%;
-  height: clamp(125px, 38vw, 200px);
-  border-radius: clamp(8px, 2.5vw, 12px);
+width: clamp(160px, 46.82vw, 184px);
+height: clamp(144px, 42.23vw, 165.97px);
+border-radius: clamp(11px, 3.35vw, 13.17px);
+opacity: 1;
   overflow: hidden;
 }
 
@@ -36,17 +37,16 @@
   flex-direction: column;
   align-items: center;
   flex: 1;
-  gap: clamp(8px, 2.4vw, 12px);
+  gap: clamp(3px, 1.237vw, 4.86px);
   padding: clamp(8px, 2.4vw, 12px) 24px clamp(10px, 3vw, 14px);
 }
 
 .titlegrid {
 font-family: 'Roboto Slab', serif;
 font-weight: 900;
-font-style: normal;
 font-size: clamp(16px, 4.7vw, 18.47px);
+line-height: 100%;
 text-align: center;
-vertical-align: middle;
 color: #571B51;
 line-height: normal;
 margin: 0;
@@ -58,15 +58,14 @@ margin: 0;
   justify-content: center;
   gap: clamp(3px, 1vw, 6px);
   margin-top: auto;
-  padding: clamp(5px, 1.6vw, 8px) clamp(12px, 4vw, 20px);
+padding: clamp(4px, 1.55vw, 6.1px) clamp(14px, 5.09vw, 20px);
   border: none;
   border-radius: 999px;
   background: #97538c;
   color: #fff;
   font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  font-size: clamp(11px, 3.2vw, 14px);
-  line-height: 1;
+font-weight: 600;
+font-size: clamp(11px, 3.39vw, 13.33px);
   white-space: nowrap;
   cursor: pointer;
   transition: background 0.2s ease;

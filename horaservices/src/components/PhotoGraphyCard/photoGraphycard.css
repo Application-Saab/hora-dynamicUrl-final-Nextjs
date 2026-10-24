@@ -19,11 +19,11 @@
 }
 
 .photo-imageWrapper {
-  position: relative;
-  width: 100%;
-  height: clamp(105px, 32.82vw, 129px);
-  border-radius: clamp(8px, 1vw, 10px);
-  overflow: hidden;
+width: 100%;
+height: clamp(105px, 32.94vw, 129px);
+border-radius: clamp(8px, 2.06vw, 10px);
+position: relative;
+overflow: hidden;
 }
 
 .photo-image {
@@ -35,8 +35,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(8px, 1vw, 10px);
-  padding: clamp(8px, 1vw, 10px) clamp(4px, 0.8vw, 6px) clamp(8px, 1vw, 10px);
+  gap: clamp(5px, 1.865vw, 7.33px);
+  padding: clamp(8px, 1vw, 10px)  clamp(1.5px, 0.509vw, 2px);
   flex: 1;
 }
 
@@ -55,14 +55,13 @@
   align-items: center;
   gap: clamp(3px, 0.5vw, 4px);
   margin-top: auto;
-  padding: clamp(5px, 1.4vw, 8px) clamp(10px, 2.4vw, 18px);
+ padding: clamp(2px, 0.62vw, 2.45px) clamp(4px, 1.385vw, 5.45px);
   border-radius: 999px;
   background: #97538c;
   color: #fff;
-  font-family: "Inter", sans-serif;
-  font-weight: 600;
-  font-size: clamp(12px, 1.6vw, 15px);
-  line-height: 1;
+font-family: 'Inter', sans-serif;
+font-weight: 600;
+font-size: clamp(9px, 2.72vw, 10.69px);
   white-space: nowrap;
   transition: background 0.2s ease;
 }

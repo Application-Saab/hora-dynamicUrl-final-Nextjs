@@ -48,7 +48,7 @@
   display: block;
   object-fit: cover;
   image-rendering: auto;
-  max-width: 800px;
+  max-width: 480px;
   margin: auto;
 }
 
@@ -316,7 +316,7 @@
   display: flex;
   flex-direction: column;
   height: auto;
-  max-width: 800px;
+  max-width: 480px;
   margin: auto;
 }
 
@@ -370,7 +370,7 @@
   padding: 8px;
   margin-left: 7px;
   margin-right: 7px;
-  max-width: 800px;
+  max-width: 480px;
   margin: auto;
 }
 
@@ -399,7 +399,7 @@
 .work-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 8px;
+  gap: clamp(8px, 2.97vw, 11.67px);
   justify-content: center;
   width: 100%;
   box-sizing: border-box;
@@ -747,7 +747,7 @@
   width: 100%;
   overflow: hidden;
   margin-top: 20px;
-  max-width: 800px;
+  max-width: 480px;
   margin: auto;
 }
 
@@ -898,7 +898,7 @@ margin-left: clamp(5px, 1.50vw, 6px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   width: 100%;
   text-align: center;
-  max-width: 800px;
+  max-width: 480px;
   margin: auto;
   margin-bottom: auto;
   height: auto;
@@ -1110,7 +1110,7 @@ strong {
   background-color: #fff9f0;
   padding: 16px;
   border-radius: 12px;
-  max-width: 800px;
+  max-width: 480px;
   margin: auto;
 }
 
@@ -1132,7 +1132,7 @@ strong {
   justify-content: center;
   padding: 5px;
   gap: 10px;
-  max-width: 800px;
+  max-width: 480px;
   margin: auto;
 }
 
@@ -1143,7 +1143,7 @@ strong {
   justify-content: center;
   padding: 5px;
   gap: 10px;
-  max-width: 800px;
+  max-width: 480px;
   margin: auto;
 }
 

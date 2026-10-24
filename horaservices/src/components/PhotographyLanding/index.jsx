@@ -132,7 +132,7 @@ const PhotographyLanding = ({
         initialProducts={initialPackages}
         isDirectProductPage={true}
       />
-    <PhotographersSection/>
+    <PhotographersSection city={city} />
       {/* HORA info card */}
       <div className="hora-wrap">
         <div className="hora-card">

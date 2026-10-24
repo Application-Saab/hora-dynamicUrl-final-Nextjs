@@ -1,9 +1,13 @@
-import birthday from "@/assets/photography/Birthday-Photography.svg";
-import anniversary from "@/assets/photography/Anniversary-Photography.svg";
-import housewarming from "@/assets/photography/House-warming-Photography.svg";
-import naming from "@/assets/photography/Naming-ceremony-Photography.svg";
-import bachelorette from "@/assets/photography/Bachelorette-Photography.svg";
-import babyshower from "@/assets/photography/Baby-Shower-Photography.svg";
+import birthday from "@/assets/photography/Birthday-Photography.webp";
+import anniversary from "@/assets/photography/Anniversary-Photography.webp";
+import housewarming from "@/assets/photography/House-warming-Photography.webp";
+import naming from "@/assets/photography/Naming-ceremony-Photography.webp";
+import bachelorette from "@/assets/photography/Bachelorette-Photography.webp";
+import babyshower from "@/assets/photography/Baby-Shower-Photography.webp";
+import newbornbaby from "@/assets/photography/New-Born-Baby-Photography.webp";
+import maternity from "@/assets/photography/Maternity-Photography.webp";
+import wedding from "@/assets/photography/Wedding-Photography.webp";
+import Engagement from "@/assets/photography/Engagement-Photography.webp"
 
 import EngagementBanner from "../assets/photographyCategories/Photography9.webp";
 import WeddingBanner from "../assets/photographyCategories/Photography10.webp";
@@ -74,8 +78,7 @@ export const photoCat = [
   },
   {
     id: "7",
-    image:
-      "https://horaservices.com/api/uploads/compressed_webp/Engagement-Photography.webp",
+    image:Engagement,
     name: "Engagement Photography",
     subCategory: "Engagement-Photography",
     catValue: "Engagement-Photography",
@@ -84,8 +87,7 @@ export const photoCat = [
   },
   {
     id: "8",
-    image:
-      "https://horaservices.com/api/uploads/compressed_webp/Wedding-Photography.webp",
+    image:wedding,
     name: "Wedding Photography",
     subCategory: "Wedding-Photography",
     catValue: "Wedding-Photography",
@@ -95,8 +97,7 @@ export const photoCat = [
 
   {
     id: "9",
-    image:
-      "https://horaservices.com/api/uploads/compressed_webp/Maternity-Photography.webp",
+    image:maternity,
     name: "Maternity Photography",
     subCategory: "Maternity-Photography",
     catValue: "Maternity-Photography",
@@ -106,8 +107,7 @@ export const photoCat = [
 
   {
     id: "10",
-    image:
-      "https://horaservices.com/api/uploads/compressed_webp/New-Born-Baby-Photography.webp",
+    image:newbornbaby,
     name: "New Born Baby Photography",
     subCategory: "New-Born-Baby-Photography",
     catValue: "New-Born-Baby-Photography",
