@@ -8,6 +8,7 @@ import {
   GET_PHOTOGRAPHY_ORDER_DETAILS,
 } from "../../utils/apiconstants";
 import { fetchWithError } from "@/utils/fetchWithError";
+import Head from "next/head";
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
