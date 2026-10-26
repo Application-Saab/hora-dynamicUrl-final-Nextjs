@@ -41,7 +41,7 @@ export default function HeaderCards({
                                </div>
 
                         <span>
-                            Folder {index + 1}
+                            Project {index + 1}
                         </span>
                     </div>
                 );
