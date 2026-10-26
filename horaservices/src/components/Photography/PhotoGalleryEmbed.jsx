@@ -54,8 +54,13 @@ const PhotoGalleryEmbed = ({
     if (!userId && !visitorId) return;
 
     const params = new URLSearchParams();
-    if (userId) params.append("userId", userId);
-    if (visitorId) params.append("visitorId", visitorId);
+    if (userId) {
+      params.append("userId", userId);
+    } else {
+      params.append("visitorId", visitorId);
+    } 
+    
+    // if (visitorId)
 
     fetchWithError(`${BASE_URL}/api/event-dates/my-events?${params.toString()}`)
       .then((res) => res.json())

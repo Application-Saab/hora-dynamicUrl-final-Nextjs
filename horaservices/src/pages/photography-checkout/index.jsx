@@ -40,6 +40,7 @@ import {
 import { useCity } from "@/utils/cityContext";
 import { categoryNameToSlug } from "@/utils/Getphotocategoryurl";
 import { fetchWithError } from "@/utils/fetchWithError";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 
 // Safe parse helpers
 const safeJsonParse = (value, fallback) => {
@@ -520,6 +521,7 @@ const Checkout = () => {
     return `https://horaservices.com/api/uploads/compressed_webp/${cleanFileName}.webp`;
   };
   const contactUsRedirection = (productName) => {
+    trackWAClicks()
     const waCategory =
       selectedCatValue || formatPhotographyCategory(selectedCatValue);
     const waCity = city || selectedCitySlug;

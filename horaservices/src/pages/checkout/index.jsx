@@ -36,6 +36,7 @@ import { safeGetItem } from "@/utils/safeStorage";
 import { useCity } from "@/utils/cityContext";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { getCategoryNameToSlug } from "@/utils/similarProductUtils";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 
 // Safe parse helpers
 const safeJsonParse = (value, fallback) => {
@@ -492,6 +493,7 @@ const Checkout = () => {
   };
 
   const contactUsRedirection = (category, cityName) => {
+    trackWAClicks()
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "decoration-checkout_contact_us_click",

@@ -30,6 +30,7 @@ import { formatDate } from "../../utils/formateDate";
 import axiosApi from "@/utils/axiosApi";
 import { safeGetItem } from "@/utils/safeStorage";
 import Head from "next/head";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 
 const FoodDeliveryCheckout = () => {
   //   const { selectedDishesFoodDelivery , selectedOption ,orderType, selectedDishDictionary, selectedDishPrice, totalOrderAmount , selectedDishQuantities , peopleCount} = useLocation().state || {}; // Accessing subCategory and itemName safely
@@ -453,6 +454,7 @@ const FoodDeliveryCheckout = () => {
   }
 
   const contactUsRedirection = () => {
+    trackWAClicks()
     window.open(
       "https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20food%20delivery%20and%20live%20Catering%20service",
       "_blank",

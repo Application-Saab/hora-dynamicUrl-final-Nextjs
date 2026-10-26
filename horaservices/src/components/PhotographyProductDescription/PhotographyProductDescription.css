@@ -1,0 +1,70 @@
+
+.photography-product-description {
+  max-width: 900px;
+  margin: 32px auto;
+  padding: 24px;
+  color: #97538C;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  line-height: 1.6;
+}
+
+.photography-product-description__title {
+  margin: 0 0 10px;
+  color:  #97538C;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.photography-product-description__subtitle {
+  margin: 0 0 24px;
+  color: #222;
+  font-size: 15px;
+}
+
+.photography-product-description__list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.photography-product-description__item {
+  padding: 16px;
+  background: #faf9f6;
+  border: 1px solid #eeeae3;
+  border-radius: 8px;
+}
+
+.photography-product-description__item-label {
+  margin-bottom: 6px;
+  color:  #97538C;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.photography-product-description__item-explanation {
+  color: #222;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+  .photography-product-description {
+    margin: 0 12px;
+    padding: 16px;
+  }
+
+  .photography-product-description__title {
+    font-size: 14px;
+  }
+
+  .photography-product-description__subtitle {
+    font-size: 12px;
+  }
+
+  .photography-product-description__item {
+    padding: 12px;
+  }
+}

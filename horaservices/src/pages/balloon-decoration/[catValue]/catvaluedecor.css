@@ -135,7 +135,8 @@
   font-family: 'Roboto', sans-serif;
 } */
 
-.category-content h1 {
+.category-content h1,
+.category-content h2 {
   font-size: 21px;
   font-weight: 600;
   color: #333;
@@ -180,7 +181,8 @@
     padding: 15px;
   }
 
-  .category-content h1 {
+  .category-content h1,
+  .category-content h2 {
     font-size: 15px;
   }
 

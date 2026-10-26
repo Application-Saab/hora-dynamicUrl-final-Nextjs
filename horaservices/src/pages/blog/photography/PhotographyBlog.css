@@ -1,0 +1,120 @@
+
+.photography-listing {
+  min-height: 100vh;
+  background: #fff;
+}
+
+.photography-listing__header {
+  background: #111;
+  padding: 36px 16px 32px;
+}
+
+.photography-listing__header-inner {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.photography-listing__breadcrumb {
+  font-size: 0.78rem;
+  color: #aaa;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.photography-listing__breadcrumb a {
+  color: #ccc;
+  text-decoration: none;
+}
+
+.photography-listing__breadcrumb a:hover {
+  color: #fff;
+}
+
+.photography-listing__heading {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 8px;
+  line-height: 1.2;
+}
+
+.photography-listing__subheading {
+  font-size: 0.9rem;
+  color: #aaa;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.photography-listing__grid {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.photography-listing__card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 16px;
+  background: #fafafa;
+  border-radius: 10px;
+  border: 1px solid #ebebeb;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.photography-listing__card:hover {
+  border-color: #e0b84d;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.photography-listing__card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.photography-listing__category {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #e0b84d;
+}
+
+.photography-listing__reading-time {
+  font-size: 0.72rem;
+  color: #999;
+}
+
+.photography-listing__card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.photography-listing__card-excerpt {
+  font-size: 0.84rem;
+  color: #555;
+  margin: 0;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.photography-listing__read-more {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #e0b84d;
+  margin-top: 4px;
+}

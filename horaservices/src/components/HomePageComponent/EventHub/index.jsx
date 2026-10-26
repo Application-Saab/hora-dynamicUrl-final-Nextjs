@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import useApi from "@/hooks/useApi";
 import { GET_ALL_EVENT_HUB } from "@/utils/apiconstants";
 import { usePathname } from "next/navigation";
@@ -46,7 +47,7 @@ const GuestAvatar = ({ guest, zIndex }) => {
   );
 };
 
-const EventHub = ({ userId }) => {
+const EventHub = ({ userId, onEventsLoaded }) => {
   const pathname = usePathname();
   const { data, loading } = useApi(
     userId ? `${GET_ALL_EVENT_HUB}/${userId}` : null,
@@ -55,6 +56,18 @@ const EventHub = ({ userId }) => {
   const isWonderlandInternational = pathname?.startsWith(
     "/wonderlandinternational"
   );
+
+  const events = data?.data || [];
+
+  // Parent (HomeContent) ko batao ki events hain ya nahi
+  useEffect(() => {
+    if (!userId) {
+      onEventsLoaded?.(0);
+      return;
+    }
+    if (!loading) onEventsLoaded?.(events.length);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, events.length, userId]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "Event Date";
@@ -73,21 +86,23 @@ const EventHub = ({ userId }) => {
   const isCapsuleEvent = (event) =>
     (event?.dataType || "").toString().toLowerCase() === "capsule";
 
-const getEventHref = (event) => {
-  if (isCapsuleEvent(event)) {
-    if (!event.capsuleUrl) {
-      return null; // capsule event hai but URL nahi mila, card disabled rahega
+  const getEventHref = (event) => {
+    if (isCapsuleEvent(event)) {
+      if (!event.capsuleUrl) {
+        return null; // capsule event hai but URL nahi mila, card disabled rahega
+      }
+      return event.capsuleUrl; // API se jo mila wahi direct use karo
     }
-    return event.capsuleUrl; // API se jo mila wahi direct use karo, kuch add/append mat karo
-  }
 
-  const basePath = isWonderlandInternational
-    ? "/wonderlandinternational/invite"
-    : "/wonderland/invite";
-  return `${basePath}?eventid=${event._id}`;
-};
+    const basePath = isWonderlandInternational
+      ? "/wonderlandinternational/invite"
+      : "/wonderland/invite";
+    return `${basePath}?eventid=${event._id}`;
+  };
 
-  const events = data?.data || [];
+  // Saare hooks upar ho chuke hain, ab safely hide kar sakte hain.
+  // Loading ho ya koi event na ho => poora section hide.
+  if (loading || events.length === 0) return null;
 
   return (
     <div className="event-hub">
@@ -115,137 +130,140 @@ const getEventHref = (event) => {
         />
       </div>
 
-      {loading ? (
-        <p className="loading-text">Loading your events...</p>
-      ) : (
-        <div className="event-hub-scroll">
-          {events.map((event) => {
-            const thumbSrc = event.externalTemplateImageUrl;
+      <div className="event-hub-scroll">
+        {events.map((event) => {
+          const thumbSrc = event.externalTemplateImageUrl;
 
-            const realGuests = (event.guests || []).filter(
-              (g) => g && (g.url || g.name)
-            );
+          const realGuests = (event.guests || []).filter(
+            (g) => g && (g.url || g.name)
+          );
 
-            const href = getEventHref(event);
-            const capsule = isCapsuleEvent(event);
-            const isDisabled = !href;
+          const href = getEventHref(event);
+          const capsule = isCapsuleEvent(event);
+          const isDisabled = !href;
 
-            const cardInner = (
-              <>
-                {/* LEFT - THUMBNAIL IMAGE */}
-                <div className="event-hub-thumb">
-                  {thumbSrc ? (
-                    <img src={thumbSrc} alt={event.hostName || "Event invite"} />
-                  ) : (
-                    <div className="event-hub-thumb-fallback">
-                      <span>{(event.hostName || "E").trim().charAt(0).toUpperCase()}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* RIGHT - DETAILS */}
-                <div className="event-hub-details">
-                  <span
-                    className={`role-badge ${
-                      event.eventRole?.toLowerCase() === "host" ? "host" : "guest"
-                    }`}
-                  >
-                    {event.eventRole
-                      ? event.eventRole.charAt(0).toUpperCase() +
-                        event.eventRole.slice(1)
-                      : "Guest"}
-                  </span>
-
-                  <h3 className="event-title">
-                    {event.eventType || event.hostName || "Event"}
-                  </h3>
-
-                  <div className="event-date">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="3" y="4" width="18" height="18" rx="2" />
-                      <path d="M16 2v4M8 2v4M3 10h18" />
-                    </svg>
-                    <span>{formatDate(event.eventDate)}</span>
+          const cardInner = (
+            <>
+              {/* LEFT - THUMBNAIL IMAGE */}
+              <div className="event-hub-thumb">
+                {thumbSrc ? (
+                  <img src={thumbSrc} alt={event.hostName || "Event invite"} />
+                ) : (
+                  <div className="event-hub-thumb-fallback">
+                    <span>
+                      {(event.hostName || "E").trim().charAt(0).toUpperCase()}
+                    </span>
                   </div>
+                )}
+              </div>
 
-                  {realGuests.length > 0 ? (
-                    <div className="event-avatars-row">
-                      <div className="event-avatars">
-                        {realGuests.slice(0, 4).map((g, i) => (
-                          <GuestAvatar
-                            key={g._id || g.id || `${event._id}-${i}`}
-                            guest={g}
-                            zIndex={10 - i}
-                          />
-                        ))}
-                      </div>
-
-                      {realGuests.length > 4 && (
-                        <span className="avatar-more">
-                          +{realGuests.length - 4}
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="event-avatars-row event-avatars-empty">
-                      <span className="no-guests-text">No guests</span>
-                    </div>
-                  )}
-
-                  {isDisabled ? (
-                    <span className="visit-btn visit-btn-disabled">
-                      Link not available
-                    </span>
-                  ) : (
-                    <span className="visit-btn">
-                      Visit Event
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <path d="M9 6l6 6-6 6" />
-                      </svg>
-                    </span>
-                  )}
-                </div>
-              </>
-            );
-
-            // capsuleUrl na milne par card ko clickable nahi rakhte — plain div.
-            if (isDisabled) {
-              return (
-                <div
-                  className="event-hub-card event-hub-card-disabled"
-                  key={event._id}
+              {/* RIGHT - DETAILS */}
+              <div className="event-hub-details">
+                <span
+                  className={`role-badge ${
+                    event.eventRole?.toLowerCase() === "host" ? "host" : "guest"
+                  }`}
                 >
-                  {cardInner}
-                </div>
-              );
-            }
+                  {event.eventRole
+                    ? event.eventRole.charAt(0).toUpperCase() +
+                      event.eventRole.slice(1)
+                    : "Guest"}
+                </span>
 
+                <h3 className="event-title">
+                  {event.eventType || event.hostName || "Event"}
+                </h3>
+
+                <div className="event-date">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <path d="M16 2v4M8 2v4M3 10h18" />
+                  </svg>
+                  <span>{formatDate(event.eventDate)}</span>
+                </div>
+
+                {realGuests.length > 0 ? (
+                  <div className="event-avatars-row">
+                    <div className="event-avatars">
+                      {realGuests.slice(0, 4).map((g, i) => (
+                        <GuestAvatar
+                          key={g._id || g.id || `${event._id}-${i}`}
+                          guest={g}
+                          zIndex={10 - i}
+                        />
+                      ))}
+                    </div>
+
+                    {realGuests.length > 4 && (
+                      <span className="avatar-more">
+                        +{realGuests.length - 4}
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <div className="event-avatars-row event-avatars-empty">
+                    <span className="no-guests-text">No guests</span>
+                  </div>
+                )}
+
+                {isDisabled ? (
+                  <span className="visit-btn visit-btn-disabled">
+                    Link not available
+                  </span>
+                ) : (
+                  <span className="visit-btn">
+                    Visit Event
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                    >
+                      <path d="M9 6l6 6-6 6" />
+                    </svg>
+                  </span>
+                )}
+              </div>
+            </>
+          );
+
+          // capsuleUrl na milne par card ko clickable nahi rakhte — plain div.
+          if (isDisabled) {
             return (
-              <Link
-                href={href}
-                className="event-hub-card"
+              <div
+                className="event-hub-card event-hub-card-disabled"
                 key={event._id}
-                {...(capsule ? { target: "_self" } : {})}
               >
                 {cardInner}
-              </Link>
+              </div>
             );
-          })}
+          }
 
-          {/* STATIC PROMO CARD - always shown at the end */}
-          <div className="event-hub-promo-card">
-            <div className="promo-icon-wrap">
-              <Image
-                src={promoimage}
-                alt="Promo"
-                width={50}
-                height={50}
-              />
-            </div>
-            <p>Don't let memories fade—track and relive every event.</p>
+          return (
+            <Link
+              href={href}
+              className="event-hub-card"
+              key={event._id}
+              {...(capsule ? { target: "_self" } : {})}
+            >
+              {cardInner}
+            </Link>
+          );
+        })}
+
+        {/* STATIC PROMO CARD - always shown at the end */}
+        <div className="event-hub-promo-card">
+          <div className="promo-icon-wrap">
+            <Image src={promoimage} alt="Promo" width={50} height={50} />
           </div>
+          <p>Don't let memories fade—track and relive every event.</p>
         </div>
-      )}
+      </div>
     </div>
   );
 };

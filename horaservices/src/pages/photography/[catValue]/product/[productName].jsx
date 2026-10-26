@@ -4,7 +4,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { faqData } from "@/utils/photographyFAQData.js";
+import { faqData } from "@/utils/photographyProductPageFaqData.js";
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
 import ShareIcon from "@/assets/shareIcon.svg";
 import PROFESSIONALPHOTOGRAPHERS from "@/assets/professionalPhoto.png";

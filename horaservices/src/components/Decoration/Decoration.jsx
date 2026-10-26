@@ -26,6 +26,8 @@ import BrandBanner from "@/components/BrandBanner";
 import whatsappbanner from "@/assets/Whatsaap_banner.webp";
 import weddingBannerImg from "@/assets/Wedding_banner.webp";
 import Decorationseodata from "@/utils/Decorationseodata.json";
+import DecorationBanner from "@/components/CategoryDecorationBanner";
+import { getBalloonDecorationH1 } from "@/utils/balloonDecorationH1";
 import { getBalloonDecorationSeo } from "@/utils/balloonDecorationSeo";
 import haldiImg from "@/assets/trending-haldi.webp";
 import mehandiImg from "@/assets/trending-mehandi.webp";
@@ -175,10 +177,21 @@ const Decoration = ({ city, locality }) => {
   const hasCityPageParam = city ? true : false;
   const pathname = router.asPath;
 
+  // Page H1 from the SEO sheet (main page + city hubs); null elsewhere.
+  const sheetH1 = getBalloonDecorationH1(pathname);
+
   const categorySlug = useMemo(
     () => getCategorySlugFromPath(pathname, city, locality),
     [pathname, city, locality],
   );
+
+  // city/locality ke saath fixed-category link banata hai
+  const buildFixedPath = (slug, catValue) => {
+    let path = "";
+    if (city) path += `/${city.toLowerCase()}`;
+    if (locality) path += `/${locality.toLowerCase()}`;
+    return `${path}/${slug}/${catValue}`;
+  };
 
   /* ---------------- GLOBAL SEARCH ---------------- */
   const searchBase = `${city ? "/" + String(city).toLowerCase() : ""}${
@@ -263,18 +276,18 @@ const Decoration = ({ city, locality }) => {
 
   const getCategoryHref = (item) => item?.href || "#";
 
- const getProductHref = (p) => {
-  if (!p) return "#";
+  const getProductHref = (p) => {
+    if (!p) return "#";
 
-  const slug =
-    p.slug ||
-    p.product_slug ||
-    (p.name ? slugify(p.name) : "");
-  if (!slug) return "#";
+    const slug =
+      p.slug ||
+      p.product_slug ||
+      (p.name ? slugify(p.name) : "");
+    if (!slug) return "#";
 
-  // Direct product page: /balloon-decoration/product/slug
-  return `/${categorySlug}/product/${slug}`;
-};
+    // Direct product page: /balloon-decoration/product/slug
+    return `/${categorySlug}/product/${slug}`;
+  };
 
   const openSearchCategory = (item) => {
     if (item?.href) router.push(item.href);
@@ -323,7 +336,7 @@ const Decoration = ({ city, locality }) => {
 
   const reviewsRef = useRef(null);
 
-   const SITE = "https://horaservices.com";
+  const SITE = "https://horaservices.com";
   const citySlug = city ? slugify(city) : "";
   const localitySlug = locality ? slugify(locality) : "";
 
@@ -432,6 +445,8 @@ const Decoration = ({ city, locality }) => {
         />
       </div>
 
+      {sheetH1 && <DecorationBanner title={sheetH1} />}
+
       {/* CIRCLE TABS */}
       <div ref={smallCardRef}>
         <SmallCardGrid
@@ -486,25 +501,26 @@ const Decoration = ({ city, locality }) => {
             data={weddingCollections}
             city={city}
             locality={locality}
+            categorySlug="wedding-decoration"
           />
         </div>
       </section>
 
-      <div className="wa-banner">
+      <a
+        className="wa-banner"
+        href={waLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat now on WhatsApp"
+        onClick={trackWAClicks}
+      >
         <Banner
           image={whatsappbanner}
           alt="Your Celebrations, Our Commitment"
           border="1px solid #599911"
         />
 
-        <a
-          className="wa-banner__btn"
-          href={waLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Chat now on WhatsApp"
-          onClick={trackWAClicks}
-        >
+        <span className="wa-banner__btn">
           <Image
             src={whatsappIcon}
             alt=""
@@ -514,8 +530,8 @@ const Decoration = ({ city, locality }) => {
             className="wa-banner__icon"
           />
           <span>Chat Now on WhatsApp</span>
-        </a>
-      </div>
+        </span>
+      </a>
 
       <section className="why-people-love-us">
         <div className="page-width">
@@ -624,7 +640,7 @@ const Decoration = ({ city, locality }) => {
             />
 
             <CelebrationCard
-              href={`/${categorySlug}/first-night-decoration`}
+              href={buildFixedPath("wedding-decoration", "first-night-decoration")}
               bg={firstNightBg}
               photo={firstNightPhoto}
               photoAlt="First night decoration"

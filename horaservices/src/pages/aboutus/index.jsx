@@ -6,6 +6,7 @@ import how_3 from "../../assets/how_3.webp";
 import Image from "next/image";
 import "../../pages/aboutus/aboutus.css";
 import Head from "next/head";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 
 const AboutUs = () => {
   return (
@@ -162,6 +163,7 @@ const AboutUs = () => {
                 rel="noopener noreferrer"
                 href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services"
                 role="button"
+                onClick={() => trackWAClicks()}
               >
                 Connect with Us
               </a>

@@ -36,19 +36,21 @@ const SmallCardGrid = ({
   const normalize = (str) => str?.toLowerCase().replace(/[^a-z0-9]/g, "").trim();
 
   // Build route using city, locality, categorySlug, and card catValue
-  const buildCardPath = (item) => {
-    if (!item?.catValue) return "/";
+ const buildCardPath = (item) => {
+  if (!item?.catValue) return "/";
 
-    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+  // item ka apna categorySlug ho to wo, warna current page se
+  const categorySlug =
+    item.categorySlug || getCategorySlugFromPath(pathname, city, locality);
 
-    let path = "";
-    if (city) path += `/${city.toLowerCase()}`;
-    if (locality) path += `/${locality.toLowerCase()}`;
+  let path = "";
+  if (city) path += `/${city.toLowerCase()}`;
+  if (locality) path += `/${locality.toLowerCase()}`;
 
-    path += `/${categorySlug}/${item.catValue.replace(/\s+/g, "-")}`;
+  path += `/${categorySlug}/${item.catValue.replace(/\s+/g, "-")}`;
 
-    return path;
-  };
+  return path;
+};
 
   // Only tracking (navigation <a href> se hogi)
   const handleClick = (item) => {

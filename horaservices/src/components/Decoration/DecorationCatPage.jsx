@@ -40,6 +40,7 @@ import SearchSortBar, {
   sortOptions,
 } from "@/components/SearchSortBar";
 import DecorationBanner from "@/components/CategoryDecorationBanner";
+import { getBalloonDecorationH1 } from "@/utils/balloonDecorationH1";
 import DecorationCatDescriptionData, {
   buildCityLinksHtml,
   buildThemeLinksHtml,
@@ -108,6 +109,7 @@ const DecorationCatPage = ({
   initialCatId = "",
   initialHasMore = false,
   isDirectProductPage = false,
+    categorySlug = "balloon-decoration",
 }) => {
   const router = useRouter();
   const pathname = router.asPath.split("?")[0];
@@ -964,7 +966,10 @@ const renderChip = (chip) => (
           {!isThemePage && (
             <>
               <section>
-                <DecorationBanner category={normalizedCat} />
+                <DecorationBanner
+                  category={normalizedCat}
+                  title={getBalloonDecorationH1(pathname)}
+                />
               </section>
 
               {/* Theme route (/hero etc.) par search/sort bar aur price selector nahi */}
@@ -1334,7 +1339,8 @@ const renderChip = (chip) => (
                       className={`category-item ${!showAll && index >= 2 ? "category-item--hidden" : ""
                         }`}
                     >
-                      <h1>{item.title}</h1>
+                      {/* h2: the page's single H1 is the banner above */}
+                      <h2>{item.title}</h2>
                       <div
                         className="item-content"
                         dangerouslySetInnerHTML={{ __html: item.htmlContent }}
