@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CalendarDays } from "lucide-react";
 import Image from "next/image";
 import Head from "next/head";
@@ -29,6 +29,21 @@ const formatEventDate = (isoString) => {
   return `${day} ${month} ${year}`;
 };
 
+// Layout ke daysBetween jaisa hi logic: event date UTC date-only hai, aaj local date.
+// 0 = aaj, negative = expire ho chuki.
+const getDaysLeft = (isoString) => {
+  const d = new Date(isoString);
+  if (isNaN(d.getTime())) return NaN;
+  const now = new Date();
+  const todayUTC = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const targetUTC = Date.UTC(
+    d.getUTCFullYear(),
+    d.getUTCMonth(),
+    d.getUTCDate()
+  );
+  return Math.round((targetUTC - todayUTC) / (1000 * 60 * 60 * 24));
+};
+
 export default function EventDateBanner({
   userId: userIdProp,
   visitorId: visitorIdProp,
@@ -42,8 +57,10 @@ export default function EventDateBanner({
   const [eventId, setEventId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  // const [reminderOpen, setReminderOpen] = useState(false); // ❌ reminder band
-  // const [reminderVariant, setReminderVariant] = useState("planner"); // ❌ reminder band
+
+  const midnightTimerRef = useRef(null);
+  // Latest fetchEventDate ko timer/listeners me stale closure ke bina call karne ke liye
+  const fetchRef = useRef(null);
 
   const getIds = () => {
     const userId = userIdProp || safeGetItem("userID");
@@ -71,9 +88,9 @@ export default function EventDateBanner({
     }
 
     const params = new URLSearchParams();
-    if (userId){
+    if (userId) {
       params.append("userId", userId);
-    } else{
+    } else {
       params.append("visitorId", visitorId);
     }
 
@@ -83,12 +100,21 @@ export default function EventDateBanner({
       .then((res) => res.json())
       .then((json) => {
         const events = json?.data?.eventDates || [];
-        if (events.length > 0) {
-          const lastEvent = events[events.length - 1];
-          setEventDate(lastEvent.date);
-          setEventId(lastEvent._id);
+
+        // Sirf aaj/future wali dates, sabse nazdeek pehle.
+        // Expire ho chuki dates ignore (banner nahi dikhega).
+        const upcoming = events
+          .map((ev) => ({ ...ev, daysLeft: getDaysLeft(ev.date) }))
+          .filter((ev) => !Number.isNaN(ev.daysLeft) && ev.daysLeft >= 0)
+          .sort((a, b) => a.daysLeft - b.daysLeft);
+
+        if (upcoming.length > 0) {
+          const nextEvent = upcoming[0];
+          setEventDate(nextEvent.date);
+          setEventId(nextEvent._id);
           setDateResolved(true);
         } else {
+          // Koi event nahi ya sab expire -> banner hide, popup flow wapas
           setEventDate(null);
           setEventId(null);
           setDateResolved(false);
@@ -103,6 +129,8 @@ export default function EventDateBanner({
       .finally(() => setIsLoading(false));
   };
 
+  fetchRef.current = fetchEventDate;
+
   useEffect(() => {
     fetchEventDate();
   }, [userIdProp, visitorIdProp]);
@@ -113,6 +141,34 @@ export default function EventDateBanner({
     }
   }, [dateResolved]);
 
+  useEffect(() => {
+    if (midnightTimerRef.current) clearTimeout(midnightTimerRef.current);
+    if (!eventDate) return;
+
+    const now = new Date();
+    const msUntilMidnight =
+      new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) -
+      now +
+      1000;
+
+    midnightTimerRef.current = setTimeout(() => {
+      fetchRef.current?.();
+    }, msUntilMidnight);
+
+    return () => {
+      if (midnightTimerRef.current) clearTimeout(midnightTimerRef.current);
+    };
+  }, [eventDate]);
+
+  // Tab/app wapas khulne par (sleep ke baad timer miss ho sakta hai) recheck
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === "visible") fetchRef.current?.();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, []);
+
   const handleConfirm = (newDate) => {
     if (newDate) {
       setEventDate(newDate);
@@ -122,7 +178,10 @@ export default function EventDateBanner({
   };
 
   const { userId: currentUserId, visitorId: currentVisitorId } = getIds();
-  const showBanner = !isLoading && !!eventDate;
+
+  // Extra safety: state me koi expired date reh bhi jaye to banner nahi dikhega
+  const isUpcoming = !!eventDate && getDaysLeft(eventDate) >= 0;
+  const showBanner = !isLoading && isUpcoming;
 
   return (
     <>
