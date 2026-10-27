@@ -18,7 +18,7 @@ import NewBornBanner from "../assets/photographyCategories/Photography12.webp";
 import CorporateBanner from "../assets/photographyCategories/photography13.webp"
 import welcomebabyBanner from "../assets/photographyCategories/photography14.webp"
 export const photoCat = [
-{
+  {
     id: "1",
     image: birthday,
     name: "Birthday-Photography",
@@ -265,7 +265,7 @@ export const seoData = {
     color: "#97538C",
   },
 
-    "corporate-photography": {
+  "corporate-photography": {
     title: "Corporate Photography | Professional Corporate Photographer | HORA",
     description:
       "Book professional corporate photography for office events, conferences, team celebrations, corporate parties and business occasions. Capture your corporate moments with HORA.",
@@ -323,23 +323,27 @@ export const categoryToWeblinkFolderName = {
     folderName: "new born ",
     customerId: "64137625549b58e3dc39a685",
   },
-  "corporate-photography":{
+  "corporate-photography": {
     folderName: "corporatePoselink",
-    customerId:"6a7f09a01144665025c88d8e"
+    customerId: "6a7f09a01144665025c88d8e"
   },
-   "welcome-baby-photography":{
-    folderName:"welcomeBaby_poseLink",
-    customerId:"6a7f09a01144665025c88d8e"
-   },
- "pre-wedding": {
-  folderName: "pre wedding",
-  customerId: "66a7f09a01144665025c88d8e",
+  "welcome-baby-photography": {
+    folderName: "welcomeBaby_poseLink",
+    customerId: "6a7f09a01144665025c88d8e"
+  },
+  "pre-wedding": {
+    folderName: "pre wedding",
+    customerId: "66a7f09a01144665025c88d8e",
+  },
 
   "haldi-mehndi": {
-    folderName: "haldi mehndi",          // apne weblink ka exact folder name daalo
+    folderName: "haldi_mehendi_weblink1",
+    customerId: "66a7f09a01144665025c88d8e"
+  },
+  "wedding": {
+    folderName: "Wedding",
     customerId: "6683e5d43e33c54c0ebde8f2",
   },
-}
 };
 
 
@@ -354,6 +358,6 @@ export const photographyCategoryPageTopBannerHeading = {
   "bachelorette-photography": BacheloretteBanner,
   "maternity-photography": MaternityBanner,
   "new-born-baby-photography": NewBornBanner,
-  "corporate-photography":CorporateBanner,
-  "welcome-baby-photography":welcomebabyBanner
+  "corporate-photography": CorporateBanner,
+  "welcome-baby-photography": welcomebabyBanner
 };
