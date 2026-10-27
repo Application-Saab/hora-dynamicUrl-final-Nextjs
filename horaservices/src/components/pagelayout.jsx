@@ -21,24 +21,35 @@ const BANNER_FIRST_DELAY_MS = 30 * 1000;
 const BANNER_REPEAT_MS = 30 * 1000;
 const BANNER_VISIBLE_MS = 8 * 1000;
 
-const DATE_SHEET_REASK_BUFFER_DAYS = 1;
+// [DATE CHANGE] 0 = event date nikalte hi (agle din) popup/notification wapas shuru
+const DATE_SHEET_REASK_BUFFER_DAYS = 0;
 const DATE_SHEET_SHOWN_KEY = "DATE_SHEET_SHOWN";
+
+// [DATE CHANGE] Jin services ke pages par date popup/notification chalega.
+// Naya service add karna ho to bas yahan slug daalo.
+const DATE_SHEET_SERVICES = ["balloon-decoration", "photography", "food", "catering"];
+
+// [DATE CHANGE] Popup din me ek baar: sessionStorage ki jagah localStorage me aaj ki date save hoti hai
+const getTodayKey = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+};
 
 const hasSheetBeenShown = () => {
   try {
-    return sessionStorage.getItem(DATE_SHEET_SHOWN_KEY) === "1";
+    return localStorage.getItem(DATE_SHEET_SHOWN_KEY) === getTodayKey();
   } catch (e) {
     return false;
   }
 };
 const markSheetShown = () => {
   try {
-    sessionStorage.setItem(DATE_SHEET_SHOWN_KEY, "1");
+    localStorage.setItem(DATE_SHEET_SHOWN_KEY, getTodayKey());
   } catch (e) {}
 };
 const resetSheetShown = () => {
   try {
-    sessionStorage.removeItem(DATE_SHEET_SHOWN_KEY);
+    localStorage.removeItem(DATE_SHEET_SHOWN_KEY);
   } catch (e) {}
 };
 
@@ -145,7 +156,9 @@ const LayoutInner = ({ children }) => {
   const [showDateSheet, setShowDateSheet] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
 
-  const checkStarted = useRef(false);
+  // [CHANGE] Boolean ki jagah: kis identity (userId/visitorId) ke liye check start hua wo yaad rakhta hai.
+  // Visitor se logged-in user banne par dobara check chalega.
+  const checkStarted = useRef(null);
   const dateSheetTimerRef = useRef(null);
   const futureRecheckTimerRef = useRef(null);
   const dateConfirmedRef = useRef(false);
@@ -153,7 +166,10 @@ const LayoutInner = ({ children }) => {
 
   const [cityResolved] = useState(true);
 
-  const isDateSheetAllowedPath = /(^|\/)(balloon-decoration|photography)(\/|$)/.test(pathname || "");
+  // [DATE CHANGE] sab services ke liye (DATE_SHEET_SERVICES list se)
+  const isDateSheetAllowedPath = new RegExp(
+    `(^|\\/)(${DATE_SHEET_SERVICES.join("|")})(\\/|$)`
+  ).test(pathname || "");
 
   useEffect(() => {
     const storedId = safeGetItem("userID");
@@ -165,6 +181,15 @@ const LayoutInner = ({ children }) => {
     if (storedPincode) setPincode(storedPincode);
 
     setIdsReady(true);
+  }, []);
+
+  // [CHANGE] Component unmount par hi timers clear hote hain.
+  // (Pehle main effect ka cleanup har dependency change par timers maar deta tha.)
+  useEffect(() => {
+    return () => {
+      if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
+      if (futureRecheckTimerRef.current) clearTimeout(futureRecheckTimerRef.current);
+    };
   }, []);
 
   const showReminder = useCallback(() => {
@@ -217,13 +242,18 @@ const LayoutInner = ({ children }) => {
           setDateResolved(true);
           setShowDateSheet(false);
           setShowBanner(false);
-          const nearestEvent = futureEvents[0];
-          const msUntilExpiry = (nearestEvent.daysLeft + 1) * 24 * 60 * 60 * 1000;
+
+          // [DATE CHANGE] Pehle (daysLeft + 1) * 24h ka timer tha. setTimeout ~24.8 din se
+          // zyada delay par overflow hoke turant fire ho jata hai (API loop). Isliye
+          // har raat 12 baje recheck karte hain; date nikalte hi flow wapas shuru.
+          const now = new Date();
+          const msUntilMidnight =
+            new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) - now + 1000;
 
           if (futureRecheckTimerRef.current) clearTimeout(futureRecheckTimerRef.current);
           futureRecheckTimerRef.current = setTimeout(() => {
             checkAndSchedule();
-          }, msUntilExpiry);
+          }, msUntilMidnight);
 
           return;
         }
@@ -240,7 +270,8 @@ const LayoutInner = ({ children }) => {
             setDateResolved(true);
             return;
           }
-          resetSheetShown();
+          // [DATE CHANGE] yahan pehle resetSheetShown() tha. Usse expired date wale user ko
+          // har check par popup dobara dikhta tha (din me ek baar rule toot'ta tha). Hata diya.
         }
 
         if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
@@ -260,30 +291,50 @@ const LayoutInner = ({ children }) => {
     if (!isDateSheetAllowedPath) {
       setDateResolved(true);
       // Doosre page par jaane par popup/notification/timer band.
-      // Wapas aane par: sheet is session me dikh chuki hai to seedha notification,
-      // warna popup. Tab/website band karke wapas aane par sab reset ho jata hai.
+      // Wapas aane par: sheet aaj dikh chuki hai to seedha notification,
+      // warna popup. Agle din date na ho to popup phir ek baar aayega.
       setShowDateSheet(false);
       setShowBanner(false);
-      checkStarted.current = false;
+      checkStarted.current = null;
       if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
+      // [CHANGE] midnight timer bhi band
+      if (futureRecheckTimerRef.current) clearTimeout(futureRecheckTimerRef.current);
       return;
     }
 
     if (!idsReady) return;
     if (!userId && !visitorId) return;
     if (!cityResolved) return;
-    if (checkStarted.current) return;
-    checkStarted.current = true;
+
+    // [CHANGE] userId/visitorId badalne par dobara check start hoga
+    const identityKey = userId || visitorId;
+    if (checkStarted.current === identityKey) return;
+    checkStarted.current = identityKey;
 
     checkAndSchedule(
       hasSheetBeenShown() ? BANNER_FIRST_DELAY_MS : DATE_SHEET_DELAY_MS
     );
-
-    return () => {
-      if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
-      if (futureRecheckTimerRef.current) clearTimeout(futureRecheckTimerRef.current);
-    };
   }, [userId, visitorId, idsReady, checkAndSchedule, isDateSheetAllowedPath, setDateResolved, cityResolved]);
+
+  // [CHANGE] Phone/browser me tab wapas aane par (ya raat 12 ke baad app kholne par) dobara check
+  useEffect(() => {
+    if (!isDateSheetAllowedPath || !idsReady) return;
+
+    const onVisible = () => {
+      if (document.visibilityState !== "visible") return;
+      // sheet ya banner pehle se dikh raha ho to kuch mat karo
+      if (showDateSheet || showBanner) return;
+
+      const shownToday = hasSheetBeenShown();
+      checkAndSchedule(
+        shownToday ? BANNER_FIRST_DELAY_MS : DATE_SHEET_DELAY_MS,
+        shownToday
+      );
+    };
+
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [isDateSheetAllowedPath, idsReady, showDateSheet, showBanner, checkAndSchedule]);
 
   /* ---------------- Date bottom sheet handlers ---------------- */
 
@@ -298,7 +349,7 @@ const LayoutInner = ({ children }) => {
     }
 
     // Bina date select kiye band kiya -> top notification dikhao.
-    // Popup ke turant baad pehli notification (1 sec), uske baad har 30 sec me.
+    // [CHANGE] Popup ke baad pehli notification 30 sec baad, uske baad har 30 sec me.
     checkAndSchedule(
       bannerShownOnceRef.current ? BANNER_REPEAT_MS : BANNER_FIRST_DELAY_MS,
       true
