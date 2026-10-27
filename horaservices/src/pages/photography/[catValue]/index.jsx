@@ -369,27 +369,6 @@ export default function CatValuePage({
       ) : (
         <>
           <div style={{ padding: "clamp(4px, 1.27vw, 5px)" }}>
-            {/* ── Breadcrumb ── */}
-            <nav aria-label="Breadcrumb" className="cc-breadcrumb">
-              <ol className="cc-breadcrumb-list">
-                <li>
-                  <a href="/" className="cc-breadcrumb-link">Home</a>
-                </li>
-                <li aria-hidden="true" className="cc-breadcrumb-sep">›</li>
-                <li>
-                  <a href="/photography" className="cc-breadcrumb-link">Photography</a>
-                </li>
-                {effectiveCatValue && (
-                  <>
-                    <li aria-hidden="true" className="cc-breadcrumb-sep">›</li>
-                    <li aria-current="page" className="cc-breadcrumb-current">
-                      {effectiveCatValue.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
-                    </li>
-                  </>
-                )}
-              </ol>
-            </nav>
-
             {showMomentPicker ? (
               <DecorationBanner
                 category={normalizedCat}
