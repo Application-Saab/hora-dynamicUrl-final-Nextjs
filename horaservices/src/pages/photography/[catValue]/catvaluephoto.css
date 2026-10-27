@@ -426,31 +426,6 @@ font-size: clamp(20px, calc((25 / 393) * 100vw), 25px);
 .cc-acc-body.open {
   max-height: 200px; /* reduce from 400px */
 }
-/* ── Breadcrumb (category page) ── */
-.cc-breadcrumb {
-  padding: 8px clamp(12px, 3vw, 20px);
-  background: #fafafa;
-  border-bottom: 1px solid #f0e8ef;
-}
-.cc-breadcrumb-list {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 2px 4px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  font-size: clamp(11px, 2.6vw, 13px);
-  color: #6b7280;
-}
-.cc-breadcrumb-link {
-  color: #97538C;
-  text-decoration: none;
-}
-.cc-breadcrumb-link:hover { text-decoration: underline; }
-.cc-breadcrumb-sep { color: #9ca3af; }
-.cc-breadcrumb-current { color: #374151; font-weight: 500; }
-
 /* ── City+category unique intro paragraph ── */
 .cc-city-intro {
   margin: 12px clamp(12px, 3vw, 20px) 0;
