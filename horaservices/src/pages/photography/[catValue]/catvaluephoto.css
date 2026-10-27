@@ -309,6 +309,7 @@ font-size: clamp(20px, calc((25 / 393) * 100vw), 25px);
     right: 2%;
   }
 }
+
 /* Icon Stats */
 .cc-stats {
   display: flex;

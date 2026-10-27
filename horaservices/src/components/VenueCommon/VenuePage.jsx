@@ -41,7 +41,6 @@ const VenuePage = ({
   // SSR data ko seedha state mein daalo
   const [eventDetails, setEventDetails] = useState(initialEventDetails);
   const [venuePackages, setVenuePackages] = useState(initialPackages || []);
-  console.log('%c [ venuePackages ]', 'font-size:13px; background:pink; color:#bf2c9f;', venuePackages)
   const [venueCategories, setVenueCategories] = useState(
     initialCategories || [],
   );
@@ -57,6 +56,12 @@ const VenuePage = ({
   const [pushRsvpClick, setPushRsvpClick] = useState(false);
   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
   const [openTerms, setOpenTerms] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const intro = eventDetails.description || "";
+  const words = intro.split(" ");
+  const firstLine = words.slice(0, 8).join(" ");
+  const restText = words.slice(8).join(" ");
 
   const {} = useRsvpStatus(venueId, skipRsvpCheck);
   const { data } = useApi(`${GET_VENUE_CATEGORIES_LIST}`, "get");
@@ -371,6 +376,28 @@ Please share more details and availability.`;
             </div>
           )}
 
+          {eventDetails?.description && (
+            <div className="cc-accordion">
+              <button
+                className={`cc-acc-btn ${open ? "open" : ""}`}
+                onClick={() => setOpen(!open)}
+              >
+                <span className="cc-acc-preview">
+                  {firstLine}
+                  {!open && "…"}
+                </span>
+                <span className={`cc-acc-icon ${open ? "open" : ""}`}>
+                  <svg viewBox="0 0 24 24">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </span>
+              </button>
+              <div className={`cc-acc-body ${open ? "open" : ""}`}>
+                <p className="cc-acc-text">{restText}</p>
+              </div>
+            </div>
+          )}
+
           {/* PACKAGES - yeh ab page source mein full HTML ke saath aayega */}
           {venuePackages.length > 0 && (
             <div
@@ -410,7 +437,13 @@ Please share more details and availability.`;
                 marginBottom: "10px",
               }}
             >
-              <button className="view-terms-btn" type="button" onClick={() => setOpenTerms(true)}>Terms & Condition</button>
+              <button
+                className="view-terms-btn"
+                type="button"
+                onClick={() => setOpenTerms(true)}
+              >
+                Terms & Condition
+              </button>
             </div>
           )}
 
@@ -442,7 +475,9 @@ Please share more details and availability.`;
               venueImageUrl={eventDetails?.venueImageUrl}
             />
           </div>
-          <FAQSection faqData={eventDetails?.faqs} />
+          {eventDetails?.faqs?.length > 0 && (
+            <FAQSection faqData={eventDetails?.faqs} />
+          )}
         </div>
       </div>
 
