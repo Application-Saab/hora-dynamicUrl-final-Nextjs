@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import Head from "next/head";
 import { getDecorationOrganizationSchema } from "../../utils/schema";
 import dynamic from "next/dynamic";
@@ -107,6 +107,15 @@ import BirthdayBanner from "../Birthdaybanner";
 import BirthdayMagicalBanner from "../Birthdaymagicalbanner";
 import { smallCardCategories } from "@/utils/smallCardCategories";
 
+/* ---- GLOBAL SEARCH imports ---- */
+import axiosApi from "@/utils/axiosApi";
+import {
+  BASE_URL,
+  GET_DECORATION_CAT_ID,
+  GET_DECORATION_CAT_ITEM,
+} from "@/utils/apiconstants";
+import { NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
+
 const stats = [
   {
     icon: whypeople1,
@@ -157,6 +166,64 @@ const brandItems = [
   },
 ];
 
+const slugify = (val) =>
+  String(val || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+
+/* ------------------------------------------------------------------ *
+ * GLOBAL SEARCH DATA (module level => sirf ek baar banta hai)
+ * ------------------------------------------------------------------ */
+const toTitle = (s) =>
+  String(s || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/\b\w/g, (m) => m.toUpperCase());
+
+// decCat me duplicate, trailing space, capital `Image` aur uppercase catValue
+// ho sakte hain -- sab yahan saaf ho jaate hain.
+const SEARCH_CATEGORIES = (() => {
+  const seen = new Set();
+  return decCat.reduce((acc, c) => {
+    const catValue = String(c.catValue || "").trim().toLowerCase();
+    if (!catValue || seen.has(catValue)) return acc;
+    seen.add(catValue);
+    acc.push({
+      name: toTitle(c.name),
+      catValue,
+      subCategory: String(c.subCategory || "").trim(),
+      image: String(c.image || c.Image || "").trim(),
+    });
+    return acc;
+  }, []);
+})();
+
+const SEARCH_THEMES = [
+  ...themeFilters.map((t) => ({ ...t, cat: "kids-birthday-decoration" })),
+  ...NamingCeremonyThemes.map((t) => ({
+    ...t,
+    cat: "naming-ceremony-decoration",
+  })),
+];
+
+// category ki id ek baar fetch hoti hai, phir cache
+const catIdCache = {};
+const getCatId = async (c) => {
+  if (catIdCache[c.catValue]) return catIdCache[c.catValue];
+  if (!c.subCategory) return null;
+  try {
+    const res = await axiosApi.get(
+      BASE_URL + GET_DECORATION_CAT_ID + c.subCategory,
+    );
+    const id = res.data?.data?._id || null;
+    if (id) catIdCache[c.catValue] = id;
+    return id;
+  } catch {
+    return null;
+  }
+};
+
 const Decoration = ({ city, locality }) => {
   const smallCardRef = useRef(null);
   const router = useRouter();
@@ -168,36 +235,134 @@ const Decoration = ({ city, locality }) => {
   const pathname = router.asPath;
   // Page H1 from the SEO sheet (main page + city hubs); null elsewhere.
   const sheetH1 = getBalloonDecorationH1(pathname);
-  const [sortOption, setSortOption] = useState("popularity");
 
-  // Dropdown mein category par click ka URL (CategoryGrid jaisa hi)
-const getCategoryHref = (cat) => {
-  const slug = cat.categorySlug || categorySlug;
-  let path = "";
-  if (city) path += `/${city.toLowerCase()}`;
-  if (locality) path += `/${locality.toLowerCase()}`;
-  return `${path}/${slug}/${cat.catValue}`;
-};
-  // Search dropdown aur typewriter placeholder isi list se chalte hain
-const searchCategoryList = smallCardCategories.map((c) => ({
-  id: c.catValue,
-  label: c.name,
-  image: c.image,
-  catValue: c.catValue,
-  categorySlug: c.categorySlug,
-}));
-const categorySlug = useMemo(
-  () => getCategorySlugFromPath(pathname, city, locality),
-  [pathname, city, locality],
-);
+  const categorySlug = useMemo(
+    () => getCategorySlugFromPath(pathname, city, locality),
+    [pathname, city, locality],
+  );
 
-// city/locality ke saath fixed-category link banata hai
-const buildFixedPath = (slug, catValue) => {
-  let path = "";
-  if (city) path += `/${city.toLowerCase()}`;
-  if (locality) path += `/${locality.toLowerCase()}`;
-  return `${path}/${slug}/${catValue}`;
-};
+  // city/locality ke saath fixed-category link banata hai
+  const buildFixedPath = (slug, catValue) => {
+    let path = "";
+    if (city) path += `/${city.toLowerCase()}`;
+    if (locality) path += `/${locality.toLowerCase()}`;
+    return `${path}/${slug}/${catValue}`;
+  };
+
+  /* ---------------- GLOBAL SEARCH ---------------- */
+  const searchBase = `${city ? "/" + String(city).toLowerCase() : ""}${
+    locality ? "/" + String(locality).toLowerCase() : ""
+  }/${categorySlug}`;
+
+  // Category + Theme list (local data, turant match hoti hai)
+  const searchCategoryList = useMemo(() => {
+    const localImages = smallCardCategories.reduce((m, c) => {
+      m[c.catValue] = c.image;
+      return m;
+    }, {});
+
+    const cats = SEARCH_CATEGORIES.map((c) => ({
+      id: `cat-${c.catValue}`,
+      kind: "category",
+      label: c.name,
+      image: c.image || localImages[c.catValue] || undefined,
+      href: `${searchBase}/${c.catValue}`,
+    }));
+
+    const themes = SEARCH_THEMES.map((t) => {
+      const value = String(t.value).trim();
+      return {
+        id: `theme-${t.cat}-${value}`,
+        kind: "theme",
+        label: `${String(t.label).trim()} Theme`,
+        image: t.image,
+        href: `${searchBase}/${t.cat}/${value}`,
+      };
+    });
+
+    return [...cats, ...themes];
+  }, [searchBase]);
+
+  // Products: backend se live (debounced)
+  const [searchProducts, setSearchProducts] = useState([]);
+  const searchReq = useRef(0);
+  const searchTimer = useRef(null);
+  useEffect(() => () => clearTimeout(searchTimer.current), []);
+
+  const handleQueryChange = (value) => {
+    const term = String(value || "").trim();
+    clearTimeout(searchTimer.current);
+    const id = ++searchReq.current;
+
+    if (term.length < 2) {
+      setSearchProducts([]);
+      return;
+    }
+
+    searchTimer.current = setTimeout(async () => {
+      const t = term.toLowerCase();
+      // jo categories typed word se match karti hain wo pehle, max 8
+      const cats = [...SEARCH_CATEGORIES]
+        .sort((a, b) => {
+          const sa = `${a.name} ${a.catValue}`.toLowerCase().includes(t) ? 0 : 1;
+          const sb = `${b.name} ${b.catValue}`.toLowerCase().includes(t) ? 0 : 1;
+          return sa - sb;
+        })
+        .slice(0, 8);
+
+      const results = await Promise.allSettled(
+        cats.map(async (c) => {
+          const catId = await getCatId(c);
+          if (!catId) return [];
+          const url = `${BASE_URL + GET_DECORATION_CAT_ITEM}v3/${catId}?limit=6&page=1&search=${encodeURIComponent(term)}`;
+          const res = await axiosApi.get(url);
+          return (res.data?.data || []).map((p) => ({
+            ...p,
+            _catValue: c.catValue,
+          }));
+        }),
+      );
+
+      if (id !== searchReq.current) return; // purani request ignore
+      setSearchProducts(
+        results.flatMap((r) => (r.status === "fulfilled" ? r.value : [])),
+      );
+    }, 300);
+  };
+
+  const getCategoryHref = (item) => item?.href || "#";
+
+  const getProductHref = (p) => {
+    if (!p) return "#";
+
+    const slug =
+      p.slug ||
+      p.product_slug ||
+      (p.name ? slugify(p.name) : "");
+    if (!slug) return "#";
+
+    // Direct product page: /balloon-decoration/product/slug
+    return `/${categorySlug}/product/${slug}`;
+  };
+
+  const openSearchCategory = (item) => {
+    if (item?.href) router.push(item.href);
+  };
+
+  // Enter dabane par: sabse relevant category ke search page par
+  const handleSearchSubmit = (q) => {
+    const text = String(q || "").trim();
+    if (!text) return;
+    const lower = text.toLowerCase();
+    const catValue =
+      searchProducts[0]?._catValue ||
+      SEARCH_CATEGORIES.find((c) =>
+        `${c.name} ${c.catValue}`.toLowerCase().includes(lower),
+      )?.catValue ||
+      "birthday-decoration";
+    router.push(`${searchBase}/${catValue}?search=${encodeURIComponent(text)}`);
+  };
+  /* ---------------- /GLOBAL SEARCH ---------------- */
 
   const { citySeoData, defaultSeo } = Decorationseodata;
   const cardsData = [
@@ -290,11 +455,6 @@ const buildFixedPath = (slug, catValue) => {
   const bannerImages = [Banner1, Banner2, Banner3];
 
   const SITE = "https://horaservices.com";
-  const slugify = (val) =>
-    String(val || "")
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, "-");
 
   const citySlug = city ? slugify(city) : "";
   const localitySlug = locality ? slugify(locality) : "";
@@ -399,14 +559,17 @@ const buildFixedPath = (slug, catValue) => {
         <div className="page-width">
           <HoraBanner />
         </div>
+
+        {/* GLOBAL SEARCH: category + theme + product */}
         <SearchSortBar
-          sortOption={sortOption}
-          onSortChange={setSortOption}
           searchCategoryList={searchCategoryList}
-          products={[]}
+          products={searchProducts}
           categoryType="decoration"
+          onCategorySelect={openSearchCategory}
+          onQueryChange={handleQueryChange}
+          onSubmitSearch={handleSearchSubmit}
           getCategoryHref={getCategoryHref}
-          getProductHref={() => "#"}
+          getProductHref={getProductHref}
           showSort={false}
         />
       </div>
@@ -471,7 +634,6 @@ const buildFixedPath = (slug, catValue) => {
           />
         </div>
       </section>
-
 
       <a
         className="wa-banner"

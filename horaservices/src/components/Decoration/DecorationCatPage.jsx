@@ -17,7 +17,7 @@ import {
   getRandomRating,
 } from "@/utils/decorationCatHelpers";
 import { NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
-import "./catvaluedecor.css";
+import "@/pages/balloon-decoration/[catValue]/catvaluedecor.css";
 import ProductGrid from "@/components/productGrid";
 import FilterBar from "@/components/FilterBar";
 import DidyouKnow from "../../assets/didyouknow.jpg";
@@ -32,9 +32,13 @@ import CardSkeleton from "@/components/CardSkeleton";
 import HighPriceProduct from "@/components/Highpriceproduct";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 import SeoHead from "@/utils/SeoHead";
-// ✅ CHANGE 1: `themes` bhi import karo (URL ke priceTheme=budget se theme object nikalne ke liye)
+// `themes` bhi import karo (URL ke priceTheme=budget se theme object nikalne ke liye)
 import ThemeSelector, { themes as priceThemes } from "@/components/Themeselector";
-import SearchSortBar, { designTypeOptions } from "@/components/SearchSortBar";
+// ✅ sortOptions bhi import kiya (chip ka label dikhane ke liye)
+import SearchSortBar, {
+  designTypeOptions,
+  sortOptions,
+} from "@/components/SearchSortBar";
 import DecorationBanner from "@/components/CategoryDecorationBanner";
 import { getBalloonDecorationH1 } from "@/utils/balloonDecorationH1";
 import DecorationCatDescriptionData, {
@@ -45,6 +49,7 @@ import EventDateBanner from "@/components/Eventdatebanner";
 import axiosApi from "@/utils/axiosApi";
 import MakeItYoursBanner from "@/components/MakeItYoursBanner";
 import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
+import { X } from "lucide-react";
 
 const PRICE_SORTS = ["newArrival", "lowToHigh", "highToLow"];
 const VALID_SORTS = [...PRICE_SORTS];
@@ -92,10 +97,7 @@ const parseFiltersFromQuery = (query = {}) => {
   return { sortOption, search, priceTheme, designTypes };
 };
 
-// ✅ CHANGE 17: Cache key ab FILTERS se banti hai, router.asPath se nahi.
-// asPath fetch ke time par purana ho sakta hai (router.replace async hai),
-// jisse sorted data galat key mein save hota tha aur "Popularity" par wapas
-// aane par purana sorted data restore ho jata tha.
+// Cache key FILTERS se banti hai, router.asPath se nahi.
 const buildCacheKey = (path, sort, priceThemeId, search, designTypes = []) =>
   `decorcat:${path}|sort=${sort || "popularity"}|price=${priceThemeId || ""}|search=${search || ""}|design=${designTypes.join(",")}`;
 
@@ -112,7 +114,7 @@ const DecorationCatPage = ({
   const router = useRouter();
   const pathname = router.asPath.split("?")[0];
 
-  // ✅ CHANGE 3: URL se initial filters nikalo
+  // URL se initial filters nikalo
   const urlFilters = parseFiltersFromQuery(router.query);
   const hasUrlFilters =
     urlFilters.sortOption !== "popularity" ||
@@ -120,8 +122,7 @@ const DecorationCatPage = ({
     !!urlFilters.priceTheme ||
     urlFilters.designTypes.length > 0;
 
-  // ✅ CHANGE 4: Agar URL mein filter hai to SSR ka (unfiltered) data skip nahi
-  // karna — fresh filtered fetch hona chahiye.
+  // Agar URL mein filter hai to SSR ka (unfiltered) data skip nahi karna
   const skipInitialFetch = useRef(
     initialCatalogueData.length > 0 && !hasUrlFilters,
   );
@@ -204,7 +205,7 @@ const DecorationCatPage = ({
   // ================= CACHE-FIRST BACK-NAVIGATION SUPPORT =================
   const hasHydratedFromCache = useRef(false);
 
-  // ✅ CHANGE 7: URL ke query params update karne ka helper
+  // URL ke query params update karne ka helper
   // shallow: true => getServerSideProps dobara nahi chalega, page reload nahi hoga.
   // Value null/""/undefined ho to param URL se hat jata hai.
   const updateQueryParams = (updates) => {
@@ -238,6 +239,7 @@ const DecorationCatPage = ({
 
     router.replace(newUrl, undefined, { shallow: true, scroll: false });
   };
+
   useEffect(() => {
     if (!router.isReady || typeof window === "undefined") return;
 
@@ -271,10 +273,8 @@ const DecorationCatPage = ({
     router.query.designType,
   ]);
 
-  // ✅ CHANGE 8 (UPDATED): Ab themed URL (…/kids-birthday-decoration/hero) par
-  // bhi user usi URL par rehta hai. Sirf query add/remove hoti hai:
-  //   /hero  ->  /hero?priceTheme=value
-  // Theme (hero) aur price range DONO ek saath apply hote hain.
+  // Themed URL (…/kids-birthday-decoration/hero) par bhi user usi URL par rehta hai.
+  // Sirf query add/remove hoti hai: /hero -> /hero?priceTheme=value
   const handleSelectPriceTheme = (theme) => {
     hasHydratedFromCache.current = false; // genuine user action
     if (typeof window !== "undefined") {
@@ -305,8 +305,7 @@ const DecorationCatPage = ({
 
   const isPriceThemeActive = !!selectedPriceTheme;
 
-  // ---- Sort state (New Arrival / Popularity / Price Low-High / Price High-Low / Style options) ----
-  // ✅ CHANGE 9: initial value URL se aayegi (pehle "popularity" thi)
+  // ---- Sort state ----
   const [sortOption, setSortOption] = useState(urlFilters.sortOption);
 
   // ---- Design Type filter (multi-select: wall, ring, ...) ----
@@ -314,7 +313,6 @@ const DecorationCatPage = ({
   const designTypesKey = designTypes.join(",");
 
   // Sort & Filter sheet ka "Apply" — sort + design type EK saath, EK hi URL update
-  // (do alag router.replace se purani URL overwrite ho sakti thi)
   const handleSortFilterApply = ({
     sortOption: nextSort,
     designTypes: nextDesigns,
@@ -322,15 +320,35 @@ const DecorationCatPage = ({
     hasHydratedFromCache.current = false;
     setSortOption(nextSort);
     setDesignTypes(nextDesigns);
-    // ✅ CHANGE 10: URL update (popularity default hai, to param hata do)
     updateQueryParams({
       sortBy: nextSort === "popularity" ? null : nextSort,
       designType: nextDesigns,
     });
   };
 
+  // ✅ Chips ke handlers: sirf wahi filter hatta hai jis par × dabaya
+  const removeSortFilter = () => {
+    hasHydratedFromCache.current = false;
+    setSortOption("popularity");
+    updateQueryParams({ sortBy: null });
+  };
+
+  const removeDesignFilter = (id) => {
+    hasHydratedFromCache.current = false;
+    const next = designTypes.filter((d) => d !== id);
+    setDesignTypes(next);
+    updateQueryParams({ designType: next });
+  };
+
+  const clearAllFilters = () => {
+    hasHydratedFromCache.current = false;
+    setSortOption("popularity");
+    setDesignTypes([]);
+    setSelectedPriceTheme(null);
+    updateQueryParams({ sortBy: null, designType: null, priceTheme: null });
+  };
+
   // ---- Search: whether a free-text search is currently active ----
-  // ✅ UPDATED: theme route par search bar hidden hai, isliye search kabhi active nahi
   const isSearchActive = !isThemeRoute && !!searchQuery.trim();
 
   const handleSearchChange = (query) => {
@@ -343,7 +361,7 @@ const DecorationCatPage = ({
       setSortOption("popularity");
       setSelectedPriceTheme(null);
       setDesignTypes([]);
-      // ✅ CHANGE 11: search URL mein, baaki filters URL se clear
+      // search URL mein, baaki filters URL se clear
       updateQueryParams({
         search: trimmed,
         sortBy: null,
@@ -393,17 +411,13 @@ const DecorationCatPage = ({
     }
   }, []);
 
-  // ✅ CHANGE 12: URL -> STATE sync (refresh, shared link, browser back/forward)
-  // URL hi source of truth hai. Agar URL ke query se state alag hai to state
-  // update hoga, aur neeche wala fetch effect apne aap fresh data layega.
+  // URL -> STATE sync (refresh, shared link, browser back/forward)
   useEffect(() => {
     if (!router.isReady) return;
 
     const next = parseFiltersFromQuery(router.query);
 
     setSortOption((prev) => (prev === next.sortOption ? prev : next.sortOption));
-    // URL mein search lowercase hota hai, isliye case-insensitive compare
-    // (warna "Barbie" type karne par state lowercase se overwrite hoke refetch hota)
     setSearchQuery((prev) =>
       prev.toLowerCase() === next.search.toLowerCase() ? prev : next.search,
     );
@@ -425,8 +439,7 @@ const DecorationCatPage = ({
     router.query.designType,
   ]);
 
-  // ✅ CHANGE 14: URL ka [theme] (jaise "hero") hamesha apply hoga, price
-  // theme ke saath bhi. Pehle priceTheme active hone par ye ignore hota tha.
+  // URL ka [theme] (jaise "hero") hamesha apply hoga, price theme ke saath bhi.
   useEffect(() => {
     if (theme) {
       setThemeFilter(theme);
@@ -458,8 +471,6 @@ const DecorationCatPage = ({
   }, [initialCatId, initialCatalogueData, initialHasMore]);
 
   // ================= CACHE-FIRST: subCategory resolve hote hi check karo =================
-  // NOTE: cacheKey mein router.asPath hai, jisme ab ?sortBy=... bhi aata hai,
-  // isliye har filter ka apna alag cache banega (back par wahi view milega).
   useEffect(() => {
     addSpaces(subCategory);
     if (!subCategory) return;
@@ -640,7 +651,7 @@ const DecorationCatPage = ({
         params.set("sortBy", sortOption);
       }
 
-      // ✅ Design Type: designType=Wall  (multiple => "Wall,Ring")
+      // Design Type: designType=Wall  (multiple => "Wall,Ring")
       if (designTypes.length > 0) {
         const apiValues = designTypes
           .map((id) => designTypeOptions.find((o) => o.id === id)?.apiValue)
@@ -849,6 +860,92 @@ const DecorationCatPage = ({
     );
   };
 
+  // ✅ Active filter chips: price + sort + har design type
+ // ✅ Active filter chips: price + sort + har design type
+const activeChips = [];
+
+if (selectedPriceTheme) {
+  activeChips.push({
+    key: "price",
+    label:
+      selectedPriceTheme.label ||
+      selectedPriceTheme.name ||
+      selectedPriceTheme.title,
+    onRemove: () => handleSelectPriceTheme(null),
+  });
+}
+
+if (sortOption !== "popularity") {
+  activeChips.push({
+    key: "sort",
+    label: sortOptions.find((o) => o.id === sortOption)?.label || sortOption,
+    onRemove: removeSortFilter,
+  });
+}
+
+designTypes.forEach((id) => {
+  activeChips.push({
+    key: `design-${id}`,
+    label: designTypeOptions.find((o) => o.id === id)?.label || id,
+    onRemove: () => removeDesignFilter(id),
+  });
+});
+
+// ✅ Upar ki row mein kitne chips fit honge (width naap kar)
+const wrapRef = useRef(null);
+const clearRef = useRef(null);
+const measureRef = useRef(null);
+const [topCount, setTopCount] = useState(1);
+
+const chipsKey = activeChips.map((c) => `${c.key}:${c.label}`).join("|");
+
+useEffect(() => {
+  const compute = () => {
+    const wrap = wrapRef.current;
+    const measure = measureRef.current;
+    if (!wrap || !measure) return;
+
+    const GAP = 8;
+    const clearW =
+      activeChips.length > 1 ? (clearRef.current?.offsetWidth || 90) + 12 : 0;
+    const cs = getComputedStyle(wrap);
+    const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+    const available = wrap.clientWidth - padX - clearW;
+    const widths = Array.from(measure.children).map((el) => el.offsetWidth);
+
+    let used = 0;
+    let count = 0;
+    for (const w of widths) {
+      const next = used + (count ? GAP : 0) + w;
+      if (next > available) break;
+      used = next;
+      count++;
+    }
+    setTopCount(Math.max(1, count)); // kam se kam 1 chip upar
+  };
+
+  compute();
+  window.addEventListener("resize", compute);
+  return () => window.removeEventListener("resize", compute);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [chipsKey, loading, isInitialLoad, isSearchActive, isThemeRoute]);
+
+const topChips = activeChips.slice(0, topCount);      // ✅ topCount use karo
+const bottomChips = activeChips.slice(topCount);      // ✅
+
+const renderChip = (chip) => (
+  <span key={chip.key} className="active-filter-chip">
+    {chip.label}
+    <button
+      type="button"
+      className="active-filter-chip__close"
+      aria-label={`Remove ${chip.label}`}
+      onClick={chip.onRemove}
+    >
+      <X size={16} strokeWidth={2.5} />
+    </button>
+  </span>
+);
   return (
     <div className="decCatPage">
       <SeoHead
@@ -875,7 +972,7 @@ const DecorationCatPage = ({
                 />
               </section>
 
-              {/* ✅ Theme route (/hero etc.) par search/sort bar aur price selector nahi */}
+              {/* Theme route (/hero etc.) par search/sort bar aur price selector nahi */}
               {!isThemeRoute && (
                 <>
                   <SearchSortBar
@@ -893,7 +990,46 @@ const DecorationCatPage = ({
                     initialQuery={searchQuery}
                   />
 
-                  {isPriceThemeSelectorPage && !isSearchActive && (
+                  {/* ✅ Active filter chips (price + sort + design types) */}
+             {activeChips.length > 0 && !isSearchActive && (
+  <div className="active-filter-wrap" ref={wrapRef}>
+    {/* Sirf naapne ke liye, user ko dikhta nahi */}
+    <div className="active-filter-measure" ref={measureRef} aria-hidden="true">
+      {activeChips.map((chip) => (
+        <span key={chip.key} className="active-filter-chip">
+          {chip.label}
+          <span className="active-filter-chip__close">
+            <X size={16} strokeWidth={2.5} />
+          </span>
+        </span>
+      ))}
+    </div>
+
+    <div className="active-filter-top">
+      <div className="active-filter-top-chips">
+        {topChips.map(renderChip)}
+      </div>
+
+      {activeChips.length > 1 && (
+        <button
+          type="button"
+          className="active-filter-clear"
+          onClick={clearAllFilters}
+          ref={clearRef}
+        >
+          Clear All
+        </button>
+      )}
+    </div>
+
+    {bottomChips.length > 0 && (
+      <div className="active-filter-scroll">
+        {bottomChips.map(renderChip)}
+      </div>
+    )}
+  </div>
+)}               
+   {isPriceThemeSelectorPage && !isSearchActive && (
                     <ThemeSelector
                       onSelectTheme={handleSelectPriceTheme}
                       selectedThemeId={selectedPriceTheme?.id || null}
@@ -1200,9 +1336,8 @@ const DecorationCatPage = ({
                   {currentCategoryContent.map((item, index) => (
                     <div
                       key={index}
-                      className={`category-item ${
-                        !showAll && index >= 2 ? "category-item--hidden" : ""
-                      }`}
+                      className={`category-item ${!showAll && index >= 2 ? "category-item--hidden" : ""
+                        }`}
                     >
                       {/* h2: the page's single H1 is the banner above */}
                       <h2>{item.title}</h2>

@@ -245,3 +245,99 @@
   background: #fff;
   z-index: 999;
 }
+.active-filter-wrap {
+  position: relative; /* ✅ ADD */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding:  0px clamp(8px, 2.54vw, 10px);
+}
+
+/* ✅ ADD: naapne wali hidden row, user ko nahi dikhegi */
+.active-filter-measure {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: max-content;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  visibility: hidden;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Upar ki row: scroll nahi, Clear All right mein */
+.active-filter-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.active-filter-top-chips {
+  display: flex;
+  flex-wrap: nowrap; /* ✅ CHANGE: wrap se nowrap */
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden; /* ✅ ADD */
+}
+
+/* Sirf neeche ki row scroll hogi */
+.active-filter-scroll {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.active-filter-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.active-filter-chip {
+  flex-shrink: 0;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: clamp(6px, 1.78vw, 7px) clamp(8px, 2.54vw, 10px);
+  border-radius:57.29px;
+  background: #97538C1A;
+  color: #97538C;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: clamp(11px, 2.974vw, 11.69px);
+}
+
+.active-filter-chip__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.active-filter-clear {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: #97538C;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: clamp(13px, 3.562vw, 14px);
+  text-decoration: underline;
+  cursor: pointer;
+  white-space: nowrap;
+}
