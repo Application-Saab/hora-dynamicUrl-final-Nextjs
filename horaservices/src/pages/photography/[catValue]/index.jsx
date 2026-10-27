@@ -39,6 +39,7 @@ import DecorationBanner from "@/components/CategoryDecorationBanner";
 import PhotographyCardSkeleton from "@/components/PhotographyCardSkeleton";
 import { isValidPhotographyCategorySlug } from "@/utils/routeConfig";
 import PhotoGalleryEmbed from "@/components/Photography/PhotoGalleryEmbed";
+import { getCityCategoryIntro } from "@/utils/photographyCityCategories";
 
 // ---------- constants / helpers (same as before) ----------
 const isWeddingCategory = (category) => {
@@ -197,6 +198,7 @@ export default function CatValuePage({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(ssrError || "");
   const [open, setOpen] = useState(false);
+  const [cityIntroOpen, setCityIntroOpen] = useState(false);
   const [activeMoment, setActiveMoment] = useState(initialActiveMoment);
 
   const schemaOrg = getPhotographyOrganizationSchema();
@@ -419,6 +421,36 @@ export default function CatValuePage({
                 ]}
               />
             ) : null}
+
+            {/* ── City + category unique intro (prevents duplicate content) ── */}
+            {city && effectiveCatValue && (() => {
+              const cityIntro = getCityCategoryIntro(city, effectiveCatValue);
+              if (!cityIntro) return null;
+              const cityWords = cityIntro.split(" ");
+              const cityFirstLine = cityWords.slice(0, 8).join(" ");
+              const cityRest = cityWords.slice(8).join(" ");
+              return (
+                <div className="cc-accordion">
+                  <button
+                    className={`cc-acc-btn ${cityIntroOpen ? "open" : ""}`}
+                    onClick={() => setCityIntroOpen(!cityIntroOpen)}
+                  >
+                    <span className="cc-acc-preview">
+                      {cityFirstLine}
+                      {!cityIntroOpen && "…"}
+                    </span>
+                    <span className={`cc-acc-icon ${cityIntroOpen ? "open" : ""}`}>
+                      <svg viewBox="0 0 24 24">
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </span>
+                  </button>
+                  <div className={`cc-acc-body ${cityIntroOpen ? "open" : ""}`}>
+                    <p className="cc-acc-text">{cityRest}</p>
+                  </div>
+                </div>
+              );
+            })()}
 
             <div className="cc-stats">
               <div className="cc-stat">

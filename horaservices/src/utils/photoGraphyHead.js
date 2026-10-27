@@ -155,7 +155,9 @@ export function SeoMain({ city, locality, scriptTag }) {
 // ---------- CATEGORY ( /photography/[catValue] ) ----------
 export function SeoCategory({ city, locality, catValue, seoData, scriptTag }) {
   const seo = seoData?.[catValue] || {};
-  const safeCat = catValue ? catValue.replace(/-/g, " ") : "";
+  const safeCat = catValue
+    ? catValue.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+    : "";
   const safeDesc = seo?.description || "";
 
   const canonical = buildPhotographyCanonical({

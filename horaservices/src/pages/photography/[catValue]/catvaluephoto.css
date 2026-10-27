@@ -427,3 +427,14 @@ font-size: clamp(20px, calc((25 / 393) * 100vw), 25px);
 .cc-acc-body.open {
   max-height: 200px; /* reduce from 400px */
 }
+/* ── City+category unique intro paragraph ── */
+.cc-city-intro {
+  margin: 12px clamp(12px, 3vw, 20px) 0;
+  padding: 12px 16px;
+  background: #fdf6fc;
+  border-left: 3px solid #97538C;
+  border-radius: 0 8px 8px 0;
+  font-size: clamp(12px, 2.8vw, 14px);
+  color: #374151;
+  line-height: 1.7;
+}

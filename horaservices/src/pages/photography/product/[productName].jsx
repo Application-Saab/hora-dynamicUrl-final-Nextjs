@@ -623,7 +623,7 @@ const ProductDetails = ({
                 }}
               >
                 <div className="breadcrumb-row">
-                  <h2 className="breadcrumb-text">
+                  <nav aria-label="Breadcrumb" className="breadcrumb-text">
                     <a
                       style={{
                         color: "rgb(157, 74, 147)",
@@ -648,7 +648,7 @@ const ProductDetails = ({
                       </>
                     )}
                     {" > "}
-                  </h2>
+                  </nav>
 
                   <button
                     onClick={() => {
