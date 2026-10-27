@@ -2,7 +2,7 @@ const folderToSubCategory = {
   Wedding: "wedding-photography",
   "maternity poses": "maternity-photography",
   Candid: "birthday-photography",
-  "pre wedding": "engagement-photography",
+  "pre wedding": "pre-wedding",
   HaldiandMehendi: "wedding-photography",
   "baby shower": "baby-shower-photography",
   "naming ceremony weblink": "naming-ceremony-photography",

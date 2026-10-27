@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 
@@ -144,7 +144,6 @@ export async function getServerSideProps(context) {
   }
 
   const galleryData = categoryToWeblinkFolderName[finalCatValue] || null;
-  console.log('%c [ galleryData ]', 'font-size:13px; background:pink; color:#bf2c9f;', galleryData)
 
   return {
     props: {
@@ -193,11 +192,19 @@ export default function CatValuePage({
 
   const [catId, setCatId] = useState(initialCatId);
   const [products, setProducts] = useState(initialProducts || []);
-  const [galleryData, setGalleryData] = useState(initialGalleryData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(ssrError || "");
   const [open, setOpen] = useState(false);
   const [activeMoment, setActiveMoment] = useState(initialActiveMoment);
+
+  // ✅ Gallery hamesha current slug (catValue) se nikalo, wedding par force mat karo
+  const galleryData = useMemo(
+    () =>
+      (typeof catValue === "string" && categoryToWeblinkFolderName[catValue]) ||
+      initialGalleryData ||
+      null,
+    [catValue, initialGalleryData],
+  );
 
   const schemaOrg = getPhotographyOrganizationSchema();
   const scriptTag = JSON.stringify(schemaOrg);
@@ -210,6 +217,14 @@ export default function CatValuePage({
   const words = intro.split(" ");
   const firstLine = words.slice(0, 8).join(" ");
   const restText = words.slice(8).join(" ");
+
+  // ✅ SSR props change hone par (Wedding → Pre-Wedding navigation) state sync karo
+  useEffect(() => {
+    setCatId(initialCatId);
+    setProducts(initialProducts || []);
+    setError(ssrError || "");
+    setActiveMoment(initialActiveMoment);
+  }, [initialCatId, initialProducts, ssrError, initialActiveMoment]);
 
   // Client-side only when user navigates to a different catValue
   // (SSR already hydrated current route)
@@ -239,7 +254,6 @@ export default function CatValuePage({
       setActiveMoment(
         MOMENT_SLUG_TO_KEY[catValue] ? MOMENT_SLUG_TO_KEY[catValue] : null,
       );
-      setGalleryData(categoryToWeblinkFolderName[nextEffective] || null);
 
       try {
         const catRes = await axiosApi.get(
@@ -507,6 +521,7 @@ export default function CatValuePage({
       {galleryData?.folderName && galleryData?.customerId && (
         <div className="photo-gallery-wrapper">
           <PhotoGalleryEmbed
+            key={`${galleryData.customerId}-${galleryData.folderName}`}
             folderName={galleryData.folderName}
             customerId={galleryData.customerId}
             city={formatCity(city)}

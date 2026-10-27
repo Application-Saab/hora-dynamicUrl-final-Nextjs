@@ -330,7 +330,16 @@ export const categoryToWeblinkFolderName = {
    "welcome-baby-photography":{
     folderName:"welcomeBaby_poseLink",
     customerId:"6a7f09a01144665025c88d8e"
-   }
+   },
+ "pre-wedding": {
+  folderName: "pre wedding",
+  customerId: "66a7f09a01144665025c88d8e",
+
+  "haldi-mehndi": {
+    folderName: "haldi mehndi",          // apne weblink ka exact folder name daalo
+    customerId: "6683e5d43e33c54c0ebde8f2",
+  },
+}
 };
 
 
