@@ -59,10 +59,17 @@ const MOMENT_KEY_TO_SLUG = {
   wedding: "wedding",
 };
 
-const MOMENT_NAME_FILTERS = {
-  "pre-wedding": (name) => /pre[\s-]?wedding/i.test(name),
-  "haldi-mahandi": (name) => /haldi|mehandi|mehndi|mahandi|sangeet/i.test(name),
-  wedding: (name) => /wedding/i.test(name) && !/pre[\s-]?wedding/i.test(name),
+// ✅ Pre Wedding / Haldi ka apna alag backend category (wedding se filter nahi hota)
+const MOMENT_API_CATEGORY = {
+  "pre-wedding": "PreWeddingPhotography",
+  "haldi-mehndi": "HaldiMehendiPhotography",
+};
+
+// ✅ Banner me selected moment ka naam
+const MOMENT_LABELS = {
+  "pre-wedding": "Pre Wedding",
+  "haldi-mahandi": "Haldi & Mahandi",
+  wedding: "Wedding",
 };
 
 const getDiscountedPrice = (price = 0) => {
@@ -103,6 +110,11 @@ export async function getServerSideProps(context) {
       ? "wedding-photography"
       : finalCatValue;
 
+  // ✅ API ke liye category: pre-wedding / haldi ka apna, baaki same
+  const apiCatValue =
+    (typeof finalCatValue === "string" && MOMENT_API_CATEGORY[finalCatValue]) ||
+    effectiveCatValue;
+
   const initialActiveMoment =
     typeof finalCatValue === "string" && MOMENT_SLUG_TO_KEY[finalCatValue]
       ? MOMENT_SLUG_TO_KEY[finalCatValue]
@@ -113,11 +125,11 @@ export async function getServerSideProps(context) {
   let error = "";
 
 
-  if (effectiveCatValue) {
+  if (apiCatValue) {
     try {
       // 1) Category ID
       const catRes = await axiosApi.get(
-        `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(effectiveCatValue)}`,
+        `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(apiCatValue)}`,
       );
       catId = catRes.data?.data?._id || null;
 
@@ -251,13 +263,16 @@ export default function CatValuePage({
         ? "wedding-photography"
         : catValue;
 
+      // ✅ API ke liye category: pre-wedding / haldi ka apna, baaki same
+      const nextApiCategory = MOMENT_API_CATEGORY[catValue] || nextEffective;
+
       setActiveMoment(
         MOMENT_SLUG_TO_KEY[catValue] ? MOMENT_SLUG_TO_KEY[catValue] : null,
       );
 
       try {
         const catRes = await axiosApi.get(
-          `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(nextEffective)}`,
+          `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(nextApiCategory)}`,
         );
         const categoryId = catRes.data?.data?._id;
         if (!categoryId) {
@@ -351,12 +366,10 @@ export default function CatValuePage({
     photographyCategoryPageTopBannerHeading["default"];
   const showMomentPicker = isWeddingCategory(normalizedCat);
 
-  const displayedProducts =
-    showMomentPicker && activeMoment && MOMENT_NAME_FILTERS[activeMoment]
-      ? products.filter((item) =>
-          MOMENT_NAME_FILTERS[activeMoment](item.name || ""),
-        )
-      : products;
+  // ✅ Banner heading: selected moment ka naam, warna category ka h1
+  const momentBannerTitle =
+    (activeMoment && MOMENT_LABELS[activeMoment]) || title;
+  const displayedProducts = products;
   const formatCity = (c) =>
     c
       ? String(c)
@@ -385,7 +398,7 @@ export default function CatValuePage({
             {showMomentPicker ? (
               <DecorationBanner
                 category={normalizedCat}
-                title="Choose Your Moment"
+                title={momentBannerTitle}
               />
             ) : (
               <section className="cc-banner">

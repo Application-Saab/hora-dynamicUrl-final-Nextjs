@@ -18,7 +18,7 @@ import NewBornBanner from "../assets/photographyCategories/Photography12.webp";
 import CorporateBanner from "../assets/photographyCategories/photography13.webp"
 import welcomebabyBanner from "../assets/photographyCategories/photography14.webp"
 export const photoCat = [
-  {
+{
     id: "1",
     image: birthday,
     name: "Birthday-Photography",
@@ -114,8 +114,29 @@ export const photoCat = [
     slug: "new-born-baby-photography",
     imgAlt: "Cute newborn photoshoot ideas",
   },
+
   {
     id: "11",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/Prewedding-photo.webp",
+    name: "Pre Wedding Photography",
+    subCategory: "PreWeddingPhotography",
+    catValue: "PreWeddingPhotography",
+    slug: "pre-wedding",
+    imgAlt: "Wedding photography with cinematic shots",
+  },
+  {
+    id: "12",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/Haldi-Mhandi-photo.webp",
+    name: "Haldi Mehandi Photography",
+    subCategory: "HaldiMehendiPhotography",
+    catValue: "HaldiMehendiPhotography",
+    slug: "haldi-mehndi",
+    imgAlt: "Wedding photography with cinematic shots",
+  },
+    {
+    id: "13",
     image:
       "https://horaservices.com/api/uploads/compressed_webp/New-Born-Baby-Photography.webp",
     name: "Intimate-Gathering",
@@ -123,26 +144,6 @@ export const photoCat = [
     catValue: "Intimate-Gathering",
     slug: "intimate-gathering",
     imgAlt: "Intimate-Gathering",
-  },
-  {
-    id: "12",
-    image:
-      "https://horaservices.com/api/uploads/compressed_webp/Wedding-Photography.webp",
-    name: "Pre Wedding Photography",
-    subCategory: "Wedding-Photography",
-    catValue: "Wedding-Photography",
-    slug: "pre-wedding",
-    imgAlt: "Wedding photography with cinematic shots",
-  },
-  {
-    id: "13",
-    image:
-      "https://horaservices.com/api/uploads/compressed_webp/Wedding-Photography.webp",
-    name: "Haldi Mehandi Photography",
-    subCategory: "Wedding-Photography",
-    catValue: "Wedding-Photography",
-    slug: "haldi-mehndi",
-    imgAlt: "Wedding photography with cinematic shots",
   },
   {
     id: "14",
@@ -241,6 +242,22 @@ export const seoData = {
     color: "#bb3a4a",
   },
 
+  "pre-wedding": {
+    title: "Pre Wedding Photoshoot | Pre Wedding Photographer | HORA",
+    description:
+      "Book a professional pre wedding photoshoot. Candid, cinematic and traditional couple shoots at your favourite location. Expert pre wedding photographers. Book HORA pre wedding photography today.",
+    h1: "Pre Wedding Photoshoot",
+    color: "#624859",
+  },
+
+  "haldi-mehndi": {
+    title: "Haldi & Mehndi Photography | Haldi Ceremony Photoshoot | HORA",
+    description:
+      "Book professional haldi and mehndi ceremony photography. Capture every colourful, joyful moment of your haldi and mehendi functions. Book HORA haldi mehndi photographer today.",
+    h1: "Haldi & Mehndi Photography",
+    color: "#cea555",
+  },
+
   "maternity-photography": {
     title: "Maternity Photoshoot | Pregnancy Photography | HORA",
     description:
@@ -265,7 +282,7 @@ export const seoData = {
     color: "#97538C",
   },
 
-  "corporate-photography": {
+    "corporate-photography": {
     title: "Corporate Photography | Professional Corporate Photographer | HORA",
     description:
       "Book professional corporate photography for office events, conferences, team celebrations, corporate parties and business occasions. Capture your corporate moments with HORA.",
@@ -323,24 +340,24 @@ export const categoryToWeblinkFolderName = {
     folderName: "new born ",
     customerId: "64137625549b58e3dc39a685",
   },
-  "corporate-photography": {
+  "corporate-photography":{
     folderName: "corporatePoselink",
-    customerId: "6a7f09a01144665025c88d8e"
+    customerId:"6a7f09a01144665025c88d8e"
   },
-  "welcome-baby-photography": {
-    folderName: "welcomeBaby_poseLink",
-    customerId: "6a7f09a01144665025c88d8e"
-  },
-  "pre-wedding": {
-    folderName: "pre wedding",
-    customerId: "66a7f09a01144665025c88d8e",
-  },
-
+   "welcome-baby-photography":{
+    folderName:"welcomeBaby_poseLink",
+    customerId:"6a7f09a01144665025c88d8e"
+   },
+ "pre-wedding": {
+  folderName: "pre wedding",
+  customerId: "66a7f09a01144665025c88d8e",
+},
+  // ✅ NEW: moment slugs ke liye apne alag folders
   "haldi-mehndi": {
     folderName: "haldi_mehendi_weblink1",
-    customerId: "66a7f09a01144665025c88d8e"
+    customerId: "66a7f09a01144665025c88d8e",
   },
-  "wedding": {
+  wedding: {
     folderName: "Wedding",
     customerId: "6683e5d43e33c54c0ebde8f2",
   },
@@ -350,6 +367,8 @@ export const categoryToWeblinkFolderName = {
 export const photographyCategoryPageTopBannerHeading = {
   "engagement-photography": EngagementBanner,
   "wedding-photography": WeddingBanner,
+  "pre-wedding": WeddingBanner,
+  "haldi-mehndi": WeddingBanner,
   "anniversary-photography": AnniversaryBanner,
   "birthday-photography": BirthdayBanner,
   "house-warming-photography": HouseWarmingBanner,
@@ -358,6 +377,6 @@ export const photographyCategoryPageTopBannerHeading = {
   "bachelorette-photography": BacheloretteBanner,
   "maternity-photography": MaternityBanner,
   "new-born-baby-photography": NewBornBanner,
-  "corporate-photography": CorporateBanner,
-  "welcome-baby-photography": welcomebabyBanner
+  "corporate-photography":CorporateBanner,
+  "welcome-baby-photography":welcomebabyBanner
 };
