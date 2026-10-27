@@ -1404,47 +1404,63 @@ function DecorationsCatDetails({
   const breadcrumbHref = `/${categorySlug}${catValue ? `/${catValue}` : ""}`;
   const breadcrumbText = toTitleCase(catValue || categorySlug);
 
-  const metaDescription = `${product?.name || "Decoration"} from Hora Services – Beautiful ${catLabelShort} decoration${
-    categoryConfig.startingPrice
+  const metaDescription = `${product?.name || "Decoration"} from Hora Services – Beautiful ${catLabelShort} decoration${categoryConfig.startingPrice
       ? ` starting at just ₹${categoryConfig.startingPrice}`
       : ""
   }. Book for birthdays, anniversaries, weddings & more!`;
 
   const reviewsForCategory =
     REVIEWS_BY_CATEGORY[categorySlug] || balloonreviewsproduct;
+  const DEFAULT_OG_IMAGE =
+    "https://horaservices.com/api/uploads/attachment-1706520980436.png";
 
+  const toAbsolute = (u) => (u.startsWith("http") ? u : `${SITE}${u}`);
+
+  const featuredFileName = product?.featured_images?.[0]?.fileName;
+
+  const ogImage = featuredFileName
+    ? toAbsolute(
+      `${COMPRESSED_WEBP_IMG_URL}${featuredFileName.split(".")[0]}.webp`,
+    )
+    : DEFAULT_OG_IMAGE;
+
+  const seoTitle = `${product?.name || ""} | ${catLabel}`;
+  const ogTitle = `${product?.name || ""} | ${catLabel} by Hora Services`;
+  const ogDescription = `Book ${product?.name || ""} decoration by Hora Services. Explore ${catLabelShort} designs for birthdays, anniversaries, baby showers & more.`;
   return (
     <>
       <div className="App" style={{ backgroundColor: "white" }}>
         <Head>
-          <title>{`${product?.name || ""} | ${catLabel}`}</title>
+          <title>{seoTitle}</title>
           <meta name="description" content={metaDescription} />
           <meta
             name="keywords"
             content={`${product?.name || ""}, ${catLabel}, ${categoryLabel}, ${product?.name || ""} decoration price`}
           />
-          <link rel="canonical" href={canonicalUrl} />
-          <meta
-            property="og:title"
-            content={`${product?.name || ""} | ${catLabel} by Hora Services`}
-          />
-          <meta
-            property="og:description"
-            content={`Book ${product?.name || ""} decoration by Hora Services. Explore ${catLabelShort} designs for birthdays, anniversaries, baby showers & more.`}
-          />
-          <meta
-            property="og:image"
-            content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
-          />
-          <meta property="og:url" content={canonicalUrl} />
-          <meta property="og:type" content="website" />
           <meta name="robots" content="index, follow" />
           <meta name="author" content="Hora Services" />
+
+          <link rel="canonical" href={canonicalUrl} />
           <link
             rel="icon"
             href="https://horaservices.com/api/uploads/logo-icon.png"
             type="image/x-icon"
           />
+
+          {/* Open Graph */}
+          <meta property="og:title" content={ogTitle} />
+          <meta property="og:description" content={ogDescription} />
+          <meta property="og:url" content={canonicalUrl} />
+          <meta property="og:type" content="website" />
+          <meta property="og:image" content={ogImage} />
+          <meta property="og:image:alt" content={product?.name || "Hora Services"} />
+
+          {/* Twitter */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={ogTitle} />
+          <meta name="twitter:description" content={ogDescription} />
+          <meta name="twitter:image" content={ogImage} />
+
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: scriptTag }}
