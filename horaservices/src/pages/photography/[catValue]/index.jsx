@@ -207,9 +207,6 @@ export default function CatValuePage({
   const photographyDescription =
   photographyCategoryDescriptions?.[effectiveCatValue] || null;
   const intro = content.description || "";
-  const words = intro.split(" ");
-  const firstLine = words.slice(0, 8).join(" ");
-  const restText = words.slice(8).join(" ");
 
   // Client-side only when user navigates to a different catValue
   // (SSR already hydrated current route)
@@ -424,13 +421,10 @@ export default function CatValuePage({
             {city && effectiveCatValue && (() => {
               const cityIntro = getCityCategoryIntro(city, effectiveCatValue);
               if (!cityIntro) return null;
-              const cityWords = cityIntro.split(" ");
-              const cityFirstLine = cityWords.slice(0, 8).join(" ");
-              const cityRest = cityWords.slice(8).join(" ");
               return (
                 <details className="cc-accordion">
                   <summary className="cc-acc-btn">
-                    <span className="cc-acc-preview">{cityFirstLine}…</span>
+                    <span className="cc-acc-preview">{cityIntro}</span>
                     <span className="cc-acc-icon">
                       <svg viewBox="0 0 24 24">
                         <polyline points="6 9 12 15 18 9" />
@@ -438,7 +432,7 @@ export default function CatValuePage({
                     </span>
                   </summary>
                   <div className="cc-acc-body">
-                    <p className="cc-acc-text">{cityRest}</p>
+                    <p className="cc-acc-text">{cityIntro}</p>
                   </div>
                 </details>
               );
@@ -476,7 +470,7 @@ export default function CatValuePage({
 
             <details className="cc-accordion">
               <summary className="cc-acc-btn">
-                <span className="cc-acc-preview">{firstLine}…</span>
+                <span className="cc-acc-preview">{intro}</span>
                 <span className="cc-acc-icon">
                   <svg viewBox="0 0 24 24">
                     <polyline points="6 9 12 15 18 9" />
@@ -484,7 +478,7 @@ export default function CatValuePage({
                 </span>
               </summary>
               <div className="cc-acc-body">
-                <p className="cc-acc-text">{restText}</p>
+                <p className="cc-acc-text">{intro}</p>
               </div>
             </details>
           </div>

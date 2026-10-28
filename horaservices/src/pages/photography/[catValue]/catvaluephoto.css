@@ -386,6 +386,10 @@ font-size: clamp(20px, calc((25 / 393) * 100vw), 25px);
 .cc-accordion[open] .cc-acc-btn {
   padding-bottom: 4px;
 }
+/* Hide the preview line when expanded — full text is in .cc-acc-body */
+.cc-accordion[open] .cc-acc-preview {
+  display: none;
+}
 .cc-acc-preview {
   font-size: clamp(11px, 2.8vw, 13px);
   color: #6b7280;
