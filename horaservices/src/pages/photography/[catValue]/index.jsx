@@ -40,6 +40,7 @@ import PhotographyCardSkeleton from "@/components/PhotographyCardSkeleton";
 import { isValidPhotographyCategorySlug } from "@/utils/routeConfig";
 import PhotoGalleryEmbed from "@/components/Photography/PhotoGalleryEmbed";
 import { getCityCategoryIntro } from "@/utils/photographyCityCategories";
+import { PHOTOGRAPHY_BLOG_ARTICLES } from "@/utils/photographyBlogData";
 
 // ---------- constants / helpers (same as before) ----------
 const isWeddingCategory = (category) => {
@@ -379,7 +380,7 @@ export default function CatValuePage({
               <section className="cc-banner">
                 <Image
                   src={bannerToShow}
-                  alt={title}
+                  alt={city ? `${title} in ${formatCity(city)} — professional photography by HORA` : `${title} — professional photography packages by HORA`}
                   fill
                   className="cc-banner-img"
                   priority
@@ -556,13 +557,38 @@ export default function CatValuePage({
   )}
 
 
-    <div style={{ maxWidth: "480px", margin: "auto" }}>
+    <div style={{ margin: "25px auto 20px", width: "99%" }}>
       <PhotographyHowItWorks />
-    <FAQSection
-  faqData={photographyCategoryFAQData(effectiveCatValue)}
-  heading="Frequently Asked Questions"
-/>
-</div>
+
+      {/* ── Related blog posts ── */}
+      {(() => {
+        const related = PHOTOGRAPHY_BLOG_ARTICLES.filter(
+          (a) => a.categorySlug === effectiveCatValue
+        ).slice(0, 3);
+        if (!related.length) return null;
+        return (
+          <div className="cc-blog-links">
+            <h2 className="cc-blog-links-heading">Related Articles</h2>
+            <ul className="cc-blog-links-list">
+              {related.map((article) => (
+                <li key={article.slug} className="cc-blog-links-item">
+                  <a href={`/blog/photography/${article.slug}`} className="cc-blog-links-anchor">
+                    <span className="cc-blog-links-title">{article.title}</span>
+                    <span className="cc-blog-links-meta">{article.readingTime} min read</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <a href="/blog/photography" className="cc-blog-links-all">See all photography articles →</a>
+          </div>
+        );
+      })()}
+
+          <FAQSection
+          faqData={photographyCategoryFAQData(effectiveCatValue)}
+          heading="Frequently Asked Questions"
+          />
+    </div>
     </div>
   );
 }
