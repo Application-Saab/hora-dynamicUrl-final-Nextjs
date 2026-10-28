@@ -28,7 +28,7 @@
 }
 
 .photography-article__breadcrumb a:hover {
-  color: #e0b84d;
+  color: #97538C;
 }
 
 /* Header */
@@ -51,7 +51,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #e0b84d;
+  color: #97538C;
 }
 
 .photography-article__dot {
@@ -79,7 +79,7 @@
   line-height: 1.7;
   margin: 0;
   font-style: italic;
-  border-left: 3px solid #e0b84d;
+  border-left: 3px solid #97538C;
   padding-left: 12px;
 }
 
@@ -132,7 +132,7 @@
 
 .photography-article__cta-button {
   display: inline-block;
-  background: #e0b84d;
+  background: #97538C;
   color: #fff;
   font-size: 0.85rem;
   font-weight: 700;
@@ -144,7 +144,7 @@
 }
 
 .photography-article__cta-button:hover {
-  background: #c9a33a;
+  background: #97538C;
 }
 
 /* Back link */
@@ -162,7 +162,7 @@
 }
 
 .photography-article__back-link:hover {
-  color: #e0b84d;
+  color:#97538C;
 }
 
 @media (min-width: 768px) {

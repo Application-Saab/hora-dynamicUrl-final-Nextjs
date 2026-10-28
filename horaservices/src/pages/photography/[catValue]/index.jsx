@@ -557,7 +557,7 @@ export default function CatValuePage({
   )}
 
 
-    <div style={{ maxWidth: "480px", margin: "auto" }}>
+    <div style={{ margin: "25px auto 20px", width: "99%" }}>
       <PhotographyHowItWorks />
 
       {/* ── Related blog posts ── */}
@@ -584,11 +584,11 @@ export default function CatValuePage({
         );
       })()}
 
-    <FAQSection
-  faqData={photographyCategoryFAQData(effectiveCatValue)}
-  heading="Frequently Asked Questions"
-/>
-</div>
+          <FAQSection
+          faqData={photographyCategoryFAQData(effectiveCatValue)}
+          heading="Frequently Asked Questions"
+          />
+    </div>
     </div>
   );
 }
