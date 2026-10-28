@@ -597,7 +597,10 @@ export default function CatValuePage({
       })()}
 
           <FAQSection
-          faqData={cityFaqData || photographyCategoryFAQData(effectiveCatValue)}
+          faqData={[
+            ...(cityFaqData || []),
+            ...photographyCategoryFAQData(effectiveCatValue),
+          ]}
           heading="Frequently Asked Questions"
           />
     </div>
