@@ -40,7 +40,7 @@ export const PHOTOGRAPHY_BLOG_ARTICLES = [
       },
       {
         heading: "Verify the backup plan",
-        body: "What happens if your photographer falls sick the morning of the event? A solo freelancer has no answer. A platform or agency can send a replacement. Always ask this question before signing off.",
+        body: "What happens if your photographer falls sick the morning of the event? A solo photographer has no answer. A platform or agency can send a replacement. Always ask this question before signing off.",
       },
       {
         heading: "Compare total cost, not hourly rate",

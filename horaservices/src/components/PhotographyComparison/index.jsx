@@ -83,7 +83,7 @@ const PhotographyComparison = () => {
               className="photography-comparison__header-cell photography-comparison__freelancer-header"
               role="columnheader"
             >
-              Freelancer
+              photographers
             </div>
           </div>
 

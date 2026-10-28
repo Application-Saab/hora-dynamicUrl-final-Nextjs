@@ -49,7 +49,7 @@ export const CityPhotographyLandingPage = {
   bangalore: {
     city: "Bangalore",
     slug: "/bangalore/photography",
-    metaTitle: "Photographers in Bangalore, Verified Freelancers | HORA",
+    metaTitle: "Photographers in Bangalore, Verified photographers | HORA",
     metaDescription:
       "Book verified photographers in Bangalore from just one hour. Freelance talent without the risk, studio or home shoots, female photographers available.",
     heading: "Find a Verified Photographer in Bangalore, Near You",
@@ -280,7 +280,7 @@ export const CityPhotographyLandingPage = {
     homeHeading: "Photographer or camera man, for the hours you need",
     homeParagraphs: [
       "In Ghaziabad, people often say \"camera man\" when they mean someone who'll cover both photos and video, and on HORA that's a single booking. Pick photos, video or both, from just one hour.",
-      "Most shoots here are small events at home or in the society hall: a naming ceremony, a birthday, a mata ki chowki, a newborn's first month. A couple of hours covers them, which keeps things well within most budgets. For maternity and newborn sessions, you can ask for a female photographer. Every photographer is verified before joining, so you get the price of a freelancer with sample work to check first. We arrange society gate access ahead of time, and for weddings you can scale up to full coverage with video.",
+      "Most shoots here are small events at home or in the society hall: a naming ceremony, a birthday, a mata ki chowki, a newborn's first month. A couple of hours covers them, which keeps things well within most budgets. For maternity and newborn sessions, you can ask for a female photographer. Every photographer is verified before joining, so you get the price of a photographer with sample work to check first. We arrange society gate access ahead of time, and for weddings you can scale up to full coverage with video.",
     ],
     outdoorHeading: "Outdoor shoot spots in Ghaziabad",
     outdoorText:
