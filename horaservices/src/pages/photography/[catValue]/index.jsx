@@ -174,6 +174,7 @@ export default function CatValuePage({
   initialGalleryData,
   initialActiveMoment,
   ssrError,
+  cityFaqData,
 }) {
   const router = useRouter();
   const { userId } = useSelector((state) => state.auth || {});
@@ -596,7 +597,7 @@ export default function CatValuePage({
       })()}
 
           <FAQSection
-          faqData={photographyCategoryFAQData(effectiveCatValue)}
+          faqData={cityFaqData || photographyCategoryFAQData(effectiveCatValue)}
           heading="Frequently Asked Questions"
           />
     </div>
