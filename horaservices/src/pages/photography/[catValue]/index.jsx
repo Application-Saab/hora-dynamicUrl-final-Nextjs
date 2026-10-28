@@ -423,35 +423,7 @@ export default function CatValuePage({
               />
             ) : null}
 
-            {/* ── City + category unique intro (prevents duplicate content) ── */}
-            {city && effectiveCatValue && (() => {
-              const cityIntro = getCityCategoryIntro(city, effectiveCatValue);
-              if (!cityIntro) return null;
-              const cityWords = cityIntro.split(" ");
-              const cityFirstLine = cityWords.slice(0, 8).join(" ");
-              const cityRest = cityWords.slice(8).join(" ");
-              return (
-                <div className="cc-accordion">
-                  <button
-                    className={`cc-acc-btn ${cityIntroOpen ? "open" : ""}`}
-                    onClick={() => setCityIntroOpen(!cityIntroOpen)}
-                  >
-                    <span className="cc-acc-preview">
-                      {cityFirstLine}
-                      {!cityIntroOpen && "…"}
-                    </span>
-                    <span className={`cc-acc-icon ${cityIntroOpen ? "open" : ""}`}>
-                      <svg viewBox="0 0 24 24">
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </span>
-                  </button>
-                  <div className={`cc-acc-body ${cityIntroOpen ? "open" : ""}`}>
-                    <p className="cc-acc-text">{cityRest}</p>
-                  </div>
-                </div>
-              );
-            })()}
+          
 
             <div className="cc-stats">
               <div className="cc-stat">
@@ -483,25 +455,64 @@ export default function CatValuePage({
               </div>
             </div>
 
-            <div className="cc-accordion">
-              <button
-                className={`cc-acc-btn ${open ? "open" : ""}`}
-                onClick={() => setOpen(!open)}
-              >
-                <span className="cc-acc-preview">
-                  {firstLine}
-                  {!open && "…"}
-                </span>
-                <span className={`cc-acc-icon ${open ? "open" : ""}`}>
-                  <svg viewBox="0 0 24 24">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                </span>
-              </button>
-              <div className={`cc-acc-body ${open ? "open" : ""}`}>
-                <p className="cc-acc-text">{restText}</p>
-              </div>
-            </div>
+           {/* City + category unique intro */}
+{city && effectiveCatValue && (() => {
+  const cityIntro = getCityCategoryIntro(city, effectiveCatValue);
+
+  if (!cityIntro) {
+    return (
+      <div className="cc-accordion">
+        <button
+          className={`cc-acc-btn ${open ? "open" : ""}`}
+          onClick={() => setOpen(!open)}
+        >
+          <span className="cc-acc-preview">
+            {firstLine}
+            {!open && "…"}
+          </span>
+
+          <span className={`cc-acc-icon ${open ? "open" : ""}`}>
+            <svg viewBox="0 0 24 24">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </span>
+        </button>
+
+        <div className={`cc-acc-body ${open ? "open" : ""}`}>
+          <p className="cc-acc-text">{restText}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const cityWords = cityIntro.split(" ");
+  const cityFirstLine = cityWords.slice(0, 8).join(" ");
+  const cityRest = cityWords.slice(8).join(" ");
+
+  return (
+    <div className="cc-accordion">
+      <button
+        className={`cc-acc-btn ${cityIntroOpen ? "open" : ""}`}
+        onClick={() => setCityIntroOpen(!cityIntroOpen)}
+      >
+        <span className="cc-acc-preview">
+          {cityFirstLine}
+          {!cityIntroOpen && "…"}
+        </span>
+
+        <span className={`cc-acc-icon ${cityIntroOpen ? "open" : ""}`}>
+          <svg viewBox="0 0 24 24">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </span>
+      </button>
+
+      <div className={`cc-acc-body ${cityIntroOpen ? "open" : ""}`}>
+        <p className="cc-acc-text">{cityRest}</p>
+      </div>
+    </div>
+  );
+})()}
           </div>
 
           <EventDateBanner userId={userId} visitorId={visitorId} />
