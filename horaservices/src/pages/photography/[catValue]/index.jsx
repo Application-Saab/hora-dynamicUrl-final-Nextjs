@@ -197,8 +197,6 @@ export default function CatValuePage({
   const [galleryData, setGalleryData] = useState(initialGalleryData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(ssrError || "");
-  const [open, setOpen] = useState(false);
-  const [cityIntroOpen, setCityIntroOpen] = useState(false);
   const [activeMoment, setActiveMoment] = useState(initialActiveMoment);
 
   const schemaOrg = getPhotographyOrganizationSchema();
@@ -430,25 +428,19 @@ export default function CatValuePage({
               const cityFirstLine = cityWords.slice(0, 8).join(" ");
               const cityRest = cityWords.slice(8).join(" ");
               return (
-                <div className="cc-accordion">
-                  <button
-                    className={`cc-acc-btn ${cityIntroOpen ? "open" : ""}`}
-                    onClick={() => setCityIntroOpen(!cityIntroOpen)}
-                  >
-                    <span className="cc-acc-preview">
-                      {cityFirstLine}
-                      {!cityIntroOpen && "…"}
-                    </span>
-                    <span className={`cc-acc-icon ${cityIntroOpen ? "open" : ""}`}>
+                <details className="cc-accordion">
+                  <summary className="cc-acc-btn">
+                    <span className="cc-acc-preview">{cityFirstLine}…</span>
+                    <span className="cc-acc-icon">
                       <svg viewBox="0 0 24 24">
                         <polyline points="6 9 12 15 18 9" />
                       </svg>
                     </span>
-                  </button>
-                  <div className={`cc-acc-body ${cityIntroOpen ? "open" : ""}`}>
+                  </summary>
+                  <div className="cc-acc-body">
                     <p className="cc-acc-text">{cityRest}</p>
                   </div>
-                </div>
+                </details>
               );
             })()}
 
@@ -482,25 +474,19 @@ export default function CatValuePage({
               </div>
             </div>
 
-            <div className="cc-accordion">
-              <button
-                className={`cc-acc-btn ${open ? "open" : ""}`}
-                onClick={() => setOpen(!open)}
-              >
-                <span className="cc-acc-preview">
-                  {firstLine}
-                  {!open && "…"}
-                </span>
-                <span className={`cc-acc-icon ${open ? "open" : ""}`}>
+            <details className="cc-accordion">
+              <summary className="cc-acc-btn">
+                <span className="cc-acc-preview">{firstLine}…</span>
+                <span className="cc-acc-icon">
                   <svg viewBox="0 0 24 24">
                     <polyline points="6 9 12 15 18 9" />
                   </svg>
                 </span>
-              </button>
-              <div className={`cc-acc-body ${open ? "open" : ""}`}>
+              </summary>
+              <div className="cc-acc-body">
                 <p className="cc-acc-text">{restText}</p>
               </div>
-            </div>
+            </details>
           </div>
 
           <EventDateBanner userId={userId} visitorId={visitorId} />
