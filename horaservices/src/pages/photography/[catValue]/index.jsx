@@ -40,6 +40,7 @@ import PhotographyCardSkeleton from "@/components/PhotographyCardSkeleton";
 import { isValidPhotographyCategorySlug } from "@/utils/routeConfig";
 import PhotoGalleryEmbed from "@/components/Photography/PhotoGalleryEmbed";
 import { getCityCategoryIntro } from "@/utils/photographyCityCategories";
+import CityLongContent from "@/components/CityLongContent";
 
 // ---------- constants / helpers (same as before) ----------
 const isWeddingCategory = (category) => {
@@ -563,6 +564,7 @@ export default function CatValuePage({
   heading="Frequently Asked Questions"
 />
 </div>
+    {city && <CityLongContent city={city} catValue={effectiveCatValue} />}
     </div>
   );
 }
