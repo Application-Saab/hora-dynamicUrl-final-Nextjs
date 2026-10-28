@@ -417,26 +417,7 @@ export default function CatValuePage({
               />
             ) : null}
 
-            {/* ── City + category unique intro (prevents duplicate content) ── */}
-            {city && effectiveCatValue && (() => {
-              const cityIntro = getCityCategoryIntro(city, effectiveCatValue);
-              if (!cityIntro) return null;
-              return (
-                <details className="cc-accordion">
-                  <summary className="cc-acc-btn">
-                    <span className="cc-acc-preview">{cityIntro}</span>
-                    <span className="cc-acc-icon">
-                      <svg viewBox="0 0 24 24">
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </span>
-                  </summary>
-                  <div className="cc-acc-body">
-                    <p className="cc-acc-text">{cityIntro}</p>
-                  </div>
-                </details>
-              );
-            })()}
+        
 
             <div className="cc-stats">
               <div className="cc-stat">
@@ -467,20 +448,45 @@ export default function CatValuePage({
                 </div>
               </div>
             </div>
+            {/* City + category unique intro */}
+{city && effectiveCatValue && (() => {
+  const cityIntro = getCityCategoryIntro(city, effectiveCatValue);
 
-            <details className="cc-accordion">
-              <summary className="cc-acc-btn">
-                <span className="cc-acc-preview">{intro}</span>
-                <span className="cc-acc-icon">
-                  <svg viewBox="0 0 24 24">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                </span>
-              </summary>
-              <div className="cc-acc-body">
-                <p className="cc-acc-text">{intro}</p>
-              </div>
-            </details>
+  return (
+    <>
+      {cityIntro ? (
+        <details className="cc-accordion">
+          <summary className="cc-acc-btn">
+            <span className="cc-acc-preview">{cityIntro}</span>
+            <span className="cc-acc-icon">
+              <svg viewBox="0 0 24 24">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </span>
+          </summary>
+          <div className="cc-acc-body">
+            <p className="cc-acc-text">{cityIntro}</p>
+          </div>
+        </details>
+      ) : (
+        <details className="cc-accordion">
+          <summary className="cc-acc-btn">
+            <span className="cc-acc-preview">{intro}</span>
+            <span className="cc-acc-icon">
+              <svg viewBox="0 0 24 24">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </span>
+          </summary>
+          <div className="cc-acc-body">
+            <p className="cc-acc-text">{intro}</p>
+          </div>
+        </details>
+      )}
+    </>
+  );
+})()}
+          
           </div>
 
           <EventDateBanner userId={userId} visitorId={visitorId} />
