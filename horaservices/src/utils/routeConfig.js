@@ -14,7 +14,8 @@ export const DIRECT_ROUTES = [
   "/photographer-profile",
   "/wedding-decoration",
   "/wonderland",
-  "/wonderlandinternational"
+  "/wonderlandinternational",
+  "/flower-decoration"
 ];
 
 export const CITY_ROUTES = [
@@ -26,7 +27,8 @@ export const CITY_ROUTES = [
   "/balloon-decoration-google-ads",
   "/balloon-decoration-instagram",
   "/balloon-decoration-youtube",
-  "/wedding-decoration"
+  "/wedding-decoration",
+  "/flower-decoration"
 ];
 
 export const CITY_LOCALITY_ROUTES = [
@@ -34,7 +36,8 @@ export const CITY_LOCALITY_ROUTES = [
   "/balloon-decoration",
   "/chef-near-me",
   "/photography",
-  "/wedding-decoration"
+  "/wedding-decoration",
+  "/flower-decoration"
 ];
 
 export const normalizeRoutePath = (pathname = "") => {
