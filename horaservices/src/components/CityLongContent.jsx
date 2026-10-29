@@ -26,7 +26,6 @@ export default function CityLongContent({ city, catValue }) {
         margin: "40px auto 0",
         padding: "0 16px 40px",
         fontFamily: "inherit",
-        color: "#97538c",
       }}
     >
       {content.sections.map((section, idx) => (
@@ -38,6 +37,7 @@ export default function CityLongContent({ city, catValue }) {
               lineHeight: 1.35,
               marginBottom: "10px",
               color: "inherit",
+               color: "#97538c",
             }}
           >
             {section.heading}
@@ -47,7 +47,7 @@ export default function CityLongContent({ city, catValue }) {
               fontSize: "0.97rem",
               lineHeight: 1.75,
               margin: 0,
-              color: "inherit",
+              color: "#222",
               opacity: 0.9,
             }}
           >

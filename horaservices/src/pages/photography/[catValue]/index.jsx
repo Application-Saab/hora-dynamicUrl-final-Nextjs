@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 
@@ -41,6 +41,7 @@ import { isValidPhotographyCategorySlug } from "@/utils/routeConfig";
 import PhotoGalleryEmbed from "@/components/Photography/PhotoGalleryEmbed";
 import { getCityCategoryIntro } from "@/utils/photographyCityCategories";
 import CityLongContent from "@/components/CityLongContent";
+import { PHOTOGRAPHY_BLOG_ARTICLES } from "@/utils/photographyBlogData";
 
 // ---------- constants / helpers (same as before) ----------
 const isWeddingCategory = (category) => {
@@ -61,10 +62,17 @@ const MOMENT_KEY_TO_SLUG = {
   wedding: "wedding",
 };
 
-const MOMENT_NAME_FILTERS = {
-  "pre-wedding": (name) => /pre[\s-]?wedding/i.test(name),
-  "haldi-mahandi": (name) => /haldi|mehandi|mehndi|mahandi|sangeet/i.test(name),
-  wedding: (name) => /wedding/i.test(name) && !/pre[\s-]?wedding/i.test(name),
+// ✅ Pre Wedding / Haldi ka apna alag backend category (wedding se filter nahi hota)
+const MOMENT_API_CATEGORY = {
+  "pre-wedding": "PreWeddingPhotography",
+  "haldi-mehndi": "HaldiMehendiPhotography",
+};
+
+// ✅ Banner me selected moment ka naam
+const MOMENT_LABELS = {
+  "pre-wedding": "Pre Wedding",
+  "haldi-mahandi": "Haldi & Mahandi",
+  wedding: "Wedding",
 };
 
 const getDiscountedPrice = (price = 0) => {
@@ -105,6 +113,11 @@ export async function getServerSideProps(context) {
       ? "wedding-photography"
       : finalCatValue;
 
+  // ✅ API ke liye category: pre-wedding / haldi ka apna, baaki same
+  const apiCatValue =
+    (typeof finalCatValue === "string" && MOMENT_API_CATEGORY[finalCatValue]) ||
+    effectiveCatValue;
+
   const initialActiveMoment =
     typeof finalCatValue === "string" && MOMENT_SLUG_TO_KEY[finalCatValue]
       ? MOMENT_SLUG_TO_KEY[finalCatValue]
@@ -115,11 +128,11 @@ export async function getServerSideProps(context) {
   let error = "";
 
 
-  if (effectiveCatValue) {
+  if (apiCatValue) {
     try {
       // 1) Category ID
       const catRes = await axiosApi.get(
-        `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(effectiveCatValue)}`,
+        `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(apiCatValue)}`,
       );
       catId = catRes.data?.data?._id || null;
 
@@ -146,7 +159,6 @@ export async function getServerSideProps(context) {
   }
 
   const galleryData = categoryToWeblinkFolderName[finalCatValue] || null;
-  console.log('%c [ galleryData ]', 'font-size:13px; background:pink; color:#bf2c9f;', galleryData)
 
   return {
     props: {
@@ -174,6 +186,7 @@ export default function CatValuePage({
   initialGalleryData,
   initialActiveMoment,
   ssrError,
+  cityFaqData,
 }) {
   const router = useRouter();
   const { userId } = useSelector((state) => state.auth || {});
@@ -195,12 +208,20 @@ export default function CatValuePage({
 
   const [catId, setCatId] = useState(initialCatId);
   const [products, setProducts] = useState(initialProducts || []);
-  const [galleryData, setGalleryData] = useState(initialGalleryData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(ssrError || "");
   const [open, setOpen] = useState(false);
   const [cityIntroOpen, setCityIntroOpen] = useState(false);
   const [activeMoment, setActiveMoment] = useState(initialActiveMoment);
+
+  // ✅ Gallery hamesha current slug (catValue) se nikalo, wedding par force mat karo
+  const galleryData = useMemo(
+    () =>
+      (typeof catValue === "string" && categoryToWeblinkFolderName[catValue]) ||
+      initialGalleryData ||
+      null,
+    [catValue, initialGalleryData],
+  );
 
   const schemaOrg = getPhotographyOrganizationSchema();
   const scriptTag = JSON.stringify(schemaOrg);
@@ -213,6 +234,14 @@ export default function CatValuePage({
   const words = intro.split(" ");
   const firstLine = words.slice(0, 8).join(" ");
   const restText = words.slice(8).join(" ");
+
+  // ✅ SSR props change hone par (Wedding → Pre-Wedding navigation) state sync karo
+  useEffect(() => {
+    setCatId(initialCatId);
+    setProducts(initialProducts || []);
+    setError(ssrError || "");
+    setActiveMoment(initialActiveMoment);
+  }, [initialCatId, initialProducts, ssrError, initialActiveMoment]);
 
   // Client-side only when user navigates to a different catValue
   // (SSR already hydrated current route)
@@ -239,14 +268,16 @@ export default function CatValuePage({
         ? "wedding-photography"
         : catValue;
 
+      // ✅ API ke liye category: pre-wedding / haldi ka apna, baaki same
+      const nextApiCategory = MOMENT_API_CATEGORY[catValue] || nextEffective;
+
       setActiveMoment(
         MOMENT_SLUG_TO_KEY[catValue] ? MOMENT_SLUG_TO_KEY[catValue] : null,
       );
-      setGalleryData(categoryToWeblinkFolderName[nextEffective] || null);
 
       try {
         const catRes = await axiosApi.get(
-          `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(nextEffective)}`,
+          `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(nextApiCategory)}`,
         );
         const categoryId = catRes.data?.data?._id;
         if (!categoryId) {
@@ -340,12 +371,10 @@ export default function CatValuePage({
     photographyCategoryPageTopBannerHeading["default"];
   const showMomentPicker = isWeddingCategory(normalizedCat);
 
-  const displayedProducts =
-    showMomentPicker && activeMoment && MOMENT_NAME_FILTERS[activeMoment]
-      ? products.filter((item) =>
-          MOMENT_NAME_FILTERS[activeMoment](item.name || ""),
-        )
-      : products;
+  // ✅ Banner heading: selected moment ka naam, warna category ka h1
+  const momentBannerTitle =
+    (activeMoment && MOMENT_LABELS[activeMoment]) || title;
+  const displayedProducts = products;
   const formatCity = (c) =>
     c
       ? String(c)
@@ -374,13 +403,13 @@ export default function CatValuePage({
             {showMomentPicker ? (
               <DecorationBanner
                 category={normalizedCat}
-                title="Choose Your Moment"
+                title={momentBannerTitle}
               />
             ) : (
               <section className="cc-banner">
                 <Image
                   src={bannerToShow}
-                  alt={title}
+                  alt={city ? `${title} in ${formatCity(city)} — professional photography by HORA` : `${title} — professional photography packages by HORA`}
                   fill
                   className="cc-banner-img"
                   priority
@@ -423,35 +452,7 @@ export default function CatValuePage({
               />
             ) : null}
 
-            {/* ── City + category unique intro (prevents duplicate content) ── */}
-            {city && effectiveCatValue && (() => {
-              const cityIntro = getCityCategoryIntro(city, effectiveCatValue);
-              if (!cityIntro) return null;
-              const cityWords = cityIntro.split(" ");
-              const cityFirstLine = cityWords.slice(0, 8).join(" ");
-              const cityRest = cityWords.slice(8).join(" ");
-              return (
-                <div className="cc-accordion">
-                  <button
-                    className={`cc-acc-btn ${cityIntroOpen ? "open" : ""}`}
-                    onClick={() => setCityIntroOpen(!cityIntroOpen)}
-                  >
-                    <span className="cc-acc-preview">
-                      {cityFirstLine}
-                      {!cityIntroOpen && "…"}
-                    </span>
-                    <span className={`cc-acc-icon ${cityIntroOpen ? "open" : ""}`}>
-                      <svg viewBox="0 0 24 24">
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </span>
-                  </button>
-                  <div className={`cc-acc-body ${cityIntroOpen ? "open" : ""}`}>
-                    <p className="cc-acc-text">{cityRest}</p>
-                  </div>
-                </div>
-              );
-            })()}
+          
 
             <div className="cc-stats">
               <div className="cc-stat">
@@ -483,25 +484,64 @@ export default function CatValuePage({
               </div>
             </div>
 
-            <div className="cc-accordion">
-              <button
-                className={`cc-acc-btn ${open ? "open" : ""}`}
-                onClick={() => setOpen(!open)}
-              >
-                <span className="cc-acc-preview">
-                  {firstLine}
-                  {!open && "…"}
-                </span>
-                <span className={`cc-acc-icon ${open ? "open" : ""}`}>
-                  <svg viewBox="0 0 24 24">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                </span>
-              </button>
-              <div className={`cc-acc-body ${open ? "open" : ""}`}>
-                <p className="cc-acc-text">{restText}</p>
-              </div>
-            </div>
+           {/* City + category unique intro */}
+{city && effectiveCatValue && (() => {
+  const cityIntro = getCityCategoryIntro(city, effectiveCatValue);
+
+  if (!cityIntro) {
+    return (
+      <div className="cc-accordion">
+        <button
+          className={`cc-acc-btn ${open ? "open" : ""}`}
+          onClick={() => setOpen(!open)}
+        >
+          <span className="cc-acc-preview">
+            {firstLine}
+            {!open && "…"}
+          </span>
+
+          <span className={`cc-acc-icon ${open ? "open" : ""}`}>
+            <svg viewBox="0 0 24 24">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </span>
+        </button>
+
+        <div className={`cc-acc-body ${open ? "open" : ""}`}>
+          <p className="cc-acc-text">{restText}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const cityWords = cityIntro.split(" ");
+  const cityFirstLine = cityWords.slice(0, 8).join(" ");
+  const cityRest = cityWords.slice(8).join(" ");
+
+  return (
+    <div className="cc-accordion">
+      <button
+        className={`cc-acc-btn ${cityIntroOpen ? "open" : ""}`}
+        onClick={() => setCityIntroOpen(!cityIntroOpen)}
+      >
+        <span className="cc-acc-preview">
+          {cityFirstLine}
+          {!cityIntroOpen && "…"}
+        </span>
+
+        <span className={`cc-acc-icon ${cityIntroOpen ? "open" : ""}`}>
+          <svg viewBox="0 0 24 24">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </span>
+      </button>
+
+      <div className={`cc-acc-body ${cityIntroOpen ? "open" : ""}`}>
+        <p className="cc-acc-text">{cityRest}</p>
+      </div>
+    </div>
+  );
+})()}
           </div>
 
           <EventDateBanner userId={userId} visitorId={visitorId} />
@@ -540,6 +580,7 @@ export default function CatValuePage({
       {galleryData?.folderName && galleryData?.customerId && (
         <div className="photo-gallery-wrapper">
           <PhotoGalleryEmbed
+            key={`${galleryData.customerId}-${galleryData.folderName}`}
             folderName={galleryData.folderName}
             customerId={galleryData.customerId}
             city={formatCity(city)}
@@ -557,14 +598,48 @@ export default function CatValuePage({
   )}
 
 
-    <div style={{ maxWidth: "480px", margin: "auto" }}>
+    <div style={{ margin: "25px auto 20px", width: "99%" }}>
       <PhotographyHowItWorks />
-    <FAQSection
-  faqData={photographyCategoryFAQData(effectiveCatValue)}
-  heading="Frequently Asked Questions"
-/>
-</div>
-    {city && <CityLongContent city={city} catValue={effectiveCatValue} />}
+      
+ 
+
+      {/* ── Related blog posts ── */}
+      {(() => {
+        const related = PHOTOGRAPHY_BLOG_ARTICLES.filter(
+          (a) => a.categorySlug === effectiveCatValue
+        ).slice(0, 3);
+        if (!related.length) return null;
+        return (
+          <div className="cc-blog-links">
+            <h2 className="cc-blog-links-heading">Related Articles</h2>
+            <ul className="cc-blog-links-list">
+              {related.map((article) => (
+                <li key={article.slug} className="cc-blog-links-item">
+                  <a href={`/blog/photography/${article.slug}`} className="cc-blog-links-anchor">
+                    <span className="cc-blog-links-title">{article.title}</span>
+                    <span className="cc-blog-links-meta">{article.readingTime} min read</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <a href="/blog/photography" className="cc-blog-links-all">See all photography articles →</a>
+          </div>
+        );
+      })()}
+         <div
+        className="tab-section-details-productpage"
+        style={{ maxWidth: "480px", margin: "0 auto" }}
+        >
+          <FAQSection
+          faqData={[
+            ...(cityFaqData || []),
+            ...photographyCategoryFAQData(effectiveCatValue),
+          ]}
+          heading="Frequently Asked Questions"
+          />
+          {city && <CityLongContent city={city} catValue={effectiveCatValue} />}
+            </div>
+    </div>
     </div>
   );
 }

@@ -26,6 +26,7 @@ import {
   CHECK_TOKEN_HEALTH,
   REFRESH_ACCESS_TOKEN,
 } from "@/utils/apiconstants";
+import { initMetaPixel } from "../utils/fpixel";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -115,6 +116,10 @@ function MyApp({ Component, pageProps }) {
       console.log("GTM Script Loaded");
     })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
   }, []);
+
+  useEffect(() => {
+  initMetaPixel();
+}, []);
 
   const logout = () => {
     localStorage.clear();

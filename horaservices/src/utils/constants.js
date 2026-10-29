@@ -118,6 +118,8 @@ export const FIREBASE_VAPID_KEY =
 
 export const WHATSAPP_API_TOKEN = "key_fHOm5tEzbfSWRbC29LoZkYd0vpqaU7B22Q2iSL2vgawcN3k0D75iXNSPRen3ie7Qj3L7C6r5EhH4lLYeL1dCtPj9WyQ9wPm2abK1wltW8bYXVR5xvjLfPeQgfRld3ws1lkkRduX6tfrHbmYnbhbYnau3HSfJAylSmBso4m5qjO7vm4YjbhtqMbdkNK2EoNPXqM5SdxThyeGvSlvoA8JCVhGvL98yrocJJ7JfhBasgsEnN7qArGvPdsswdhys"  
 
+export const META_PIXEL_ID_STATIC = "1646622982525186";
+
 export const INVITE_CATEGORIES = [
   "Birthday",
   "BabyShower",

@@ -34,6 +34,7 @@ import Categorythemeselector from "@/components/Categorythemeselector";
 import { fetchWithError } from "@/utils/fetchWithError";
 import axiosApi from "@/utils/axiosApi";
 import { categoryNameToSlug } from "@/utils/Getphotocategoryurl";
+import { PHOTOGRAPHY_BLOG_ARTICLES } from "@/utils/photographyBlogData";
 import WhatsAppIcon from "@/app/WhatsAppIconGtm";
 import { useCity } from "@/utils/cityContext";
 import { ProductPageLoader } from "@/components/PageLoaders/ProductPageLoader";
@@ -591,7 +592,7 @@ const ProductDetails = ({
                         }.webp`
                       : fallbackImg
                   }
-                  alt={`${work?.name || "Product"} image`}
+                  alt={work?.name ? `${work.name} — photography package by HORA${city ? ` in ${city}` : ""}` : "Professional photography package by HORA"}
                   style={{ width: "100%", height: "auto" }}
                   className="photoImage"
                   width={400}
@@ -803,6 +804,30 @@ const ProductDetails = ({
               items={brandItems}
             />
             <AdditionalServices />
+            {/* ── Related blog posts ── */}
+            {(() => {
+              const related = PHOTOGRAPHY_BLOG_ARTICLES.filter(
+                (a) => a.categorySlug === catValue
+              ).slice(0, 3);
+              if (!related.length) return null;
+              return (
+                <div className="cc-blog-links">
+                  <h2 className="cc-blog-links-heading">Related Articles</h2>
+                  <ul className="cc-blog-links-list">
+                    {related.map((article) => (
+                      <li key={article.slug} className="cc-blog-links-item">
+                        <a href={`/blog/photography/${article.slug}`} className="cc-blog-links-anchor">
+                          <span className="cc-blog-links-title">{article.title}</span>
+                          <span className="cc-blog-links-meta">{article.readingTime} min read</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                  <a href="/blog/photography" className="cc-blog-links-all">See all photography articles →</a>
+                </div>
+              );
+            })()}
+
             <div className="tab-section-details-productpage">
               <FAQSection faqData={faqData} />
             </div>

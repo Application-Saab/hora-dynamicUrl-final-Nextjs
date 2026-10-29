@@ -12,6 +12,7 @@ import axiosApi from "@/utils/axiosApi";
 import "../../../../app/homepage.css";
 import { isValidPhotographyCategorySlug } from "@/utils/routeConfig";
 import { categoryToWeblinkFolderName } from "@/utils/photoCategories";
+import { getCityCategoryFAQData } from "@/utils/PhotographyPagesfaqdata";
 
 // Same helpers as CatValuePage (moment + discount)
 const MOMENT_SLUG_TO_KEY = {
@@ -132,6 +133,9 @@ export async function getServerSideProps(context) {
 
   const galleryData = categoryToWeblinkFolderName[finalCatValue] || null;
 
+  // City + category specific FAQs (null if none exist — CatValuePage falls back to category FAQs)
+  const cityFaqData = getCityCategoryFAQData(citySlug, finalCatValue);
+
   return {
     props: {
       // CatValuePage ko yeh sab chahiye
@@ -146,6 +150,8 @@ export async function getServerSideProps(context) {
       ssrError: error,
       // city sync ke liye
       citySlug,
+      // city+category specific FAQs (null = use category-level FAQs)
+      cityFaqData: cityFaqData || null,
     },
   };
 }
