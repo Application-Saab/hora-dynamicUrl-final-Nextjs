@@ -40,6 +40,7 @@ import PhotographyCardSkeleton from "@/components/PhotographyCardSkeleton";
 import { isValidPhotographyCategorySlug } from "@/utils/routeConfig";
 import PhotoGalleryEmbed from "@/components/Photography/PhotoGalleryEmbed";
 import { getCityCategoryIntro } from "@/utils/photographyCityCategories";
+import CityLongContent from "@/components/CityLongContent";
 import { PHOTOGRAPHY_BLOG_ARTICLES } from "@/utils/photographyBlogData";
 
 // ---------- constants / helpers (same as before) ----------
@@ -599,6 +600,8 @@ export default function CatValuePage({
 
     <div style={{ margin: "25px auto 20px", width: "99%" }}>
       <PhotographyHowItWorks />
+      
+ 
 
       {/* ── Related blog posts ── */}
       {(() => {
@@ -623,7 +626,10 @@ export default function CatValuePage({
           </div>
         );
       })()}
-
+         <div
+        className="tab-section-details-productpage"
+        style={{ maxWidth: "480px", margin: "0 auto" }}
+        >
           <FAQSection
           faqData={[
             ...(cityFaqData || []),
@@ -631,6 +637,8 @@ export default function CatValuePage({
           ]}
           heading="Frequently Asked Questions"
           />
+          {city && <CityLongContent city={city} catValue={effectiveCatValue} />}
+            </div>
     </div>
     </div>
   );

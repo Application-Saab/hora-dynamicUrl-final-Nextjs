@@ -108,7 +108,10 @@ const PhotographyIndexPage = ({ city, locality, initialPackages }) => {
       <div style={{ maxWidth: "480px", margin: "auto" }}>
         <SectionDescription sections={photographyDescription} />
 
-        <div className="tab-section-details-productpage">
+        <div
+        className="tab-section-details-productpage"
+        style={{ maxWidth: "480px", margin: "0 auto" }}
+        >
           <FAQSection faqData={photographyFAQData()} heading="FAQ" />
         </div>
       </div>
