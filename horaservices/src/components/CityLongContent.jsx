@@ -26,14 +26,14 @@ export default function CityLongContent({ city, catValue }) {
         margin: "40px auto 0",
         padding: "0 16px 40px",
         fontFamily: "inherit",
-        color: "inherit",
+        color: "#97538c",
       }}
     >
       {content.sections.map((section, idx) => (
-        <div key={idx} style={{ marginBottom: "28px" }}>
+        <div key={idx} style={{ marginBottom: "20px" }}>
           <h2
             style={{
-              fontSize: "1.15rem",
+              fontSize: "1rem",
               fontWeight: 700,
               lineHeight: 1.35,
               marginBottom: "10px",
