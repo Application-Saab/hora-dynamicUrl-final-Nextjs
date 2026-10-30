@@ -5,8 +5,14 @@ import "./makeItYoursBanner.css";
 import customize from "@/assets/Customizetationbanner.webp";
 import customiseIcon from "@/assets/customiselcon.webp";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 const MakeItYoursBanner = ({  phone = "7338584828",  }) => {
   const handleWhatsAppClick = () => {
+    trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.MAKE_IT_YOURS_CUSTOMIZE_BANNER, {
+      button_name: "Customize Design",
+      button_type: "customize_design_decoration",
+      page_path: window.location.pathname,
+    });
     trackWAClicks();
     const PHONE = phone;
     const text = `Looking for a Custom Decoration? Our support team is ready to help!`;

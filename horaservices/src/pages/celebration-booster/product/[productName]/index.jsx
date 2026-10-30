@@ -38,7 +38,6 @@ import ActionButtons from "@/components/Actionbuttons";
 import { filterLevelUpProducts } from "@/utils/similarProductUtils";
 
 import "./Celebrationboosterdetails.css";
-import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 
 // Ideally move these to utils/apiconstants.js alongside your other endpoints
 const CELEBRATION_BOOSTER_API =
@@ -338,32 +337,6 @@ function CelebrationBoosterDetails({ city, locality }) {
       navigator.clipboard.writeText(cleanUrl);
       alert("Link copied!");
     }
-  };
-
-  // WhatsApp "customize / enquire" — mirrors handleCustomise in DecorationCatDetails
-  const handleCustomise = (type, cityNameParam) => {
-    trackWAClicks()
-    const phoneNumber = WHATSAPP_PHONE;
-    let message = `Hi, I want to know more about "${product?.name}" (Celebration Booster), can you help me`;
-
-    if (cityNameParam) {
-      message += ` for ${cityNameParam}!`;
-    } else {
-      message += "!";
-    }
-
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "Customization_WhatsApp_Button",
-      eventCategory: "Booster Product Page",
-      eventAction: "WhatsApp Click",
-      eventLabel: "Booster Enquiry WhatsApp Button",
-    });
-
-    window.open(
-      `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
-      "_blank"
-    );
   };
 
   const handleCheckout = () => {

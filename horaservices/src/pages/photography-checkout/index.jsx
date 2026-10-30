@@ -41,6 +41,8 @@ import { useCity } from "@/utils/cityContext";
 import { categoryNameToSlug } from "@/utils/Getphotocategoryurl";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+import { trackMetaCustomEvent } from "@/utils/fpixel";
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 
 // Safe parse helpers
 const safeJsonParse = (value, fallback) => {
@@ -89,6 +91,23 @@ const Checkout = () => {
     };
     getProductDetails();
   }, [productid]);
+
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      window.location.pathname &&
+      selectedProduct?._id
+    ) {
+      const params = {
+        popup_name: "photography_checkout_page",
+        product_name: selectedProduct?.name,
+        product_id: selectedProduct?._id,
+        page_path:
+          typeof window !== "undefined" ? window.location.pathname : "",
+      };
+      trackMetaCustomEvent("photography_checkout_page_view", params);
+    }
+  }, [selectedProduct]);
 
   useEffect(() => {
     if (!router.isReady || !Array.isArray(rawAddonIds) || !rawAddonIds.length) {
@@ -370,6 +389,15 @@ const Checkout = () => {
   const balanceAmount = totalAmount - advanceAmount;
 
   const onContinueClick = async () => {
+    const storedUserID = await safeGetItem("userID");
+    trackMetaCustomEvent("confirm_order_click", {
+      order_type : "photography",
+      user_id : storedUserID || "",
+      product_name : selectedProduct?.name || "",
+      product_id : selectedProduct?._id || "",
+      phone : phoneNumber || "",
+      order_booked : "online"
+    })
     setIsClosed(false);
     if (!selectedTimeSlot) {
       setSelectedTimeSlotError(true);
@@ -393,7 +421,6 @@ const Checkout = () => {
       setCombinedDateTimeError(false);
     }
     const apiUrl = BASE_URL + PAYMENT;
-    const storedUserID = await safeGetItem("userID");
     let merchantTransactionId;
     try {
       const addressID = await saveAddress();
@@ -521,7 +548,12 @@ const Checkout = () => {
     return `https://horaservices.com/api/uploads/compressed_webp/${cleanFileName}.webp`;
   };
   const contactUsRedirection = (productName) => {
-    trackWAClicks()
+    trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.PHOTOGRAPHY_CHECKOUT_CONTACT_US, {
+      button_name: "Contact Us",
+      button_type: "photography_contact_us",
+      page_path: window.location.pathname,
+    });
+    trackWAClicks();
     const waCategory =
       selectedCatValue || formatPhotographyCategory(selectedCatValue);
     const waCity = city || selectedCitySlug;

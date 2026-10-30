@@ -9,6 +9,7 @@ import iconPremium from "@/assets/Premimum_Quality.svg";
 import iconSupport from "@/assets/Support.svg";
 import iconWhatsapp from "@/assets/whatsapp-icon.png";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 
 /**
  * Bottom se open hone wala coupon sheet.
@@ -54,6 +55,11 @@ export default function CouponBottomSheet({
   }, [open]);
 
   const handleWhatsApp = () => {
+    trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.COUPON_AMOUNT_CHAT_NOW, {
+      button_name: "Coupon Amount Off Chat Now",
+      button_type: "coupon_amount_chat_now",
+      page_path: window.location.pathname,
+    });
     trackWAClicks();
     const finalMessage =
       message ||

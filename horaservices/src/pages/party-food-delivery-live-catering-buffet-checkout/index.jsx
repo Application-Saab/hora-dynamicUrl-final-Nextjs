@@ -31,6 +31,8 @@ import axiosApi from "@/utils/axiosApi";
 import { safeGetItem } from "@/utils/safeStorage";
 import Head from "next/head";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+import { trackMetaCustomEvent } from "@/utils/fpixel";
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 
 const FoodDeliveryCheckout = () => {
   //   const { selectedDishesFoodDelivery , selectedOption ,orderType, selectedDishDictionary, selectedDishPrice, totalOrderAmount , selectedDishQuantities , peopleCount} = useLocation().state || {}; // Accessing subCategory and itemName safely
@@ -68,6 +70,20 @@ const FoodDeliveryCheckout = () => {
     }
     setLoading(false); // Done with loading
   }, []); // Run once when component mounts
+
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      window.location.pathname
+    ) {
+      const params = {
+        popup_name: "food_delivery_checkout_page",
+        page_path:
+          typeof window !== "undefined" ? window.location.pathname : "",
+      };
+      trackMetaCustomEvent("food_delivery_checkout_page_view", params);
+    }
+  }, []);
 
   useEffect(() => {
     // If logged in, close the modal
@@ -454,7 +470,12 @@ const FoodDeliveryCheckout = () => {
   }
 
   const contactUsRedirection = () => {
-    trackWAClicks()
+    trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.FOOD_CHECKOUT_CONTACT_US, {
+      button_name: "Contact Us",
+      button_type: "food_contact_us",
+      page_path: window.location.pathname,
+    });
+    trackWAClicks();
     window.open(
       "https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20food%20delivery%20and%20live%20Catering%20service",
       "_blank",
@@ -503,9 +524,17 @@ const FoodDeliveryCheckout = () => {
 
   const onContinueClick = async () => {
     setLoading(true);
-    const apiUrl = BASE_URL + PAYMENT;
     const storedUserID = await safeGetItem("userID");
     const phoneNumber = await safeGetItem("mobileNumber");
+    trackMetaCustomEvent("confirm_order_click", {
+      order_type : selectedDeliveryOption === "party-food-delivery" ? "Food Delivery" : "Live Catering",
+      user_id : storedUserID || "",
+      // product_name : selectedProduct?.name || "",
+      // product_id : selectedProduct?._id || "",
+      phone : phoneNumber || "",
+      order_booked : "online"
+    })
+    const apiUrl = BASE_URL + PAYMENT;
     let merchantTransactionId;
     const advance = calculateAdvancePayment();
     const total = calculateFinalTotal();

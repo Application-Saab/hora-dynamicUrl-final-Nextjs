@@ -2,6 +2,7 @@ import Image from "next/image";
 import "./chatbanner.css";
 import whatsappIcon from "@/assets/whatsapp-icon.svg"
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 const ChatBanner = ({
   title = "Free Wedding Planning Chat",
   buttonText = "Chat Now",
@@ -35,7 +36,15 @@ const ChatBanner = ({
         </div>
       </div>
 
-      <button className="chat-banner-btn" onClick={() => {onChatClick(); trackWAClicks();}}>
+      <button className="chat-banner-btn" onClick={() => {
+        trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.CHAT_NOW_PHOTOGRAPHY_BANNER, {
+          button_name: "Chat Now",
+          button_type: "chat_now_photography",
+          page_path: window.location.pathname,
+        });
+        onChatClick(); 
+        trackWAClicks();
+        }}>
         {buttonText}
       </button>
     </div>

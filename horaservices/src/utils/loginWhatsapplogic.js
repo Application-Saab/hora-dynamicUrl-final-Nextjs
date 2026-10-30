@@ -2,8 +2,6 @@ import axiosApi from "@/utils/axiosApi";
 import cityNameToSlug from "./Citynametoslug.json";
 import { WHATSAPP_TEMPLATE_ENDPOINT } from "./apiconstants";
 import { WHATSAPP_API_TOKEN } from "./constants";
-import { trackWAClicks } from "./storeWhatsappClicks";
-
 /* ---------------- CONSTANTS ---------------- */
 export const WHATSAPP_BOOKING_NUMBER = "917338584828";
 

@@ -37,6 +37,8 @@ import { useCity } from "@/utils/cityContext";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { getCategoryNameToSlug } from "@/utils/similarProductUtils";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+import { trackMetaCustomEvent } from "@/utils/fpixel";
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 
 // Safe parse helpers
 const safeJsonParse = (value, fallback) => {
@@ -65,6 +67,19 @@ const Checkout = () => {
   const [selectedProduct, setSelectedProduct] = useState({});
   const [selectedCatValue, setSelectedCatValue] = useState({});
   const [selectedAddonsData, setSelectedAddonsData] = useState([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.pathname && selectedProduct?._id) {
+      const params = {
+        popup_name: "decoration_checkout_page",
+        product_name : selectedProduct?.name,
+        product_id : selectedProduct?._id,
+        page_path:
+          typeof window !== "undefined" ? window.location.pathname : "",
+      };
+      trackMetaCustomEvent("decoration_checkout_page_view", params);
+    }
+  }, [selectedProduct]);
 
   useEffect(() => {
     const getProductDetails = async () => {
@@ -341,6 +356,15 @@ const Checkout = () => {
   };
 
   const onContinueClick = async () => {
+    const storedUserID = await safeGetItem("userID");
+    trackMetaCustomEvent("confirm_order_click", {
+      order_type : "decoration",
+      user_id : storedUserID || "",
+      product_name : selectedProduct?.name || "",
+      product_id : selectedProduct?._id || "",
+      phone : phoneNumber || "",
+      order_booked : "online"
+    })
     setIsClosed(false);
 
     if (!selectedTimeSlot) {
@@ -365,7 +389,7 @@ const Checkout = () => {
       setCombinedDateTimeError(false);
     }
     const apiUrl = BASE_URL + PAYMENT;
-    const storedUserID = await safeGetItem("userID");
+    
     // const phoneNumber = await safeGetItem('mobileNumber')
     let merchantTransactionId;
     try {
@@ -493,7 +517,12 @@ const Checkout = () => {
   };
 
   const contactUsRedirection = (category, cityName) => {
-    trackWAClicks()
+    trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.DECORATION_CHECKOUT_CONTACT_US, {
+      button_name: "Contact Us",
+      button_type: "decoration_contact_us",
+      page_path: window.location.pathname,
+    });
+    trackWAClicks();
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "decoration-checkout_contact_us_click",

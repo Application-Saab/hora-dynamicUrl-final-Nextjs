@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MOBILE_DRAWER_MENU } from "@/utils/mobileDrawerMenu";
+import { trackMetaCustomEvent } from "@/utils/fpixel";
 
 const MobileDrawer = ({
   drawerRef,
@@ -8,6 +9,13 @@ const MobileDrawer = ({
   onLogin,
   onLogout
 }) => {
+  const handleMetaTracking = () => {
+    const params = {
+      popup_name: "mobile_drawer",
+      page_path: typeof window !== "undefined" ? window.location.pathname : "",
+    }
+    trackMetaCustomEvent("header_login_button_click", params)
+  }
   return (
     <div ref={drawerRef} className="mobile-drawer">
       <div className="drawer-header">Welcome to Hora</div>
@@ -36,6 +44,7 @@ const MobileDrawer = ({
                 key={index}
                 className="list drawer-btn"
                 onClick={() => {
+                  handleMetaTracking();
                   onClose();
                   onLogin();
                 }}
