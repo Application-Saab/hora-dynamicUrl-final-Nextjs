@@ -23,7 +23,8 @@ function DecorationCatCityPage({
   initialCatalogueData,
   initialCatId,
   initialHasMore,
-  isDirectProductPage = false
+  isDirectProductPage = false,
+  categorySlug = "balloon-decoration",   // override for wedding-decoration pages
 }) {
   const router = useRouter();
 
@@ -93,14 +94,20 @@ function DecorationCatCityPage({
 
   return (
     <>
+      {/* Pass serverCity (SSR-safe, from getServerSideProps context.params)
+          as a separate prop so DecorationCatPage can hand it to SeoHead.
+          The city useState value is empty at SSR time — Googlebot sees blank
+          meta tags when SeoHead uses it. */}
       <DecorationCatPage
         city={city}
+        serverCity={serverCity}
         locality={locality}
         catValue={catValue}
         initialCatalogueData={initialCatalogueData}
         initialCatId={initialCatId}
         initialHasMore={initialHasMore}
-        isDirectProductPage = {isDirectProductPage}
+        isDirectProductPage={isDirectProductPage}
+        categorySlug={categorySlug}
       />
 
       {/* key lagane se city ya category change hote hi section remount hoga,
