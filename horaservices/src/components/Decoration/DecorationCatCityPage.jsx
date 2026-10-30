@@ -3,6 +3,7 @@ import SectionDescription from "@/components/Description";
 import FAQSection from "@/components/FAQSection";
 import { getCategoryContent } from "@/utils/Decorationcategorycontent";
 import { decorationCityFAQData } from "@/utils/DecorationCityFAQ";
+import { weddingDecorationFAQData } from "@/utils/WeddingDecorationFAQData";
 import { CityDecorationlandingPage } from "@/utils/CityDecorationlanding";
 import { getCityCategoryLanding } from "@/utils/Citycategorydecorationlanding";
 import CityDecorationlanding from "./cityDecorationlanding";
@@ -86,8 +87,11 @@ function DecorationCatCityPage({
     CityDecorationlandingPage[city?.toLowerCase()]?.faqs ||
     [];
 
-  // General FAQ
-  const generalFaqs = decorationCityFAQData();
+  // General FAQ — use wedding FAQs for wedding-decoration pages, balloon FAQs for everything else
+  const generalFaqs =
+    categorySlug === "wedding-decoration"
+      ? weddingDecorationFAQData()
+      : decorationCityFAQData();
 
   // City FAQ + General FAQ
   const cityDecorationFAQ = [...cityFaqs, ...generalFaqs];
