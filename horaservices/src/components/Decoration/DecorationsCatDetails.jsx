@@ -892,6 +892,9 @@ function DecorationsCatDetails({
   isDirectProductPage = false,
   // "balloon-decoration" ya "wedding". Prop na mile to URL se auto-detect hoga.
   categorySlug: categorySlugProp,
+  // SSR-safe product slug from context.params — use for canonical URL so
+  // Googlebot doesn't see a broken canonical without the product name.
+  productNameFromUrl = null,
 }) {
   const { selectedCitySlug, selectedCityName } = useCity();
   const router = useRouter();
@@ -1379,11 +1382,14 @@ function DecorationsCatDetails({
       .replace(/[^a-z0-9-]/g, "")
       .replace(/-+/g, "-");
 
-  const cityFromUrl = city || router.query?.city || null;
-  const localityFromUrl = locality || router.query?.locality || null;
+  // city and locality props come from getServerSideProps — always SSR-safe.
+  const cityFromUrl = city || null;
+  const localityFromUrl = locality || null;
 
+  // productNameFromUrl from context.params is SSR-safe.
+  // router.query?.productName is empty at SSR time → broken canonical for Googlebot.
   const productSlug =
-    router.query?.productName ||
+    productNameFromUrl ||
     product?.slug ||
     generateSlug(product?.name) ||
     "";
