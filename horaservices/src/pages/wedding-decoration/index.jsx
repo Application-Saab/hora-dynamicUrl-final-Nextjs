@@ -4,6 +4,8 @@ import { weddingDecorationFAQData } from "@/utils/WeddingDecorationFAQData";
 import { weddingDecorationDescription } from "@/utils/Weddingdecorationdescription";
 import FAQSection from "@/components/FAQSection";
 import SectionDescription from "@/components/Description";
+import WeddingBanner from "@/components/WeddingBanner";
+import weddingBannerImg from "@/assets/Wedding_banner.webp";
 
 const SITE = "https://horaservices.com";
 const CAT = "wedding-decoration";
@@ -36,6 +38,13 @@ export default function WeddingDecorationPage() {
           type="image/x-icon"
         />
       </Head>
+
+      <WeddingBanner
+        image={weddingBannerImg}
+        title="Wedding"
+        script="Decorations"
+        tagline="Beautiful decoration for every wedding celebration"
+      />
 
       <SectionDescription sections={weddingDecorationDescription} />
 
