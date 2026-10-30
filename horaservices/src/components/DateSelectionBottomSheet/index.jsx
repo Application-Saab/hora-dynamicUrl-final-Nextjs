@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { X, Calendar as CalendarIcon, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import {
+  X,
+  Calendar as CalendarIcon,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+} from "lucide-react";
 import "./DateSelectionBottomSheet.css";
 import Image from "next/image";
 import calendarBgimage from "../../assets/calendarBarBgimage.webp";
@@ -9,10 +15,21 @@ import { fetchWithError } from "@/utils/fetchWithError";
 import { useCity } from "@/utils/cityContext"; // 👈 apna sahi path daalo (CityProvider file ka)
 import InviteSheet from "../CouponInvitesheetbottom";
 import CouponBottomSheet from "../Couponbottomsheet";
+import { trackMetaCustomEvent } from "../../utils/fpixel";
 
 const MONTH_NAMES = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 const DAY_NAMES = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
@@ -27,7 +44,7 @@ const pushGTMEvent = (eventName, params = {}) => {
 
 const toISODateOnly = (date) => {
   return new Date(
-    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
   ).toISOString();
 };
 
@@ -65,7 +82,7 @@ const pickExistingEventDate = (events) => {
     const parsedDateOnly = new Date(
       parsed.getFullYear(),
       parsed.getMonth(),
-      parsed.getDate()
+      parsed.getDate(),
     );
 
     if (parsedDateOnly >= todayOnly) return parsed;
@@ -111,7 +128,6 @@ const formatEventDate = (date) =>
       })
     : "";
 
-
 export default function DateSelectionBottomSheet({
   isOpen,
   onClose,
@@ -128,12 +144,13 @@ export default function DateSelectionBottomSheet({
 }) {
   useLockBodyScroll(isOpen);
 
-
   const { selectedCityName, selectedCitySlug } = useCity();
 
   const resolvedCity =
     selectedCityName ||
-    (selectedCitySlug && selectedCitySlug !== NOT_SELECTED ? selectedCitySlug : "") ||
+    (selectedCitySlug && selectedCitySlug !== NOT_SELECTED
+      ? selectedCitySlug
+      : "") ||
     cityProp;
 
   const today = new Date();
@@ -148,15 +165,22 @@ export default function DateSelectionBottomSheet({
   const [offerSheet, setOfferSheet] = useState(null);
   const [offerDate, setOfferDate] = useState(null);
 
-  // GTM: popup khulte hi event (kahin se bhi khule — auto / notification / edit button)
   useEffect(() => {
     if (!isOpen) return;
-    pushGTMEvent("event_date_popup_view", {
+
+    const eventParams = {
       popup_name: "event_date_selection",
       city: resolvedCity || "",
       event_title: eventTitle || "",
       page_path: typeof window !== "undefined" ? window.location.pathname : "",
-    });
+    };
+
+    // Existing GTM event
+    pushGTMEvent("event_date_popup_view", eventParams);
+
+    // New Meta Pixel event
+    trackMetaCustomEvent("event_date_popup_view", eventParams);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
@@ -241,7 +265,11 @@ export default function DateSelectionBottomSheet({
 
   if (!isOpen) return offerSheets;
 
-  const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const todayDateOnly = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  );
   const isPastDate = (day) => {
     if (!day) return false;
     const cellDate = new Date(viewYear, viewMonth, day);
@@ -277,14 +305,20 @@ export default function DateSelectionBottomSheet({
     setError(null);
   };
 
-  // GTM: sirf cross (X) button click par event, phir popup band
   const handleCrossClick = () => {
-    pushGTMEvent("event_date_popup_cross_click", {
+    const eventParams = {
       popup_name: "event_date_selection",
       city: resolvedCity || "",
       event_title: eventTitle || "",
       page_path: typeof window !== "undefined" ? window.location.pathname : "",
-    });
+    };
+
+    // Existing GTM event
+    pushGTMEvent("event_date_popup_cross_click", eventParams);
+
+    // New Meta Pixel event
+    trackMetaCustomEvent("event_date_popup_cross_click", eventParams);
+
     onClose();
   };
 
@@ -342,16 +376,16 @@ export default function DateSelectionBottomSheet({
       // GTM: date successfully save hone par confirm event (selected date ke saath)
       const pad = (n) => String(n).padStart(2, "0");
       const selectedDateStr = `${selectedDate.getFullYear()}-${pad(
-        selectedDate.getMonth() + 1
+        selectedDate.getMonth() + 1,
       )}-${pad(selectedDate.getDate())}`;
       const daysLeft = Math.round(
         (new Date(
           selectedDate.getFullYear(),
           selectedDate.getMonth(),
-          selectedDate.getDate()
+          selectedDate.getDate(),
         ) -
           todayDateOnly) /
-          (1000 * 60 * 60 * 24)
+          (1000 * 60 * 60 * 24),
       );
       pushGTMEvent("event_date_popup_confirm", {
         popup_name: "event_date_selection",
@@ -361,7 +395,19 @@ export default function DateSelectionBottomSheet({
         mode: resolvedMode, // "create" | "add" | "update"
         city: resolvedCity || "",
         event_title: eventTitle || "",
-        page_path: typeof window !== "undefined" ? window.location.pathname : "",
+        page_path:
+          typeof window !== "undefined" ? window.location.pathname : "",
+      });
+
+      trackMetaCustomEvent("event_date_popup_confirm", {
+        popup_name: "event_date_selection",
+        event_date: selectedDateStr,
+        event_date_formatted: formatEventDate(selectedDate),
+        days_left: daysLeft,
+        mode: resolvedMode,
+        city: resolvedCity || "",
+        event_title: eventTitle || "",
+        page_path: window.location.pathname,
       });
 
       if (onConfirm) onConfirm(selectedDate, data);
@@ -406,7 +452,11 @@ export default function DateSelectionBottomSheet({
       <div className="dsb-device">
         <div className="dsb-overlay" onClick={onClose} />
         <div className="dsb-sheet-wrapper">
-          <button className="dsb-close-btn" onClick={handleCrossClick} aria-label="Close">
+          <button
+            className="dsb-close-btn"
+            onClick={handleCrossClick}
+            aria-label="Close"
+          >
             <X size={16} strokeWidth={2.4} color="#1a1a1a" />
           </button>
 
@@ -437,26 +487,44 @@ export default function DateSelectionBottomSheet({
                   onClick={handlePrevMonth}
                   aria-label="Previous month"
                   disabled={isPrevMonthDisabled}
-                  style={isPrevMonthDisabled ? { opacity: 0.3, cursor: "not-allowed" } : undefined}
+                  style={
+                    isPrevMonthDisabled
+                      ? { opacity: 0.3, cursor: "not-allowed" }
+                      : undefined
+                  }
                 >
                   <ChevronLeft size={20} strokeWidth={2.4} />
                 </button>
-                <span className="dsb-month-label">{MONTH_NAMES[viewMonth].toUpperCase()}</span>
-                <button className="dsb-nav-btn" onClick={handleNextMonth} aria-label="Next month">
+                <span className="dsb-month-label">
+                  {MONTH_NAMES[viewMonth].toUpperCase()}
+                </span>
+                <button
+                  className="dsb-nav-btn"
+                  onClick={handleNextMonth}
+                  aria-label="Next month"
+                >
                   <ChevronRight size={20} strokeWidth={2.4} />
                 </button>
               </div>
 
               <div className="dsb-day-names">
                 {DAY_NAMES.map((d) => (
-                  <span key={d} className="dsb-day-name">{d}</span>
+                  <span key={d} className="dsb-day-name">
+                    {d}
+                  </span>
                 ))}
               </div>
 
-              <div className="dsb-days-grid" style={{ "--total-rows": totalRows }}>
+              <div
+                className="dsb-days-grid"
+                style={{ "--total-rows": totalRows }}
+              >
                 {calendarCells.map((day, idx) =>
                   day === null ? (
-                    <span key={`empty-${idx}`} className="dsb-day-cell dsb-day-empty" />
+                    <span
+                      key={`empty-${idx}`}
+                      className="dsb-day-cell dsb-day-empty"
+                    />
                   ) : (
                     <button
                       key={day}
@@ -468,7 +536,7 @@ export default function DateSelectionBottomSheet({
                     >
                       {day}
                     </button>
-                  )
+                  ),
                 )}
               </div>
             </div>

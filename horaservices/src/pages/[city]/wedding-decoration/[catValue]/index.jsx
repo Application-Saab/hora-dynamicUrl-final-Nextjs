@@ -6,5 +6,5 @@ export async function getServerSideProps(context) {
 }
 
 export default function WeddingCityCatPage(props) {
-  return <DecorationCatCityPage {...props} isDirectProductPage={true} />;
+  return <DecorationCatCityPage {...props} isDirectProductPage={true} categorySlug="wedding-decoration" />;
 }
