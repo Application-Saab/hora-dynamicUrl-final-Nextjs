@@ -222,7 +222,8 @@ export const buildDecorationCategoryCanonical = ({
   locality,
   catValue,
   theme,
-  isBooster = false
+  isBooster = false,
+  parentCategory = "balloon-decoration",   // "balloon-decoration" | "wedding-decoration" etc.
 } = {}) => {
   const parts = [];
 
@@ -232,10 +233,10 @@ export const buildDecorationCategoryCanonical = ({
   if (citySlug) parts.push(citySlug);
   if (localitySlug) parts.push(localitySlug);
 
-  if (isBooster) {  
+  if (isBooster) {
     parts.push("celebration-booster");
-  }else {
-    parts.push("balloon-decoration");
+  } else {
+    parts.push(parentCategory);
   }
 
 
@@ -289,7 +290,7 @@ export const getPageMetaDescription = (catValue, city, locality) => {
 // ─────────────────────────────────────────────
 // MAIN COMPONENT
 // ─────────────────────────────────────────────
-const SeoHead = ({ catValue, city, locality, theme, isBooster = false }) => {
+const SeoHead = ({ catValue, city, locality, theme, isBooster = false, parentCategory = "balloon-decoration" }) => {
   console.log('%c [ theme ]', 'font-size:13px; background:pink; color:#bf2c9f;', theme)
   console.log('%c [ city ]', 'font-size:13px; background:pink; color:#bf2c9f;', city)
   console.log('%c [ catValue ]', 'font-size:13px; background:pink; color:#bf2c9f;', catValue)
@@ -315,6 +316,7 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false }) => {
     catValue,
     theme,
     isBooster,
+    parentCategory,
   });
 
   return (

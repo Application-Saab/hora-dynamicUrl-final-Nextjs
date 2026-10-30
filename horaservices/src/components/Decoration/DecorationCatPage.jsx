@@ -103,6 +103,7 @@ const buildCacheKey = (path, sort, priceThemeId, search, designTypes = []) =>
 
 const DecorationCatPage = ({
   city: cityProp = "",
+  serverCity = null,   // SSR-safe city name from getServerSideProps — use for <Head> only
   locality = null,
   catValue: catValueProp = "",
   initialCatalogueData = [],
@@ -948,11 +949,16 @@ const renderChip = (chip) => (
 );
   return (
     <div className="decCatPage">
+      {/* serverCity is the SSR-safe value from getServerSideProps — always
+          populated for Googlebot. cityProp / city state are empty at SSR time.
+          Fallback to cityProp for backward compat when called without serverCity.
+          parentCategory ensures wedding-decoration URLs get the right canonical. */}
       <SeoHead
         catValue={normalizedCat}
-        city={city}
+        city={serverCity || cityProp}
         locality={locality}
         theme={theme}
+        parentCategory={categorySlug}
       />
 
       {isInitialLoad && loading ? (
