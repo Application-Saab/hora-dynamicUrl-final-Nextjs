@@ -26,6 +26,8 @@ import {formatDate} from "../../utils/formateDate"
 import axiosApi from '@/utils/axiosApi';
 import { safeGetItem } from '@/utils/safeStorage';
 import { trackWAClicks } from '@/utils/storeWhatsappClicks';
+import { trackMetaCustomEvent } from '@/utils/fpixel';
+import { MARKETING_EVENTS } from '@/utils/marketingEvents';
 
 const ChefCheckout = () => {
     //   let { peopleCount, orderType, selectedDishDictionary, selectedDishPrice, selectedCount , selectedDishes } = useLocation().state || {}; // Accessing subCategory and itemName safely
@@ -70,6 +72,20 @@ useEffect(() => {
   window.addEventListener("resize", handleResize);
   return () => window.removeEventListener("resize", handleResize);
 }, []);
+
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      window.location.pathname
+    ) {
+      const params = {
+        popup_name: "book_chef_checkout_page",
+        page_path:
+          typeof window !== "undefined" ? window.location.pathname : "",
+      };
+      trackMetaCustomEvent("book_chef_checkout_page_view", params);
+    }
+  }, []);
 
 
    const safeCharge = selectedCount >= 7 ? 700 : 0; 
@@ -183,6 +199,11 @@ useEffect(() => {
 
   
 const contactUsRedirection = () => {
+    trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.BOOK_CHEF_CHECKOUT_CONTACT_US, {
+      button_name: "Contact Us",
+      button_type: "book_chef_contact",
+      page_path: window.location.pathname,
+    });
   trackWAClicks()
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({

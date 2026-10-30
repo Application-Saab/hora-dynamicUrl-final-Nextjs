@@ -18,6 +18,7 @@ import "../../../css/chefOrder.css";
 import { safeGetItem } from "@/utils/safeStorage";
 import Head from "next/head";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 
 const FoodDeliveryselectDate = () => {
   const router = useRouter();
@@ -249,6 +250,11 @@ const FoodDeliveryselectDate = () => {
   };
 
   const contactUsRedirection = () => {
+    trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.PARTY_FOOD_WHATSAPP_BTN, {
+      button_name: "Whatsapp",
+      button_type: "contact_us_food",
+      page_path: window.location.pathname,
+    });
     trackWAClicks()
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({

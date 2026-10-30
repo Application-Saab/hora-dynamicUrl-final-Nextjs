@@ -21,31 +21,71 @@ import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 import loginLine from "@/assets/loginline.svg";
 import { useCity } from "@/utils/cityContext";
 import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
-import { resolveWhatsAppLink, sendWelcomeMessage } from "@/utils/loginWhatsapplogic";
+import {
+  resolveWhatsAppLink,
+  sendWelcomeMessage,
+} from "@/utils/loginWhatsapplogic";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+import { MARKETING_EVENTS, trackMarketingEvent, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 
 /* ---------------- SMALL INLINE ICONS ---------------- */
 const WhatsAppIcon = () => (
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff" aria-hidden="true">
+  <svg
+    width="26"
+    height="26"
+    viewBox="0 0 24 24"
+    fill="#fff"
+    aria-hidden="true"
+  >
     <path d="M12.04 2a9.9 9.9 0 0 0-8.5 14.9L2 22l5.25-1.5A9.9 9.9 0 1 0 12.04 2zm0 18.1c-1.5 0-2.95-.4-4.2-1.15l-.3-.18-3.1.88.9-3.02-.2-.31A8.1 8.1 0 1 1 12.04 20.1zm4.45-6.06c-.24-.12-1.44-.71-1.66-.79-.22-.08-.39-.12-.55.12-.16.24-.63.79-.77.95-.14.16-.28.18-.53.06a6.6 6.6 0 0 1-3.3-2.88c-.25-.43.25-.4.72-1.34.08-.16.04-.3-.02-.42-.06-.12-.55-1.32-.75-1.81-.2-.47-.4-.41-.55-.42h-.47c-.16 0-.43.06-.65.3-.22.24-.86.84-.86 2.05s.88 2.38 1 2.55c.12.16 1.73 2.64 4.19 3.7.59.25 1.05.4 1.4.52.59.19 1.12.16 1.55.1.47-.07 1.44-.59 1.64-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.47-.28z" />
   </svg>
 );
 
 const ShieldIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    width="13"
+    height="13"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <path d="M12 3l8 3v6c0 4.5-3.2 8.3-8 9-4.8-.7-8-4.5-8-9V6l8-3z" />
     <path d="M9 12l2 2 4-4" />
   </svg>
 );
 
 const BoltIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    width="13"
+    height="13"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" />
   </svg>
 );
 
 const HeadsetIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    width="13"
+    height="13"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <path d="M4 14v-2a8 8 0 0 1 16 0v2" />
     <rect x="3" y="14" width="4" height="6" rx="1.5" />
     <rect x="17" y="14" width="4" height="6" rx="1.5" />
@@ -127,9 +167,13 @@ const OtpLogin = ({
         fromWonderland: isWonderlandPath ? true : false,
         ...extraVerifyData,
       };
-      const res = await axiosApi.post(BASE_URL + OTP_GENERATE_END_POINT, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await axiosApi.post(
+        BASE_URL + OTP_GENERATE_END_POINT,
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+        },
+      );
 
       if (res.data.status === API_SUCCESS_CODE) {
         setIsOtpSent(true);
@@ -239,6 +283,11 @@ const OtpLogin = ({
         safeSetItem("userID", res.data.data._id);
         sendWelcomeMessage(mobileNumber);
         assignVisitorToUserId(res.data.data._id, visitorid);
+
+        trackMarketingEvent(MARKETING_EVENTS.LOGIN_SUCCESS, {
+          login_method: "otp",
+          page_path: window.location.pathname,
+        });
 
         window.dispatchEvent(new Event("loginStateChange"));
 
@@ -452,7 +501,18 @@ const OtpLogin = ({
                       href={whatsappLink}
                       target="_blank"
                       rel="noreferrer"
-                      onClick={() => trackWAClicks()}
+                      onClick={() => {
+                        trackWhatsAppButtonClick(
+                          MARKETING_EVENTS.WHATSAPP_BUTTONS.BOOK_ON_WHATSAPP,
+                          {
+                            button_name: "Book On WhatsApp",
+                            button_type: "checkout_booking_login_popup",
+                            service_name: serviceName || "",
+                            city: cityName || cityCtx?.selectedCityName || "",
+                          },
+                        );
+                        trackWAClicks();
+                      }}
                     >
                       <WhatsAppIcon />
                       <span className="whatsapp-text">

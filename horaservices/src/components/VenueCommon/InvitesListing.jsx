@@ -18,6 +18,7 @@ import {
 import { fetchWithError } from "@/utils/fetchWithError";
 import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 
 const BATCH_SIZE = 10;
 const WHATSAPP_PHONE = "7338584828";
@@ -459,7 +460,15 @@ const VenueList = ({
                         display: "inline-block",
                         textDecoration: "none",
                       }}
-                      onClick={(e) => {e.stopPropagation(); trackWAClicks();}}
+                      onClick={(e) => {
+                        trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.CHECK_AVAILABILITY_VENUE_LANDING, {
+                          button_name: "Check Availability",
+                          button_type: "check_availibility_venue_landing",
+                          page_path: window.location.pathname,
+                        });
+                        e.stopPropagation(); 
+                        trackWAClicks();
+                      }}
                     >
                       Check Availability
                     </a>

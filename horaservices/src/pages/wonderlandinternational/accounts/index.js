@@ -15,14 +15,13 @@ import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import LogoutModal from "@/utils/LogoutModal";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
+import { trackMetaCustomEvent } from "@/utils/fpixel";
 
 const AccountPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showOtpLogin, setShowOtpLogin] = useState(false);
-  const userId =
-    typeof window !== "undefined" ? safeGetItem("userID") : null;
-  const token =
-    typeof window !== "undefined" ? safeGetItem("token") : null;
+  const userId = typeof window !== "undefined" ? safeGetItem("userID") : null;
+  const token = typeof window !== "undefined" ? safeGetItem("token") : null;
   const [showEditName, setShowEditName] = useState(false);
   const [editedName, setEditedName] = useState("");
   const [editLoading, setEditLoading] = useState(false);
@@ -74,7 +73,7 @@ const AccountPage = () => {
           body: JSON.stringify({
             name: editedName,
           }),
-        }
+        },
       );
       const data = await response.json();
       if (data.error) {
@@ -123,7 +122,7 @@ const AccountPage = () => {
           headers: {
             Authorization: `${token || localStorage.getItem("token")}`,
           },
-        }
+        },
       );
       if (response.ok) {
         const data = await response.json();
@@ -140,6 +139,14 @@ const AccountPage = () => {
     }
   };
 
+  const handleMetaTracking = () => {
+    const params = {
+      popup_name: "wonderland_international_page",
+      page_path: typeof window !== "undefined" ? window.location.pathname : "",
+    };
+    trackMetaCustomEvent("header_login_button_click", params);
+  };
+
   return (
     <>
       <div className="account-ctn">
@@ -150,8 +157,8 @@ const AccountPage = () => {
                 preview?.url
                   ? preview.url
                   : userDetails?.avatar
-                  ? userDetails.avatar
-                  : "https://avatar.iran.liara.run/public/12"
+                    ? userDetails.avatar
+                    : "https://avatar.iran.liara.run/public/12"
               }
               height={100}
               width={100}
@@ -217,6 +224,7 @@ const AccountPage = () => {
               if (isLoggedIn) {
                 setShowLogoutConfirm(true);
               } else {
+                handleMetaTracking();
                 handleLogin();
               }
             }}
