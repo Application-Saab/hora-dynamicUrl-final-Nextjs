@@ -1295,7 +1295,7 @@ function DecorationsCatDetails({
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
-      event: "book_now_click",
+      event: "continue_button_product_detail_page",
       product_name: product?.name,
     });
 
@@ -1314,18 +1314,34 @@ function DecorationsCatDetails({
     });
   };
 
-  const handleShare = () => {
-    const cleanUrl = window.location.origin + window.location.pathname;
-    if (navigator.share) {
-      navigator.share({
-        title: product?.name || "Hora Services",
-        url: cleanUrl,
-      });
-    } else {
-      navigator.clipboard.writeText(cleanUrl);
-      alert("Link copied!");
-    }
-  };
+const handleShare = () => {
+  const cleanUrl = window.location.origin + window.location.pathname;
+
+  // GTM Event
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "product-details_page_share_clicked",
+    product_name: product?.name || "Hora Services",
+    share_url: cleanUrl,
+    share_method: navigator.share ? "native_share" : "copy_link",
+    page_path: window.location.pathname,
+  });
+
+  if (navigator.share) {
+    navigator.share({
+      title: product?.name || "Hora Services",
+      url: cleanUrl,
+    }).catch((error) => {
+      if (error.name !== "AbortError") {
+        console.error("Share failed:", error);
+      }
+    });
+  } else {
+    navigator.clipboard.writeText(cleanUrl)
+      .then(() => alert("Link copied!"))
+      .catch(() => alert("Unable to copy link"));
+  }
+};
 
   const getItemInclusion = (inclusion) => {
     if (!Array.isArray(inclusion) || !inclusion.length) return null;

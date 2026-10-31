@@ -32,12 +32,23 @@ const CelebrationCard = ({
   const Tag = href ? "a" : "div";
   const linkProps = href ? { href } : {};
 
+const handleCelebrationCardClick = () => {
+  window.dataLayer = window.dataLayer || [];
+
+  window.dataLayer.push({
+    event: "celebration_landing_page_card_clicked",
+    cardTitle: title || "N/A",
+    cardSubtitle: subtitle || "N/A",
+    href: href || "N/A",
+  });
+};
   return (
     <div className="cel-wrap">
       <Tag
         {...linkProps}
         className={`cel-card cel-card--${imageSide}`}
         style={{ "--accent": accent, "--title": titleColor }}
+          onClick={handleCelebrationCardClick}
       >
         {bg && (
           <Image
