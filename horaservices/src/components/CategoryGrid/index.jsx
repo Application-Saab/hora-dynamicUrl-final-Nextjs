@@ -34,8 +34,8 @@ const CategoryGrid = ({ cardsData = [], city = "", locality = "" }) => {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: city
-        ? "slider_view_all_citypage_clicked"
-        : "slider_view_all_clicked",
+        ? "decoration_landing_city_page_big_small_card_clicked"
+        : "decoration_landing_page_big_small_card_clicked",
       viewAllTitle: card.title,
       catValue: card.catValue,
       city: city || "default",
