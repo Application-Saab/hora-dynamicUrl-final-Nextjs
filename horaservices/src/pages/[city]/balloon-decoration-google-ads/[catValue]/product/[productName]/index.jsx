@@ -280,15 +280,15 @@ function DecorationCatDetails() {
         <div className="whyHoraSec">
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }} className="whyHoraSecInner">
             <div className="whyHoraSecBox">
-              <Image src={buynowImage} alt="buy-now" style={{ height: "auto" }} />
+              <Image src={buynowImage} alt="Expert decorators – professionally trained HORA decoration team" style={{ height: "auto" }} />
               <p style={{ color: "gray", fontSize: "12px" }} className="whyHoraSubheading">Experts Decorations</p>
             </div>
             <div className="whyHoraSecBox">
-              <Image src={buynowImage1} alt="buy-now" style={{ height: "auto" }} />
+              <Image src={buynowImage1} alt="Secured transactions – safe and verified payment for HORA decoration booking" style={{ height: "auto" }} />
               <p style={{ color: "gray", fontSize: "12px" }} className="whyHoraSubheading">Secured Transactions</p>
             </div>
             <div className="whyHoraSecBox">
-              <Image src={buynowImage2} alt="buy-now" style={{ height: "auto" }} />
+              <Image src={buynowImage2} alt="100% service guaranteed – HORA ensures every decoration is completed as booked" style={{ height: "auto" }} />
               <p style={{ color: "gray", fontSize: "12px" }} className="whyHoraSubheading">100% Service Guaranteed</p>
             </div>
           </div>
@@ -403,7 +403,7 @@ function DecorationCatDetails() {
     const inclusionItems = statements.flatMap(statement => statement.split("-").filter(item => item.trim() !== ''));
     const inclusionList = inclusionItems.map((item, index) => (
       <li key={index} className="inclusionstyle">
-        <Image src={checkImage} alt="Info" style={{ height: 13, width: 13, marginRight: 10 }} />
+        <Image src={checkImage} alt="Included feature" style={{ height: 13, width: 13, marginRight: 10 }} />
         {item.trim()}
       </li>
     ));
@@ -457,7 +457,7 @@ function DecorationCatDetails() {
             <Image src={`https://horaservices.com/api/uploads/${product.featured_image}`} alt={`balloon decoration ${altTagCatValue} ${product.name} ${product.price}`} style={{ width: "100%", height: "auto" }} width={300} height={300} />
             <div style={{ position: "absolute", bottom: 3, right: 3, borderRadius: "50%", padding: 10 }}>
                       <span style={{ color: "rgba(157, 74, 147, 0.6)", fontWeight: "600" }}>
-                      <Image src={logo} style={{ width:"70px" , height:"80px"}} className="hora-watermark-image"/>  
+                      <Image src={logo} alt="HORA – verified decoration service" style={{ width:"70px" , height:"80px"}} className="hora-watermark-image"/>  
                       </span>
                     </div>
             </div>

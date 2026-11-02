@@ -83,7 +83,7 @@ export default function HoraBanner() {
               <li className="hb-feature" key={strong}>
                 <span className="hb-feature__icon">
                   <Sparkle side="left" />
-                  <Image src={icon} alt="" width="39" height="39" />
+                  <Image src={icon} alt={strong} width="39" height="39" />
                   <Sparkle side="right" />
                 </span>
                 <p className="hb-feature__label">
