@@ -1,5 +1,10 @@
 import { getCityCategoryLanding } from "@/utils/Citycategorydecorationlanding";
 
+// Convert "name-reveal-decoration" → "Name Reveal Decoration"
+const slugToLabel = (slug) =>
+  String(slug || "").trim().toLowerCase().replace(/-/g, " ")
+    .replace(/\b\w/g, (ch) => ch.toUpperCase());
+
 const defaultCategorySeo = {
   "birthday-decoration": {
     title: "Birthday Decoration at Home from Rs 1,499 | HORA Services",
@@ -118,6 +123,12 @@ export const getPageTitleCategory = (catValue, city, locality, theme) => {
       : entry.title;
   }
 
+  // 3. Auto-generate from slug so new categories always get a clean title
+  if (catKey) {
+    const label = slugToLabel(catKey);
+    return city ? `${label} in ${city} | HORA` : `${label} at Home | HORA`;
+  }
+
   return genericFallback.title;
 };
 
@@ -129,7 +140,20 @@ export const getPageMetaDescriptionCategory = (catValue, city, locality) => {
     if (cityData?.metaDescription) return cityData.metaDescription;
   }
 
-  return (
-    defaultCategorySeo[catKey]?.description || genericFallback.description
-  );
+  const entry = defaultCategorySeo[catKey];
+  if (entry) {
+    return typeof entry.description === "function"
+      ? entry.description(city || null)
+      : entry.description;
+  }
+
+  // 3. Auto-generate from slug so new categories always get a clean description
+  if (catKey) {
+    const label = slugToLabel(catKey).toLowerCase();
+    return city
+      ? `Book ${label} at home in ${city} from Rs 1,499. Same-day setup by verified HORA decorators.`
+      : `Book ${label} at home from Rs 1,499. Same-day setup by verified HORA decorators across 8 cities.`;
+  }
+
+  return genericFallback.description;
 };
