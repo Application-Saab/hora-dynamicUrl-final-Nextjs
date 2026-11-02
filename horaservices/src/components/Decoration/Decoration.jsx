@@ -586,7 +586,7 @@ const Decoration = ({ city, locality }) => {
         <div className="wed-sec__bg" aria-hidden="true">
           <Image
             src={weddingBg}
-            alt=""
+            alt="Wedding decoration background – elegant floral setup by HORA"
             sizes="(max-width: 768px) 100vw, 600px"
             className="wed-sec__bg-img"
           />
@@ -652,8 +652,7 @@ const Decoration = ({ city, locality }) => {
         <span className="wa-banner__btn">
           <Image
             src={whatsappIcon}
-            alt=""
-            aria-hidden="true"
+            alt="WhatsApp – chat with HORA for decoration booking"
             width={24}
             height={24}
             className="wa-banner__icon"
@@ -740,7 +739,7 @@ const Decoration = ({ city, locality }) => {
         <div className="couple-sec__bg" aria-hidden="true">
           <Image
             src={coupleBgBanner}
-            alt=""
+            alt="Couple celebration background – romantic anniversary decoration by HORA"
             sizes="(max-width: 768px) 100vw, 600px"
             className="couple-sec__bg-img"
           />
@@ -813,7 +812,7 @@ const Decoration = ({ city, locality }) => {
         <div className="baby-sec__bg" aria-hidden="true">
           <Image
             src={babyBgBanner}
-            alt=""
+            alt="Baby celebration background – baby shower and welcome baby decoration by HORA"
             sizes="(max-width: 768px) 100vw, 600px"
             className="baby-sec__bg-img"
           />

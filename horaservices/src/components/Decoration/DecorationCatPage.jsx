@@ -1258,8 +1258,7 @@ const renderChip = (chip) => (
                       <div className="highlight-card">
                         <Image
                           src={googleRating}
-                          alt=""
-                          aria-hidden="true"
+                          alt="4.7+ Google Rating – HORA decoration verified by customers"
                           width={60}
                           height={60}
                         />
@@ -1268,8 +1267,7 @@ const renderChip = (chip) => (
                       <div className="highlight-card">
                         <Image
                           src={ontime}
-                          alt=""
-                          aria-hidden="true"
+                          alt="On Time Completion – HORA decorators arrive and set up on schedule"
                           width={60}
                           height={60}
                         />
@@ -1278,8 +1276,7 @@ const renderChip = (chip) => (
                       <div className="highlight-card">
                         <Image
                           src={Gurantee}
-                          alt=""
-                          aria-hidden="true"
+                          alt="100% Fulfilment Guarantee – HORA ensures every decoration order is completed"
                           width={60}
                           height={60}
                         />

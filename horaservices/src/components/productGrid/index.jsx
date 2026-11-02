@@ -78,8 +78,7 @@ const ProductGrid = ({
                 <div className="watermark">
                   <Image
                     src={logo}
-                    alt=""
-                    aria-hidden="true"
+                    alt="HORA – verified decoration service"
                     width={isPhotography ? 28 : 18}
                     height={isPhotography ? 28 : 18}
                   />

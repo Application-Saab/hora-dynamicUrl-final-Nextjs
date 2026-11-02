@@ -320,15 +320,15 @@
 //         <div className="whyHoraSec">
 //           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }} className="whyHoraSecInner">
 //             <div className="whyHoraSecBox">
-//               <Image src={buynowImage} alt="" aria-hidden="true" style={{ height: "auto" }} />
+//               <Image src={buynowImage} alt="Expert decorators – professionally trained HORA decoration team" style={{ height: "auto" }} />
 //               <p style={{ color: "gray", fontSize: "12px" }} className="whyHoraSubheading">Experts Decorations</p>
 //             </div>
 //             <div className="whyHoraSecBox">
-//               <Image src={buynowImage1} alt="" aria-hidden="true" style={{ height: "auto" }} />
+//               <Image src={buynowImage1} alt="Secured transactions – safe and verified payment for HORA decoration booking" style={{ height: "auto" }} />
 //               <p style={{ color: "gray", fontSize: "12px" }} className="whyHoraSubheading">Secured Transactions</p>
 //             </div>
 //             <div className="whyHoraSecBox">
-//               <Image src={buynowImage2} alt="" aria-hidden="true" style={{ height: "auto" }} />
+//               <Image src={buynowImage2} alt="100% service guaranteed – HORA ensures every decoration is completed as booked" style={{ height: "auto" }} />
 //               <p style={{ color: "gray", fontSize: "12px" }} className="whyHoraSubheading">100% Service Guaranteed</p>
 //             </div>
 //           </div>
