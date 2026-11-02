@@ -3,9 +3,17 @@
     "title": "Balloon Decoration at Home from Rs 1,499 | HORA Services",
     "description": "Book balloon decoration at home from Rs 1,499. Arch, wall, ring and themed designs with same-day and midnight slots across 17 cities. Verified decorators."
   },
+  "/balloon-decoration/annaprashan-decoration": {
+    "title": "Annaprashan Decoration at Home from Rs 1,499 | HORA",
+    "description": "Annaprashan Decoration at home from Rs 1,499. Rice ceremony setups, floral and balloon themes, traditional stage and cradle decor by verified HORA decorators."
+  },
   "/balloon-decoration/bachelorette-decoration": {
     "title": "Bachelorette Party Decoration at Home from Rs 1,599 | HORA",
     "description": "Book bachelorette party decoration at home from Rs 1,599. Bride-to-be backdrops, balloons and props. Same-day setup by verified decorators."
+  },
+  "/balloon-decoration/baptism-decoration": {
+    "title": "Baptism Decoration at Home from Rs 1,499 | HORA",
+    "description": "Baptism Decoration at home from Rs 1,499. Church and home setups, white and pastel balloon themes, cross backdrops and floral arrangements by verified HORA decorators."
   },
   "/balloon-decoration/car-decoration": {
     "title": "Car Decoration at Home from Rs 1,684 | HORA Services",
@@ -231,6 +239,10 @@
     "title": "Unicorn Theme Birthday Decoration from Rs 1,555 | HORA",
     "description": "Unicorn theme birthday decoration at home from Rs 1,555. Arches, rings and backdrops, set up same day by verified decorators."
   },
+  "/balloon-decoration/name-reveal-decoration": {
+    "title": "Name Reveal Decoration at Home from Rs 1,499 | HORA",
+    "description": "Name Reveal Decoration at home from Rs 1,499. Letter balloon setups, name reveal backdrops, floral and themed designs. Same-day slots by verified HORA decorators."
+  },
   "/balloon-decoration/nation-pride-decoration": {
     "title": "Nation Pride Decoration at Home from Rs 1,490 | HORA",
     "description": "Book nation pride decoration at home from Rs 1,490. Tricolour setups for Independence and Republic Day. Same-day setup by verified decorators."
@@ -247,6 +259,10 @@
     "title": "Balloon Decoration in Bangalore from Rs 1,499 | HORA",
     "description": "Balloon Decoration in Bangalore from Rs 1,499. Birthday, anniversary, baby shower and themed setups. Same-day and midnight slots by verified HORA decorators."
   },
+  "/bangalore/balloon-decoration/annaprashan-decoration": {
+    "title": "Annaprashan Decoration in Bangalore from Rs 1,499 | HORA",
+    "description": "Annaprashan Decoration in Bangalore from Rs 1,499. Rice ceremony setups, floral and balloon themes, traditional stage and cradle decor by verified HORA decorators."
+  },
   "/bangalore/balloon-decoration/anniversary-decoration": {
     "title": "Anniversary Decoration in Bangalore from Rs 1,499 | HORA",
     "description": "Anniversary Decoration in Bangalore from Rs 1,499. Romantic room setups, rose petal trails, candlelight dinner and midnight slots by verified HORA decorators."
@@ -258,6 +274,10 @@
   "/bangalore/balloon-decoration/bachelorette-decoration": {
     "title": "Bachelorette Party Decoration in Bangalore | HORA",
     "description": "Bachelorette Party Decoration in Bangalore from Rs 1,599. Bride-to-be backdrops, balloons and props. Same-day setup by verified HORA decorators."
+  },
+  "/bangalore/balloon-decoration/baptism-decoration": {
+    "title": "Baptism Decoration in Bangalore from Rs 1,499 | HORA",
+    "description": "Baptism Decoration in Bangalore from Rs 1,499. Church and home setups, white and pastel balloon themes, cross backdrops and floral arrangements by verified HORA decorators."
   },
   "/bangalore/balloon-decoration/birthday-decoration": {
     "title": "Birthday Decoration in Bangalore from Rs 1,499 | HORA",
@@ -486,6 +506,10 @@
   "/bangalore/balloon-decoration/kids-birthday-decoration/unicorn": {
     "title": "Unicorn Birthday Decoration in Bangalore | HORA",
     "description": "Book Unicorn theme birthday decoration in Bangalore from Rs 1,555. 30 Unicorn designs with balloon arches, backdrops and props, set up at home same day."
+  },
+  "/bangalore/balloon-decoration/name-reveal-decoration": {
+    "title": "Name Reveal Decoration in Bangalore from Rs 1,499 | HORA",
+    "description": "Name Reveal Decoration in Bangalore from Rs 1,499. Letter balloon setups, name reveal backdrops, floral and themed designs. Same-day slots by verified HORA decorators."
   },
   "/bangalore/balloon-decoration/naming-ceremony-decoration": {
     "title": "Naming Ceremony Decoration in Bangalore from Rs 1,499 | HORA",
@@ -1011,6 +1035,10 @@
     "title": "Balloon Decoration in Delhi from Rs 1,499 | HORA",
     "description": "Balloon Decoration in Delhi from Rs 1,499. Birthday, anniversary, baby shower and themed setups. Same-day and midnight slots by verified HORA decorators."
   },
+  "/delhi/balloon-decoration/annaprashan-decoration": {
+    "title": "Annaprashan Decoration in Delhi from Rs 1,499 | HORA",
+    "description": "Annaprashan Decoration in Delhi from Rs 1,499. Rice ceremony setups, floral and balloon themes, traditional stage and cradle decor by verified HORA decorators."
+  },
   "/delhi/balloon-decoration/anniversary-decoration": {
     "title": "Anniversary Decoration in Delhi from Rs 1,499 | HORA",
     "description": "Anniversary Decoration in Delhi from Rs 1,499. Romantic room setups, rose petal trails, candlelight dinner and midnight slots by verified HORA decorators."
@@ -1022,6 +1050,10 @@
   "/delhi/balloon-decoration/bachelorette-decoration": {
     "title": "Bachelorette Party Decoration in Delhi from Rs 1,599 | HORA",
     "description": "Bachelorette Party Decoration in Delhi from Rs 1,599. Bride-to-be backdrops, balloons and props. Same-day setup by verified HORA decorators."
+  },
+  "/delhi/balloon-decoration/baptism-decoration": {
+    "title": "Baptism Decoration in Delhi from Rs 1,499 | HORA",
+    "description": "Baptism Decoration in Delhi from Rs 1,499. Church and home setups, white and pastel balloon themes, cross backdrops and floral arrangements by verified HORA decorators."
   },
   "/delhi/balloon-decoration/birthday-decoration": {
     "title": "Birthday Decoration in Delhi from Rs 1,499 | HORA",
@@ -1251,6 +1283,10 @@
     "title": "Unicorn Birthday Decoration in Delhi | HORA",
     "description": "Book Unicorn theme birthday decoration in Delhi from Rs 1,555. 30 Unicorn designs with balloon arches, backdrops and props, set up at home same day."
   },
+  "/delhi/balloon-decoration/name-reveal-decoration": {
+    "title": "Name Reveal Decoration in Delhi from Rs 1,499 | HORA",
+    "description": "Name Reveal Decoration in Delhi from Rs 1,499. Letter balloon setups, name reveal backdrops, floral and themed designs. Same-day slots by verified HORA decorators."
+  },
   "/delhi/balloon-decoration/naming-ceremony-decoration": {
     "title": "Naming Ceremony Decoration in Delhi from Rs 1,499 | HORA",
     "description": "Naming Ceremony Decoration in Delhi from Rs 1,499. Name reveal backdrops, decorated cradle, traditional and balloon themes by verified HORA decorators."
@@ -1279,6 +1315,10 @@
     "title": "Balloon Decoration in Faridabad from Rs 1,499 | HORA",
     "description": "Balloon Decoration in Faridabad from Rs 1,499. Birthday, anniversary, baby shower and themed setups. Same-day and midnight slots by verified HORA decorators."
   },
+  "/faridabad/balloon-decoration/annaprashan-decoration": {
+    "title": "Annaprashan Decoration in Faridabad from Rs 1,499 | HORA",
+    "description": "Annaprashan Decoration in Faridabad from Rs 1,499. Rice ceremony setups, floral and balloon themes, traditional stage and cradle decor by verified HORA decorators."
+  },
   "/faridabad/balloon-decoration/anniversary-decoration": {
     "title": "Anniversary Decoration in Faridabad from Rs 1,499 | HORA",
     "description": "Anniversary Decoration in Faridabad from Rs 1,499. Romantic room setups, rose petal trails, candlelight dinner and midnight slots by verified HORA decorators."
@@ -1290,6 +1330,10 @@
   "/faridabad/balloon-decoration/bachelorette-decoration": {
     "title": "Bachelorette Party Decoration in Faridabad | HORA",
     "description": "Bachelorette Party Decoration in Faridabad from Rs 1,599. Bride-to-be backdrops, balloons and props. Same-day setup by verified HORA decorators."
+  },
+  "/faridabad/balloon-decoration/baptism-decoration": {
+    "title": "Baptism Decoration in Faridabad from Rs 1,499 | HORA",
+    "description": "Baptism Decoration in Faridabad from Rs 1,499. Church and home setups, white and pastel balloon themes, cross backdrops and floral arrangements by verified HORA decorators."
   },
   "/faridabad/balloon-decoration/birthday-decoration": {
     "title": "Birthday Decoration in Faridabad from Rs 1,499 | HORA",
@@ -1519,6 +1563,10 @@
     "title": "Unicorn Birthday Decoration in Faridabad | HORA",
     "description": "Book Unicorn theme birthday decoration in Faridabad from Rs 1,555. 30 Unicorn designs with balloon arches, backdrops and props, set up at home same day."
   },
+  "/faridabad/balloon-decoration/name-reveal-decoration": {
+    "title": "Name Reveal Decoration in Faridabad from Rs 1,499 | HORA",
+    "description": "Name Reveal Decoration in Faridabad from Rs 1,499. Letter balloon setups, name reveal backdrops, floral and themed designs. Same-day slots by verified HORA decorators."
+  },
   "/faridabad/balloon-decoration/naming-ceremony-decoration": {
     "title": "Naming Ceremony Decoration in Faridabad from Rs 1,499 | HORA",
     "description": "Naming Ceremony Decoration in Faridabad from Rs 1,499. Name reveal backdrops, decorated cradle, traditional and balloon themes by verified HORA decorators."
@@ -1547,6 +1595,10 @@
     "title": "Balloon Decoration in Ghaziabad from Rs 1,499 | HORA",
     "description": "Balloon Decoration in Ghaziabad from Rs 1,499. Birthday, anniversary, baby shower and themed setups. Same-day and midnight slots by verified HORA decorators."
   },
+  "/ghaziabad/balloon-decoration/annaprashan-decoration": {
+    "title": "Annaprashan Decoration in Ghaziabad from Rs 1,499 | HORA",
+    "description": "Annaprashan Decoration in Ghaziabad from Rs 1,499. Rice ceremony setups, floral and balloon themes, traditional stage and cradle decor by verified HORA decorators."
+  },
   "/ghaziabad/balloon-decoration/anniversary-decoration": {
     "title": "Anniversary Decoration in Ghaziabad from Rs 1,499 | HORA",
     "description": "Anniversary Decoration in Ghaziabad from Rs 1,499. Romantic room setups, rose petal trails, candlelight dinner and midnight slots by verified HORA decorators."
@@ -1558,6 +1610,10 @@
   "/ghaziabad/balloon-decoration/bachelorette-decoration": {
     "title": "Bachelorette Party Decoration in Ghaziabad | HORA",
     "description": "Bachelorette Party Decoration in Ghaziabad from Rs 1,599. Bride-to-be backdrops, balloons and props. Same-day setup by verified HORA decorators."
+  },
+  "/ghaziabad/balloon-decoration/baptism-decoration": {
+    "title": "Baptism Decoration in Ghaziabad from Rs 1,499 | HORA",
+    "description": "Baptism Decoration in Ghaziabad from Rs 1,499. Church and home setups, white and pastel balloon themes, cross backdrops and floral arrangements by verified HORA decorators."
   },
   "/ghaziabad/balloon-decoration/birthday-decoration": {
     "title": "Birthday Decoration in Ghaziabad from Rs 1,499 | HORA",
@@ -1786,6 +1842,10 @@
   "/ghaziabad/balloon-decoration/kids-birthday-decoration/unicorn": {
     "title": "Unicorn Birthday Decoration in Ghaziabad | HORA",
     "description": "Book Unicorn theme birthday decoration in Ghaziabad from Rs 1,555. 30 Unicorn designs with balloon arches, backdrops and props, set up at home same day."
+  },
+  "/ghaziabad/balloon-decoration/name-reveal-decoration": {
+    "title": "Name Reveal Decoration in Ghaziabad from Rs 1,499 | HORA",
+    "description": "Name Reveal Decoration in Ghaziabad from Rs 1,499. Letter balloon setups, name reveal backdrops, floral and themed designs. Same-day slots by verified HORA decorators."
   },
   "/ghaziabad/balloon-decoration/naming-ceremony-decoration": {
     "title": "Naming Ceremony Decoration in Ghaziabad from Rs 1,499 | HORA",
@@ -2063,6 +2123,10 @@
     "title": "Balloon Decoration in Gurugram from Rs 1,499 | HORA",
     "description": "Balloon Decoration in Gurugram from Rs 1,499. Birthday, anniversary, baby shower and themed setups. Same-day and midnight slots by verified HORA decorators."
   },
+  "/gurugram/balloon-decoration/annaprashan-decoration": {
+    "title": "Annaprashan Decoration in Gurugram from Rs 1,499 | HORA",
+    "description": "Annaprashan Decoration in Gurugram from Rs 1,499. Rice ceremony setups, floral and balloon themes, traditional stage and cradle decor by verified HORA decorators."
+  },
   "/gurugram/balloon-decoration/anniversary-decoration": {
     "title": "Anniversary Decoration in Gurugram from Rs 1,499 | HORA",
     "description": "Anniversary Decoration in Gurugram from Rs 1,499. Romantic room setups, rose petal trails, candlelight dinner and midnight slots by verified HORA decorators."
@@ -2074,6 +2138,10 @@
   "/gurugram/balloon-decoration/bachelorette-decoration": {
     "title": "Bachelorette Party Decoration in Gurugram | HORA",
     "description": "Bachelorette Party Decoration in Gurugram from Rs 1,599. Bride-to-be backdrops, balloons and props. Same-day setup by verified HORA decorators."
+  },
+  "/gurugram/balloon-decoration/baptism-decoration": {
+    "title": "Baptism Decoration in Gurugram from Rs 1,499 | HORA",
+    "description": "Baptism Decoration in Gurugram from Rs 1,499. Church and home setups, white and pastel balloon themes, cross backdrops and floral arrangements by verified HORA decorators."
   },
   "/gurugram/balloon-decoration/birthday-decoration": {
     "title": "Birthday Decoration in Gurugram from Rs 1,499 | HORA",
@@ -2303,6 +2371,10 @@
     "title": "Unicorn Birthday Decoration in Gurugram | HORA",
     "description": "Book Unicorn theme birthday decoration in Gurugram from Rs 1,555. 30 Unicorn designs with balloon arches, backdrops and props, set up at home same day."
   },
+  "/gurugram/balloon-decoration/name-reveal-decoration": {
+    "title": "Name Reveal Decoration in Gurugram from Rs 1,499 | HORA",
+    "description": "Name Reveal Decoration in Gurugram from Rs 1,499. Letter balloon setups, name reveal backdrops, floral and themed designs. Same-day slots by verified HORA decorators."
+  },
   "/gurugram/balloon-decoration/naming-ceremony-decoration": {
     "title": "Naming Ceremony Decoration in Gurugram from Rs 1,499 | HORA",
     "description": "Naming Ceremony Decoration in Gurugram from Rs 1,499. Name reveal backdrops, decorated cradle, traditional and balloon themes by verified HORA decorators."
@@ -2331,6 +2403,10 @@
     "title": "Balloon Decoration in Hyderabad from Rs 1,499 | HORA",
     "description": "Balloon Decoration in Hyderabad from Rs 1,499. Birthday, anniversary, baby shower and themed setups. Same-day and midnight slots by verified HORA decorators."
   },
+  "/hyderabad/balloon-decoration/annaprashan-decoration": {
+    "title": "Annaprashan Decoration in Hyderabad from Rs 1,499 | HORA",
+    "description": "Annaprashan Decoration in Hyderabad from Rs 1,499. Rice ceremony setups, floral and balloon themes, traditional stage and cradle decor by verified HORA decorators."
+  },
   "/hyderabad/balloon-decoration/anniversary-decoration": {
     "title": "Anniversary Decoration in Hyderabad from Rs 1,499 | HORA",
     "description": "Anniversary Decoration in Hyderabad from Rs 1,499. Romantic room setups, rose petal trails, candlelight dinner and midnight slots by verified HORA decorators."
@@ -2342,6 +2418,10 @@
   "/hyderabad/balloon-decoration/bachelorette-decoration": {
     "title": "Bachelorette Party Decoration in Hyderabad | HORA",
     "description": "Bachelorette Party Decoration in Hyderabad from Rs 1,599. Bride-to-be backdrops, balloons and props. Same-day setup by verified HORA decorators."
+  },
+  "/hyderabad/balloon-decoration/baptism-decoration": {
+    "title": "Baptism Decoration in Hyderabad from Rs 1,499 | HORA",
+    "description": "Baptism Decoration in Hyderabad from Rs 1,499. Church and home setups, white and pastel balloon themes, cross backdrops and floral arrangements by verified HORA decorators."
   },
   "/hyderabad/balloon-decoration/birthday-decoration": {
     "title": "Birthday Decoration in Hyderabad from Rs 1,499 | HORA",
@@ -2570,6 +2650,10 @@
   "/hyderabad/balloon-decoration/kids-birthday-decoration/unicorn": {
     "title": "Unicorn Birthday Decoration in Hyderabad | HORA",
     "description": "Book Unicorn theme birthday decoration in Hyderabad from Rs 1,555. 30 Unicorn designs with balloon arches, backdrops and props, set up at home same day."
+  },
+  "/hyderabad/balloon-decoration/name-reveal-decoration": {
+    "title": "Name Reveal Decoration in Hyderabad from Rs 1,499 | HORA",
+    "description": "Name Reveal Decoration in Hyderabad from Rs 1,499. Letter balloon setups, name reveal backdrops, floral and themed designs. Same-day slots by verified HORA decorators."
   },
   "/hyderabad/balloon-decoration/naming-ceremony-decoration": {
     "title": "Naming Ceremony Decoration in Hyderabad from Rs 1,499 | HORA",
@@ -3591,6 +3675,10 @@
     "title": "Balloon Decoration in Mumbai from Rs 1,499 | HORA",
     "description": "Balloon Decoration in Mumbai from Rs 1,499. Birthday, anniversary, baby shower and themed setups. Same-day and midnight slots by verified HORA decorators."
   },
+  "/mumbai/balloon-decoration/annaprashan-decoration": {
+    "title": "Annaprashan Decoration in Mumbai from Rs 1,499 | HORA",
+    "description": "Annaprashan Decoration in Mumbai from Rs 1,499. Rice ceremony setups, floral and balloon themes, traditional stage and cradle decor by verified HORA decorators."
+  },
   "/mumbai/balloon-decoration/anniversary-decoration": {
     "title": "Anniversary Decoration in Mumbai from Rs 1,499 | HORA",
     "description": "Anniversary Decoration in Mumbai from Rs 1,499. Romantic room setups, rose petal trails, candlelight dinner and midnight slots by verified HORA decorators."
@@ -3602,6 +3690,10 @@
   "/mumbai/balloon-decoration/bachelorette-decoration": {
     "title": "Bachelorette Party Decoration in Mumbai from Rs 1,599 | HORA",
     "description": "Bachelorette Party Decoration in Mumbai from Rs 1,599. Bride-to-be backdrops, balloons and props. Same-day setup by verified HORA decorators."
+  },
+  "/mumbai/balloon-decoration/baptism-decoration": {
+    "title": "Baptism Decoration in Mumbai from Rs 1,499 | HORA",
+    "description": "Baptism Decoration in Mumbai from Rs 1,499. Church and home setups, white and pastel balloon themes, cross backdrops and floral arrangements by verified HORA decorators."
   },
   "/mumbai/balloon-decoration/birthday-decoration": {
     "title": "Birthday Decoration in Mumbai from Rs 1,499 | HORA",
@@ -3831,6 +3923,10 @@
     "title": "Unicorn Birthday Decoration in Mumbai | HORA",
     "description": "Book Unicorn theme birthday decoration in Mumbai from Rs 1,555. 30 Unicorn designs with balloon arches, backdrops and props, set up at home same day."
   },
+  "/mumbai/balloon-decoration/name-reveal-decoration": {
+    "title": "Name Reveal Decoration in Mumbai from Rs 1,499 | HORA",
+    "description": "Name Reveal Decoration in Mumbai from Rs 1,499. Letter balloon setups, name reveal backdrops, floral and themed designs. Same-day slots by verified HORA decorators."
+  },
   "/mumbai/balloon-decoration/naming-ceremony-decoration": {
     "title": "Naming Ceremony Decoration in Mumbai from Rs 1,499 | HORA",
     "description": "Naming Ceremony Decoration in Mumbai from Rs 1,499. Name reveal backdrops, decorated cradle, traditional and balloon themes by verified HORA decorators."
@@ -3859,6 +3955,10 @@
     "title": "Balloon Decoration in Noida from Rs 1,499 | HORA",
     "description": "Balloon Decoration in Noida from Rs 1,499. Birthday, anniversary, baby shower and themed setups. Same-day and midnight slots by verified HORA decorators."
   },
+  "/noida/balloon-decoration/annaprashan-decoration": {
+    "title": "Annaprashan Decoration in Noida from Rs 1,499 | HORA",
+    "description": "Annaprashan Decoration in Noida from Rs 1,499. Rice ceremony setups, floral and balloon themes, traditional stage and cradle decor by verified HORA decorators."
+  },
   "/noida/balloon-decoration/anniversary-decoration": {
     "title": "Anniversary Decoration in Noida from Rs 1,499 | HORA",
     "description": "Anniversary Decoration in Noida from Rs 1,499. Romantic room setups, rose petal trails, candlelight dinner and midnight slots by verified HORA decorators."
@@ -3870,6 +3970,10 @@
   "/noida/balloon-decoration/bachelorette-decoration": {
     "title": "Bachelorette Party Decoration in Noida from Rs 1,599 | HORA",
     "description": "Bachelorette Party Decoration in Noida from Rs 1,599. Bride-to-be backdrops, balloons and props. Same-day setup by verified HORA decorators."
+  },
+  "/noida/balloon-decoration/baptism-decoration": {
+    "title": "Baptism Decoration in Noida from Rs 1,499 | HORA",
+    "description": "Baptism Decoration in Noida from Rs 1,499. Church and home setups, white and pastel balloon themes, cross backdrops and floral arrangements by verified HORA decorators."
   },
   "/noida/balloon-decoration/birthday-decoration": {
     "title": "Birthday Decoration in Noida from Rs 1,499 | HORA",
@@ -4098,6 +4202,10 @@
   "/noida/balloon-decoration/kids-birthday-decoration/unicorn": {
     "title": "Unicorn Birthday Decoration in Noida | HORA",
     "description": "Book Unicorn theme birthday decoration in Noida from Rs 1,555. 30 Unicorn designs with balloon arches, backdrops and props, set up at home same day."
+  },
+  "/noida/balloon-decoration/name-reveal-decoration": {
+    "title": "Name Reveal Decoration in Noida from Rs 1,499 | HORA",
+    "description": "Name Reveal Decoration in Noida from Rs 1,499. Letter balloon setups, name reveal backdrops, floral and themed designs. Same-day slots by verified HORA decorators."
   },
   "/noida/balloon-decoration/naming-ceremony-decoration": {
     "title": "Naming Ceremony Decoration in Noida from Rs 1,499 | HORA",
