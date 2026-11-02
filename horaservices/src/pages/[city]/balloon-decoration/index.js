@@ -48,10 +48,6 @@ export default function BalloonDecorationCityPage({
           }
         />
 
-        <meta
-          name="keywords"
-          content={`balloon decoration in ${city}, birthday decoration, wedding decoration, baby shower decoration`}
-        />
 
         <meta
           name="robots"
