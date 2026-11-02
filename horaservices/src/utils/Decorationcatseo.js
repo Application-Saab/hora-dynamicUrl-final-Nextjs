@@ -1,4 +1,5 @@
 import { getCityCategoryLanding } from "@/utils/Citycategorydecorationlanding";
+import { slugTitle, slugDescription } from "@/utils/slugSeo";
 
 const defaultCategorySeo = {
   "birthday-decoration": {
@@ -118,6 +119,9 @@ export const getPageTitleCategory = (catValue, city, locality, theme) => {
       : entry.title;
   }
 
+  // 3. Auto-generate from slug so new categories always get a clean title
+  if (catKey) return slugTitle(catKey, city || null);
+
   return genericFallback.title;
 };
 
@@ -129,7 +133,15 @@ export const getPageMetaDescriptionCategory = (catValue, city, locality) => {
     if (cityData?.metaDescription) return cityData.metaDescription;
   }
 
-  return (
-    defaultCategorySeo[catKey]?.description || genericFallback.description
-  );
+  const entry = defaultCategorySeo[catKey];
+  if (entry) {
+    return typeof entry.description === "function"
+      ? entry.description(city || null)
+      : entry.description;
+  }
+
+  // 3. Auto-generate from slug so new categories always get a clean description
+  if (catKey) return slugDescription(catKey, city || null);
+
+  return genericFallback.description;
 };
