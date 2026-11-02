@@ -320,15 +320,15 @@
 //         <div className="whyHoraSec">
 //           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }} className="whyHoraSecInner">
 //             <div className="whyHoraSecBox">
-//               <Image src={buynowImage} alt="buy-now" style={{ height: "auto" }} />
+//               <Image src={buynowImage} alt="" aria-hidden="true" style={{ height: "auto" }} />
 //               <p style={{ color: "gray", fontSize: "12px" }} className="whyHoraSubheading">Experts Decorations</p>
 //             </div>
 //             <div className="whyHoraSecBox">
-//               <Image src={buynowImage1} alt="buy-now" style={{ height: "auto" }} />
+//               <Image src={buynowImage1} alt="" aria-hidden="true" style={{ height: "auto" }} />
 //               <p style={{ color: "gray", fontSize: "12px" }} className="whyHoraSubheading">Secured Transactions</p>
 //             </div>
 //             <div className="whyHoraSecBox">
-//               <Image src={buynowImage2} alt="buy-now" style={{ height: "auto" }} />
+//               <Image src={buynowImage2} alt="" aria-hidden="true" style={{ height: "auto" }} />
 //               <p style={{ color: "gray", fontSize: "12px" }} className="whyHoraSubheading">100% Service Guaranteed</p>
 //             </div>
 //           </div>

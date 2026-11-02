@@ -727,7 +727,7 @@ const Decoration = ({ city, locality }) => {
           <section className="decorationCollageBanner">
             <Image
               src={decorCollageIMG}
-              alt="Decoration-Banner"
+              alt="HORA balloon decoration collage – real setups at home in 8 cities"
               width={"100%"}
               height={"auto"}
               className="decorationCollageBanner-image"
@@ -878,7 +878,7 @@ const Decoration = ({ city, locality }) => {
       <section className="BabyShowerBanner">
         <Image
           src={BrandBannerIMG}
-          alt="Decoration-Banner"
+          alt="HORA – trusted brand for balloon and flower decoration at home"
           width={1200}
           height={400}
           className="decorationBanner-image"

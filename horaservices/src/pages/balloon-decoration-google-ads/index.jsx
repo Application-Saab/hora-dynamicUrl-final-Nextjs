@@ -671,7 +671,7 @@ const Decoration = () => {
         />
         <div style={{ position: "absolute", bottom: 3, right: 3, borderRadius: "50%", padding: 10 }}>
           <span style={{ color: "rgba(157, 74, 147, 0.6)", fontWeight: "600" }}>
-            <Image src={logo} style={{ width: "70px", height: "80px" }} className="hora-watermark-image" />
+            <Image src={logo} alt="" aria-hidden="true" style={{ width: "70px", height: "80px" }} className="hora-watermark-image" />
           </span>
         </div>
         </div>

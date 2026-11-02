@@ -1156,7 +1156,7 @@ const renderChip = (chip) => (
                     <section className="decorationBanner">
                       <Image
                         src={DidyouKnow}
-                        alt="Decoration-Banner"
+                        alt="Did You Know – balloon decoration tips by HORA"
                         width={1200}
                         height={400}
                         className="decorationBanner-image"
@@ -1181,7 +1181,7 @@ const renderChip = (chip) => (
                     <section className="decorationBanner">
                       <Image
                         src={makeItMemorable}
-                        alt="Decoration-Banner"
+                        alt="Make it memorable – HORA decoration setups at home"
                         width={1200}
                         height={400}
                         className="decorationBanner-image"
@@ -1205,7 +1205,7 @@ const renderChip = (chip) => (
                   <section className="decorationBanner">
                     <Image
                       src={steps}
-                      alt="Decoration-Banner"
+                      alt="How HORA decoration works – 3 easy steps to book"
                       width={1200}
                       height={400}
                       className="decorationBanner-image"
@@ -1229,7 +1229,7 @@ const renderChip = (chip) => (
                     <section className="decorationBanner">
                       <Image
                         src={makeitmemorablebanner}
-                        alt="Decoration-Banner"
+                        alt="Make every celebration unforgettable with HORA decorators"
                         width={1200}
                         height={400}
                         className="decorationBanner-image"
@@ -1258,7 +1258,8 @@ const renderChip = (chip) => (
                       <div className="highlight-card">
                         <Image
                           src={googleRating}
-                          alt="Google Rating"
+                          alt=""
+                          aria-hidden="true"
                           width={60}
                           height={60}
                         />
@@ -1267,7 +1268,8 @@ const renderChip = (chip) => (
                       <div className="highlight-card">
                         <Image
                           src={ontime}
-                          alt="On Time Completion"
+                          alt=""
+                          aria-hidden="true"
                           width={60}
                           height={60}
                         />
@@ -1276,7 +1278,8 @@ const renderChip = (chip) => (
                       <div className="highlight-card">
                         <Image
                           src={Gurantee}
-                          alt="100% Full Fill Guarantee"
+                          alt=""
+                          aria-hidden="true"
                           width={60}
                           height={60}
                         />
