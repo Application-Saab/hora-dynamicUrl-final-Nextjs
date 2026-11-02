@@ -1,3 +1,4 @@
+import Head from "next/head";
 import DecorationsCatDetails from "@/components/Decoration/DecorationsCatDetails";
 import {
   BASE_URL,
@@ -6,6 +7,7 @@ import {
   GET_ADDON_BY_ID,
 } from "@/utils/apiconstants";
 import axiosApi from "@/utils/axiosApi";
+import { getDecorationProductOrganizationSchema } from "@/utils/schema";
 
 function formatProductName(productName) {
   if (!productName) return "";
@@ -93,5 +95,17 @@ export async function getServerSideProps(context) {
 }
 
 export default function ProductPage(props) {
-  return <DecorationsCatDetails {...props} />;
+  const productSchema = getDecorationProductOrganizationSchema(props.initialProduct || {});
+
+  return (
+    <>
+      <Head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+        />
+      </Head>
+      <DecorationsCatDetails {...props} />
+    </>
+  );
 }

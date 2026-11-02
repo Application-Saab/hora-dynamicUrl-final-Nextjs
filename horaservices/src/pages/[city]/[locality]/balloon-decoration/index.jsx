@@ -1,3 +1,4 @@
+import Head from "next/head";
 import SectionDescription from "@/components/Description";
 import FAQSection from "@/components/FAQSection";
 import { OtherDecorationCategorySection } from "@/components/LocalitiesSection";
@@ -7,6 +8,7 @@ import { decorationCityFAQData } from "@/utils/DecorationCityFAQ";
 import { decorationCityDescription } from "@/utils/DecorationDescription";
 import { DecorationSEOKeywords } from "@/utils/GetSEOKeywords";
 import { decCat } from "@/utils/decorationCategories";
+import { getDecorationOrganizationSchema } from "@/utils/schema";
 
 import { useRouter } from "next/router";
 
@@ -46,6 +48,7 @@ function DecorationLocalityPage({ city, citySlug, localitySlug }) {
   const router = useRouter();
 
   const locality = formatLocalityName(localitySlug);
+  const orgSchema = getDecorationOrganizationSchema();
 
   const cityDecorationFAQ = decorationCityFAQData(city);
 
@@ -64,6 +67,13 @@ function DecorationLocalityPage({ city, citySlug, localitySlug }) {
 
   return (
     <>
+      <Head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
+        />
+      </Head>
+
       <Decoration city={city} locality={locality} />
 
       <div className="tab-section-details-productpage">

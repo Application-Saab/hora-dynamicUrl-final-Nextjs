@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
+import { getPhotographyLandingSchema } from "@/utils/schema";
 
 import PhotographyLanding, {
   STANDARD_PACKAGE_TAG_ID,
@@ -139,6 +140,7 @@ const PhotographyCityPage = ({
   if (!city) return null;
 
   const pageUrl = `https://horaservices.com/${citySlug}/photography`;
+  const landingSchema = getPhotographyLandingSchema(city);
 
   return (
     <>
@@ -151,6 +153,10 @@ const PhotographyCityPage = ({
         <meta property="og:description" content={seo.description} />
         <meta property="og:url" content={pageUrl} />
         <meta property="og:type" content="website" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(landingSchema) }}
+        />
       </Head>
 
       <PhotographyLanding

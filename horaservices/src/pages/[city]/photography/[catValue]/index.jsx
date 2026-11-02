@@ -1,7 +1,9 @@
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
 
 import CatValuePage from "@/pages/photography/[catValue]";
+import { getPhotographyLandingSchema } from "@/utils/schema";
 import {
   BASE_URL,
   GET_DECORATION_CAT_ID,
@@ -201,7 +203,16 @@ const PhotographyCityCatPage = (ssrProps) => {
   // SSR pe city hamesha aati hai — null return mat karo (SEO)
   if (!city) return null;
 
+  const landingSchema = getPhotographyLandingSchema(city);
+
   return (
+    <>
+      <Head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(landingSchema) }}
+        />
+      </Head>
     <div>
       <CatValuePage
         {...catValueProps}
@@ -217,6 +228,7 @@ const PhotographyCityCatPage = (ssrProps) => {
         ssrError={ssrProps.ssrError}
       />
     </div>
+    </>
   );
 };
 

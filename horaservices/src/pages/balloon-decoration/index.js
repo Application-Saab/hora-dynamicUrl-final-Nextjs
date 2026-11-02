@@ -1,8 +1,10 @@
+import Head from "next/head";
 import Decoration from "@/components/Decoration/Decoration";
 import SectionDescription from "@/components/Description";
 import FAQSection from "@/components/FAQSection";
 import { decorationCityDescription } from "@/utils/DecorationDescription";
 import { decorationCityFAQData } from "@/utils/DecorationCityFAQ";
+import { getDecorationOrganizationSchema } from "@/utils/schema";
 
 export async function getServerSideProps() {
   return {
@@ -11,6 +13,8 @@ export async function getServerSideProps() {
 }
 
 export default function BalloonDecorationPage() {
+  const orgSchema = getDecorationOrganizationSchema();
+
   // decorationCityDescription already { heading, blocks } shape mein hai,
   // isliye seedha use ho sakta hai — koi conversion nahi chahiye
   const descriptionSections = decorationCityDescription;
@@ -20,6 +24,13 @@ export default function BalloonDecorationPage() {
 
   return (
     <>
+      <Head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
+        />
+      </Head>
+
       <Decoration />
 
       <SectionDescription sections={descriptionSections} />

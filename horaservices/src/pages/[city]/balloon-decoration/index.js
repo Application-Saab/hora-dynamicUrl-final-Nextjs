@@ -7,6 +7,7 @@ import {
   getCityNameFromSlug,
 } from "../../../utils/validCities";
 import { getBalloonDecorationSeo } from "@/utils/balloonDecorationSeo";
+import { getDecorationOrganizationSchema } from "@/utils/schema";
 
 export async function getServerSideProps(context) {
   const citySlug = context.params?.city?.toLowerCase();
@@ -31,6 +32,7 @@ export default function BalloonDecorationCityPage({
 }) {
   // SEO sheet copy for this city hub (falls back to the existing copy).
   const sheetSeo = getBalloonDecorationSeo({ city: citySlug });
+  const orgSchema = getDecorationOrganizationSchema();
 
   return (
     <>
@@ -62,6 +64,10 @@ export default function BalloonDecorationCityPage({
         <meta
           property="og:type"
           content="website"
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
         />
       </Head>
 
