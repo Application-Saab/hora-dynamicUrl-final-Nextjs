@@ -4,6 +4,7 @@ import Image from "next/image";
 import "./whatsapp.css";
 import whatsappIcon from "@/assets/whatsapp-icon.png";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 export default function WhatsAppFloat({ shouldShow, handleWhatsAppClick }) {
   const texts = ["Customer Support", "Customization", "Book Now"];
   const [index, setIndex] = useState(0);
@@ -32,6 +33,11 @@ export default function WhatsAppFloat({ shouldShow, handleWhatsAppClick }) {
         onClick={() => {
           handleWhatsAppClick(texts[index]);
           trackWAClicks();
+          trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.FLOTING_WA_ICON_ALL_PAGE, {
+            button_name: "Customer Support",
+            button_type: "floting_enquiry_icon",
+            page_path: window.location.pathname,
+          });
         }}
       >
         <div className="wa-bubble" ref={bubbleRef}>

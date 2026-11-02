@@ -7,6 +7,7 @@ import Image from "next/image";
 import "../../pages/aboutus/aboutus.css";
 import Head from "next/head";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 
 const AboutUs = () => {
   return (
@@ -163,7 +164,14 @@ const AboutUs = () => {
                 rel="noopener noreferrer"
                 href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services"
                 role="button"
-                onClick={() => trackWAClicks()}
+                onClick={() => {
+                  trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.ABOUT_US_CONTACT_BTN, {
+                    button_name: "Connect with us",
+                    button_type: "connect_with_us_about",
+                    page_path: window.location.pathname,
+                  });
+                  trackWAClicks();
+                }}
               >
                 Connect with Us
               </a>

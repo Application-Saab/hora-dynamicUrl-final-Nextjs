@@ -6,6 +6,7 @@ import orderWarning from "../assets/OrderWarning.png"
   import imageivew from '../assets/logout.png';
 import Image from "next/image";
 import { trackWAClicks } from "./storeWhatsappClicks";
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "./marketingEvents";
 
 const Popup = ({
   onClose,
@@ -26,6 +27,11 @@ const Popup = ({
   };
 
   const handleContactUs = () => {
+    trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.PARTY_FOOD_WHATSAPP_BTN, {
+      button_name: "Contact Us",
+      button_type: "food_contact_us",
+      page_path: window.location.pathname,
+  });
     trackWAClicks()
     window.open(
       "https://wa.me/+917338584828/?text=Hello%20I%20have%20some%20queries%20for%20food%20delivey%20and%20live%20Catering%20service"

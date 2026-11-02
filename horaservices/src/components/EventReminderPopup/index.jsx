@@ -8,6 +8,7 @@ import Image from "next/image";
 import whatsappIcon from "@/assets/whatsapp-icon.svg";
 import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 
 const WHATSAPP_NUMBER = "7338584828";
 
@@ -53,6 +54,11 @@ export default function EventReminderPopup({
   const config = VARIANTS[variant] || VARIANTS.approaching;
 
   const handleWhatsAppClick = () => {
+    trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.EVENT_DATE_CONSULTATION_POPUP, {
+      button_name: "Get Free Consultation",
+      button_type: "free_consultation_popup",
+      page_path: window.location.pathname,
+    });
     trackWAClicks();
     const encodedMsg = encodeURIComponent(config.whatsappMessage);
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMsg}`, "_blank");

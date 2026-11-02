@@ -26,6 +26,7 @@ import Head from "next/head";
 import FAQSection from "../FAQSection";
 import TermsModal from "./TermsModal";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 
 const VenuePage = ({
   city: propCity = null,
@@ -291,6 +292,11 @@ const VenuePage = ({
   const PHONE = "7338584828";
 
   const handleEnquire = () => {
+    trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.VENUE_ENQUIRE_NOW_BTN, {
+      button_name: "Enquire Now",
+      button_type: "enquire_now_venue",
+      page_path: window.location.pathname,
+    });
     trackWAClicks();
     const venueName = eventDetails?.venueName || "this venue";
     const location = eventDetails?.city || eventDetails?.location || "";

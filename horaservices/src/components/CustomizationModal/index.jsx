@@ -8,6 +8,7 @@ import numberIcon from "@/assets/customizatiton/Numbers.webp";
 import themeIcon from "@/assets/customizatiton/Changetheme.webp";
 import balloonTitleIcon from "@/assets/customizatiton/titleBallons.webp";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 const customizationItems = [
   {
     icon: balloonIcon,
@@ -54,6 +55,11 @@ const CustomizationModal = ({ open, onClose, image, whatsappNumber = "9173385848
 
 const handleConsultation = () => {
     if (!product) return;
+    trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.CUSTOMIZE_DECORATION_PRODUCT_GRID_POPUP, {
+      button_name: "Get Free Consultation",
+      button_type: "decoration_product_grid_cunsultation_popup_btn",
+      page_path: window.location.pathname,
+    });
     trackWAClicks();
 
     // GTM push - WhatsApp CTA click

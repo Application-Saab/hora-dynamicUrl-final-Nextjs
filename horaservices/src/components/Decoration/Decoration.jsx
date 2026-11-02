@@ -115,6 +115,7 @@ import {
   GET_DECORATION_CAT_ITEM,
 } from "@/utils/apiconstants";
 import { NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 
 const stats = [
   {
@@ -428,14 +429,6 @@ const Decoration = ({ city, locality }) => {
     catValue: "wedding-decoration",
   };
 
-  const handleWhatsApp = () => {
-    trackWAClicks();
-    const phoneNumber = "7338584828";
-    const message = encodeURIComponent("I want to customize a decoration");
-    if (typeof window !== "undefined") {
-      window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
-    }
-  };
   const handleSeeMoreClick = () => {
     setTimeout(() => {
       smallCardRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -641,7 +634,14 @@ const Decoration = ({ city, locality }) => {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat now on WhatsApp"
-        onClick={trackWAClicks}
+        onClick={() => {
+          trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.WE_ARE_HERE_BANNER_DECORATION, {
+            button_name: "Chat Now on Whatsapp",
+            button_type: "happy_to_help_banner_btn",
+            page_path: window.location.pathname,
+          });
+          trackWAClicks();
+        }}
       >
         <Banner
           image={whatsappbanner}
