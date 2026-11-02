@@ -1,5 +1,9 @@
 import balloonDecorationH1 from "@/utils/balloonDecorationH1.json";
-import { slugH1 } from "@/utils/slugSeo";
+
+// Convert "name-reveal-decoration" → "Name Reveal Decoration"
+const slugToLabel = (slug) =>
+  String(slug || "").trim().toLowerCase().replace(/-/g, " ")
+    .replace(/\b\w/g, (ch) => ch.toUpperCase());
 
 // ─────────────────────────────────────────────────────────────
 // Page H1 for balloon-decoration pages, keyed by URL path
@@ -57,5 +61,6 @@ export const getBalloonDecorationH1 = (path) => {
   const catSegments = segments.filter((s) => !CITY_SLUGS.has(s) && !SKIP.has(s));
   const catSlug = catSegments[catSegments.length - 1] || null;
 
-  return slugH1(catSlug, city);
+  const label = slugToLabel(catSlug);
+  return city ? `${label} in ${city}` : label;
 };

@@ -1,5 +1,9 @@
 import { getCityCategoryLanding } from "@/utils/Citycategorydecorationlanding";
-import { slugTitle, slugDescription } from "@/utils/slugSeo";
+
+// Convert "name-reveal-decoration" → "Name Reveal Decoration"
+const slugToLabel = (slug) =>
+  String(slug || "").trim().toLowerCase().replace(/-/g, " ")
+    .replace(/\b\w/g, (ch) => ch.toUpperCase());
 
 const defaultCategorySeo = {
   "birthday-decoration": {
@@ -120,7 +124,10 @@ export const getPageTitleCategory = (catValue, city, locality, theme) => {
   }
 
   // 3. Auto-generate from slug so new categories always get a clean title
-  if (catKey) return slugTitle(catKey, city || null);
+  if (catKey) {
+    const label = slugToLabel(catKey);
+    return city ? `${label} in ${city} | HORA` : `${label} at Home | HORA`;
+  }
 
   return genericFallback.title;
 };
@@ -141,7 +148,12 @@ export const getPageMetaDescriptionCategory = (catValue, city, locality) => {
   }
 
   // 3. Auto-generate from slug so new categories always get a clean description
-  if (catKey) return slugDescription(catKey, city || null);
+  if (catKey) {
+    const label = slugToLabel(catKey).toLowerCase();
+    return city
+      ? `Book ${label} at home in ${city} from Rs 1,499. Same-day setup by verified HORA decorators.`
+      : `Book ${label} at home from Rs 1,499. Same-day setup by verified HORA decorators across 8 cities.`;
+  }
 
   return genericFallback.description;
 };
