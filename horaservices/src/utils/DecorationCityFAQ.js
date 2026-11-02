@@ -44,4 +44,34 @@ export const decorationCityFAQData = () => [
     answer:
       "Most setups take 60 to 90 minutes to install, and a larger or more detailed design a little longer. The cleanup's always included, so once your event's over the decorator clears the balloons, the props and the tape, and leaves your space exactly as it was.",
   },
+  {
+    question: "What is the cheapest balloon decoration package available?",
+    answer:
+      "The most affordable balloon decoration starts at Rs 1,499. This includes a simple two-colour balloon wall or cluster, a foil name or birthday banner, and the full setup and cleanup. It's designed for compact apartments and works well as a clean, photo-ready look without needing a large space.",
+  },
+  {
+    question: "Can I book balloon decoration online?",
+    answer:
+      "Yes. You can book balloon decoration online in a few minutes. Pick a design from the category you need, add your city, address and preferred time, then confirm the booking. We call you before the slot to confirm, and the decorator arrives with everything ready to set up.",
+  },
+  {
+    question: "Do you do balloon decoration for anniversaries and not just birthdays?",
+    answer:
+      "Yes. We set up balloon decoration for birthdays, anniversaries, baby showers, welcome baby, first night room decoration, haldi and mehndi, and more. Each occasion has its own setups and themes. Pick the category that matches your celebration and choose a design from there.",
+  },
+  {
+    question: "Can I customise the balloon decoration colours and theme?",
+    answer:
+      "Yes, fully. You can change the balloon colours, add or remove elements, specify the name and age number, choose add-ons like fairy lights, fresh flowers or a lit name board, and request a custom theme. If you have a reference image from Instagram or Pinterest, share it at booking and we will tell you how close we can get.",
+  },
+  {
+    question: "How do I book a balloon decorator for tomorrow?",
+    answer:
+      "Book online today — there is no minimum notice required beyond a few hours. Pick the setup you want, choose a slot for tomorrow, enter your address and confirm. We will call you to confirm the booking, and the decorator arrives at the booked time with everything needed for the setup.",
+  },
+  {
+    question: "What is the difference between a backdrop, an arch and ceiling balloons?",
+    answer:
+      "A backdrop is a decorated wall, usually behind the cake table, with balloons, a foil name and any props — it is the main focal point for photos. An arch is a curved balloon frame over a doorway or the cake table. Ceiling balloons are bouquets that float up and attach to the ceiling, adding height without using floor space. Many setups combine a backdrop with ceiling balloons, especially in smaller rooms.",
+  },
 ];

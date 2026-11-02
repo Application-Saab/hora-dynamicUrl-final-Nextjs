@@ -1,6 +1,7 @@
 import SectionDescription from "@/components/Description";
 import LocalitiesSection, { OtherDecorationCategorySection } from "@/components/LocalitiesSection";
 import Decoration from "@/components/Decoration/Decoration";
+import DecorationIntro from "@/components/DecorationIntro";
 import { decorationCityFAQData } from "@/utils/DecorationCityFAQ";
 import { decorationCityDescription } from "@/utils/DecorationDescription";
 import { DecorationSEOKeywords } from "@/utils/GetSEOKeywords";
@@ -104,6 +105,9 @@ const [citySlug, setCitySlug] = useState(serverCitySlug || "");
   return (
     <>
       <Decoration city={city} locality={locality} />
+
+      {/* Keyword-rich intro — "balloon decoration in [City]" in first 100 words */}
+      <DecorationIntro city={city} />
 
       {/* key={city} lagane se React is section ko city change hote hi
           poori tarah remount karega — stale render kabhi nahi dikhega */}

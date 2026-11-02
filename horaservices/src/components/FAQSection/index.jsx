@@ -1,11 +1,26 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
+import Head from "next/head";
 import cancellation from "../../assets/Cancellation.svg";
 import Arrow from "../../assets/arrow.png";
 
 const FAQSection = ({ faqData = [], heading = "FAQ" }) => {
   const [openIndex, setOpenIndex] = useState(null);
+
+  // Build FAQPage JSON-LD schema for Google rich results
+  const faqSchema = faqData.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqData.map((item) => ({
+      "@type": "Question",
+      "name": item?.question || item?.name || "",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item?.answer || item?.acceptedAnswer?.text || "",
+      },
+    })),
+  } : null;
 
   const handleToggle = (index) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -17,6 +32,15 @@ const FAQSection = ({ faqData = [], heading = "FAQ" }) => {
     item?.answer || item?.acceptedAnswer?.text || "No answer available.";
 
   return (
+    <>
+      {faqSchema && (
+        <Head>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+          />
+        </Head>
+      )}
     <div style={{ margin: "auto", maxWidth: "96%" }}>
       <div
         style={{
@@ -120,6 +144,7 @@ const FAQSection = ({ faqData = [], heading = "FAQ" }) => {
         );
       })}
     </div>
+    </>
   );
 };
 

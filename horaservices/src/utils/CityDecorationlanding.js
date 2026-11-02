@@ -31,6 +31,31 @@ export const CityDecorationlandingPage = {
         answer:
           "We cover DLF Cyber City and Phases 1 to 5, Golf Course Road and Extension, Sohna Road, MG Road, Sushant Lok, Palam Vihar, the Old Gurugram sectors, and New Gurugram out to Sectors 80 to 95 and the Dwarka Expressway. Add your pincode at booking to confirm a slot in your area.",
       },
+      {
+        question: "What does balloon decoration cost in Gurugram?",
+        answer:
+          "Balloon decoration in Gurugram starts at Rs 1,499 for a simple setup. A standard themed look with foil balloons and fairy lights runs Rs 2,500 to Rs 5,000, and premium setups with a lit name board, ring frame or fresh flowers go from Rs 5,000 upward. The price you see at booking is the price you pay, with nothing added on the day.",
+      },
+      {
+        question: "Can you do a surprise birthday decoration in Gurugram without the birthday person finding out?",
+        answer:
+          "Yes, and this is one of our most common bookings in Gurugram. When you book, just mention it's a surprise and share a contact who can let the decorator in — a family member, a flatmate or building security. The decorator coordinates quietly, finishes the setup, sends you a photo, and is gone well before the birthday person walks in.",
+      },
+      {
+        question: "Do you do midnight balloon decoration in Gurugram?",
+        answer:
+          "Yes. Midnight slots are available in Gurugram, particularly popular for partner and anniversary surprises. Book a few hours in advance to confirm a midnight decorator in your area, and share your building access details so the setup can be completed before midnight.",
+      },
+      {
+        question: "How long does a balloon decoration setup take in Gurugram?",
+        answer:
+          "Most setups in Gurugram take 60 to 90 minutes. Larger backdrops with premium add-ons like a lit name board or fresh flowers may take up to two hours. Cleanup is always included — the decorator clears everything away after the celebration and leaves the room as they found it.",
+      },
+      {
+        question: "Is balloon decoration available at society party halls in Gurugram?",
+        answer:
+          "Yes. We decorate both homes and society community halls across Gurugram. Just mention the venue at booking — the decorator will plan the access, gate pass and the right scale of setup for the space.",
+      },
     ],
   },
 
@@ -65,6 +90,31 @@ export const CityDecorationlandingPage = {
         question: "Which areas of Bangalore do you cover?",
         answer:
           "We cover Whitefield, Koramangala, HSR, Indiranagar, Jayanagar, JP Nagar, Electronic City, Sarjapur Road, Hebbal, Yelahanka and most other localities. Add your pincode at booking to confirm a slot in your area.",
+      },
+      {
+        question: "What does balloon decoration cost in Bangalore?",
+        answer:
+          "Balloon decoration in Bangalore starts at Rs 1,499. A themed setup with foil balloons and lights typically runs Rs 2,500 to Rs 5,000, and premium setups with a lit name board, ring frame or fresh flowers go from Rs 5,000 upward. All prices are fixed — what you see at booking is exactly what you pay.",
+      },
+      {
+        question: "Can you arrange a surprise balloon decoration in Bangalore?",
+        answer:
+          "Yes. Surprise setups are very common in Bangalore. When you book, mention it's a surprise and share a contact who can let the decorator in — a flatmate, family member or security. The decorator coordinates quietly, finishes the setup, sends you a confirmation photo, and leaves before the birthday person arrives.",
+      },
+      {
+        question: "Do you do midnight decoration in Bangalore?",
+        answer:
+          "Yes. Midnight slots are available across most of Bangalore. They are especially popular for partner surprises and close-friend birthdays. Book a few hours in advance to confirm, and share your building access details so everything is ready before midnight.",
+      },
+      {
+        question: "Can you decorate a terrace or balcony in a Bangalore apartment?",
+        answer:
+          "Yes, and terrace setups are one of our most-loved looks in Bangalore, especially in the evening when the weather is mild. We work with your outdoor space, whether it is a balcony, terrace or rooftop, and size the design to it. Just mention the space at booking.",
+      },
+      {
+        question: "How long does balloon decoration setup take in Bangalore?",
+        answer:
+          "Most setups in Bangalore take 60 to 90 minutes. Larger designs with premium add-ons may take closer to two hours. Cleanup is always included — the decorator clears the balloons, props and tape after the celebration and leaves your space exactly as they found it.",
       },
     ],
   },
@@ -101,6 +151,31 @@ export const CityDecorationlandingPage = {
         answer:
           "We cover HITEC City, Gachibowli, Madhapur, Kondapur, Kukatpally, KPHB, Banjara Hills, Jubilee Hills, Ameerpet, Secunderabad, Dilsukhnagar, LB Nagar and most other localities. Add your pincode at booking to confirm a slot in your area.",
       },
+      {
+        question: "What does balloon decoration cost in Hyderabad?",
+        answer:
+          "Balloon decoration in Hyderabad starts at Rs 1,499. A standard themed look with foil balloons, fairy lights and a name backdrop runs Rs 2,500 to Rs 5,000. Premium setups with a lit name board, ring frame or fresh flowers start from Rs 5,000. The price is fixed at booking with no day-of changes.",
+      },
+      {
+        question: "Can you do a surprise decoration setup in Hyderabad without the person knowing?",
+        answer:
+          "Yes. Surprise setups are among our most frequent bookings in Hyderabad. Tell us it's a surprise when you book and share a contact who can provide access — a family member, flatmate or security. The decorator finishes quietly, sends you a photo confirmation, and leaves before the birthday person arrives.",
+      },
+      {
+        question: "Do you offer midnight balloon decoration in Hyderabad?",
+        answer:
+          "Yes. Midnight setups are available in most areas of Hyderabad. Book a few hours in advance to confirm a slot, and share your building access details. The decorator arrives in the evening, finishes before midnight, and the room is ready the moment the clock turns.",
+      },
+      {
+        question: "Can you match the decoration to a Hyderabad festival theme like Ganesh Chaturthi or a puja?",
+        answer:
+          "Yes. We can match the decoration palette and style to the occasion rather than a generic party look. If you are celebrating alongside a festival or a puja, mention it at booking and we will plan the colours and props to suit the occasion.",
+      },
+      {
+        question: "How long does balloon decoration setup take in Hyderabad?",
+        answer:
+          "Most setups in Hyderabad take 60 to 90 minutes. Larger or more detailed designs, such as a ring frame with a lit name board and fresh flowers, may take up to two hours. Cleanup is always included and covered by the same decorator.",
+      },
     ],
   },
 
@@ -135,6 +210,31 @@ export const CityDecorationlandingPage = {
         question: "Which areas of Mumbai do you cover?",
         answer:
           "We cover Andheri, Bandra, Juhu, Goregaon, Malad, Kandivali, Borivali, Powai, Ghatkopar, Chembur, Mulund, Dadar, the Navi Mumbai nodes like Vashi, Nerul and Kharghar, and Thane. Add your pincode at booking to confirm a slot in your area.",
+      },
+      {
+        question: "What does balloon decoration cost in Mumbai?",
+        answer:
+          "Balloon decoration in Mumbai starts at Rs 1,499. A standard themed setup with foil balloons, fairy lights and a name backdrop typically runs Rs 2,500 to Rs 5,000. Premium setups with a ring frame, lit name board or fresh flowers start from Rs 5,000. The price is locked at booking — nothing is added on the day.",
+      },
+      {
+        question: "Can you do balloon decoration in a small Mumbai apartment?",
+        answer:
+          "Yes, and small apartments are exactly what most of our Mumbai setups are for. A compact 1 or 2 BHK looks its best with one strong feature wall behind the cake and ceiling balloons to add height without taking up floor space. We plan every setup around your room size, so it looks full without ever feeling crowded.",
+      },
+      {
+        question: "Do you handle society gate passes and building access in Mumbai?",
+        answer:
+          "Yes. For high-rise societies in Mumbai, we ask for your building name, wing and flat number at booking, and sort the gate pass with your building security in advance. This way the decorator is not stuck at the gate when your evening is about to begin.",
+      },
+      {
+        question: "Can you do a midnight birthday decoration in Mumbai?",
+        answer:
+          "Yes. Midnight setups are available across most of Mumbai, and they are a popular choice for partner and close-friend surprises. Book a few hours in advance, share your building access details, and the decorator will have the room ready before midnight.",
+      },
+      {
+        question: "How long does balloon decoration setup take in Mumbai?",
+        answer:
+          "Most setups in Mumbai take 60 to 90 minutes. Premium setups with ring frames, fresh flowers or lit name boards may take closer to two hours. Cleanup is always included — the decorator removes all balloons, props and tape after the celebration.",
       },
     ],
   },
@@ -171,6 +271,31 @@ export const CityDecorationlandingPage = {
         answer:
           "We cover Saket, Greater Kailash, CR Park, Vasant Kunj, Hauz Khas, Dwarka, Janakpuri, Rajouri Garden, Rohini, Pitampura, Mayur Vihar, Preet Vihar, Laxmi Nagar and most other localities. Add your pincode at booking to confirm a slot in your area.",
       },
+      {
+        question: "What does balloon decoration cost in Delhi?",
+        answer:
+          "Balloon decoration in Delhi starts at Rs 1,499. A themed setup with foil balloons, fairy lights and a name wall typically costs Rs 2,500 to Rs 5,000. Premium setups with a ring frame, lit name board or fresh flowers start from Rs 5,000. The price is fixed at booking and does not change on the day.",
+      },
+      {
+        question: "Can you decorate a terrace in Delhi for a winter outdoor birthday?",
+        answer:
+          "Yes. Outdoor and terrace setups are very popular in Delhi during the cooler months. We size the decoration to your outdoor space and use elements that photograph well in natural light. Just mention the space at booking and we will plan accordingly.",
+      },
+      {
+        question: "Do you offer midnight balloon decoration in Delhi?",
+        answer:
+          "Yes. Midnight slots are available across most of Delhi. They are particularly popular for partner surprises and close-friend celebrations. Book a few hours in advance to confirm, share your address and building access details, and the room will be ready before midnight.",
+      },
+      {
+        question: "Can you set up balloon decoration in an independent house or kothi in Delhi?",
+        answer:
+          "Yes. Independent homes in Delhi, including builder floors, kothis and the larger South Delhi houses, give us more space to work with. We can do a full backdrop, an entry arch and ceiling balloons in a larger drawing room or garden. Tell us the space at booking and we will plan the right scale of setup for it.",
+      },
+      {
+        question: "How long does balloon decoration setup take in Delhi?",
+        answer:
+          "Most setups in Delhi take 60 to 90 minutes. Larger designs with premium elements like a lit name board, fresh flowers or a ring frame may take up to two hours. Cleanup is always included — the decorator removes everything after the celebration and leaves your home as they found it.",
+      },
     ],
   },
 
@@ -204,6 +329,26 @@ export const CityDecorationlandingPage = {
         question: "Which areas of Noida do you cover?",
         answer:
           "We cover the Central Noida sectors like 50, 55, 56, 47 and 62, the Expressway sectors 76 to 78, 137 and 150, plus Noida Extension, Gaur City and Greater Noida around Pari Chowk. Add your pincode at booking to confirm a slot in your area.",
+      },
+      {
+        question: "What does balloon decoration cost in Noida?",
+        answer:
+          "Balloon decoration in Noida starts at Rs 1,499. A themed setup with foil balloons, fairy lights and a name wall typically runs Rs 2,500 to Rs 5,000. Premium setups with a ring frame, lit name board or fresh flowers start from Rs 5,000. Everything is priced upfront at booking — no extras on the day.",
+      },
+      {
+        question: "Can you do a surprise balloon decoration in Noida society without the person knowing?",
+        answer:
+          "Yes. Surprise setups are one of our most popular bookings in Noida. Tell us it's a surprise when you book and share a contact who can let the decorator in — a family member, flatmate or security. The decorator coordinates quietly, sends you a photo when done, and leaves before the birthday person arrives.",
+      },
+      {
+        question: "Do you offer midnight balloon decoration in Noida?",
+        answer:
+          "Yes. Midnight slots are available across most of Noida and Greater Noida. They are particularly popular among the young families in Noida's societies. Book a few hours in advance, share your tower and flat number for gate pass, and the room will be ready before midnight.",
+      },
+      {
+        question: "How long does balloon decoration setup take in Noida?",
+        answer:
+          "Most setups in Noida take 60 to 90 minutes. Larger designs or premium add-ons like a lit name board or ring frame may take up to two hours. Cleanup is always included — the decorator removes all balloons, props and tape after the celebration and leaves your flat exactly as they found it.",
       },
     ],
   },
@@ -239,6 +384,26 @@ export const CityDecorationlandingPage = {
         answer:
           "We cover Indirapuram, Vaishali, Vasundhara, Kaushambi, Raj Nagar, Raj Nagar Extension, Crossings Republik and the older Ghaziabad areas like Kavi Nagar and Shastri Nagar. Add your pincode at booking to confirm a slot in your area.",
       },
+      {
+        question: "What does balloon decoration cost in Ghaziabad?",
+        answer:
+          "Balloon decoration in Ghaziabad starts at Rs 1,499. A standard themed setup with foil balloons, fairy lights and a name backdrop typically runs Rs 2,500 to Rs 5,000. Premium setups with ring frames, lit name boards or fresh flowers start from Rs 5,000. The price is fixed at booking with nothing added on the day.",
+      },
+      {
+        question: "Can you do a surprise birthday decoration in Ghaziabad?",
+        answer:
+          "Yes. Surprise setups are a regular booking in Ghaziabad. When you book, mention it's a surprise and share a contact who can provide access — a family member, flatmate or society security. The decorator finishes quietly, sends you a confirmation photo, and is gone before the birthday person walks in.",
+      },
+      {
+        question: "Do you offer midnight decoration in Ghaziabad?",
+        answer:
+          "Yes. Midnight slots are available in most areas of Ghaziabad, particularly in Indirapuram, Vaishali and Vasundhara. Book a few hours in advance and share your building access details so the setup can be completed before midnight.",
+      },
+      {
+        question: "How long does balloon decoration setup take in Ghaziabad?",
+        answer:
+          "Most setups in Ghaziabad take 60 to 90 minutes. Larger designs or premium add-ons may take up to two hours. Cleanup is always included — the decorator clears all balloons, props and tape after the celebration and leaves your home exactly as they found it.",
+      },
     ],
   },
 
@@ -272,6 +437,31 @@ export const CityDecorationlandingPage = {
         question: "Which areas of Faridabad do you cover?",
         answer:
           "We cover the old Faridabad sectors like 14, 15, 16, 21 and 37, the NIT area, and Greater Faridabad, Neharpar, sectors 75 to 89, along with Ballabhgarh. Add your pincode at booking to confirm a slot in your area.",
+      },
+      {
+        question: "What does balloon decoration cost in Faridabad?",
+        answer:
+          "Balloon decoration in Faridabad starts at Rs 1,499. A themed setup with foil balloons, fairy lights and a name wall typically runs Rs 2,500 to Rs 5,000. Premium setups with a lit name board, ring frame or fresh flowers start from Rs 5,000. The price is locked at booking with nothing added on the day.",
+      },
+      {
+        question: "Can you do a surprise balloon decoration in Faridabad?",
+        answer:
+          "Yes. Surprise setups are a regular booking in Faridabad. Mention it's a surprise when you book and share a contact who can provide access — a family member, flatmate or building security. The decorator finishes quietly, sends you a confirmation photo, and leaves before the birthday person walks in.",
+      },
+      {
+        question: "Do you offer midnight decoration in Faridabad?",
+        answer:
+          "Yes. Midnight slots are available across most of Faridabad. Book a few hours in advance, share your address and access details, and the room will be ready before midnight.",
+      },
+      {
+        question: "Can you decorate a builder floor or independent house in Faridabad?",
+        answer:
+          "Yes. Independent homes and builder floors are very common in Faridabad's old sectors, and they often have generous drawing rooms or terraces that suit a full backdrop, an arch and ceiling balloons. Tell us the space at booking and we will plan the right scale of setup for it.",
+      },
+      {
+        question: "How long does balloon decoration setup take in Faridabad?",
+        answer:
+          "Most setups in Faridabad take 60 to 90 minutes. Premium designs with ring frames, lit name boards or fresh flowers may take up to two hours. Cleanup is always included — the decorator removes all balloons, props and tape after the celebration and leaves your home exactly as they found it.",
       },
     ],
   },

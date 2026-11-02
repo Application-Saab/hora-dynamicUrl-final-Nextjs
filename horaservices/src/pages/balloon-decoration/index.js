@@ -1,6 +1,7 @@
 import Decoration from "@/components/Decoration/Decoration";
 import SectionDescription from "@/components/Description";
 import FAQSection from "@/components/FAQSection";
+import DecorationIntro from "@/components/DecorationIntro";
 import { decorationCityDescription } from "@/utils/DecorationDescription";
 import { decorationCityFAQData } from "@/utils/DecorationCityFAQ";
 
@@ -21,6 +22,9 @@ export default function BalloonDecorationPage() {
   return (
     <>
       <Decoration />
+
+      {/* Keyword-rich intro — puts "balloon decoration" in the first 100 words for Google */}
+      <DecorationIntro />
 
       <SectionDescription sections={descriptionSections} />
 
