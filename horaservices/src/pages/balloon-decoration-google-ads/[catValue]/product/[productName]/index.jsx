@@ -425,7 +425,6 @@ function DecorationCatDetails() {
       <Head>
         <title>Balloon and Flower Decoration @999</title>
         <meta name="description" content="Celebrate Anniversary, Birthday & other Occasions with Candlelight Dinners, Surprises & Balloon Decorations" />
-        <meta name="keywords" content="Balloon and Flower Decoration @999" />
         <meta property="og:title" content="Balloon and Flower Decoration by Professional Decorators" />
         <meta property="og:description" content="Celebrate Anniversary, Birthday & other Occasions with Candlelight Dinners, Surprises & Balloon Decorations" />
         <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />

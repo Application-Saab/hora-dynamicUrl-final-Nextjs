@@ -323,7 +323,6 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false, parentCat
     <Head>
       <title>{title}</title>
       <meta name="description" content={description} />
-      <meta name="keywords" content="Balloon and Flower Decorations @999" />
 
       {/* one source for canonical + og:url, so they never drift apart */}
       <link rel="canonical" href={canonicalUrl} />
