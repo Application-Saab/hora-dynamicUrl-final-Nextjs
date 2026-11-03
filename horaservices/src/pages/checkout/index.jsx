@@ -1,11 +1,10 @@
 // import { useLocation } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
-import DatePicker from 'react-datepicker';
+import dynamic from 'next/dynamic';
+// Loaded only in the browser, when the checkout renders, instead of in the page bundle.
+const DatePicker = dynamic(() => import('react-datepicker'), { ssr: false });
 import 'react-datepicker/dist/react-datepicker.css';
-import TimePicker from 'react-time-picker';
-import 'react-time-picker/dist/TimePicker.css';
-import 'react-clock/dist/Clock.css';
 import checkOutImage from '../../assets/checkout-problem.png';
 import axios from 'axios';
 import { BASE_URL, GET_ADDRESS_LIST, CONFIRM_ORDER_ENDPOINT, SAVE_LOCATION_ENDPOINT } from '../../utils/apiconstants';

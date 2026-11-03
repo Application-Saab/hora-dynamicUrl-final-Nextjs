@@ -119,7 +119,7 @@ const DecorationCatPage = () => {
   useEffect(() => {
     addSpaces(subCategory);
     getSubCatId(subCategory); // Fetch category ID based on the selected subcategory
-    window.addEventListener('scroll', handleScroll); // Add scroll event listener
+    window.addEventListener('scroll', handleScroll, { passive: true }); // Add scroll event listener
 
     return () => {
       window.removeEventListener('scroll', handleScroll); // Cleanup on unmount

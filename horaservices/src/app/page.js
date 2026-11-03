@@ -12,7 +12,7 @@ import Head from "next/head";
 import Success from '../pages/Success';
 import Failure from '../pages/Failure';
 // import { useNavigate , Link, useLocation } from 'react-router-dom'; // Import useNavigate
-import whatsppicon from "../assets/whatsapp-icon.png";
+import whatsppicon from "../assets/whatsapp-icon.webp";
 import { getHomeOrganizationSchema } from "../utils/schema";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -30,10 +30,10 @@ import { sendGTMEvent  } from '@next/third-parties/google';
 
 import './homepage.css'
 // remove later
-// import homepage_entertainment1 from '../assets/homepage_entertainment1.png';
-// import homepage_entertainment2 from '../assets/homepage_entertainment2.png';
-// import homepage_entertainment3 from '../assets/homepage_entertainment3.png';
-// import homepage_entertainment4 from '../assets/homepage_entertainment4.png';
+// import homepage_entertainment1 from '../assets/homepage_entertainment1.webp';
+// import homepage_entertainment2 from '../assets/homepage_entertainment2.webp';
+// import homepage_entertainment3 from '../assets/homepage_entertainment3.webp';
+// import homepage_entertainment4 from '../assets/homepage_entertainment4.webp';
 
 export default function Home() {
 const router = useRouter();
@@ -125,7 +125,7 @@ const settings = {
     slidesToShow: 3,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 2000,
+    autoplaySpeed: 5000,
     responsive: [
       {
         breakpoint: 1024,
@@ -151,7 +151,7 @@ const settings = {
     slidesToScroll: 1,
     autoplay: true,
     fade: true, // Enables the fade effect
-    autoplaySpeed: 2500,
+    autoplaySpeed: 5000,
     responsive: [
       {
         breakpoint: 1024,
@@ -176,7 +176,7 @@ const settings = {
     slidesToShow: 6,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 1000,
+    autoplaySpeed: 3000,
     arrows: false,
     responsive: [
       {
@@ -361,38 +361,38 @@ const celebrateData = [
   {
     id: 1,
     title: 'Birthday and Anniversary',
-    imageUrl: require('../assets/homepage_Celebrate1.png'),
+    imageUrl: require('../assets/homepage_Celebrate1.webp'),
     imgAlt: 'Birthday and Anniversary celebration',
-    link: "https://horaservices.com/balloon-decoration/birthday-decoration",
+    link: "/balloon-decoration/birthday-decoration",
   },
   {
     id: 2,
     title: 'House Parties',
-    imageUrl: require('../assets/homepage_Celebrate2.png'),
+    imageUrl: require('../assets/homepage_Celebrate2.webp'),
     imgAlt: 'House parties celebration',
   },
   {
     id: 3,
     title: 'Corporate Events',
-    imageUrl: require('../assets/homepage_Celebrate3.png'),
+    imageUrl: require('../assets/homepage_Celebrate3.webp'),
     imgAlt: 'Corporate events celebration',
   },
   {
     id: 4,
     title: 'Wedding Events',
-    imageUrl: require('../assets/homepage_Celebrate4.png'),
+    imageUrl: require('../assets/homepage_Celebrate4.webp'),
     imgAlt: 'Wedding events celebration',
   },
   {
     id: 5,
     title: 'Gatherings',
-    imageUrl: require('../assets/homepage_Celebrate5.png'),
+    imageUrl: require('../assets/homepage_Celebrate5.webp'),
     imgAlt: 'Gatherings celebration',
   },
   {
     id: 6,
     title: 'Kids Events',
-    imageUrl: require('../assets/homepage_Celebrate6.png'),
+    imageUrl: require('../assets/homepage_Celebrate6.webp'),
     imgAlt: 'Kids events celebration',
   },
 ];
@@ -443,7 +443,7 @@ const CustomerReview = [
 const openSliderLink = (link , title) => {
   sendGTMEvent('event', 'homePageSliderClicked', { value: title });
   if (link) {
-    window.location.href = link; // Redirects to the provided link
+    router.push(link); // client-side navigation, no full page reload
   }
 };
 
@@ -488,8 +488,7 @@ return (
           <Image src={slide.image} alt={slide.title} 
            width={1200} 
            height={400} 
-           quality={100}         // Adjust quality for better compression
-           priority={false} 
+           priority={index === 0} // only the first slide is the LCP image
            layout="responsive" 
            className="responsive-image"
            />
@@ -511,10 +510,10 @@ return (
     <div className="food-cards desktop">
     {foodData.map(item => (
       <div key={item.id} className="food-card">
-        <a href={item.link} className="food-card-link">
+        <Link href={item.link} className="food-card-link">
           <Image src={item.image} alt={item.title} className="food-image"  width={200} height={100}/>
           <p className="food-card-title"  onClick={() => handleTitleClick(item.title)}>{item.title}</p>
-        </a>
+        </Link>
       </div>
     ))}
     </div>
@@ -522,20 +521,20 @@ return (
     <div className="food-cards mobile">
   {foodData.slice(0, 1).map(item => (
     <div key={item.id} className="food-card left-side">
-      <a href={item.link} className="food-card-link">
+      <Link href={item.link} className="food-card-link">
         <Image src={item.image} alt={item.title} className="food-image" width={200} height={100}/>
         <p className="food-card-title"  onClick={() => handleTitleClick(item.title)}>{item.title}</p>
-      </a>
+      </Link>
     </div>
   ))}
   
   <div className="food-card  right-side">
     {foodData.slice(1, 3).map(item => (
       <div key={item.id} className="food-card right-card">
-        <a href={item.link} className="food-card-link">
+        <Link href={item.link} className="food-card-link">
           <Image src={item.image} alt={item.title} className="food-image" width={200} height={100}/>
           <p className="food-card-title"  onClick={() => handleTitleClick(item.title)}>{item.title}</p>
-        </a>
+        </Link>
       </div>
     ))}
   </div>
@@ -552,7 +551,7 @@ return (
     </div>
     <div className="service-image-container">
       <Image src="https://horaservices.com/api/uploads/homepage_decoration.webp" alt="Decoration" className="service-image" width={200} height={100}/>
-      <button className="book-now2" id="home-decoration-sec" onClick={() => window.location.href = '/balloon-decoration'} >Book Now</button>
+      <button className="book-now2" id="home-decoration-sec" onClick={() => router.push('/balloon-decoration')} >Book Now</button>
     </div>
   </div>
   <div className="service">
@@ -596,11 +595,11 @@ return (
     <div className="categoriesCard-container">
     {whereAreYouData.map(category => (
       <div key={category.id} className="categoriesCard-card">
-        <a href={category.link} rel="noopener noreferrer">
+        <Link href={category.link}>
           <div className="categoriesCard-image-wrapper">
             <Image src={category.imageUrl} alt={category.title} className="categoriesCard-image"  width={200} height={100}/>
           </div>
-        </a>
+        </Link>
         <div className="what-are-sec">
         <p className="categoriesCard-title">{category.title}</p>
         <ul className="categoriesCard-points">
@@ -608,9 +607,9 @@ return (
             <li key={index}>{point}</li>
           ))}
         </ul>
-        <a href={category.link} className="categoriesCard-explore-more" >
+        <Link href={category.link} className="categoriesCard-explore-more" >
           Explore More
-        </a>
+        </Link>
         </div>
        
       </div>
@@ -627,9 +626,13 @@ return (
       <Slider {...celebrateslidersettings}>
       {celebrateData.map(category => (
       <div key={category.id} className="categories-card">
-      <a href={category.link} rel="noopener noreferrer">
+      {category.link ? (
+        <Link href={category.link}>
+          <Image src={category.imageUrl} alt={category.title} className="categories-image" />
+        </Link>
+      ) : (
         <Image src={category.imageUrl} alt={category.title} className="categories-image" />
-      </a>
+      )}
       <p className="categories-title">{category.title}</p>
       </div>
       ))}

@@ -5,7 +5,7 @@ import { Modal, Button, Container, Row, Col, Spinner } from "react-bootstrap";
 // import { useLocation } from 'react-router-dom';
 // import { useNavigate } from 'react-router-dom';
 import checkImage from "../../../assets/tick.jpeg";
-import orderWarning from "../../../assets/OrderWarning.png";
+import orderWarning from "../../../assets/OrderWarning.webp";
 import Popup from "../../../utils/popup";
 import SelectDishes from "../../../assets/selectDish.png";
 import SelectDateTime from "../../../assets/event2.png";
@@ -1431,5 +1431,8 @@ const styles = {
     height: "48px",
   },
 };
+
+// Needs browser-only data (URL query, localStorage, saved cart), so it renders after hydration.
+FoodDeliveryselectDate.clientOnly = true;
 
 export default FoodDeliveryselectDate;

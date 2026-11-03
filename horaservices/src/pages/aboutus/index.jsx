@@ -1,5 +1,5 @@
 import React from "react";
-import hero_general from "../../assets/hero_general.jpg";
+import hero_general from "../../assets/hero_general.webp";
 import how_1 from '../../../public/assets/how_1.svg';
 import how_2 from '../../../public/assets/how_2.svg';
 import how_3 from "../../../public/assets/how_3.svg";

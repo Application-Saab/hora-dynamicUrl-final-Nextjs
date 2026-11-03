@@ -1,11 +1,10 @@
 // import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
-import DatePicker from 'react-datepicker';
+import dynamic from 'next/dynamic';
+// Loaded only in the browser, when the checkout renders, instead of in the page bundle.
+const DatePicker = dynamic(() => import('react-datepicker'), { ssr: false });
 import 'react-datepicker/dist/react-datepicker.css';
-import TimePicker from 'react-time-picker';
-import 'react-time-picker/dist/TimePicker.css';
-import 'react-clock/dist/Clock.css';
 import axios from 'axios';
 import { BASE_URL, GET_ADDRESS_LIST, CONFIRM_ORDER_ENDPOINT, SAVE_LOCATION_ENDPOINT } from '../../utils/apiconstants';
 import { PAYMENT, PAYMENT_STATUS, API_SUCCESS_CODE } from '../../utils/apiconstants';
@@ -1683,6 +1682,9 @@ const FoodDeliveryCheckout = () => {
         </div>
     );
 };
+
+// Needs browser-only data (URL query, localStorage, saved cart), so it renders after hydration.
+FoodDeliveryCheckout.clientOnly = true;
 
 export default FoodDeliveryCheckout;
 

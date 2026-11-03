@@ -1,5 +1,5 @@
 import React from 'react';
-import contactusbanner from "../../assets/contactusbanner.png";
+import contactusbanner from "../../assets/contactusbanner.webp";
 
 const PrivacyPolicy = () => {
   const styles = {

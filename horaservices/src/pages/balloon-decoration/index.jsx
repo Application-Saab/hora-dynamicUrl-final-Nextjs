@@ -4,7 +4,6 @@ import Head from 'next/head';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons"
 import axios from 'axios';
-import { useParams } from "react-router-dom";
 import { BASE_URL, GET_DECORATION_CAT_ID, GET_DECORATION_CAT_ITEM } from '../../utils/apiconstants';
 import { getDecorationOrganizationSchema } from '../../utils/schema';
 import { setState } from '../../actions/action';
@@ -14,9 +13,9 @@ import { useDispatch } from "react-redux";
 import '../../css/decoration.css';
 import '../../components/DecorationLandingSlider/decorationladingslider.css';
 import DecorationLandingSlider from  '../../components/DecorationLandingSlider';
-import HaldiImage from '../../assets/HaldiImage.png';
-import MehendiImage from '../../assets/MehendiImage.png';
-import BacheloretteImage from '../../assets/Bachelorette.jpg';
+import HaldiImage from '../../assets/HaldiImage.webp';
+import MehendiImage from '../../assets/MehendiImage.webp';
+import BacheloretteImage from '../../assets/Bachelorette.webp';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -44,7 +43,7 @@ const Decoration = () => {
     // const navigate = useNavigate();
     const schemaOrg = getDecorationOrganizationSchema();
     const scriptTag = JSON.stringify(schemaOrg);
-    let { city } = useParams();
+    const city = undefined; // this is the all-India page; city pages live under /[city]/balloon-decoration
     const hasCityPageParam = city ? true : false;
 
     const openCatItems = (item) => {

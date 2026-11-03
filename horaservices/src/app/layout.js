@@ -13,6 +13,7 @@ const scriptTag = JSON.stringify(schemaOrg);
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <GoogleTagManager gtmId="GTM-K3SCKLTZ" />
       <body className={inter.className}>
         <Header />
         {children}

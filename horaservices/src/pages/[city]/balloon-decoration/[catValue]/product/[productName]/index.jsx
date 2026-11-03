@@ -218,4 +218,7 @@ const styles = {
   },
 };
 
+// Needs browser-only data (URL query, localStorage, saved cart), so it renders after hydration.
+DecorationCatDetails.clientOnly = true;
+
 export default DecorationCatDetails;

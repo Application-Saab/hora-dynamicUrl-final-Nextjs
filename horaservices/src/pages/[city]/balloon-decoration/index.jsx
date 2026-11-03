@@ -4,7 +4,6 @@ import Head from 'next/head';
 import axios from 'axios';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons"
-import { useParams } from "react-router-dom";
 import { BASE_URL, GET_DECORATION_CAT_ID, GET_DECORATION_CAT_ITEM } from '../../../utils/apiconstants';
 import DecorationLandingSlider from  '../../../components/DecorationLandingSlider';
 import getFAQs from "@/components/JsonData/faqData";
