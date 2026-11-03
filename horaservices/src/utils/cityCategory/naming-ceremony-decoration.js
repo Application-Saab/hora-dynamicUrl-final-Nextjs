@@ -1,0 +1,152 @@
+import { cityAreasData as c } from "./_cityAreas";
+
+export const namingCeremonyDecoration = {
+  "naming-ceremony-decoration": {
+    mumbai: {
+      city: "Mumbai", category: "Naming Ceremony Decoration",
+      title: "Naming Ceremony Decoration in Mumbai, Setups from Rs 1,499 | HORA",
+      metaDescription: "Naming ceremony decoration in Mumbai from Rs 1,499. Floral backdrops, balloon arches and traditional setups for namkaran ceremonies in Andheri, Powai and Navi Mumbai.",
+      heading: "Naming Ceremony Decoration in Mumbai",
+      intro: "A naming ceremony is the baby's formal introduction to the family and the world, and the decoration should feel as significant as the occasion. Soft flowers, a personalised backdrop with the baby's name, marigold strings, fairy lights and balloon clusters make the room feel festive and traditional at once. A verified decorator sets it up in about an hour. Naming ceremony decoration in Mumbai starts at Rs 1,499.",
+      homeHeading: "Naming ceremony setups at home and in halls in Mumbai",
+      homeParagraphs: [
+        "Many Mumbai naming ceremonies happen at home in the flat or at the society community room, and we set up beautifully for both. Share the space and the expected number of guests and we design accordingly.",
+        "For traditional families who want marigold strings and flower work alongside balloons, we can blend both elements into the setup. Tell us the look you want and we bring it.",
+      ],
+      ...c.mumbai,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "What does a naming ceremony decoration include in Mumbai?", answer: "A personalised backdrop with the baby's name, floral arrangements, balloon clusters, marigold strings if required and fairy lights. You can choose the colour palette and the style — traditional, modern or a blend of both." },
+        { question: "Can you do traditional floral naming ceremony setups in Mumbai?", answer: "Yes. We work with marigold strings, roses and traditional flower work alongside balloons. Tell us the style you want at booking." },
+        { question: "Which areas of Mumbai do you cover for naming ceremony decoration?", answer: c.mumbai.areasAnswer },
+      ],
+    },
+    bangalore: {
+      city: "Bangalore", category: "Naming Ceremony Decoration",
+      title: "Naming Ceremony Decoration in Bangalore, Setups from Rs 1,499 | HORA",
+      metaDescription: "Naming ceremony decoration in Bangalore from Rs 1,499. Floral backdrops and balloon setups for namkaran ceremonies in Whitefield, Koramangala and HSR.",
+      heading: "Naming Ceremony Decoration in Bangalore",
+      intro: "Naming ceremonies in Bangalore bring together family from near and far, and the decoration sets the mood from the moment guests arrive. A personalised backdrop with the baby's name, flower garlands, soft balloon clusters and warm lighting make the hall or home feel celebratory and special. A verified decorator sets it up in about an hour. Naming ceremony decoration in Bangalore starts at Rs 1,499.",
+      homeHeading: "Naming ceremony setups at home in Bangalore",
+      homeParagraphs: [
+        "Apartment community rooms and clubhouses are popular in Bangalore for naming ceremonies with a larger guest list. We set up the full backdrop, flower work and balloon arrangement for the space.",
+        "For a home setup, a styled main wall with the baby's name backdrop and a flower arrangement in front of the seating makes a beautiful focal point for the ceremony.",
+      ],
+      ...c.bangalore,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "What does a naming ceremony decoration include in Bangalore?", answer: "A personalised backdrop with the baby's name, floral arrangements, balloon clusters and fairy lights. You can choose between a traditional, modern or blended look." },
+        { question: "Do you set up in clubhouses for naming ceremonies in Bangalore?", answer: "Yes. Clubhouse and community room setups for naming ceremonies are common in Bangalore. Mention the venue and guest count when you book." },
+        { question: "Which areas of Bangalore do you cover for naming ceremony decoration?", answer: c.bangalore.areasAnswer },
+      ],
+    },
+    hyderabad: {
+      city: "Hyderabad", category: "Naming Ceremony Decoration",
+      title: "Naming Ceremony Decoration in Hyderabad, Setups from Rs 1,499 | HORA",
+      metaDescription: "Naming ceremony decoration in Hyderabad from Rs 1,499. Floral backdrops and balloon setups for namkaran and cradle ceremonies in Gachibowli, HITEC City and Banjara Hills.",
+      heading: "Naming Ceremony Decoration in Hyderabad",
+      intro: "Hyderabad naming ceremonies are often large family gatherings, and the decoration needs to fill a hall or a living room with warmth and festivity. Marigold strings, a personalised backdrop with the baby's name, balloon clusters and flower arrangements bring the right mix of traditional and celebratory. A verified decorator sets it up in about an hour. Naming ceremony decoration in Hyderabad starts at Rs 1,499.",
+      homeHeading: "Naming ceremony setups at home in Hyderabad",
+      homeParagraphs: [
+        "For large family naming ceremonies in Hyderabad, we can set up in a full function room or a big living room with a backdrop, marigold garlands, balloon arches and styled seating.",
+        "For a smaller home ceremony, a single beautifully dressed wall with the baby's name and fresh flowers is the perfect focal point.",
+      ],
+      ...c.hyderabad,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Do you do large family naming ceremony setups in Hyderabad?", answer: "Yes. Large gatherings are common for naming ceremonies in Hyderabad. We scale up with a full backdrop, marigold garlands, balloon arch and styled seating. Share the guest count and venue when you book." },
+        { question: "Which areas of Hyderabad do you cover for naming ceremony decoration?", answer: c.hyderabad.areasAnswer },
+      ],
+    },
+    delhi: {
+      city: "Delhi", category: "Naming Ceremony Decoration",
+      title: "Naming Ceremony Decoration in Delhi, Setups from Rs 1,499 | HORA",
+      metaDescription: "Naming ceremony decoration in Delhi from Rs 1,499. Floral backdrops and balloon setups for namkaran ceremonies across South Delhi, Dwarka and Rohini.",
+      heading: "Naming Ceremony Decoration in Delhi",
+      intro: "A naming ceremony in Delhi is a family milestone, and the decoration is part of how the occasion is remembered. A personalised backdrop with the baby's name, floral work, balloon clusters and warm lighting turn the home or hall into a beautiful setting for the ceremony. A verified decorator sets it up in about an hour. Naming ceremony decoration in Delhi starts at Rs 1,499.",
+      homeHeading: "Naming ceremony setups at home in Delhi",
+      homeParagraphs: [
+        "Large homes in south Delhi and Rohini give us space for a full backdrop, flower garlands and a styled seating area for the ceremony.",
+        "For a DDA flat or apartment, one well-dressed wall with the baby's name and fresh flowers is the most popular look. We work with the space you have.",
+      ],
+      ...c.delhi,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "What does a naming ceremony decoration include in Delhi?", answer: "A personalised backdrop with the baby's name, floral arrangements, balloon clusters, marigold strings if required and fairy lights. You can choose a traditional, modern or blended look." },
+        { question: "Which areas of Delhi do you cover for naming ceremony decoration?", answer: c.delhi.areasAnswer },
+      ],
+    },
+    noida: {
+      city: "Noida", category: "Naming Ceremony Decoration",
+      title: "Naming Ceremony Decoration in Noida, Setups from Rs 1,499 | HORA",
+      metaDescription: "Naming ceremony decoration in Noida from Rs 1,499. Floral backdrops and balloon setups for namkaran ceremonies across Sectors 50, 137 and Greater Noida.",
+      heading: "Naming Ceremony Decoration in Noida",
+      intro: "A naming ceremony in a Noida society flat or community room brings the family together for the baby's most important early milestone. A personalised backdrop with the baby's name, flower work and balloon clusters make the occasion feel as significant as it is. A verified decorator coordinates the gate pass and sets it up in about an hour. Naming ceremony decoration in Noida starts at Rs 1,499.",
+      homeHeading: "Naming ceremony setups at home in Noida",
+      homeParagraphs: [
+        "Society party terraces and community rooms in Noida are popular for naming ceremonies with extended family. We set up the full backdrop and decoration for the space.",
+        "Share the tower, flat number and a security contact and we coordinate the gate pass in advance so the setup is done before the family and guests arrive.",
+      ],
+      ...c.noida,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Do you handle gate access for naming ceremony setups in Noida?", answer: "Yes. Share the tower, flat and a security contact when you book and we coordinate the gate pass so the decorator arrives on time." },
+        { question: "Which areas of Noida do you cover for naming ceremony decoration?", answer: c.noida.areasAnswer },
+      ],
+    },
+    gurugram: {
+      city: "Gurugram", category: "Naming Ceremony Decoration",
+      title: "Naming Ceremony Decoration in Gurugram, Setups from Rs 1,499 | HORA",
+      metaDescription: "Naming ceremony decoration in Gurugram from Rs 1,499. Floral backdrops and balloon setups for namkaran ceremonies in DLF, Golf Course Road and Sohna Road.",
+      heading: "Naming Ceremony Decoration in Gurugram",
+      intro: "A naming ceremony in Gurugram is a meaningful family gathering, and the decoration is how the occasion feels different from any other day. A personalised backdrop with the baby's name, fresh flowers, balloon clusters and warm lights make the home or hall feel celebratory and welcoming. A verified decorator handles the gate pass and sets it up in about an hour. Naming ceremony decoration in Gurugram starts at Rs 1,499.",
+      homeHeading: "Naming ceremony setups at home in Gurugram",
+      homeParagraphs: [
+        "DLF and Golf Course Road flats with spacious living rooms allow for a full backdrop and flower arrangement that fills the space beautifully for a larger naming ceremony gathering.",
+        "For a compact flat, one well-dressed wall with the baby's name and flowers is the most popular look. We sort the gate pass so the setup is done before the guests arrive.",
+      ],
+      ...c.gurugram,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "What does a naming ceremony decoration include in Gurugram?", answer: "A personalised backdrop with the baby's name, floral arrangements, balloon clusters and fairy lights. You can choose a traditional, modern or blended look." },
+        { question: "Which areas of Gurugram do you cover for naming ceremony decoration?", answer: c.gurugram.areasAnswer },
+      ],
+    },
+    ghaziabad: {
+      city: "Ghaziabad", category: "Naming Ceremony Decoration",
+      title: "Naming Ceremony Decoration in Ghaziabad, Setups from Rs 1,499 | HORA",
+      metaDescription: "Naming ceremony decoration in Ghaziabad from Rs 1,499. Floral backdrops and balloon setups for namkaran ceremonies in Indirapuram, Vaishali and Raj Nagar.",
+      heading: "Naming Ceremony Decoration in Ghaziabad",
+      intro: "Naming ceremonies in Ghaziabad are warm, full-family occasions, and the decoration should reflect that. A personalised backdrop with the baby's name, marigold strings, flower work and balloon clusters make the living room or community hall feel festive and celebratory. A verified decorator coordinates the gate pass and sets it up in about an hour. Naming ceremony decoration in Ghaziabad starts at Rs 1,499.",
+      homeHeading: "Naming ceremony setups at home in Ghaziabad",
+      homeParagraphs: [
+        "Community halls in Indirapuram and Vaishali are the top pick for naming ceremonies with a large family gathering. We set up the full backdrop, flower work and balloon arrangement for the hall.",
+        "Home setups in a flat or builder floor work beautifully with one styled main wall. Share the society and flat details and we handle the gate pass.",
+      ],
+      ...c.ghaziabad,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Do you set up in community halls for naming ceremonies in Ghaziabad?", answer: "Yes. Community hall setups for naming ceremonies are very popular in Ghaziabad. Mention the hall and the guest count when you book and we design the full setup accordingly." },
+        { question: "Which areas of Ghaziabad do you cover for naming ceremony decoration?", answer: c.ghaziabad.areasAnswer },
+      ],
+    },
+    faridabad: {
+      city: "Faridabad", category: "Naming Ceremony Decoration",
+      title: "Naming Ceremony Decoration in Faridabad, Setups from Rs 1,499 | HORA",
+      metaDescription: "Naming ceremony decoration in Faridabad from Rs 1,499. Floral backdrops and balloon setups for namkaran ceremonies across old sectors, NIT and Greater Faridabad.",
+      heading: "Naming Ceremony Decoration in Faridabad",
+      intro: "A naming ceremony in Faridabad brings extended family together to celebrate the baby's first milestone, and the decoration is part of what makes the occasion feel significant. A personalised backdrop with the baby's name, flowers, balloon clusters and warm lighting set the tone perfectly. A verified decorator sets it up in about an hour. Naming ceremony decoration in Faridabad starts at Rs 1,499.",
+      homeHeading: "Naming ceremony setups at home in Faridabad",
+      homeParagraphs: [
+        "Builder floors and independent houses in the old sectors have large drawing rooms that work beautifully for naming ceremonies with extended family — full backdrop, flower garlands and a styled seating area.",
+        "Society flats in Greater Faridabad are great for smaller, more intimate naming ceremonies. We handle the gate pass so the setup is done before the ceremony begins.",
+      ],
+      ...c.faridabad,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "What does a naming ceremony decoration include in Faridabad?", answer: "A personalised backdrop with the baby's name, floral arrangements, balloon clusters and fairy lights. You can choose between a traditional and a modern look, or a blend of both." },
+        { question: "Which areas of Faridabad do you cover for naming ceremony decoration?", answer: c.faridabad.areasAnswer },
+      ],
+    },
+  },
+};

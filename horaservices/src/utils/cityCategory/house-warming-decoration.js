@@ -1,0 +1,151 @@
+import { cityAreasData as c } from "./_cityAreas";
+
+export const houseWarmingDecoration = {
+  "house-warming-decoration": {
+    mumbai: {
+      city: "Mumbai", category: "House Warming Decoration",
+      title: "House Warming Decoration in Mumbai, Griha Pravesh Setups from Rs 1,499 | HORA",
+      metaDescription: "House warming decoration in Mumbai from Rs 1,499. Griha pravesh and housewarming setups with flowers, balloons and marigold strings in Andheri, Powai and Navi Mumbai.",
+      heading: "House Warming Decoration in Mumbai",
+      intro: "A housewarming in Mumbai is the first celebration in a new home, and the decoration sets the tone for everything that follows. Marigold strings at the entrance, a Welcome Home backdrop, fresh flowers, balloon clusters and warm lights make the flat or house feel festive and auspicious. A verified decorator sets it up in about an hour. House warming decoration in Mumbai starts at Rs 1,499.",
+      homeHeading: "House warming setups in Mumbai",
+      homeParagraphs: [
+        "Society flats in Mumbai are the most common setting for a housewarming, and we set up beautifully in any size space — compact 1BHK or large 3BHK. The entrance decoration and the main living room backdrop are the two focal points.",
+        "For traditional griha pravesh ceremonies with pandit arrangements, the decoration works around the ceremony setup. Tell us the timeline and we coordinate around it.",
+      ],
+      ...c.mumbai,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "What does a house warming decoration include in Mumbai?", answer: "A Welcome Home or personalised backdrop, marigold strings at the entrance, flower arrangements, balloon clusters and fairy lights. You can choose a traditional, modern or blended look." },
+        { question: "Can you coordinate the decoration around a griha pravesh puja in Mumbai?", answer: "Yes. Tell us the puja timeline and we plan the decoration setup so it is done before the ceremony begins and does not interfere with the pandit's arrangements." },
+        { question: "Which areas of Mumbai do you cover for house warming decoration?", answer: c.mumbai.areasAnswer },
+      ],
+    },
+    bangalore: {
+      city: "Bangalore", category: "House Warming Decoration",
+      title: "House Warming Decoration in Bangalore, Griha Pravesh Setups from Rs 1,499 | HORA",
+      metaDescription: "House warming decoration in Bangalore from Rs 1,499. Griha pravesh and housewarming setups with flowers, balloons and marigold strings in Whitefield, Koramangala and HSR.",
+      heading: "House Warming Decoration in Bangalore",
+      intro: "Moving into a new home in Bangalore is a milestone worth celebrating properly. Marigold strings at the door, a Welcome Home backdrop, fresh flowers and balloon clusters turn the entrance and living room into something that photographs beautifully and feels auspicious. A verified decorator sets it up in about an hour. House warming decoration in Bangalore starts at Rs 1,499.",
+      homeHeading: "House warming setups in Bangalore",
+      homeParagraphs: [
+        "New apartment handovers in Whitefield and Sarjapur Road are a constant in Bangalore, and we do a lot of housewarming setups here. The entrance decoration and main living room backdrop are the two focal points.",
+        "For a griha pravesh with a puja ceremony, we time the setup to be done before the pandit arrives and leave the ceremony space clear.",
+      ],
+      ...c.bangalore,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "What does a house warming decoration include in Bangalore?", answer: "A Welcome Home backdrop, marigold strings at the entrance, flower arrangements, balloon clusters and fairy lights. Traditional or modern look, or a blend of both." },
+        { question: "Which areas of Bangalore do you cover for house warming decoration?", answer: c.bangalore.areasAnswer },
+      ],
+    },
+    hyderabad: {
+      city: "Hyderabad", category: "House Warming Decoration",
+      title: "House Warming Decoration in Hyderabad, Griha Pravesh Setups from Rs 1,499 | HORA",
+      metaDescription: "House warming decoration in Hyderabad from Rs 1,499. Griha pravesh and housewarming setups with flowers, balloons and marigold strings in Gachibowli, HITEC City and Banjara Hills.",
+      heading: "House Warming Decoration in Hyderabad",
+      intro: "A housewarming in Hyderabad often brings the whole family together for the griha pravesh ceremony and a celebration afterwards. The decoration is part of what makes the occasion feel as significant as the new home deserves. Marigold strings, a Welcome Home backdrop, flowers and warm lights make the entrance and living room look festive and auspicious. House warming decoration in Hyderabad starts at Rs 1,499.",
+      homeHeading: "House warming setups in Hyderabad",
+      homeParagraphs: [
+        "For large family housewarmings in Hyderabad with extended family gathered, we can dress the full living room and entrance with a backdrop, flower garlands and balloon arrangement.",
+        "We coordinate the setup around the griha pravesh puja so the decoration is in place before the ceremony and the ceremony space is left clear.",
+      ],
+      ...c.hyderabad,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Can you do a large family housewarming decoration in Hyderabad?", answer: "Yes. Hyderabad housewarmings often involve extended family. We scale up with a full backdrop, flower garlands and balloon arrangement for a larger gathering. Share the guest count when you book." },
+        { question: "Which areas of Hyderabad do you cover for house warming decoration?", answer: c.hyderabad.areasAnswer },
+      ],
+    },
+    delhi: {
+      city: "Delhi", category: "House Warming Decoration",
+      title: "House Warming Decoration in Delhi, Griha Pravesh Setups from Rs 1,499 | HORA",
+      metaDescription: "House warming decoration in Delhi from Rs 1,499. Griha pravesh and housewarming setups with flowers, balloons and marigold strings across South Delhi, Dwarka and Rohini.",
+      heading: "House Warming Decoration in Delhi",
+      intro: "A housewarming in Delhi is a proper family event, and the decoration is part of what makes the new home feel like it has been blessed and celebrated. Marigold strings at the entrance, a Welcome Home backdrop, flowers and balloon clusters make the living room look festive for the griha pravesh and the party that follows. House warming decoration in Delhi starts at Rs 1,499.",
+      homeHeading: "House warming setups in Delhi",
+      homeParagraphs: [
+        "Large homes in south Delhi and Rohini allow for a full entrance decoration, a backdrop in the main hall and flower arrangements throughout the space.",
+        "For a DDA flat or apartment, one well-dressed entrance and a styled main wall is the classic look. We work with the space and the ceremony timeline.",
+      ],
+      ...c.delhi,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "What does a house warming decoration include in Delhi?", answer: "A Welcome Home backdrop, marigold strings, flower arrangements, balloon clusters and fairy lights. We can blend traditional and modern elements depending on what you prefer." },
+        { question: "Which areas of Delhi do you cover for house warming decoration?", answer: c.delhi.areasAnswer },
+      ],
+    },
+    noida: {
+      city: "Noida", category: "House Warming Decoration",
+      title: "House Warming Decoration in Noida, Griha Pravesh Setups from Rs 1,499 | HORA",
+      metaDescription: "House warming decoration in Noida from Rs 1,499. Griha pravesh and housewarming setups with flowers, balloons and marigold strings across Sectors 50, 137 and Greater Noida.",
+      heading: "House Warming Decoration in Noida",
+      intro: "Noida sees a constant stream of new apartment possessions, and a housewarming is how the family marks the occasion properly. Marigold strings at the entrance, a Welcome Home backdrop and balloon clusters in the living room set the festive tone for the griha pravesh. A verified decorator coordinates the gate pass and sets it up in about an hour. House warming decoration in Noida starts at Rs 1,499.",
+      homeHeading: "House warming setups in Noida",
+      homeParagraphs: [
+        "New possession flats in the Expressway sectors and Greater Noida societies are a common housewarming setting. We decorate the entrance and the main living room and coordinate the gate pass in advance.",
+        "For the griha pravesh ceremony, we time the setup to be done before the puja begins and keep the ceremony space clear.",
+      ],
+      ...c.noida,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Do you handle gate access for house warming setups in Noida?", answer: "Yes. Share the tower, flat number and a security contact and we coordinate the gate pass so the decorator arrives and sets up on time." },
+        { question: "Which areas of Noida do you cover for house warming decoration?", answer: c.noida.areasAnswer },
+      ],
+    },
+    gurugram: {
+      city: "Gurugram", category: "House Warming Decoration",
+      title: "House Warming Decoration in Gurugram, Griha Pravesh Setups from Rs 1,499 | HORA",
+      metaDescription: "House warming decoration in Gurugram from Rs 1,499. Griha pravesh and housewarming setups with flowers, balloons and marigold strings in DLF, Golf Course Road and Sohna Road.",
+      heading: "House Warming Decoration in Gurugram",
+      intro: "A housewarming in a new Gurugram flat is a milestone for the whole family, and the decoration is how the occasion is marked before the griha pravesh puja and the celebration. Marigold strings, a Welcome Home backdrop, flowers and balloon clusters at the entrance and living room make the new home feel festive and auspicious from the moment guests arrive. House warming decoration in Gurugram starts at Rs 1,499.",
+      homeHeading: "House warming setups in Gurugram",
+      homeParagraphs: [
+        "New possession flats in DLF, Golf Course Road and the Dwarka Expressway sectors are our most common housewarming venue in Gurugram. We decorate the entrance and the main living room and sort the society gate pass in advance.",
+        "We time the setup around the griha pravesh puja timeline so the decoration is done before the pandit arrives and the ceremony space is left clear.",
+      ],
+      ...c.gurugram,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "What does a house warming decoration include in Gurugram?", answer: "A Welcome Home backdrop, marigold strings at the entrance, flower arrangements, balloon clusters and fairy lights. Traditional, modern or a blend — tell us the look you want." },
+        { question: "Which areas of Gurugram do you cover for house warming decoration?", answer: c.gurugram.areasAnswer },
+      ],
+    },
+    ghaziabad: {
+      city: "Ghaziabad", category: "House Warming Decoration",
+      title: "House Warming Decoration in Ghaziabad, Griha Pravesh Setups from Rs 1,499 | HORA",
+      metaDescription: "House warming decoration in Ghaziabad from Rs 1,499. Griha pravesh and housewarming setups with flowers, balloons and marigold strings in Indirapuram, Vaishali and Raj Nagar.",
+      heading: "House Warming Decoration in Ghaziabad",
+      intro: "Housewarmings in Ghaziabad bring the full family together for the griha pravesh puja and a celebration, and the decoration is part of what makes the new home feel ready. Marigold strings at the entrance, a Welcome Home backdrop, flowers and balloon clusters in the living room set the festive and auspicious mood. House warming decoration in Ghaziabad starts at Rs 1,499.",
+      homeHeading: "House warming setups in Ghaziabad",
+      homeParagraphs: [
+        "New possession flats in Indirapuram, Vaishali and Vasundhara are our most common housewarming venue in Ghaziabad. We decorate the entrance and the main living room and handle the society gate pass.",
+        "For builder floors in Raj Nagar with a larger drawing room, we can do a more extensive setup with a full backdrop and flower garlands.",
+      ],
+      ...c.ghaziabad,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "What does a house warming decoration include in Ghaziabad?", answer: "A Welcome Home backdrop, marigold strings, flower arrangements, balloon clusters and fairy lights. We can do a traditional or modern look, or a blend." },
+        { question: "Which areas of Ghaziabad do you cover for house warming decoration?", answer: c.ghaziabad.areasAnswer },
+      ],
+    },
+    faridabad: {
+      city: "Faridabad", category: "House Warming Decoration",
+      title: "House Warming Decoration in Faridabad, Griha Pravesh Setups from Rs 1,499 | HORA",
+      metaDescription: "House warming decoration in Faridabad from Rs 1,499. Griha pravesh and housewarming setups with flowers, balloons and marigold strings across old sectors, NIT and Greater Faridabad.",
+      heading: "House Warming Decoration in Faridabad",
+      intro: "A housewarming in Faridabad is a family gathering that calls for proper decoration. Marigold strings at the entrance, a Welcome Home backdrop in the living room, flowers and balloon clusters make the new home feel festive and ready for the griha pravesh ceremony and the celebration that follows. House warming decoration in Faridabad starts at Rs 1,499.",
+      homeHeading: "House warming setups in Faridabad",
+      homeParagraphs: [
+        "Builder floors and independent houses in the old sectors have large drawing rooms and entrances that look spectacular dressed up for a housewarming with extended family.",
+        "Society flats in Greater Faridabad are equally popular for housewarming setups. We arrange the gate pass in advance and time the setup around the griha pravesh ceremony.",
+      ],
+      ...c.faridabad,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "What does a house warming decoration include in Faridabad?", answer: "A Welcome Home backdrop, marigold strings, flower arrangements, balloon clusters and fairy lights. Traditional or modern look, or a blend of both." },
+        { question: "Which areas of Faridabad do you cover for house warming decoration?", answer: c.faridabad.areasAnswer },
+      ],
+    },
+  },
+};

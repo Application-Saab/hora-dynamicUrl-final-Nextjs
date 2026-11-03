@@ -1,0 +1,152 @@
+import { cityAreasData as c } from "./_cityAreas";
+
+export const welcomeBabyDecoration = {
+  "welcome-baby-decoration": {
+    mumbai: {
+      city: "Mumbai", category: "Welcome Baby Decoration",
+      title: "Welcome Baby Decoration in Mumbai, Setups from Rs 1,499 | HORA",
+      metaDescription: "Welcome baby decoration in Mumbai from Rs 1,499. Pastel welcome home setups for newborns at home in Andheri, Powai and Navi Mumbai.",
+      heading: "Welcome Baby Decoration in Mumbai",
+      intro: "A newborn's first day home should feel like the occasion it is. Soft balloon clusters, a Welcome Baby backdrop, flowers and fairy lights turn the living room into a gentle, beautiful greeting for the baby and a memorable moment for the parents. A verified decorator sets it up while the parents are still at the hospital, so everything is ready when they walk in the door. Welcome baby decoration in Mumbai starts at Rs 1,499.",
+      homeHeading: "Welcome home setups in Mumbai",
+      homeParagraphs: [
+        "We time the setup carefully so the room is decorated and the decorator is gone before the family arrives home. Share the expected time and whoever has access to the flat, and we coordinate around that.",
+        "Baby safety is the first priority. Every balloon is inflated away from the baby's sleeping area, nothing is positioned near the crib, and all small parts are kept well out of reach.",
+      ],
+      ...c.mumbai,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Can you set up a welcome baby decoration while the parents are at the hospital in Mumbai?", answer: "Yes. Share the expected arrival time and whoever has access to the flat. We time the decorator to finish and leave before the family arrives home." },
+        { question: "Is balloon decoration safe for a newborn in Mumbai?", answer: "Yes. We inflate balloons away from the baby's sleeping area, keep everything secured so nothing can fall, and keep small parts well out of reach. Mention a newborn at booking and we plan accordingly." },
+        { question: "Which areas of Mumbai do you cover for welcome baby decoration?", answer: c.mumbai.areasAnswer },
+      ],
+    },
+    bangalore: {
+      city: "Bangalore", category: "Welcome Baby Decoration",
+      title: "Welcome Baby Decoration in Bangalore, Setups from Rs 1,499 | HORA",
+      metaDescription: "Welcome baby decoration in Bangalore from Rs 1,499. Pastel welcome home setups for newborns in Whitefield, Koramangala and HSR.",
+      heading: "Welcome Baby Decoration in Bangalore",
+      intro: "The day a newborn comes home is one of the most significant days in any family's life, and the decoration should match that feeling. A soft pastel Welcome Baby backdrop, balloon clusters, flowers and warm lights transform the living room into a gentle celebration. A verified decorator arrives while the family is still at the hospital, sets up quietly, and leaves everything perfect for when the parents walk in. Welcome baby decoration in Bangalore starts at Rs 1,499.",
+      homeHeading: "Welcome home setups in Bangalore",
+      homeParagraphs: [
+        "Share the expected arrival time and who has access, and we coordinate the setup around the hospital discharge time so the room is ready and the decorator is gone when the family arrives.",
+        "All setups for newborns are planned with baby safety first — balloons away from the sleeping area, everything secured, and no small parts near the crib.",
+      ],
+      ...c.bangalore,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Can you time a welcome baby setup around the hospital discharge in Bangalore?", answer: "Yes. Share the expected discharge time and whoever has access to the flat, and we time the decorator to finish and leave before the family arrives home." },
+        { question: "Is the decoration safe for a newborn?", answer: "Yes. Balloons are inflated away from the sleeping area, everything is secured, and small parts are kept out of reach. Tell us there is a newborn when you book." },
+        { question: "Which areas of Bangalore do you cover for welcome baby decoration?", answer: c.bangalore.areasAnswer },
+      ],
+    },
+    hyderabad: {
+      city: "Hyderabad", category: "Welcome Baby Decoration",
+      title: "Welcome Baby Decoration in Hyderabad, Setups from Rs 1,499 | HORA",
+      metaDescription: "Welcome baby decoration in Hyderabad from Rs 1,499. Pastel welcome home setups for newborns in Gachibowli, HITEC City and Banjara Hills.",
+      heading: "Welcome Baby Decoration in Hyderabad",
+      intro: "A newborn coming home to a decorated living room is one of those moments that gets photographed and remembered for years. Soft pastels, a Welcome Baby backdrop, balloon clusters and flowers make the room feel warm and celebratory without being overwhelming. A verified decorator sets it up while the family is still at the hospital and leaves everything perfect. Welcome baby decoration in Hyderabad starts at Rs 1,499.",
+      homeHeading: "Welcome home setups in Hyderabad",
+      homeParagraphs: [
+        "For joint family setups in Hyderabad where grandparents and extended family are at home, we can dress a larger space — a full living room backdrop, balloon garland and flower arrangement.",
+        "Share the hospital discharge time and the person who has access to the home, and we time the setup to be done and cleared before the family walks in.",
+      ],
+      ...c.hyderabad,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Can you do a welcome baby setup for a joint family home in Hyderabad?", answer: "Yes. For larger joint family homes, we can scale the setup to a full living room backdrop and balloon garland. Share the space and the expected arrival time when you book." },
+        { question: "Which areas of Hyderabad do you cover for welcome baby decoration?", answer: c.hyderabad.areasAnswer },
+      ],
+    },
+    delhi: {
+      city: "Delhi", category: "Welcome Baby Decoration",
+      title: "Welcome Baby Decoration in Delhi, Setups from Rs 1,499 | HORA",
+      metaDescription: "Welcome baby decoration in Delhi from Rs 1,499. Pastel welcome home setups for newborns across South Delhi, Dwarka and Rohini.",
+      heading: "Welcome Baby Decoration in Delhi",
+      intro: "The first moments a newborn spends at home deserve a beautiful welcome. A soft pastel backdrop, gentle balloon clusters, fresh flowers and warm lights make the living room feel like a celebration without being too loud or bright. A verified decorator sets it up while the family is at the hospital, leaves well before they arrive, and the room is ready. Welcome baby decoration in Delhi starts at Rs 1,499.",
+      homeHeading: "Welcome home setups in Delhi",
+      homeParagraphs: [
+        "Larger homes in south Delhi and Rohini allow for a full living room setup — backdrop, balloon garland, flower arrangement and fairy lights across the room.",
+        "Share the expected arrival time and access details. We time the decorator so the room is done and the decorator is gone before the family walks in.",
+      ],
+      ...c.delhi,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Can you time a welcome baby decoration around the hospital discharge in Delhi?", answer: "Yes. Share the expected discharge time and whoever has access. We time the decorator to finish and leave before the family arrives home." },
+        { question: "Which areas of Delhi do you cover for welcome baby decoration?", answer: c.delhi.areasAnswer },
+      ],
+    },
+    noida: {
+      city: "Noida", category: "Welcome Baby Decoration",
+      title: "Welcome Baby Decoration in Noida, Setups from Rs 1,499 | HORA",
+      metaDescription: "Welcome baby decoration in Noida from Rs 1,499. Pastel welcome home setups for newborns across Sectors 50, 137 and Greater Noida.",
+      heading: "Welcome Baby Decoration in Noida",
+      intro: "A welcome baby setup in a Noida society flat is a beautiful way to greet a newborn's first day home. Soft pastels, a backdrop, balloon clusters and fairy lights in the living room make the moment feel as significant as it is. A verified decorator coordinates the gate pass, sets up while the family is still at the hospital, and leaves well before they arrive. Welcome baby decoration in Noida starts at Rs 1,499.",
+      homeHeading: "Welcome home setups in Noida",
+      homeParagraphs: [
+        "Share the tower, flat number and a security contact, and we coordinate the gate pass so the decorator can access the flat and set up without any delay.",
+        "Baby safety is always planned for — balloons are kept away from the sleeping area, everything is secured, and small parts are out of reach.",
+      ],
+      ...c.noida,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "How do you handle society gate access for a welcome baby setup in Noida?", answer: "Share the tower, flat number and a security contact when you book. We coordinate the gate pass in advance so the decorator can access the flat and set up while the family is at the hospital." },
+        { question: "Which areas of Noida do you cover for welcome baby decoration?", answer: c.noida.areasAnswer },
+      ],
+    },
+    gurugram: {
+      city: "Gurugram", category: "Welcome Baby Decoration",
+      title: "Welcome Baby Decoration in Gurugram, Setups from Rs 1,499 | HORA",
+      metaDescription: "Welcome baby decoration in Gurugram from Rs 1,499. Pastel welcome home setups for newborns in DLF, Golf Course Road and Sohna Road.",
+      heading: "Welcome Baby Decoration in Gurugram",
+      intro: "A newborn coming home to a decorated room is a moment no one forgets. A Welcome Baby backdrop, soft balloon clusters, flowers and warm lights in the living room make it feel like a proper celebration without being loud or overwhelming. A verified decorator handles the society gate pass, sets up while the family is still at the hospital, and is gone before they arrive. Welcome baby decoration in Gurugram starts at Rs 1,499.",
+      homeHeading: "Welcome home setups in Gurugram",
+      homeParagraphs: [
+        "DLF and Golf Course Road flats with large living rooms allow for a full backdrop, balloon garland and flower arrangement that fills the space beautifully.",
+        "We handle the gate pass and time the setup around the hospital discharge. Share the access details and the expected arrival time and we handle the rest.",
+      ],
+      ...c.gurugram,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Can you coordinate a welcome baby setup with the hospital discharge in Gurugram?", answer: "Yes. Share the expected discharge time and the access details. We sort the gate pass and time the decorator to finish and leave before the family arrives home." },
+        { question: "Which areas of Gurugram do you cover for welcome baby decoration?", answer: c.gurugram.areasAnswer },
+      ],
+    },
+    ghaziabad: {
+      city: "Ghaziabad", category: "Welcome Baby Decoration",
+      title: "Welcome Baby Decoration in Ghaziabad, Setups from Rs 1,499 | HORA",
+      metaDescription: "Welcome baby decoration in Ghaziabad from Rs 1,499. Pastel welcome home setups for newborns in Indirapuram, Vaishali and Raj Nagar.",
+      heading: "Welcome Baby Decoration in Ghaziabad",
+      intro: "A newborn's first day at home is a family occasion, and the decoration makes it feel like one. A Welcome Baby backdrop, soft balloon clusters and fairy lights in the living room set the tone perfectly. A verified decorator coordinates the gate pass, sets up while the family is still at the hospital, and leaves everything ready. Welcome baby decoration in Ghaziabad starts at Rs 1,499.",
+      homeHeading: "Welcome home setups in Ghaziabad",
+      homeParagraphs: [
+        "Share the society, tower and flat number along with a security contact, and we coordinate the gate pass so the decorator can set up undisturbed.",
+        "All setups for newborns are planned with baby safety first — balloons away from the sleeping area and all small parts out of reach.",
+      ],
+      ...c.ghaziabad,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "How do you access a Ghaziabad society flat for a welcome baby setup?", answer: "Share the society, tower and flat number along with a security contact when you book. We coordinate the gate pass in advance so the decorator can set up while the family is at the hospital." },
+        { question: "Which areas of Ghaziabad do you cover for welcome baby decoration?", answer: c.ghaziabad.areasAnswer },
+      ],
+    },
+    faridabad: {
+      city: "Faridabad", category: "Welcome Baby Decoration",
+      title: "Welcome Baby Decoration in Faridabad, Setups from Rs 1,499 | HORA",
+      metaDescription: "Welcome baby decoration in Faridabad from Rs 1,499. Pastel welcome home setups for newborns across old sectors, NIT and Greater Faridabad.",
+      heading: "Welcome Baby Decoration in Faridabad",
+      intro: "The day a newborn comes home deserves a setup that makes the moment feel as big as it is. Soft pastel balloons, a Welcome Baby backdrop and fairy lights in the living room create a warm, beautiful greeting. A verified decorator sets it up while the family is at the hospital and leaves well before they arrive home. Welcome baby decoration in Faridabad starts at Rs 1,499.",
+      homeHeading: "Welcome home setups in Faridabad",
+      homeParagraphs: [
+        "Builder floors and independent houses in the old sectors often have a large drawing room that works beautifully for a welcome baby setup with extended family gathered.",
+        "Society flats in Greater Faridabad are popular for smaller, intimate welcome setups. We sort the gate pass in advance and time the decorator around the hospital discharge.",
+      ],
+      ...c.faridabad,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Can you time a welcome baby setup around the hospital discharge in Faridabad?", answer: "Yes. Share the expected discharge time and whoever has access to the home. We time the decorator to finish and leave before the family arrives." },
+        { question: "Which areas of Faridabad do you cover for welcome baby decoration?", answer: c.faridabad.areasAnswer },
+      ],
+    },
+  },
+};
