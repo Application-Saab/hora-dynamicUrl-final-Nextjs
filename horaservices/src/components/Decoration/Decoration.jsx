@@ -519,14 +519,9 @@ const Decoration = ({ city, locality }) => {
           type="image/x-icon"
         />
 
-        <meta
-          property="og:title"
-          content="Balloon and Flower Decorations by Professional Decorators"
-        />
-        <meta
-          property="og:description"
-          content="🎉 Explore a wide range of stunning decoration designs for every event and party. Book your ideal design directly through our website for a seamless experience. Need help? Contact us at 7338584828."
-        />
+        {/* og:title + og:description match the page <title> and <meta description> */}
+        <meta property="og:title" content={pageSeo.title} />
+        <meta property="og:description" content={pageSeo.description} />
         <meta
           property="og:image"
           content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
@@ -536,7 +531,9 @@ const Decoration = ({ city, locality }) => {
           content="balloon decoration, birthday decoration, wedding decoration, baby shower decoration"
         />
 
-        {/* ✅ og:url = same as canonical */}
+        {/* og:url = same as canonical (og:url and og:type are also set in the page
+            file; keeping them here too so the component is self-contained when used
+            outside [city]/balloon-decoration) */}
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
 

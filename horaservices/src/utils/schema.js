@@ -37,7 +37,7 @@ export const getDecorationOrganizationSchema = () => ({
     "url": "https://horaservices.com",
     "keywords": "birthday decoration, anniversary decoration, party themes decorations, candlelight dinners, welcome baby decoration, baby shower decoration, first night decorations, haldi decoration, mehndi decoration, balloon room decoration, birthday decorators near me",
     "description": "🎉 Explore a wide range of stunning decoration designs for every event and party, including 🎂 birthdays, 🧸 kids' parties, 💍 anniversaries, 💃 bachelorette parties, 👶 baby showers, 🍼 naming ceremonies, and 🌙 first nights. Choose your ideal design and book directly through our website for a seamless experience. Need help? Reach out to us at 7338584828 for friendly support and personalised assistance. 😊",
-    "logo": "https://horaservices.com//api/uploads/logo-icon.png",
+    "logo": "https://horaservices.com/api/uploads/logo-icon.png",
     "priceRange": "999-39999",
     "aggregateRating": {
     "@type": "AggregateRating",
