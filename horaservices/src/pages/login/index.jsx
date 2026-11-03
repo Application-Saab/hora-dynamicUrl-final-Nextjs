@@ -5,7 +5,7 @@ import { Col, Form, Row } from "react-bootstrap";
 import { useTimer } from "../../utils/useTimer";
 import Popup from "../../utils/popup";
 import logoutImage from '../../assets/logout.png';
-import orderWarning from "../../assets/OrderWarning.png";
+import orderWarning from "../../assets/OrderWarning.webp";
 import { useRouter } from "next/router";
 import 'bootstrap/dist/css/bootstrap.min.css';
 

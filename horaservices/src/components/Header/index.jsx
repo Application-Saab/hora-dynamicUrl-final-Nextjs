@@ -9,11 +9,10 @@ import logoWhite from '../../../public/assets/logo_white.svg'
 import Link from "next/link";
 import Image from "next/image";
 import useScrollToTop from '../useScrollToTop'; // Import the custom hook
-import ChefCitypage from "../../pages/[city]/chef-near-me";
  import Popup from "../../utils/popup";
 import { usePathname, useRouter } from "next/navigation";
-import logo from '../../assets/new_logo_light.png.png';
-import logolight from '../../assets/hora-light-innerpage.png'
+import logo from '../../assets/new_logo_light.webp';
+import logolight from '../../assets/hora-light-innerpage.webp'
 import loginIcon from '../../assets/profile_picture.png';
   
 function Header() {
@@ -389,7 +388,7 @@ useEffect(() => {
       </div>
       <div style={styles.mobileViewHeader} className='mobileViewHeader py-2'>
         <div className="d-flex align-items-center gap-3 z-1" style={{ width:"100%"}}>
-          {isHomePage && ChefCitypage ? (
+          {isHomePage ? (
             <>
               <FontAwesomeIcon
                 icon={faBars}

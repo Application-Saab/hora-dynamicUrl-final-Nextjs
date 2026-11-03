@@ -1,6 +1,6 @@
 import React, { useEffect , useState } from "react";
 import "../../css/success.css";
-import confirmOrder from "../../assets/confirmOrder.png";
+import confirmOrder from "../../assets/confirmOrder.webp";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import axios from 'axios';
@@ -105,5 +105,8 @@ const sendWelcomeMessage = async (mobileNumber) => {
     </div>
   );
 };
+
+// Needs browser-only data (URL query, localStorage, saved cart), so it renders after hydration.
+Success.clientOnly = true;
 
 export default Success;

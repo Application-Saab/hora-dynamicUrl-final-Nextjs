@@ -10,7 +10,7 @@ import {
 import axios from "axios";
 import Head from 'next/head';
 // import { useNavigate , Link, useLocation } from 'react-router-dom'; // Import useNavigate
-import whatsppicon from "../../../assets/whatsapp-icon.png";
+import whatsppicon from "../../../assets/whatsapp-icon.webp";
 import { getHomeOrganizationSchema } from "../../../utils/schema";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -25,10 +25,10 @@ import PhotographyIcon from '../../../assets/photography_icon.png';
 import FoodIcon from '../../../assets/food_icon.png';
 import '../../../app/homepage.css';
 // remove later
-// import homepage_entertainment1 from '../../../assets/homepage_entertainment1.png';
-// import homepage_entertainment2 from '../../../assets/homepage_entertainment2.png';
-// import homepage_entertainment3 from '../../../assets/homepage_entertainment3.png';
-// import homepage_entertainment4 from '../../../assets/homepage_entertainment4.png';
+// import homepage_entertainment1 from '../../../assets/homepage_entertainment1.webp';
+// import homepage_entertainment2 from '../../../assets/homepage_entertainment2.webp';
+// import homepage_entertainment3 from '../../../assets/homepage_entertainment3.webp';
+// import homepage_entertainment4 from '../../../assets/homepage_entertainment4.webp';
 
 export default function Home() {
   const router = useRouter();
@@ -366,38 +366,38 @@ export default function Home() {
     {
       id: 1,
       title: 'Birthday and Anniversary',
-      imageUrl: require('../../../assets/homepage_Celebrate1.png'),
+      imageUrl: require('../../../assets/homepage_Celebrate1.webp'),
       imgAlt: 'Birthday and Anniversary celebration',
       link: "https://horaservices.com/balloon-decoration/birthday-decoration",
     },
     {
       id: 2,
       title: 'House Parties',
-      imageUrl: require('../../../assets/homepage_Celebrate2.png'),
+      imageUrl: require('../../../assets/homepage_Celebrate2.webp'),
       imgAlt: 'House parties celebration',
     },
     {
       id: 3,
       title: 'Corporate Events',
-      imageUrl: require('../../../assets/homepage_Celebrate3.png'),
+      imageUrl: require('../../../assets/homepage_Celebrate3.webp'),
       imgAlt: 'Corporate events celebration',
     },
     {
       id: 4,
       title: 'Wedding Events',
-      imageUrl: require('../../../assets/homepage_Celebrate4.png'),
+      imageUrl: require('../../../assets/homepage_Celebrate4.webp'),
       imgAlt: 'Wedding events celebration',
     },
     {
       id: 5,
       title: 'Gatherings',
-      imageUrl: require('../../../assets/homepage_Celebrate5.png'),
+      imageUrl: require('../../../assets/homepage_Celebrate5.webp'),
       imgAlt: 'Gatherings celebration',
     },
     {
       id: 6,
       title: 'Kids Events',
-      imageUrl: require('../../../assets/homepage_Celebrate6.png'),
+      imageUrl: require('../../../assets/homepage_Celebrate6.webp'),
       imgAlt: 'Kids events celebration',
     },
   ];

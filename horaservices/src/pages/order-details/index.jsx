@@ -134,4 +134,7 @@ const OrderDetail = () => {
   );
 };
 
+// Needs browser-only data (URL query, localStorage, saved cart), so it renders after hydration.
+OrderDetail.clientOnly = true;
+
 export default OrderDetail;
