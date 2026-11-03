@@ -15,6 +15,7 @@ import LogoutModal from "@/utils/LogoutModal";
 import cityNameToSlug from "../../utils/Citynametoslug.json";
 import { useCity } from "@/utils/cityContext";
 import { safeGetItem } from "@/utils/safeStorage";
+import { trackMetaCustomEvent } from "@/utils/fpixel";
 
 const CITY_LIST = Object.values(cityNameToSlug);
 
@@ -87,6 +88,14 @@ const Header = () => {
     setShowDrawer((prev) => !prev);
   };
 
+  const handleMetaTracking = () => {
+    const params = {
+      popup_name: "desktop_header_menu",
+      page_path: typeof window !== "undefined" ? window.location.pathname : "",
+    };
+    trackMetaCustomEvent("header_login_button_click", params);
+  };
+
   /** -----------------------
    * RENDER
    ------------------------ */
@@ -113,7 +122,13 @@ const Header = () => {
             <div className="desktop-only auth-section">
               {isMounted && !isLoggedIn ? (
                 /* LOGIN */
-                <div onClick={() => setIsLoginOpen(true)} className="auth-btn">
+                <div
+                  onClick={() => {
+                    handleMetaTracking();
+                    setIsLoginOpen(true);
+                  }}
+                  className="auth-btn"
+                >
                   <Image src={loginImg} alt="Login" width={20} height={20} />
                   <span>Login</span>
                 </div>

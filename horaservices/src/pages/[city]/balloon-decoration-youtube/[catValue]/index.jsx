@@ -356,7 +356,6 @@ function getSubCategory(catValue) {
     <Head>
       <title>{PageTitle(catValue)}</title>
       <meta name="description" content={getPageMetaDescription()} />
-      <meta name="keywords" content="Balloon and Flower Decoration @999" />
       <meta property="og:title" content={PageTitle(catValue)} />
       <meta property="og:description" content={getPageMetaDescription()} />
       <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
@@ -423,7 +422,7 @@ function getSubCategory(catValue) {
                     {/* Watermark */}
                     <div style={{ position: "absolute", bottom: 3, right: 3, borderRadius: "50%", padding: 10 }}>
                         <span style={{ color: "rgba(157, 74, 147, 0.6)", fontWeight: "600" }}>
-                        <Image src={logo} style={{ width:"70px" , height:"80px"}} className="hora-watermark-image"/>  
+                        <Image src={logo} alt="HORA – verified decoration service" style={{ width:"70px" , height:"80px"}} className="hora-watermark-image"/>  
                         </span>
                       </div>
                     <div className="decorationdiscount">

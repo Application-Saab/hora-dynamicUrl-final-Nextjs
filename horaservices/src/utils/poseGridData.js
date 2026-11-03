@@ -11,7 +11,7 @@ import pose10 from "@/assets/poseimages/pose10.webp";
 import pose11 from "@/assets/poseimages/pose11.webp";
 import pose12 from "@/assets/poseimages/pose12.webp";
 import pose13 from "@/assets/poseimages/pose13.webp";
-
+import pose16 from "@/assets/poseimages/pose16.webp";
 export const poseGridData = [
   { title: "Wedding", image: pose1, folder: "Wedding",customerId: "6683e5d43e33c54c0ebde8f2", },
     { title: "Engagement", image: pose2, folder: "engagement weblink",customerId: "64137625549b58e3dc39a685" },
@@ -26,7 +26,6 @@ export const poseGridData = [
 { title: "Welcome Baby", image: pose11, folder: "welcomeBaby_poseLink",customerId: "6a7f09a01144665025c88d8e" },
 { title: "Naming Ceremony", image: pose12, folder: "naming ceremony weblink",customerId: "64137625549b58e3dc39a685" },
 { title: "Corporate", image: pose13, folder: "corporatePoselink",customerId: "6a7f09a01144665025c88d8e" },
-
-
+{ title: "Pre Wedding",image: pose16,folder: "pre wedding",customerId: "66a7f09a01144665025c88d8e",},
 ];
 

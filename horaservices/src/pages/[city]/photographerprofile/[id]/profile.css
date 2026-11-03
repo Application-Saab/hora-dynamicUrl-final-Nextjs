@@ -81,7 +81,7 @@
 }
 
 .profile-info-text {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
     line-height: 1.2;
     margin: 0;
@@ -166,23 +166,37 @@
 }
 
 .spec-card {
-    max-width: 100px;
-    min-height: 70px;
+    max-width: 78px !important;
+    max-height: 78px !important;
+    min-width: 78px !important;
+    min-height: 78px !important;
     border: 0.2px solid #97538C24;
     border-radius: 10px;
-    padding: 10px 0px;
+    padding: 5px 7px !important;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: center !important;
     justify-content: flex-start;
     text-align: center;
     background: #ffffff;
     flex-shrink: 0;
     box-sizing: border-box;
+    gap: 5px;
+}
+
+.special-image-wrapper {
+    height: 34px;
+    width: 41px;
+    object-fit: cover !important;
+}
+
+.outer-special-image-wrapper {
+    height: 34px;
+    width: 41px;
 }
 
 .card-title {
-    font-size: 11px;
+    font-size: 10px !important;
     font-weight: 500;
     color: #505050;
     line-height: 1.2;
@@ -190,34 +204,51 @@
     word-break: break-word;
 }
 
+/* ===== Custom scrollbar (SS1 style) ===== */
 .custom-scroll-bar {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 6px;
-    margin-top: 10px;
+    width: 203px !important;
+    max-width: 100%;
+    margin: 10px auto 0 auto;
+    padding: 0px 5px;
+    background-color: #F0EFF0;
+    /* poora pill grey */
+    border-radius: 999px;
+    box-sizing: border-box;
 }
 
 .custom-scroll-bar .arrow {
-    font-size: 8px;
+    flex-shrink: 0;
+    font-size: 6px;
+    padding: 2px 0px;
+    line-height: 1;
     color: #8B4584;
+    user-select: none;
+    cursor: pointer;
 }
 
 .custom-scroll-bar .track {
-    width: 130px;
-    height: 7px;
-    background-color: #E5E7EB;
-    border-radius: 10px;
+    flex: 1;
+    /* bachi hui poori jagah le */
+    min-width: 0;
+    height: 8px;
+    background-color: transparent;
+    /* pill ka grey hi dikhega */
+    border-radius: 999px;
     position: relative;
     overflow: hidden;
 }
 
 .custom-scroll-bar .thumb {
-    width: 40px;
+    position: absolute;
+    top: 0;
+    left: 0;
     height: 100%;
     background-color: #97538C;
-    border-radius: 10px;
-    transition: transform 0.05s linear;
+    border-radius: 999px;
+    transition: left 0.05s linear;
 }
 
 .justify-between {
@@ -349,10 +380,10 @@
 
 /* Recent work - subfolder circle */
 .gallery-headerCard .circle-img-folder {
-    width: 72px !important;
-    height: 72px !important;
-    min-width: 72px;
-    min-height: 72px;
+    width: 67px !important;
+    height: 67px !important;
+    min-width: 67px;
+    min-height: 67px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -366,6 +397,7 @@
     width: 63.96px !important;
     height: 63.96px !important;
     border-radius: 50%;
+    padding: 2px;
     overflow: hidden;
     display: flex;
 }
@@ -394,7 +426,7 @@
 .flex {
     display: flex;
     align-items: center;
-    gap: 11px;
+    gap: 8px;
 }
 
 .profile-highlights {
@@ -404,7 +436,7 @@
     /* Teeno ek hi line mein rahenge */
     gap: 8px;
     width: 100%;
-    padding: 0px 8px;
+    padding: 0px 6px;
     align-items: center;
     margin-top: 9px;
 }
@@ -420,7 +452,6 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    background: #faf4fb;
     border: 1px solid #97538C33;
     box-sizing: border-box;
 }
@@ -598,4 +629,18 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
 .slick-next {
     z-index: 111 !important;
     background-color: transparent !important;
+}
+.orders-card{
+    background: #F8F2FA;
+}
+.rating-card{
+    background: #F5F8F3;
+}
+.experience-card{
+    background: #FEF3F4;
+}
+.about-text {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    min-width: 0;
 }

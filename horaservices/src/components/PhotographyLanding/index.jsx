@@ -111,7 +111,7 @@ const PhotographyLanding = ({
 
       {/* Category cards – next 4 */}
       <div className="gridContainersec">
-        {photoCat.slice(6, 10).map((item) => (
+        {photoCat.slice(6, 12).map((item) => (
           <PhotoGraphyCardgrid
             key={item.id}
             src={item.image}

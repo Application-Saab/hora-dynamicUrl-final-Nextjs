@@ -69,7 +69,7 @@ const ProductGrid = ({
 
                 <Image
                   src={getImageUrl(item)}
-                  alt={`balloon decoration ${item.name}`}
+                  alt={`${item.name}${catValue ? ` – ${catValue.replace(/-/g, " ")} by HORA` : " – decoration by HORA"}`}
                   className="decImage"
                   width={300}
                   height={300}
@@ -78,7 +78,7 @@ const ProductGrid = ({
                 <div className="watermark">
                   <Image
                     src={logo}
-                    alt="logo"
+                    alt="HORA – verified decoration service"
                     width={isPhotography ? 28 : 18}
                     height={isPhotography ? 28 : 18}
                   />

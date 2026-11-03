@@ -13,6 +13,8 @@ import Icon1 from "../../../../assets/photographerprofile/Icon1.svg";
 import Icon2 from "../../../../assets/photographerprofile/Icon2.svg";
 import Icon3 from "../../../../assets/photographerprofile/Icon3.svg";
 import star2 from "../../../../assets/photographerprofile/star2.svg";
+import arrow1 from "../../../../assets/photographerprofile/arrow1.svg";
+import arrow2 from "../../../../assets/photographerprofile/arrow2.svg";
 import Image from "next/image";
 import { BASE_URL } from "@/utils/apiconstants";
 import ImageGrid from "../../../../components/image-galleries/ImageGrid";
@@ -39,6 +41,7 @@ const Profile = () => {
    const [selectedIndex, setSelectedIndex] = useState(null);
    const closePopup = useCallback(() => setSelectedIndex(null), []);
    const handleImageClick = useCallback((index) => setSelectedIndex(index), []);
+   const [thumbWidth, setThumbWidth] = useState(30);   
 
 
    useEffect(() => {
@@ -201,6 +204,7 @@ const Profile = () => {
 
       if (el) {
          setHasHorizontalScroll(el.scrollWidth > el.clientWidth);
+         setThumbWidth((el.clientWidth / el.scrollWidth) * 100);
       }
    }, [selectedSpecializationList]);
 
@@ -221,8 +225,8 @@ const Profile = () => {
                   />
 
                   <div className="profile-white-section">
-                     <div className={userDetails?.avatar ? "profile-circle" : "default-profile-circle"}>
-                        {userDetails?.avatar ? (
+                        <div className={(userDetails?.avatar && userDetails?.avatar !== "attachment-1678985070996.jpg") ? "profile-circle" : "default-profile-circle"}>
+                           {(userDetails?.avatar && userDetails?.avatar !== "attachment-1678985070996.jpg") ? (
                            <Image
                               src={userDetails.avatar}
                               alt="photographer"
@@ -260,9 +264,11 @@ const Profile = () => {
                               />
                            </span>
 
-                           <span className="profile-info-text">
-                              Age - {userDetails?.age || "N/A"} Year
-                           </span>
+                              <span className="profile-info-text">
+                                 Age - {userDetails?.age
+                                    ? `${userDetails.age}${String(userDetails.age).toLowerCase().includes("year") ? "" : " Year"}`
+                                    : "N/A"}
+                              </span>
                         </div>
 
                         <div className="profile-info-row">
@@ -275,9 +281,11 @@ const Profile = () => {
                               />
                            </span>
 
-                           <span className="profile-info-text">
-                              Experience - {userDetails?.experience || "N/A"} year
-                           </span>
+                              <span className="profile-info-text">
+                                 Experience - {userDetails?.experience
+                                    ? `${userDetails.experience}${String(userDetails.experience).toLowerCase().includes("year") ? "" : " year"}`
+                                    : "N/A"}
+                              </span>
                         </div>
 
                         <div className="flex-start justify-between">
@@ -363,15 +371,16 @@ const Profile = () => {
 
                            </div>
 
-                           <div onScroll={(e) => {
-                              const el = e.currentTarget;
+                              <div onScroll={(e) => {
+                                 const el = e.currentTarget;
 
-                              const maxScroll = el.scrollWidth - el.clientWidth;
+                                 const maxScroll = el.scrollWidth - el.clientWidth;
 
-                              setScrollPosition(
-                                 maxScroll > 0 ? el.scrollLeft / maxScroll : 0
-                              );
-                           }}
+                                 setScrollPosition(
+                                    maxScroll > 0 ? el.scrollLeft / maxScroll : 0
+                                 );
+                                 setThumbWidth((el.clientWidth / el.scrollWidth) * 100);
+                              }}
                               className={`${selectedSpecializationList.length > 0 ? 'cards-scroll-container' : 'no-content'}`}>
 
                               {selectedSpecializationList.length > 0 ? (
@@ -379,12 +388,13 @@ const Profile = () => {
                                     <div key={item._id} className="spec-card">
 
                                        <div>
-                                          <div>
+                                          <div className="outer-special-image-wrapper">
                                              <Image
                                                 src={`${BASE_URL}/api/uploads/specialization/${item.image}`}
                                                 alt={item.name}
                                                 height={34}
-                                                width={42}
+                                                width={41}
+                                                className="special-image-wrapper"
                                              />
                                           </div>
                                        </div>
@@ -400,22 +410,37 @@ const Profile = () => {
                               )}
 
                            </div>
-                           {hasHorizontalScroll && (
-                              <div className="custom-scroll-bar">
-                                 <span className="arrow left">◀</span>
+                              {hasHorizontalScroll && (
+                                 <div className="custom-scroll-bar">
 
-                                 <div className="track">
-                                    <div
-                                       className="thumb"
-                                       style={{
-                                          transform: `translateX(${scrollPosition * 90}px)`
-                                       }}
-                                    ></div>
+                                    <span className="arrow left">
+                                       <Image
+                                          src={arrow1}
+                                          alt="profile-banner"
+                                          width={6}
+                                          height={5}
+                                       />
+                                    </span>
+
+                                    <div className="track">
+                                       <div
+                                          className="thumb"
+                                          style={{
+                                             width: `${thumbWidth}%`,
+                                             left: `${scrollPosition * (100 - thumbWidth)}%`,
+                                          }}
+                                       ></div>
+                                    </div>
+
+                                    <span className="arrow right">
+                                       <Image
+                                          src={arrow2}
+                                          alt="profile-banner"
+                                          width={6}
+                                          height={5}
+                                       /></span>
                                  </div>
-
-                                 <span className="arrow right">▶</span>
-                              </div>
-                           )}
+                              )}
 
                         </div>
 
@@ -424,7 +449,7 @@ const Profile = () => {
                   </div>
 
                   <div className="profile-highlights">
-                     <div className="highlight-card">
+                     <div className="highlight-card orders-card">
                         <div className="highlight-icon">
                            <img src={Icon1.src} alt="Events" />
                         </div>
@@ -435,7 +460,7 @@ const Profile = () => {
                         </div>
                      </div>
 
-                     <div className="highlight-card">
+                     <div className="highlight-card rating-card">
                         <div className="highlight-icon">
                            <img src={Icon2.src} alt="Rating" />
                         </div>
@@ -446,12 +471,15 @@ const Profile = () => {
                         </div>
                      </div>
 
-                     <div className="highlight-card">
+                     <div className="highlight-card experience-card">
                         <div className="highlight-icon">
                            <img src={Icon3.src} alt="Experience" />
                         </div>
                         <div className="highlight-content">
-                           <h2>{userDetails?.experience} Years</h2>
+                              <h2>
+                                 {userDetails?.experience}
+                                 {String(userDetails?.experience || "").toLowerCase().includes("year") ? "" : " Years"}
+                              </h2>
                            <h3>Capturing Moments</h3>
                            <p>Celebrating your special days with you</p>
                         </div>

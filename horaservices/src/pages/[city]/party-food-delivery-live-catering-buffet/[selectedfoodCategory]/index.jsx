@@ -25,6 +25,7 @@ import {
   UPDATE_ORDER_STATUS,
 } from "../../../../utils/apiconstants";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 
 export default function Home({
   city: ssrCity = null,
@@ -717,7 +718,14 @@ export default function Home({
         <Link
           href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services"
           target="_blank"
-          onClick={() => trackWAClicks()}
+          onClick={() => {
+            trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.PARTY_FOOD_WHATSAPP_BTN, {
+              button_name: "Whatsapp Button",
+              button_type: "party_food_whatsapp_icon",
+              page_path: window.location.pathname,
+            });
+            trackWAClicks();
+          }}
         >
           <Image
             className="whatappicon"

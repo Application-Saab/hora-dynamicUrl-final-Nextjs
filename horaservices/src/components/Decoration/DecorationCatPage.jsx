@@ -103,6 +103,7 @@ const buildCacheKey = (path, sort, priceThemeId, search, designTypes = []) =>
 
 const DecorationCatPage = ({
   city: cityProp = "",
+  serverCity = null,   // SSR-safe city name from getServerSideProps — use for <Head> only
   locality = null,
   catValue: catValueProp = "",
   initialCatalogueData = [],
@@ -948,11 +949,16 @@ const renderChip = (chip) => (
 );
   return (
     <div className="decCatPage">
+      {/* serverCity is the SSR-safe value from getServerSideProps — always
+          populated for Googlebot. cityProp / city state are empty at SSR time.
+          Fallback to cityProp for backward compat when called without serverCity.
+          parentCategory ensures wedding-decoration URLs get the right canonical. */}
       <SeoHead
         catValue={normalizedCat}
-        city={city}
+        city={serverCity || cityProp}
         locality={locality}
         theme={theme}
+        parentCategory={categorySlug}
       />
 
       {isInitialLoad && loading ? (
@@ -1150,7 +1156,7 @@ const renderChip = (chip) => (
                     <section className="decorationBanner">
                       <Image
                         src={DidyouKnow}
-                        alt="Decoration-Banner"
+                        alt="Did You Know – balloon decoration tips by HORA"
                         width={1200}
                         height={400}
                         className="decorationBanner-image"
@@ -1175,7 +1181,7 @@ const renderChip = (chip) => (
                     <section className="decorationBanner">
                       <Image
                         src={makeItMemorable}
-                        alt="Decoration-Banner"
+                        alt="Make it memorable – HORA decoration setups at home"
                         width={1200}
                         height={400}
                         className="decorationBanner-image"
@@ -1199,7 +1205,7 @@ const renderChip = (chip) => (
                   <section className="decorationBanner">
                     <Image
                       src={steps}
-                      alt="Decoration-Banner"
+                      alt="How HORA decoration works – 3 easy steps to book"
                       width={1200}
                       height={400}
                       className="decorationBanner-image"
@@ -1223,7 +1229,7 @@ const renderChip = (chip) => (
                     <section className="decorationBanner">
                       <Image
                         src={makeitmemorablebanner}
-                        alt="Decoration-Banner"
+                        alt="Make every celebration unforgettable with HORA decorators"
                         width={1200}
                         height={400}
                         className="decorationBanner-image"
@@ -1252,7 +1258,7 @@ const renderChip = (chip) => (
                       <div className="highlight-card">
                         <Image
                           src={googleRating}
-                          alt="Google Rating"
+                          alt="4.7+ Google Rating – HORA decoration verified by customers"
                           width={60}
                           height={60}
                         />
@@ -1261,7 +1267,7 @@ const renderChip = (chip) => (
                       <div className="highlight-card">
                         <Image
                           src={ontime}
-                          alt="On Time Completion"
+                          alt="On Time Completion – HORA decorators arrive and set up on schedule"
                           width={60}
                           height={60}
                         />
@@ -1270,7 +1276,7 @@ const renderChip = (chip) => (
                       <div className="highlight-card">
                         <Image
                           src={Gurantee}
-                          alt="100% Full Fill Guarantee"
+                          alt="100% Fulfilment Guarantee – HORA ensures every decoration order is completed"
                           width={60}
                           height={60}
                         />
