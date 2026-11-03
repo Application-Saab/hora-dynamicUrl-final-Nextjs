@@ -17,7 +17,7 @@ const FAQSection = ({ faqData = [], heading = "FAQ" }) => {
     item?.answer || item?.acceptedAnswer?.text || "No answer available.";
 
   return (
-    <div style={{ margin: "auto", maxWidth: "96%" }}>
+    <div style={{ margin: "auto", maxWidth: "480px" }}>
       <div
         style={{
           display: "flex",
