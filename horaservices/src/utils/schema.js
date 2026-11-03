@@ -107,26 +107,56 @@ export const getDecorationOrganizationSchema = () => ({
   }
 
  
- export const getDecorationCatOrganizationSchema = (catValue) => ({
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "brand": "Hora Services",
-  "name": catValue,
-  "description": getPageMetaDescription(catValue),
-  "url": `https://horaservices.com/balloon-decoration/${catValue}`,
-  "image": [
-    "https://horaservices.com/api/uploads/attachment-1706520980436.png",
-    "https://horaservices.com/api/uploads/attachment-1711520474508.png",
-    "https://horaservices.com/api/uploads/attachment-1706459457063.png"
-  ],
-  "sku": catValue?.toLowerCase().replace(/\s/g, '-'),
-  "priceRange": "999-39999",
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.5",
-    "reviewCount": "1388"
-  }
-});
+/** Converts a slug like "baby-shower-decoration" → "Baby Shower Decoration" */
+const slugToTitle = (slug) =>
+  String(slug || "")
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+
+export const getDecorationCatOrganizationSchema = (catValue, city) => {
+  const humanName = slugToTitle(catValue);
+  const cityName = city
+    ? String(city).replace(/\b\w/g, (c) => c.toUpperCase())
+    : null;
+  const citySlug = city ? String(city).toLowerCase().replace(/\s+/g, "-") : null;
+
+  const productUrl = citySlug
+    ? `https://horaservices.com/${citySlug}/balloon-decoration/${catValue}`
+    : `https://horaservices.com/balloon-decoration/${catValue}`;
+
+  const productName = cityName
+    ? `${humanName} in ${cityName}`
+    : humanName;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "brand": { "@type": "Brand", "name": "Hora Services" },
+    "name": productName,
+    "description": getPageMetaDescription(catValue),
+    "url": productUrl,
+    "image": [
+      "https://horaservices.com/api/uploads/attachment-1706520980436.png",
+      "https://horaservices.com/api/uploads/attachment-1711520474508.png",
+      "https://horaservices.com/api/uploads/attachment-1706459457063.png"
+    ],
+    "sku": `hora-${catValue}${citySlug ? `-${citySlug}` : ""}`,
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "INR",
+      "price": "999",
+      "priceValidUntil": "2027-12-31",
+      "availability": "https://schema.org/InStock",
+      "url": productUrl,
+      "seller": { "@type": "Organization", "name": "Hora Services" }
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.5",
+      "reviewCount": "1388"
+    }
+  };
+};
 
 
 
