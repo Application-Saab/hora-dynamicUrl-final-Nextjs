@@ -1,11 +1,1017 @@
 /**
  * AllCategoryDescriptions.js
- * Single source for all decoration category descriptions and FAQs.
+ * Single source for ALL decoration category descriptions and FAQs.
  * Each key matches the catValue used in decorationCategories.js.
  * Imported as a spread into Decorationcategorycontent.js.
+ *
+ * Includes:
+ *  - 7 original categories (birthday, naming-ceremony, welcome-baby,
+ *    baby-shower, anniversary, wedding, wedding-decoration)
+ *  - 22 new categories
  */
 
 export const allCategoryContent = {
+
+  // ─── Birthday ─────────────────────────────────────────────────────────────
+  "birthday-decoration": {
+    description: [
+      {
+        heading: "Birthday decoration, built around your celebration",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "The best birthdays happen at home now, and the setup is what turns an ordinary living room into the party. That's the bit we handle for you. You pick a design, a verified decorator arrives with the balloons, the backdrop, the foil name and number, and the lights, builds it all in about an hour, and clears it away once the cake's been cut. Setups start at Rs 1,499, the themes cover every age, and in most areas you can book for the same day. A first birthday, a surprise for your partner, a milestone number for a parent, you choose the look and we take care of the rest.",
+          },
+        ],
+      },
+      {
+        heading: "What's included, and how it works",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "You don't shop for anything or blow up a single balloon, because everything the design needs comes with the decorator. The booking takes a couple of minutes: pick a setup, add your city and address, choose a date and time, and confirm. We'll call you before the slot, set up in 60 to 90 minutes, and leave the room ready for your guests. And if it's a surprise, just say so when you book, and we'll coordinate quietly so everything's finished before the birthday person walks in.",
+          },
+        ],
+      },
+      {
+        heading: "Birthday themes for every age",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Kids and adults want very different birthdays, and the theme is where that shows most. For the little ones, the setups we build most are Cocomelon and Peppa for toddlers, then Jungle, Unicorn, Frozen, Mickey and Minnie, superhero and car themes as they grow up. For adults, black and gold leads by a distance for a grown-up evening, with soft pastels, a clean minimal look and retro themes close behind. Seen something you love on Instagram or Pinterest? Send it across when you book, and we'll tell you honestly whether it works in your space and what it'll cost.",
+          },
+        ],
+      },
+      {
+        heading: "The one thing that makes a birthday setup photograph well",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Here's the single most useful thing we've learned after thousands of birthdays. You don't need balloons around the whole room, you need one strong, well-lit backdrop behind the cake table. That's where the cake cutting, the candles and the group photos all happen, so that's where the setup should be richest. A focused backdrop almost always photographs better than a big, scattered one, and it usually costs a little less too. So when you book, point us to where the cake table's going, and that's exactly where the effort lands.",
+          },
+        ],
+      },
+      {
+        heading: "First birthday setups",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "A first birthday is the one families photograph the most, so it's worth getting right. Picture a soft pastel arch or wall, a big foil number one, a decorated cake table, and a clear corner kept ready for photos. Because everyone's taking pictures all evening, we build around that one strong backdrop rather than spreading balloons thinly around the room. It's a small choice, but it's the difference between lovely first-birthday photos and cluttered ones.",
+          },
+        ],
+      },
+      {
+        heading: "Milestone and adult birthdays",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Not every birthday is for a child, and the big adult numbers deserve a look of their own. For an 18th, 21st or 30th, black and gold or a chrome finish sets a grown-up tone, usually with the age in large foil numbers and a lit name board. For a parent's 50th or 60th, families often want something warmer and more dignified, so we lean towards a soft floral backdrop, a printed photo display spanning the years, and a comfortable seat at the centre for the cake and the group picture. Whatever the milestone, share the age and the mood you're after and we'll pitch the design to match, elegant rather than childish.",
+          },
+        ],
+      },
+      {
+        heading: "Simple and budget birthday decoration at home",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "A birthday doesn't need a big production to feel special. From Rs 1,499 you get a clean, photo-ready look, and for under Rs 2,000 you can have a two-colour balloon wall, a foil Happy Birthday banner, fairy lights and a tidy cake-table corner. These are sized for regular apartment living rooms, and they're a favourite for quiet family birthdays and last-minute plans where the gesture matters more than the scale.",
+          },
+        ],
+      },
+      {
+        heading: "Surprise birthday decoration",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "A surprise only works if the room's ready and cleared before the birthday person arrives, and that timing is exactly the part we take off your hands. Tell us it's a surprise when you book and we'll plan it quietly with someone at home, whether that's a sibling, a partner or building security. Surprise setups for a partner, a parent or a close friend are among our most-booked designs, and midnight is easily the busiest slot for them.",
+          },
+        ],
+      },
+      {
+        heading: "Same-day and midnight birthday setups",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Birthday plans often come together late, and that's completely fine. Same-day birthday decoration runs in most areas as long as you book early in the day. Midnight setups are one of our most-requested slots, with the decorator arriving late in the evening and finishing before twelve, so the room's ready the moment the birthday begins. If that's what you're after, book a few hours ahead and we'll confirm it's available in your city.",
+          },
+        ],
+      },
+      {
+        heading: "Birthday decoration for any space: room, wall, stage or terrace",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "A birthday setup adapts to wherever you're celebrating. In a living room, a single feature wall behind the cake table does most of the work. For a bigger party, a stage or a named backdrop with the age anchors the room, and terraces or banquet halls take an entry arch and a seating corner. Just share the space when you book and we'll scale the design to it, so it never feels squeezed in or spread too thin.",
+          },
+        ],
+      },
+      {
+        heading: "What birthday decoration costs",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Let's talk numbers plainly. Birthday decoration at home starts at Rs 1,499. A simple balloon wall with a banner sits between Rs 1,499 and Rs 2,499, a themed setup with foil balloons, character props and lights runs Rs 2,500 to Rs 5,000, and premium work with a ring backdrop, a lit name board or fresh flowers goes from Rs 5,000 upward. Three things move the price: the balloon count and type, since plain latex is cheapest and chrome and foil cost a little more, the add-ons you choose, and your city. Whatever you see at booking is what you pay, with no visit fee and nothing added on at the door.",
+          },
+          {
+            type: "table",
+            headers: ["Setup", "Typical price"],
+            rows: [
+              ["Simple, under Rs 2,000", "Rs 1,499 to Rs 1,999"],
+              ["Standard themed", "Rs 2,000 to Rs 3,499"],
+              ["With fairy lights", "Rs 2,000 to Rs 4,499"],
+              ["Kids theme and character", "Rs 2,499 to Rs 8,999"],
+              ["Premium and luxury", "Rs 5,000 and above"],
+            ],
+          },
+        ],
+      },
+      {
+        heading: "Formats and colours that work",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Not sure where to start? The formats families reach for most are a named wall behind the cake, an arch over the cake table, a half arch with a big foil number for milestones, a premium ring with a lit name board, and ceiling balloons when wall space is tight. On colour, black and gold reads grown-up, brights and rainbow suit kids, soft pastels are lovely for a first birthday, and rose gold gives a warm, premium finish. Pick the age and theme, and we'll match the palette to it.",
+          },
+        ],
+      },
+      {
+        heading: "Why families book HORA for birthdays",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "It comes down to a few simple things. Verified decorators in all 8 cities, honest pricing from Rs 1,499, an on-time setup and a full cleanup, and real photographs from actual birthday setups rather than stock images. Thousands of birthdays set up, and a 5.0 rating from verified customers who mostly found us after one uneven experience elsewhere.",
+          },
+        ],
+      },
+    ],
+    faqData: () => [
+      {
+        question: "How much does birthday decoration cost at home?",
+        answer: "It starts at Rs 1,499 for a simple setup, and most themed and premium birthday looks land between Rs 2,500 and Rs 9,000. Where you fall in that range comes down to the balloon count and type, the add-ons like a lit name board or fresh flowers, and your city. You'll see the full price at booking, and it doesn't change on the day.",
+      },
+      {
+        question: "Do you do surprise and midnight birthday setups?",
+        answer: "Yes to both, and they're some of our most common bookings. For a surprise, tell us when you book and we'll coordinate access quietly with a family member or building security, finish the setup, send you a photo, and be gone before the birthday person arrives. Midnight slots just need a few hours notice so we can line up a decorator and confirm it's available in your city.",
+      },
+      {
+        question: "Which birthday themes do you offer for kids?",
+        answer: "Plenty of them. The popular ones are Cocomelon and Peppa for toddlers, and Jungle, Unicorn, Frozen, Mickey and Minnie, superhero and car themes for older children. If your child is after something specific, send us a reference picture and we'll match it as closely as your room allows.",
+      },
+      {
+        question: "How do I decorate for a birthday at home?",
+        answer: "The quickest route to a good look is one strong backdrop behind the cake table, a foil name or age in the middle, and warm fairy lights, rather than spreading decoration around the room. You can absolutely do this yourself, or book a decorator who brings everything and sets it up in about an hour so you're free for the rest of the day.",
+      },
+      {
+        question: "Can you recreate a setup I saw online?",
+        answer: "Usually, yes. Send the photo when you book and we'll tell you honestly how close we can get in your space and at what price, before you pay anything. Colours and layout are easy to match, and we'll flag anything that won't quite fit your room so there are no surprises on the day.",
+      },
+      {
+        question: "Do you decorate for adult and milestone birthdays too?",
+        answer: "Absolutely. Alongside kids parties, a big share of our bookings are milestone birthdays, from 18th and 21st setups to 50th and 60th celebrations for parents. The look simply shifts from bright and playful to elegant, with black and gold or chrome, large foil age numbers, a photo display and a lit name board.",
+      },
+      {
+        question: "Which cities does HORA cover?",
+        answer: "We cover Mumbai, Bangalore, Hyderabad, Delhi, Noida, Gurugram, Ghaziabad and Faridabad, with a dedicated decorator team in each so same-day service is genuinely available and not just promised.",
+      },
+      {
+        question: "How long does the setup take, and do you clean up?",
+        answer: "Most birthday setups take 60 to 90 minutes to install, and a larger or more detailed design a little longer. Cleanup is available as an add-on, choose it and, once the party's over, the decorator clears the balloons, the props and the tape, and leaves your space exactly as it was.",
+      },
+    ],
+  },
+
+  // ─── Naming Ceremony ──────────────────────────────────────────────────────
+  "naming-ceremony-decoration": {
+    description: [
+      {
+        heading: "Naming ceremony decoration, built around your baby's day",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "A naming ceremony is one of the first big days in a baby's life, and most families now hold it at home with everyone close by. The decoration is what turns the living room into the occasion, a soft backdrop for the blessings, a decorated cradle for the baby, and a corner made for the photos everyone will keep. That's the part we handle for you. You pick a look, a verified decorator arrives with the whole setup, builds it in about an hour, and has it ready before the guests and the priest arrive. Setups start at Rs 1,499, and same-day slots are open in most areas across all 8 cities.",
+          },
+        ],
+      },
+      {
+        heading: "Naming ceremony or namkaran, whatever your family calls it",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Every region has its own name for the day a baby is formally named, and we set up for all of them. In the north it's often the namkaran, in Bengali and eastern homes it sits close to the annaprashan, and in the south the naming is done at a cradle ceremony. The rituals differ a little, but the decoration needs are much the same: a blessing backdrop, a place for the seating or the cradle, the baby's name shown beautifully, and a warm, gentle look that suits a very small guest of honour. If you're holding a South Indian cradle ceremony, we have a dedicated cradle ceremony decoration setup for that. For everything else, tell us which ceremony you're marking and we'll shape the design to your family's tradition.",
+          },
+        ],
+      },
+      {
+        heading: "What's included, and how it works",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "You don't arrange a single thing yourself, because everything the design needs comes with the decorator, from the backdrop and the flowers or balloons to the name board, the cradle decoration and the lights. The booking takes a couple of minutes: pick a setup, add your city and address, choose the date and time, and confirm. We'll call you before the slot, set up in 60 to 90 minutes, and leave the room ready for the ceremony. And if the baby will be sleeping nearby, just tell us, and we'll work quietly and keep everything clear of where the little one is resting.",
+          },
+        ],
+      },
+      {
+        heading: "The decorated cradle, a lovely centrepiece",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Many naming ceremonies place the baby in a decorated cradle, so it's worth doing beautifully. Picture a jhula or palna dressed in soft flowers or draped fabric, gentle netting, and a name banner above it, with the whole thing lit warmly for the moment the baby is placed inside. We can keep it traditional with fresh marigold and jasmine, or go softer and more modern with pastel drapes and foil lettering. If you're using your own family cradle, we decorate around it, and if you need one arranged, mention it when you book.",
+          },
+        ],
+      },
+      {
+        heading: "The one thing that makes a naming ceremony setup photograph well",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Here's the single most useful thing we've learned after hundreds of naming ceremonies. You don't need flowers or balloons around the whole room, you need one strong, well-lit name reveal behind the cradle or the seating. That's where the blessings, the naming and the group photos all happen, so that's where the setup should be richest. A focused backdrop almost always photographs better than a big, scattered one, and it usually costs a little less too. So when you book, point us to where the cradle or seating is going, and that's exactly where the effort lands.",
+          },
+        ],
+      },
+      {
+        heading: "Name reveal backdrops",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Showing the baby's name is the emotional high point of the day, and a well-made name reveal is what everyone photographs. The favourites we build are a name spelled out in foil letters across a floral or balloon wall, a printed name board on a decorated easel, and a scroll or banner that the family unrolls for the reveal. Pastels suit the moment beautifully, with soft pink, blue, sage or a neutral cream depending on the theme. Share the baby's name and the spelling when you book, and we'll have it ready and correct on the day.",
+          },
+        ],
+      },
+      {
+        heading: "Traditional flowers or a modern balloon look",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Naming ceremonies split neatly into two styles, and we do both well. The traditional look leans on fresh flowers, marigold and jasmine strings, a decorated cradle, a brass or wooden feel, and a warm, rooted setting that the older generation loves. The modern look uses pastel balloons, a foil name, chrome and soft drapes, and a clean backdrop that photographs bright and current. Plenty of families mix the two, a floral cradle with a balloon name wall behind it, and that blend is one of our most requested. Tell us where your taste sits and we'll pitch the design to it.",
+          },
+        ],
+      },
+      {
+        heading: "Themes and colours for a baby girl or baby boy",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "The theme usually follows the baby, and a few palettes always land well. For a baby girl, soft pinks, rose gold, and floral pastels feel gentle and pretty. For a baby boy, powder blue, sage, and a clean white and gold look are the popular picks. If you'd rather keep it neutral, cream, peach and greenery suit either. Beyond colour, we can build around a soft cloud theme, a floral arch, a traditional temple-style backdrop, or a simple elegant name wall. Send a reference if you've seen something you like, and we'll tell you honestly how close we can get in your space.",
+          },
+        ],
+      },
+      {
+        heading: "Simple and budget naming ceremony decoration",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "A naming ceremony doesn't need a grand production to feel special. From Rs 1,499 you get a clean, photo-ready look, and for a modest budget you can have a pastel balloon or floral wall, the baby's name in foil, a lightly decorated cradle corner, and warm fairy lights. These are sized for a regular apartment living room and are a favourite for intimate ceremonies with close family, where the warmth of the day matters more than the scale of the setup.",
+          },
+        ],
+      },
+      {
+        heading: "Keeping it safe and gentle for the baby",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "The guest of honour is only a few days or weeks old, so a safe, calm setup is something we plan for from the start. Our decorators inflate balloons away from where the baby will be, secure every element so nothing can come loose, and keep small parts and stray balloons well out of reach. We avoid anything strongly scented close to the cradle, and if you're using diyas or a lamp for the ritual, we place them well away from the balloons, drapes and flowers. Tell us where the baby will rest and be held, and we keep that area clear and comfortable.",
+          },
+        ],
+      },
+      {
+        heading: "Naming ceremony decoration for any space: living room, hall or stage",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "A naming ceremony setup adapts to wherever you're celebrating. For a smaller gathering at home, a single strong feature wall behind the cradle does all the work. If the ceremony is a larger affair with a lot of family, the setup scales up to a proper stage or a full backdrop, with a raised, decorated seating area for the parents and baby, a name wall behind, floral or balloon side pieces, and warm lighting to turn a hall into the occasion. Just share the space and the guest count when you book, and we'll size the design so it never feels squeezed in or spread too thin.",
+          },
+        ],
+      },
+      {
+        heading: "What naming ceremony decoration costs",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Let's talk numbers plainly. Naming ceremony decoration at home starts at Rs 1,499 for a simple balloon or pastel wall setup. A themed setup with a decorated cradle, a foil name and lights runs Rs 2,500 to Rs 5,000, and a premium look with fresh flowers, a full floral cradle, a name board and a stage backdrop goes from Rs 5,000 upward. Three things move the price: whether you want a balloon look or fresh flowers, since flowers cost more, the size of the setup and the cradle work, and your city. Whatever you see at booking is what you pay, with no visit fee and nothing added on at the door.",
+          },
+          {
+            type: "table",
+            headers: ["Setup", "Typical price"],
+            rows: [
+              ["Simple balloon or pastel wall", "Rs 1,499 to Rs 2,499"],
+              ["Themed with decorated cradle and name", "Rs 2,500 to Rs 4,999"],
+              ["With fresh flowers", "Rs 3,500 and above"],
+              ["Premium floral and stage", "Rs 6,000 and above"],
+            ],
+          },
+        ],
+      },
+      {
+        heading: "Formats and colours that work",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Not sure where to start? The formats families reach for most are a name wall behind the cradle, a floral or balloon arch over the seating, a decorated jhula with netting and a name banner, a premium ring backdrop with a lit name board, and a simple easel-mounted name board for smaller spaces. On colour, soft pink and rose gold suit a baby girl, powder blue and sage suit a baby boy, and cream, peach or white and gold work beautifully for either. Pick the baby's gender and your preferred style, and we'll match the palette to it.",
+          },
+        ],
+      },
+      {
+        heading: "Why families book HORA for naming ceremonies",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "It comes down to a few simple things. Verified decorators in all 8 cities, honest pricing from Rs 1,499, an on-time setup that's ready before your guests and priest arrive, and real photographs from actual ceremonies rather than stock images. Thousands of celebrations set up, and a 5.0 rating from verified customers who mostly found us after one uneven experience elsewhere.",
+          },
+        ],
+      },
+    ],
+    faqData: () => [
+      {
+        question: "How much does naming ceremony decoration cost at home?",
+        answer: "It starts at Rs 1,499 for a simple balloon or pastel wall setup, and most themed and premium looks land between Rs 2,500 and Rs 6,000 and above. Where you fall in that range comes down to whether you choose balloons or fresh flowers, the size of the setup and the cradle work, and your city. You'll see the full price at booking, and it doesn't change on the day.",
+      },
+      {
+        question: "What is the difference between a naming ceremony, namkaran and cradle ceremony?",
+        answer: "They're regional versions of the same day, when a baby is formally given their name. Namkaran is the common north Indian term, cradle ceremony is the southern version where the baby is placed in a decorated cradle, and in eastern homes it often sits alongside the annaprashan. We decorate for all of them, so just tell us which your family holds and we'll shape the setup to your tradition.",
+      },
+      {
+        question: "Do you decorate the cradle or jhula?",
+        answer: "Yes. We dress a jhula or palna in fresh flowers or soft drapes, add gentle netting and a name banner, and light it warmly for the moment the baby is placed inside. If you're using your own family cradle we decorate around it, and if you need one arranged, mention it when you book.",
+      },
+      {
+        question: "Can you make a name reveal backdrop?",
+        answer: "Absolutely. The popular options are the baby's name in foil letters across a floral or balloon wall, a printed name board on a decorated easel, or a scroll banner the family unrolls for the reveal. Send us the name and its exact spelling when you book, and we'll have it ready and correct on the day.",
+      },
+      {
+        question: "How do I decorate for a naming ceremony at home?",
+        answer: "The simplest route to a good look is one soft backdrop behind the seating or cradle, the baby's name shown clearly in the middle, and warm fairy lights, rather than spreading decoration thinly across the room. You can do this yourself, or book a decorator who brings everything, from flowers to the name board, and sets it up in about an hour so you're free to get ready for your guests.",
+      },
+      {
+        question: "Do you offer both traditional flower and modern balloon setups?",
+        answer: "Yes, both, and a mix of the two. The traditional style uses fresh marigold and jasmine, a floral cradle and a warm, rooted look, while the modern style uses pastel balloons, a foil name and clean drapes. A floral cradle with a balloon name wall behind it is one of our most requested blends, so tell us where your taste sits and we'll design to match.",
+      },
+      {
+        question: "Is the setup safe for a newborn?",
+        answer: "Yes, and we plan for it deliberately. Balloons are inflated away from the baby's area, everything is secured so nothing can come loose, and small parts and stray balloons are kept out of reach. We keep strongly scented items away from the cradle and place any diyas or lamps well clear of the balloons, drapes and flowers. Just tell us where the baby will rest and we'll keep that space calm and clear.",
+      },
+      {
+        question: "Do you do baby girl and baby boy themes?",
+        answer: "Of course. For a baby girl, soft pink, rose gold and floral pastels are the favourites, and for a baby boy, powder blue, sage, and white and gold. If you'd rather keep it neutral, cream, peach and greenery suit either. Send a reference picture if you have a specific look in mind and we'll match it as closely as your space allows.",
+      },
+      {
+        question: "Which cities does HORA cover, and can I book same day?",
+        answer: "We cover Mumbai, Bangalore, Hyderabad, Delhi, Noida, Gurugram, Ghaziabad and Faridabad, with a dedicated decorator team in each. Same-day setups run in most areas as long as you book early in the day, which is handy since ceremonies are often finalised on short notice.",
+      },
+    ],
+  },
+
+  // ─── Welcome Baby ─────────────────────────────────────────────────────────
+  "welcome-baby-decoration": {
+    description: [
+      {
+        heading: "Welcome baby decoration, built around your homecoming",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Bringing your baby home for the first time is a moment you will never forget, and a warm welcome waiting at the door makes it even sweeter. That's what a welcome baby setup is for, a decorated entrance, a soft backdrop with the baby's name, and a gentle, photo-ready corner for those first pictures at home. We take care of all of it for you, so a tired new mother walks in to something lovely rather than an empty room. You pick a look, a verified decorator arrives and sets it up while you're still at the hospital or on the way, and it's ready the moment you reach home. Setups start at Rs 1,499, and same-day slots are open in most areas across all 8 cities.",
+          },
+        ],
+      },
+      {
+        heading: "What's included, and how it works",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "You don't arrange a single thing yourself, because everything the design needs comes with the decorator, from the balloons or flowers and the backdrop to the name banner, the little feet and baby motifs, and the lights. The booking takes a couple of minutes: pick a setup, add your city and address, choose the date and time, and confirm. Because a homecoming is often a surprise for the new mother, this is one of our most-booked surprise setups, just tell us and we'll coordinate quietly with a family member so everything's finished and waiting before she arrives. We set up in 60 to 90 minutes and keep everything gentle and clear around where the baby will be.",
+          },
+        ],
+      },
+      {
+        heading: "A welcome that starts at the front door",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "The nicest touch for a homecoming is a decorated entrance, so the welcome begins the moment you reach your door. We dress the doorway or the entry with an arch, balloons or fresh flowers, a \"Welcome Home Baby\" banner, and often the baby's name or a pair of little feet, so the first thing everyone sees is a warm greeting for the newest member of the family. Inside, a matching wall or backdrop carries the theme through to where the photos and the first cuddles happen. If you have a lift lobby or a society entrance to work with, tell us and we'll plan the welcome around it.",
+          },
+        ],
+      },
+      {
+        heading: "The one thing that makes a welcome baby setup feel right",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Here's the single most useful thing we've learned after hundreds of homecomings. A welcome baby setup should be warm and gentle, not a loud party. The baby is only days old and the parents are tired and happy, so the magic is in the soft touches, the decorated doorway they see first, the name waiting on the wall, and a calm, pretty corner for the first photo at home. We keep it beautiful and understated rather than big and busy, which suits both the mood of the day and the newborn at the centre of it.",
+          },
+        ],
+      },
+      {
+        heading: "The welcome backdrop and the baby's name",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Beyond the entrance, the main backdrop is where the first family photos at home are taken, so it's worth doing beautifully. We build the baby's name into it, in foil letters or on a printed board, along with soft touches like baby feet, moons, stars, clouds or a little bottle, set against pastel balloons or fresh flowers. Share the baby's name and its spelling when you book, and we'll have it ready and correct for that first photo at home.",
+          },
+        ],
+      },
+      {
+        heading: "Welcome prince or welcome princess, themes for a baby boy or girl",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "The theme usually follows the baby, and a few looks are perennial favourites. For a baby boy, powder blue and white with an \"It's a Boy\" or \"Welcome Prince\" theme, soft clouds and stars, or a gentle blue and grey. For a baby girl, blush pink and rose gold with a \"Welcome Princess\" theme, florals, or a soft lavender. If you'd rather keep it neutral, pastel yellows, sage, cream and greenery suit either beautifully. Send a reference if you've seen a look you love, and we'll tell you honestly how close we can get in your space.",
+          },
+        ],
+      },
+      {
+        heading: "Decorating the baby's room or nursery",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "If you'd like the welcome to carry into the baby's room, we can gently decorate the nursery too, a soft name banner over the cot, a cluster of ceiling balloons, fairy lights and a few clouds or stars, all kept light and safe for where the baby will sleep. It's a lovely touch for the photos and for the first few days at home, and we keep it deliberately light, with nothing hung heavily over where the baby sleeps.",
+          },
+        ],
+      },
+      {
+        heading: "Car decoration for the drive home",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Some families like to decorate the car that brings the baby home, and we do that too. A tasteful ribbon and balloon setup, a small \"Welcome Baby\" banner, and a few soft touches make the drive from the hospital feel special without ever getting in the way of the baby's seat or safety. Mention it when you book and we'll have the car ready alongside the home setup.",
+          },
+        ],
+      },
+      {
+        heading: "Traditional flowers or a soft balloon look",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Welcome baby setups split into two styles and we do both. The balloon look uses soft pastel balloons, a foil name, clouds and stars, and a clean, bright backdrop that photographs beautifully. The traditional look uses fresh flowers, a floral entrance and garlands, and a warm, rooted feel that many families prefer for a homecoming. A floral entrance with a pastel balloon wall inside is a lovely blend. Tell us where your taste sits and we'll design to match.",
+          },
+        ],
+      },
+      {
+        heading: "Simple and budget welcome baby decoration",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "A homecoming doesn't need a grand setup to feel special. From Rs 1,499 you get a clean, photo-ready look, and for a modest budget you can have a pastel balloon wall with the baby's name, a welcomed doorway, and warm fairy lights. These are sized for a regular apartment and are a favourite for a quiet, gentle homecoming with only close family, where the warmth of the moment matters more than the scale.",
+          },
+        ],
+      },
+      {
+        heading: "Gentle and safe for a newborn",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "The baby coming home is only a few days old, so a calm, safe setup is something we plan for with real care. Our decorators inflate balloons away from where the baby will be, secure every element so nothing can come loose, and keep small parts and stray balloons well out of reach and away from the cot. We avoid anything strongly scented near the baby, keep the nursery touches light with nothing heavy hung above the cot, and place any lamps well clear of the balloons and drapes. Tell us where the baby will rest and be held, and we keep that space clear, quiet and comfortable.",
+          },
+        ],
+      },
+      {
+        heading: "What welcome baby decoration costs",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Let's talk numbers plainly. Welcome baby decoration starts at Rs 1,499 for a simple pastel balloon wall. A themed setup with a decorated entrance, the baby's name and lights runs Rs 2,500 to Rs 5,000, and a premium look with fresh flowers, a full floral entrance and room decoration goes from Rs 5,000 upward. Three things move the price: whether you choose balloons or fresh flowers, since flowers cost more, how much you decorate, the entrance alone or the entrance, wall and room, and your city. Whatever you see at booking is what you pay, with no visit fee and nothing added on at the door.",
+          },
+          {
+            type: "table",
+            headers: ["Setup", "Typical price"],
+            rows: [
+              ["Simple pastel balloon wall", "Rs 1,499 to Rs 2,499"],
+              ["Themed with entrance and name", "Rs 2,500 to Rs 4,999"],
+              ["With fresh flowers", "Rs 3,500 and above"],
+              ["Premium floral, entrance and room", "Rs 6,000 and above"],
+            ],
+          },
+        ],
+      },
+      {
+        heading: "Formats and colours that work",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Not sure where to start? The formats families reach for most are a decorated entrance arch, a name wall inside carrying the baby's name in foil, a soft nursery touch over the cot, and a car ribbon setup for the drive home. On colour, powder blue and white suit a baby boy, blush pink and rose gold suit a baby girl, and pastel yellow, sage or cream work beautifully for either. Pick the baby's gender and your preferred style, and we'll match the palette to it.",
+          },
+        ],
+      },
+      {
+        heading: "Why families book HORA for welcome baby decoration",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "It comes down to a few simple things. Verified decorators in all 8 cities, honest pricing from Rs 1,499, quiet coordination for a surprise homecoming, an on-time setup that's ready before you reach home, and real photographs from actual setups rather than stock images. Thousands of celebrations set up, and a 5.0 rating from verified customers who mostly found us after one uneven experience elsewhere.",
+          },
+        ],
+      },
+    ],
+    faqData: () => [
+      {
+        question: "How much does welcome baby decoration cost at home?",
+        answer: "It starts at Rs 1,499 for a simple pastel balloon wall. A themed look with a decorated entrance, the baby's name and lights runs Rs 2,500 to Rs 5,000, and a premium floral setup with entrance and room decoration goes from Rs 5,000 upward. Fresh flowers cost more than balloons, and decorating the entrance, wall and room together costs more than a single wall. You'll see the full price at booking, and it doesn't change on the day.",
+      },
+      {
+        question: "Can you set it up as a surprise before we get home?",
+        answer: "Yes, and it's one of our most-booked welcome baby setups. Tell us it's a surprise when you book and we'll coordinate quietly with a family member, so the decorator finishes and clears out before you arrive with the baby. It's a lovely thing for a new mother to walk into after the hospital.",
+      },
+      {
+        question: "Do you decorate the entrance and the baby's room too?",
+        answer: "Yes to both. A decorated doorway or entrance is the signature touch for a homecoming, and we can carry the theme inside to a main wall and, if you like, gently into the baby's room with a soft name banner and lights. Just tell us how far you'd like the welcome to reach when you book.",
+      },
+      {
+        question: "How do I decorate for a baby's homecoming at home?",
+        answer: "The nicest route is a decorated doorway that greets everyone first, a soft backdrop inside with the baby's name for that first photo, and warm fairy lights, rather than a big scattered setup. You can do this yourself, or book a decorator who brings everything and sets it up while you're still at the hospital, so it's ready the moment you walk in.",
+      },
+      {
+        question: "Do you have themes for a baby boy and a baby girl?",
+        answer: "Of course. For a baby boy, powder blue and white with a Welcome Prince or \"It's a Boy\" theme, and for a baby girl, blush pink and rose gold with a Welcome Princess theme. Neutral pastels in yellow, sage or cream suit either. Send a reference picture if you have a specific look in mind and we'll match it as closely as your space allows.",
+      },
+      {
+        question: "Is the setup safe for a newborn?",
+        answer: "Yes, and we plan for it with real care. Balloons are inflated away from where the baby will be, everything is secured so nothing can fall, and small parts and loose balloons are kept out of reach and away from the cot. We keep nursery touches light with nothing heavy above the cot, and avoid anything strongly scented near the baby. Just tell us where the baby will rest and we keep that area calm and clear.",
+      },
+      {
+        question: "Do you offer traditional flower and balloon setups?",
+        answer: "Yes, both, and a blend of the two. The balloon look uses soft pastels, a foil name, clouds and stars, while the traditional look uses fresh flowers and a floral entrance. A floral doorway with a pastel balloon wall inside is a popular blend, so let us know your preference and we'll build to it.",
+      },
+      {
+        question: "Can you decorate the car that brings the baby home?",
+        answer: "Yes. We can add a tasteful ribbon and balloon setup with a small welcome banner to the car, kept well clear of the baby's seat and safety. Mention it when you book and we'll have the car ready alongside the home setup.",
+      },
+      {
+        question: "Which cities do you cover, and can I book same day?",
+        answer: "We cover Mumbai, Bangalore, Hyderabad, Delhi, Noida, Gurugram, Ghaziabad and Faridabad, with a dedicated decorator team in each. Same-day setups run in most areas as long as you book early in the day, which helps since a hospital discharge date is often confirmed at short notice.",
+      },
+    ],
+  },
+
+  // ─── Baby Shower ──────────────────────────────────────────────────────────
+  "baby-shower-decoration": {
+    description: [
+      {
+        heading: "Baby shower decoration, built around the mum-to-be",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "A baby shower is really a celebration of the mother-to-be, a warm afternoon of family, food and blessings before the baby arrives, and the decoration is what turns the room into the occasion. A pretty backdrop, a special decorated seat for her, soft flowers or balloons, and a corner made for all the photos everyone will take that day. That's the part we handle for you. You pick a look, a verified decorator arrives with the whole setup, builds it in about an hour, and has it ready before your guests arrive. Setups start at Rs 1,499, and same-day slots are open in most areas across all 8 cities.",
+          },
+        ],
+      },
+      {
+        heading: "Baby shower, godh bharai, seemantham or valaikappu, we set up for all of them",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "The ceremony has a different name and flavour in every part of the country, and we decorate for each. It's the godh bharai in the north, the seemantham in Telugu and Tamil homes, the valaikappu in Tamil Nadu with its bangles and flowers, and simply the baby shower in its modern form. The rituals differ, but the decoration needs are much the same: a beautiful backdrop, a decorated seat for the mum-to-be, a warm and blessed setting, and plenty of room for the family and the photos. Tell us which tradition your family follows when you book, and we'll shape the setup to match, traditional, modern, or a blend of both.",
+          },
+        ],
+      },
+      {
+        heading: "What's included, and how it works",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "You don't arrange a single thing yourself, because everything the design needs comes with the decorator, from the backdrop and the flowers or balloons to the mum-to-be seat, the props and the lights. The booking takes a couple of minutes: pick a setup, add your city and address, choose the date and time, and confirm. We'll call you before the slot, set up in 60 to 90 minutes, and leave the room ready for your guests. And if you're planning it as a surprise for the mother-to-be, just say so and we'll coordinate quietly with the family so it's finished before she arrives.",
+          },
+        ],
+      },
+      {
+        heading: "The mum-to-be's seat, the star of the setup",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Every good baby shower has one special seat for the guest of honour, and that's where we put the most care. Picture a decorated chair or a low throne dressed in flowers or drapes, a rich backdrop behind it, and soft lighting, so the mum-to-be is beautifully framed for every photo and every blessing. For a traditional godh bharai or seemantham, we can style it with fresh flowers and a floral arch, and for a modern shower, with balloons, a foil name or a \"mom to be\" theme. Wherever she sits is where the day centres, so tell us where you'd like it and that's where the effort lands.",
+          },
+        ],
+      },
+      {
+        heading: "The one thing that makes a baby shower setup work",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Here's the single most useful thing we've learned after hundreds of baby showers. The mum-to-be will be seated for most of the celebration, receiving blessings and posing for photo after photo, so her seat should be as comfortable as it is beautiful. We make sure the decorated chair is genuinely comfortable to sit in, that the backdrop frames her well from where guests will take pictures, and that the spot isn't crowded or stuffy, because a relaxed, happy mum-to-be is what makes every photo work anyway.",
+          },
+        ],
+      },
+      {
+        heading: "Traditional Indian or a modern theme",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Baby showers split neatly into two styles and we do both well. The traditional Indian look leans on fresh flowers, marigold and jasmine, a floral seat and backdrop, banana leaf and a warm, blessed feel that suits a godh bharai or seemantham beautifully. The modern look uses pastel balloons, a themed backdrop, a \"mom to be\" sash, and clean, bright styling. Plenty of families blend the two, a fresh-flower seat with a soft balloon backdrop, which keeps the ritual traditional while the photos feel current.",
+          },
+        ],
+      },
+      {
+        heading: "Themes and colours families love",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "If you're not sure where to start, a few looks always land well. For a modern shower, the favourites are twinkle twinkle little star, clouds and moons, teddy bears, a floral pastel theme, and the classic \"oh baby\" or \"mom to be\" backdrop. On colour, soft pastels suit any shower, blush and rose gold feel pretty, and sage, cream and greenery keep it gender-neutral, which is handy when the baby is a surprise. For a traditional setup, rich reds, yellows and gold with fresh flowers always look auspicious.",
+          },
+        ],
+      },
+      {
+        heading: "Stage and backdrop for a bigger gathering",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Baby showers and godh bharai celebrations often bring the whole extended family together, sometimes in a banquet hall, so the setup scales up when it needs to. A raised, decorated stage for the mum-to-be, a full backdrop, floral or balloon side pieces and warm lighting turn a hall or a large living room into the occasion.",
+          },
+        ],
+      },
+      {
+        heading: "A photo corner and the little touches",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Beyond the main backdrop, the touches that guests love are a small photo corner with a \"mom to be\" sash and a few props, a decorated table for the cake or the gifts, and soft fairy lights through the setup. These are the details that make a shower feel put together rather than plain.",
+          },
+        ],
+      },
+      {
+        heading: "Simple and budget baby shower decoration",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "A baby shower doesn't need a grand production to feel special. From Rs 1,499 you get a clean, photo-ready look, and for a modest budget you can have a pastel or floral backdrop, a nicely decorated seat for the mum-to-be, and warm fairy lights.",
+          },
+        ],
+      },
+      {
+        heading: "What baby shower decoration costs",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Let's talk numbers plainly. Baby shower decoration starts at Rs 1,499 for a simple balloon or pastel backdrop. A themed setup with a decorated mum-to-be seat, a backdrop and lights runs Rs 2,500 to Rs 5,000, and a premium look with fresh flowers, a full floral seat and a stage goes from Rs 5,000 upward.",
+          },
+          {
+            type: "table",
+            headers: ["Setup", "Typical price"],
+            rows: [
+              ["Simple balloon or pastel backdrop", "Rs 1,499 to Rs 2,499"],
+              ["Themed with decorated seat", "Rs 2,500 to Rs 4,999"],
+              ["With fresh flowers", "Rs 3,500 and above"],
+              ["Premium floral and stage", "Rs 6,000 and above"],
+            ],
+          },
+        ],
+      },
+      {
+        heading: "Formats and colours that work",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Not sure where to start? The formats families reach for most are a decorated chair or throne for the mum-to-be, a floral or balloon backdrop behind it, a photo corner with a sash and props, and a full stage setup for a banquet hall. On colour, soft pastels and rose gold suit a modern shower, gender-neutral sage, cream and greenery work when the baby is a surprise, and rich reds and gold with fresh flowers suit a traditional godh bharai or seemantham.",
+          },
+        ],
+      },
+      {
+        heading: "Why families book HORA for baby showers",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "It comes down to a few simple things. Verified decorators in all 8 cities, honest pricing from Rs 1,499, fresh flowers sourced on the morning of the celebration, an on-time setup that's ready before your guests arrive, and real photographs from actual showers rather than stock images.",
+          },
+        ],
+      },
+    ],
+    faqData: () => [
+      {
+        question: "How much does baby shower decoration cost at home?",
+        answer: "It starts at Rs 1,499 for a simple balloon or pastel backdrop. A themed look with a decorated mum-to-be seat and lights runs Rs 2,500 to Rs 5,000, and a premium floral setup with a stage goes from Rs 5,000 upward. Fresh flowers cost more than balloons, so the style you choose is the biggest factor. You'll see the full price at booking, and it doesn't change on the day.",
+      },
+      {
+        question: "What do you decorate at a baby shower?",
+        answer: "The main pieces are a strong backdrop, a special decorated seat for the mum-to-be, and a corner for the cake or the gifts, tied together with flowers or balloons and warm lighting. We can add a photo corner with a \"mom to be\" sash and props, and for a bigger gathering, a full stage.",
+      },
+      {
+        question: "Do you do traditional godh bharai and seemantham decoration?",
+        answer: "Yes. We set up for the godh bharai, the seemantham, the valaikappu and the modern baby shower, and we can keep it fully traditional with fresh flowers, a floral seat and banana leaf, or blend it with a modern balloon backdrop. Just tell us your family's tradition when you book and we'll shape the design to it.",
+      },
+      {
+        question: "What are the popular baby shower themes?",
+        answer: "The favourites are twinkle twinkle little star, clouds and moons, teddy bears, a floral pastel look, and the classic \"oh baby\" or \"mom to be\" backdrop. Gender-neutral palettes in sage, cream and greenery are popular when the baby is a surprise, while traditional families often prefer rich reds and gold with fresh flowers.",
+      },
+      {
+        question: "Can you do a baby shower in a banquet hall as well as at home?",
+        answer: "Yes. At home we build around one strong backdrop and the mum-to-be's seat, and for a bigger celebration in a banquet hall we scale up to a full decorated stage with side pieces and lighting.",
+      },
+      {
+        question: "Can you set it up as a surprise for the mum-to-be?",
+        answer: "Yes. Tell us when you book and we'll coordinate quietly with the family, finish the setup and clear out before she arrives, so she walks into her celebration already looking its best.",
+      },
+      {
+        question: "Which cities do you cover, and can I book same day?",
+        answer: "We cover Mumbai, Bangalore, Hyderabad, Delhi, Noida, Gurugram, Ghaziabad and Faridabad, with a dedicated decorator team in each. Same-day setups run in most areas as long as you book early in the day.",
+      },
+    ],
+  },
+
+  // ─── Anniversary ──────────────────────────────────────────────────────────
+  "anniversary-decoration": {
+    description: [
+      {
+        heading: "Anniversary decoration, mark the years, not just the date",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "An anniversary isn't really about the date, it's about everything since the wedding day, the years, the ordinary evenings, the whole life the two of you have quietly built together. And that deserves a bit more than a card and a dinner booking. What it deserves is a moment, the kind where they walk in, stop in the doorway, and find soft lights, flowers and a little surprise waiting just for them. That's the bit we set up for you, so you choose a look, a verified decorator turns up and builds it while you keep your partner busy, and it's ready and waiting for the reveal. Setups start at Rs 1,499, and in most areas we can do same-day and even midnight slots, right across all 8 cities.",
+          },
+        ],
+      },
+      {
+        heading: "What's included, and how it works",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Here's the good part: you don't have to arrange a single thing, because the decorator brings all of it, the balloons or flowers, the backdrop, the candles, the fairy lights, right down to the finishing touches. The booking takes a couple of minutes too, you just pick a setup, add your city and address, choose a time and confirm. And if it's a surprise, tell us when you book and we'll work around it, arriving while you keep your partner out and finishing before they're back.",
+          },
+        ],
+      },
+      {
+        heading: "The romantic room setup",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Most couples ask us to transform the room itself, and it's easy to see why. Imagine walking in to a soft canopy over the bed, rose petals and candles, warm fairy lights and a few heart balloons, with your names waiting up on the wall. It's intimate, it photographs beautifully, and it's exactly the kind of setup that stops someone in the doorway.",
+          },
+        ],
+      },
+      {
+        heading: "The best anniversary setups are personal, not just pretty",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Here's the one thing we've learned after thousands of anniversaries: the setups people actually remember aren't the biggest ones, they're the personal ones. A wall of balloons is lovely, of course, but string your photos across the years above it, pick out the date you married in foil, or swap the default roses for the flowers they genuinely love, and suddenly it isn't decoration any more, it's about the two of you.",
+          },
+        ],
+      },
+      {
+        heading: "Surprise anniversary decoration",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "The anniversary setups that land best are the ones your partner never sees coming, and the tricky bit, the timing, is exactly what we take off your hands. Just tell us it's a surprise when you book, keep them out for an hour, and we'll get in, set everything up, and be gone before you walk them back through the door. Midnight is easily our most-requested slot for anniversaries.",
+          },
+        ],
+      },
+      {
+        heading: "Candlelight dinner setups at home",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "If what you've got in mind is a quiet dinner for two, we'll set the scene for that just as happily. Picture a table dressed with candles, rose petals and fairy lights, a soft backdrop behind it, and the whole room turned intimate. It's a favourite for a first anniversary, or really for any evening that's meant to be just the two of you.",
+          },
+        ],
+      },
+      {
+        heading: "Balloon and backdrop setups for a family celebration",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Not every anniversary is a quiet one, and plenty are celebrated with the whole family and a cake in the middle. For those, a strong \"Happy Anniversary\" balloon wall or a decorated backdrop behind the cake table does most of the work, in the couple's colours or a classic black and gold.",
+          },
+        ],
+      },
+      {
+        heading: "Milestone anniversaries, from the first to the fiftieth",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Some anniversaries just ask for something bigger. A first anniversary is usually a surprise for two, soft and intimate, whereas a 25th, the silver, tends to bring the whole family together, so we lean into an elegant silver and white setup with the number lit up and plenty of room for everyone. A 50th, the golden, deserves something warm and dignified, so we go for gold and fresh flowers, a photo display walking through the fifty years, and a comfortable seat at the centre for the couple.",
+          },
+        ],
+      },
+      {
+        heading: "A surprise for your parents' anniversary",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "One of the loveliest things we get asked to do is a surprise for a mum and dad, or grandparents, on their anniversary, usually cooked up by the children. These tend to be warmer and more nostalgic than a couple's setup, so we'll lean into a photo display of the years, their wedding colours, fresh flowers, and space for everyone to gather round.",
+          },
+        ],
+      },
+      {
+        heading: "Simple and budget anniversary decoration",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "An anniversary doesn't need a grand production to feel special, and a lot of what we set up is deliberately simple. From Rs 1,499 you'll get a warm, photo-ready look, and even on a modest budget that can be a heart balloon wall, or a cosy little corner with fairy lights, candles and a few flowers.",
+          },
+        ],
+      },
+      {
+        heading: "What anniversary decoration costs",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Let's talk money plainly. Anniversary decoration at home starts at Rs 1,499 for a simple balloon or romantic corner setup, and from there a themed room with a canopy, candles and fairy lights runs Rs 2,500 to Rs 5,000. A premium look, whether that's fresh flowers, a candlelight dinner or a milestone silver or golden setup, goes from Rs 5,000 upward.",
+          },
+          {
+            type: "table",
+            headers: ["Setup", "Typical price"],
+            rows: [
+              ["Simple balloon or romantic corner", "Rs 1,499 to Rs 2,499"],
+              ["Themed room with canopy and lights", "Rs 2,500 to Rs 4,999"],
+              ["With fresh flowers or candlelight dinner", "Rs 3,500 and above"],
+              ["Premium and milestone (25th, 50th)", "Rs 5,000 and above"],
+            ],
+          },
+        ],
+      },
+      {
+        heading: "Formats and colours that work",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Not sure where to start? The formats couples reach for most are a romantic canopy over the bed, a heart balloon or floral backdrop with your names in foil, a dressed candlelight dinner table, and a full stage or balloon wall for a family celebration. On colour, reds and roses feel classically romantic, black and gold suits a bigger family evening, silver and white marks a 25th, and gold with fresh flowers marks a 50th.",
+          },
+        ],
+      },
+      {
+        heading: "Why couples book HORA for anniversaries",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "It comes down to a few simple things, really. Verified decorators in all 8 cities, honest pricing from Rs 1,499, discreet coordination when it's a surprise, a setup that's ready on time for the reveal, and real photographs from actual anniversaries rather than stock images.",
+          },
+        ],
+      },
+    ],
+    faqData: () => [
+      {
+        question: "How much does anniversary decoration cost at home?",
+        answer: "It starts at Rs 1,499 for a simple balloon or romantic corner, and from there a themed room with a canopy, candles and lights runs Rs 2,500 to Rs 5,000, while a premium setup with fresh flowers, a candlelight dinner or a milestone design goes from Rs 5,000 upward.",
+      },
+      {
+        question: "How can I make our anniversary special at home?",
+        answer: "The simplest route to a moment they'll remember is one transformed room, a soft backdrop or canopy, warm lights, candles and flowers, with a couple of personal touches like your photos or the year on the wall. Add a candlelight dinner for two and you've turned it into a whole evening.",
+      },
+      {
+        question: "Can you set it up as a surprise, and do you do midnight?",
+        answer: "Yes to both, and honestly they're our most common anniversary bookings. Tell us it's a surprise, keep your partner out for an hour, and we'll set up and slip away before the reveal. Midnight is the most-requested slot.",
+      },
+      {
+        question: "Do you do romantic room and candlelight dinner setups?",
+        answer: "We do, and the romantic room is our signature, a canopy or backdrop, rose petals, candles, fairy lights and heart balloons. And if it's a quiet evening you're after, we'll set a candlelight dinner for two with a dressed table, petals and soft lighting.",
+      },
+      {
+        question: "Do you decorate for a 25th or 50th anniversary?",
+        answer: "Absolutely. A 25th silver usually brings the family together, so we build an elegant silver and white setup with the number lit up, while a 50th golden calls for gold, fresh flowers and a photo display of the years.",
+      },
+      {
+        question: "Can you plan a surprise for my parents' anniversary?",
+        answer: "Yes, and it's one of our favourites. For a parents' or grandparents' anniversary we lean warmer and more nostalgic, so think a photo display, their wedding colours, fresh flowers and room for the whole family.",
+      },
+      {
+        question: "Which cities do you cover, and can I book same day?",
+        answer: "We're across Mumbai, Bangalore, Hyderabad, Delhi, Noida, Gurugram, Ghaziabad and Faridabad, each with its own decorator team, and same-day and midnight setups run in most areas as long as you book early in the day.",
+      },
+    ],
+  },
+
+  // ─── Wedding (both keys share the same content) ───────────────────────────
+  "wedding": {
+    description: [
+      {
+        heading: "Wedding decoration for every function, planned and coordinated as one",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "A wedding is not one celebration, it's many, spread across days and functions, the haldi and mehndi, the sangeet, the ceremony under the mandap, the reception, and every entrance, stage and car in between. Each one has to look beautiful on its own, and together they have to feel like one wedding. Pulling that off through a dozen separate vendors is the quiet stress that eats a wedding week. HORA takes it off you. You share your functions and your vision, we design the whole wedding as one look, bring the right specialist teams to each setup, and coordinate them so everything is ready on time and nothing clashes. Book us for a single function or the entire celebration, at home, in a lawn or in a banquet hall, to any budget, across all 8 cities.",
+          },
+        ],
+      },
+      {
+        heading: "Every function we decorate",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Each of these has its own setup, and you can book any one on its own or all of them together.",
+          },
+          {
+            type: "paragraph",
+            text: "Before the wedding: an engagement and ring ceremony stage, bright marigold and floral setups for the haldi, colourful and playful decor for the mehndi, and a lively stage and dance-floor setup for the sangeet night.",
+          },
+          {
+            type: "paragraph",
+            text: "The wedding day: the traditional mandap in fresh flowers, drapes or a themed design, the wedding and reception stage, a welcoming entrance and gate, and the couple's car dressed with fresh flowers and ribbons.",
+          },
+          {
+            type: "paragraph",
+            text: "After the wedding: a grand stage and hall setup for the reception evening, and a soft, romantic room setup for the couple's first night.",
+          },
+        ],
+      },
+      {
+        heading: "The details that tie a wedding together",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Beyond the stages and the mandap, it's the smaller touches that make a wedding feel finished, and we plan those in from the start. Warm lighting and festoon across the venue, fresh floral work through the spaces, table and centrepiece styling for the dining, a photo booth or a couple of fun corners for guests, and canopies or tenting for an outdoor function.",
+          },
+        ],
+      },
+      {
+        heading: "The hard part of a wedding is coordination, and that's what we own",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "The setups that go wrong are rarely about one team's work, they're about coordination. A wedding often needs several specialist teams, and the whole difference is whether someone is holding them together. That's our job. We bring the right people to each function and coordinate them into one coherent look on one timeline, with a single point of contact for you.",
+          },
+        ],
+      },
+      {
+        heading: "Every venue, from a home terrace to a banquet hall",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "We set up wherever your wedding happens. A haldi on the terrace or in the garden, a mehndi in the living room, a sangeet or reception in a banquet hall, a ceremony in a lawn or a farmhouse, or a full celebration across a hotel.",
+          },
+        ],
+      },
+      {
+        heading: "We decorate for every wedding tradition",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Weddings look different across communities, and we set up for all of them. Traditional Hindu ceremonies with a fresh-flower mandap and haldi, Muslim weddings including the nikah and walima, Christian weddings, and the many regional variations each family brings.",
+          },
+        ],
+      },
+      {
+        heading: "Traditional, floral or themed, and any budget",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Across the functions, you can go fully traditional with fresh flowers and rich colours, softer and floral with roses and greenery, or fully themed around a colour story. A large share of what we build is deliberately budget-friendly, focusing the spend on the stage and the entrance where it shows most.",
+          },
+        ],
+      },
+      {
+        heading: "How it works, from the first call to the last function",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Share your plan: tell us your functions, dates, venues and a rough budget. We design it: you get a single coordinated design across all your functions and a clear, itemised price. We build and coordinate: the right specialist teams set up each function. We recommend enquiring a few weeks ahead for a full wedding. For a single function, shorter notice is usually fine.",
+          },
+        ],
+      },
+      {
+        heading: "Why families book HORA for weddings",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Verified decorators in all 8 cities, one partner coordinating every function so nothing clashes on the day, honest pricing quoted to your plan with no surprises added later, fresh flowers sourced for the occasion, and real photographs from actual weddings rather than stock images.",
+          },
+        ],
+      },
+      {
+        heading: "Cities we serve",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "We cover Mumbai, Bangalore, Hyderabad, Delhi, Noida, Gurugram, Ghaziabad and Faridabad, with a dedicated team in each city.",
+          },
+        ],
+      },
+    ],
+    faqData: () => [
+      {
+        question: "Do you handle the full wedding, or just one function?",
+        answer: "Both. You can book a single function or the entire wedding across every function from the haldi to the reception. Most families book us for the whole thing so one partner coordinates it all and the looks match across the days.",
+      },
+      {
+        question: "Do you use one team or several for a full wedding?",
+        answer: "For a big wedding we bring in several specialist teams, flower artists, stage builders, lighting crews, so each function is handled by people who do that work best. We coordinate all of them under one design and one timeline.",
+      },
+      {
+        question: "How much does wedding decoration cost?",
+        answer: "It depends entirely on scale, so we quote to your plan. Share your functions and budget when you enquire and we'll give you a clear, itemised price for the whole wedding, with nothing added on the day.",
+      },
+      {
+        question: "Can you decorate a wedding on a budget?",
+        answer: "Yes, and a large part of what we do is exactly that. We focus the budget on the stage and the entrance where it shows most, and let well-lit drapes and flowers carry the rest.",
+      },
+      {
+        question: "Do you decorate for Hindu, Muslim and Christian weddings?",
+        answer: "Yes, all of them, including the mandap and haldi for a Hindu ceremony, the nikah and walima for a Muslim wedding, Christian weddings, and regional variations.",
+      },
+      {
+        question: "Do you cover home, lawn and banquet weddings?",
+        answer: "Yes, all of them, a terrace or garden haldi, a home mehndi, a lawn or farmhouse ceremony, and a banquet or hotel reception.",
+      },
+      {
+        question: "When should we book?",
+        answer: "As early as you can for a full wedding, ideally a few weeks ahead. For a single function, shorter notice is usually fine, and same-day is often possible for smaller setups.",
+      },
+      {
+        question: "Which cities do you cover?",
+        answer: "Mumbai, Bangalore, Hyderabad, Delhi, Noida, Gurugram, Ghaziabad and Faridabad, each with a dedicated local team.",
+      },
+    ],
+  },
+
+  "wedding-decoration": {
+    get description() { return allCategoryContent["wedding"].description; },
+    get faqData() { return allCategoryContent["wedding"].faqData; },
+  },
 
   // ─── Kids Birthday ────────────────────────────────────────────────────────
   "kids-birthday-decoration": {
