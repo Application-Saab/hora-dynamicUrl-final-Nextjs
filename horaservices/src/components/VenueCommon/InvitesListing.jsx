@@ -23,21 +23,54 @@ import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEve
 const BATCH_SIZE = 10;
 const WHATSAPP_PHONE = "7338584828";
 
-const getCacheKey = (eventType, venueType, guestCapacity, city) =>
-  `venue-list-${JSON.stringify({ eventType, venueType, guestCapacity, city })}`;
+// ✅ locality bhi include kiya
+const getCacheKey = (eventType, venueType, guestCapacity, city, locality) =>
+  `venue-list-${JSON.stringify({
+    eventType,
+    venueType,
+    guestCapacity,
+    city,
+    locality: locality || null,
+  })}`;
 
 const getVenueRoute = (city) =>
   city ? `/${city.toLowerCase()}/venue-list/venue` : "/venue-list/venue";
+
+// ✅ helper – string ya object dono handle karega
+const getLocalityValue = (locality) => {
+  if (!locality) return null;
+  if (typeof locality === "string") return locality.trim() || null;
+  if (typeof locality === "object") {
+    return (
+      locality.name ||
+      locality.label ||
+      locality.value ||
+      locality.locality ||
+      null
+    );
+  }
+  return null;
+};
 
 const VenueList = ({
   eventType,
   venueType,
   guestCapacity,
   city,
+  locality,
   search,
   initialVenues = null,
 }) => {
-  const cacheKey = getCacheKey(eventType, venueType, guestCapacity, city);
+  const localityValue = getLocalityValue(locality);
+
+  const cacheKey = getCacheKey(
+    eventType,
+    venueType,
+    guestCapacity,
+    city,
+    localityValue
+  );
+
   const cached = typeof window !== "undefined" ? getPageCache(cacheKey) : null;
 
   const getVenueHref = (venue, halls = []) => {
@@ -91,7 +124,13 @@ const VenueList = ({
   const fetchedIdsRef = useRef(new Set());
 
   useEffect(() => {
-    const key = getCacheKey(eventType, venueType, guestCapacity, city);
+    const key = getCacheKey(
+      eventType,
+      venueType,
+      guestCapacity,
+      city,
+      localityValue
+    );
     const existing = typeof window !== "undefined" ? getPageCache(key) : null;
 
     if (existing && !existing.isStale) {
@@ -114,6 +153,7 @@ const VenueList = ({
     if (venueType && venueType !== "all") params.append("venueType", venueType);
     if (guestCapacity) params.append("guestCapacity", guestCapacity);
     if (city) params.append("city", city);
+    if (localityValue) params.append("locality", localityValue); // ✅ clean value
 
     let cancelled = false;
 
@@ -133,7 +173,7 @@ const VenueList = ({
     return () => {
       cancelled = true;
     };
-  }, [eventType, venueType, guestCapacity, city]);
+  }, [eventType, venueType, guestCapacity, city, localityValue]); // ✅ localityValue
 
   const filteredVenues = useMemo(() => {
     const q = (search || "").trim().toLowerCase();
@@ -281,7 +321,6 @@ const VenueList = ({
                 color: "inherit",
               }}
             >
-              {/* SEO ke liye primary anchor tag jo poore card ko cover karega */}
               <a
                 href={href}
                 aria-label={v.venueName}
@@ -447,31 +486,6 @@ const VenueList = ({
                 <div className="venue-card-btn-ctn">
                   <div>
                     <span className="venue-menu-btn">View Package ➜</span>
-                  </div>
-                  <div>
-                    <a
-                      href={whatsappUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="check-availability-btn-venue"
-                      style={{
-                        position: "relative",
-                        zIndex: 2,
-                        display: "inline-block",
-                        textDecoration: "none",
-                      }}
-                      onClick={(e) => {
-                        trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.CHECK_AVAILABILITY_VENUE_LANDING, {
-                          button_name: "Check Availability",
-                          button_type: "check_availibility_venue_landing",
-                          page_path: window.location.pathname,
-                        });
-                        e.stopPropagation(); 
-                        trackWAClicks();
-                      }}
-                    >
-                      Check Availability
-                    </a>
                   </div>
                 </div>
               </div>

@@ -31,10 +31,10 @@ export const CITY_ROUTES = [
 
 export const CITY_LOCALITY_ROUTES = [
   "/",
-  "/balloon-decoration",
-  "/chef-near-me",
-  "/photography",
-  "/wedding-decoration"
+  // "/balloon-decoration",
+  // "/chef-near-me",
+  // "/photography",
+  // "/wedding-decoration"
 ];
 
 export const normalizeRoutePath = (pathname = "") => {

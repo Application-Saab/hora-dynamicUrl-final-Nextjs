@@ -1,225 +1,138 @@
-/* ═══════════ Highlights Row (Stats + Enquiry) ═══════════ */
-.venue-highlights-row {
-  display: flex;
-gap: clamp(4.8px, 1.527vw, 6px);
-  align-items: stretch;
-  margin-top:clamp(10.5px, 3.053vw, 12px);
-}
-
-.venue-highlights-stats {
-  flex: 1;
-  min-width: 0;
-  background: #fff;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-}
-.vh-stats-grid {
-  display: flex;
-  flex-direction: column;
+.vh-container {
   width: 100%;
+  max-width: 440px;
+  margin-top: clamp(6.51px, 2.036vw, 9.77px);
+  margin-bottom: clamp(8.14px, 2.545vw, 12.21px);
+  background: #ffffff;
+  border: 1px solid #0000001a;
+  border-radius: clamp(8.96px, 2.799vw, 13.44px);
+  padding: clamp(8.14px, 2.545vw, 12.21px) clamp(5.7px, 1.781vw, 8.55px);
+  box-sizing: border-box;
+  box-shadow: 0px 4px 4px 0px #72717112;
 }
 
-.vh-stat-item {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: clamp(8px, 2.5vw, 10px);
+.vh-header {
+  text-align: center;
+  margin-bottom: clamp(6.51px, 2.036vw, 9.77px);
+}
+
+.vh-title {
+  font-family: "Roboto", sans-serif;
+  margin: 0 0 clamp(4.07px, 1.272vw, 6.11px) 0;
+  font-size: clamp(14.66px, 4.58vw, 21.98px);
+  line-height: clamp(14.66px, 4.58vw, 21.98px);
+  font-weight: 600;
   color: #000000;
-font-family: "Poppins", sans-serif;
-font-weight: 400;
-font-style: normal;
-font-size: clamp(11px, 3.61vw, 16.33px);
-  min-width: 0;
-  width: 100%;
-  padding: clamp(10.2px, 3.05vw, 13.8px) 0;
 }
 
-.vh-stat-item:first-child {
-  padding-top: 0;
-}
-
-.vh-stat-item:last-child {
-  padding-bottom: 0;
-}
-
-/* har row ke niche dotted line, last row ke alawa */
-.vh-stat-item:not(:last-child)::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  border-bottom: 1px dashed #d9d9d9;
-}
-
-.vh-stat-item img,
-.vh-stat-item svg {
-width: clamp(18px, 6vw, 28.06px);
-height: clamp(20.74px, 6.21vw, 28.06px);
-  flex-shrink: 0;
-}
-/* ── Enquiry banner ── */
-.venue-highlights-enquiry {
-  flex: 0 0 42%;
-  max-width: 42%;
-}
-.enquiry-banner-icon {
-  position: relative;
-  z-index: 1;
-  flex-shrink: 0;
-width: clamp(47.6px, 14.25vw, 64.4px);
-height: clamp(41.65px, 12.47vw, 56.35px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: clamp(4px, 1.3vw, 6px);
-}
-
-.enquiry-banner-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.enquiry-banner {
-  position: relative;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: clamp(6px, 2.04vw, 10px);
-  border-radius: clamp(8px, 2.5vw, 12px);
-  overflow: hidden;
-  background: linear-gradient(135deg, #f2d3ee 0%, #f8ecf6 40%, #f4d9f1 70%, #e9b8e0 100%);
-}
-
-
-
-
-.eb-sparkle {
-  position: absolute;
-  top: -8px;
-  left: -8px;
-}
-
-.enquiry-banner-body {
-  position: relative;
-  z-index: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.enquiry-banner-title {
-  font-family: "Poppins", sans-serif;
-font-weight: 600;
-font-style: normal;
-font-size: clamp(11.9px, 3.56vw, 16.1px);
-  color: #1a1a1a;
-  margin: 0 0 4px 0;
-  text-align: center;
-}
-
-.enquiry-banner-title span {
-  color: #97538C;
-}
-
-.enquiry-banner-sub {
-  font-family: "Poppins", sans-serif;
+.vh-subtitle {
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  font-size: clamp(9.77px, 3.053vw, 14.66px);
+  line-height: clamp(14.66px, 4.58vw, 21.98px);
+  color: #6C6F74;
   font-weight: 400;
-font-size: clamp(8.5px, 2.54vw, 11.5px);
-  color: #655F6D;
-  margin: 0 auto clamp(8px, 2.5vw, 11px) auto;
-  max-width: 200px;
-  text-align: center;
 }
 
-.enquiry-banner-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
-  border-radius: clamp(34.78px, 11.064vw, 43.48px);
-  padding: clamp(4px, 1.3vw, 5.5px) clamp(10px, 3.2vw, 13px);
-  background-color: #97538C;
-  color: #FFFFFF;
-  gap: clamp(3.2px, 1.018vw, 4px);
-  font-family: "Poppins", sans-serif;
-font-weight: 500;
-font-style: normal;
-font-size: clamp(11.25px, 3.37vw, 15.23px);
-}
-
-.enquiry-banner-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(122, 37, 96, 0.35);
-}
-
-.eb-arrow {
-  transition: transform 0.15s ease;
-}
-.enquiry-banner-btn:hover .eb-arrow {
-  transform: translateX(3px);
-}
-/* ═══════════ Category Pills Row ═══════════ */
-.venue-category-row {
-  display: flex;
-align-items: center;
-gap: clamp(8px, 2.545vw, 10px);
-margin-top: clamp(8px, 2.545vw, 10px);
-padding-top: clamp(6.4px, 2.036vw, 8px);
- border-top: 0.49px solid #97538C;
-}
-
-.venue-category-home {
-  flex-shrink: 0;
- width: clamp(19.96px, 6.347vw, 24.94px);
-height: clamp(19.96px, 6.347vw, 24.94px);
-  border-radius: 50%;
-  background: #f3e6f2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.venue-category-scroll {
-  display: flex;
-  gap: 10px;
+.vh-grid-scroll {
+  width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-}
-.venue-category-scroll::-webkit-scrollbar {
-  display: none;
+  padding: 2px 2px 8px;
 }
 
-.venue-category-pill {
-  flex-shrink: 0;
-  display: inline-flex;
+.vh-grid-scroll::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.vh-grid {
+  display: grid;
+  grid-template-rows: repeat(2, 86px);
+  grid-auto-flow: column;
+  grid-auto-columns: clamp(92px, 25vw, 102px);
+  /* gap: 10px; */
+  gap: clamp(11.4px, 3.562vw, 17.1px);
+  width: max-content;
+  margin: 0 auto;
+}
+
+/* Individual Card */
+.vh-card {
+  background: #ffffff;
+  border: 0.2px solid #97538C8A;
+  border-radius: clamp(8.14px, 2.545vw, 12.21px);
+  display: flex;
+  flex-direction: column;
   align-items: center;
-gap: clamp(1.6px, 0.509vw, 2px);
-  padding: clamp(2.1px, 0.667vw, 2.62px);
-  border-radius: clamp(1.84px, 0.585vw, 2.3px);
- border: 0.37px solid #97538C;
- color: #97538C;
-font-family: "Inter", sans-serif;
-font-weight: 500;
-font-size: clamp(7.5px, 2.24vw, 10.5px);
-  background: #97538C1A;
-  white-space: nowrap;
+  justify-content: center;
+  padding: clamp(6.35px, 1.985vw, 9.53px) clamp(0.65px, 0.204vw, 0.98px);
+  text-align: center;
+  box-shadow: 0px 4px 4px 0px #0000000F;
 }
-.pill-cat-img{
-    width: clamp(7.87px, 2.35vw, 11px);
-height: clamp(7.87px, 2.35vw, 11px);
-}
-.arrowICON{
-width: clamp(7px, 2.29vw, 9px);
-height: clamp(7px, 2.54vw, 10px);
 
+.vh-icon-box {
+  width: clamp(31.76px, 9.924vw, 47.63px);
+  height: clamp(27.68px, 8.651vw, 41.53px);
+  border-radius: clamp(8.14px, 2.545vw, 12.21px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: clamp(4.89px, 1.527vw, 7.33px);
+  flex-shrink: 0;
+}
+
+.vh-icon-img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/* Text inside card */
+.vh-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.vh-val {
+  font-family: "Inter", sans-serif;
+  font-size: clamp(8.14px, 2.545vw, 12.21px);
+  font-weight: 600;
+  color: #505050;
+  /* line-height: 1.2; */
+  /* white-space: nowrap; */
+  /* overflow: hidden; */
+  /* text-overflow: ellipsis; */
+  max-width: 90%;
+}
+
+.vh-lbl {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: #555555;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90%;
+}
+
+/* Bottom Progress / Scroll Track Indicator */
+.vh-indicator-track {
+  width: 58px;
+  height: 4px;
+  background-color: #f0e6ef;
+  border-radius: 4px;
+  margin: 6px auto 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.vh-indicator-thumb {
+  width: 28px;
+  height: 100%;
+  background-color: #924286; /* Brand purple */
+  border-radius: 4px;
 }

@@ -10,7 +10,7 @@
   pointer-events: none;
 
   width: clamp(135px, 45.8vw, 180px);
- height: clamp(108px, 38.17vw, 150px);
+  height: clamp(108px, 38.17vw, 150px);
   opacity: 1;
 
   border-top-left-radius: clamp(7px, 2.29vw, 11px);
@@ -25,22 +25,21 @@
 
   /* Content hamesha box ke center me — chota ho ya bada */
   display: flex;
-      align-items: flex-start;
-    justify-content: flex-start;
+  align-items: flex-start;
+  justify-content: flex-start;
 
-    padding: clamp(20px, 6.36vw, 30px) clamp(10px, 4.07vw, 20px) clamp(10px, 4.07vw, 20px) 0;
+  padding: clamp(20px, 6.36vw, 30px) clamp(10px, 4.07vw, 20px)
+    clamp(10px, 4.07vw, 20px) 0;
   box-sizing: border-box;
   overflow: hidden; /* agar shrink ke baad bhi barely overflow ho to safety net */
 }
 
 .venue-name-text {
   width: 100%;
- 
   font-family: "Playfair Display", serif;
   font-weight: 600;
-  font-style: normal;
-
-  font-size: clamp(16px, 5.09vw, 20px);
+  font-style: semibold;
+  font-size: clamp(16.28px, 5.089vw, 24.43px);
   line-height: 1.25;
   color: #ffffff;
 }

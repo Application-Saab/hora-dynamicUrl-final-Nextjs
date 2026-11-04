@@ -21,7 +21,7 @@ const TemplateRenderer = ({
   isHost,
   isVenue = false,
   frompanel,
-   topBannerOverlayContent 
+  topBannerOverlayContent,
 }) => {
   const textRef = useRef(null);
   const templateRef = useRef(null);
@@ -134,7 +134,7 @@ const TemplateRenderer = ({
     let url = isVenue
       ? `${BASE_URL}/api/party-venue/venue-banner-image/${eventDetails?._id}`
       : `${BASE_URL}/api/customer/event/event-invites/external-template/${eventDetails?._id}`;
-      
+
     try {
       await fetchWithError(url, {
         method: "PUT",
@@ -153,13 +153,12 @@ const TemplateRenderer = ({
         if (
           !eventDetails?.externalTemplateImageUrl &&
           mediaUrl === DefaultTemplate.src &&
-          (isHost || frompanel == 'true') &&
+          (isHost || frompanel == "true") &&
           imageLoaded
         ) {
           handleDownload();
         }
       } else if (isVenue) {
-        console.log('%c [ isVenue ]', 'font-size:13px; background:pink; color:#bf2c9f;', isVenue)
         if (
           !eventDetails?.venueImageUrl &&
           mediaUrl === DefaultTemplate.src &&
@@ -217,6 +216,8 @@ const TemplateRenderer = ({
       style={{
         paddingInline: !isLandingPage ? "25px" : "",
         textAlign: "center",
+        marginBottom: !isVenue && "0px",
+        paddingBottom: !isVenue && "20px",
       }}
     >
       {!fetchEventLoading ? (
@@ -229,7 +230,7 @@ const TemplateRenderer = ({
               display: "inline-block",
               width: "100%",
               maxWidth: "450px",
-              borderRadius: "12px",
+              borderRadius: isVenue ? "11px" : "12px",
               overflow: "hidden",
             }}
           >
@@ -266,14 +267,14 @@ const TemplateRenderer = ({
                 style={{
                   width: "100%",
                   height: "auto",
-                  borderRadius: "12px",
+                  borderRadius:isVenue ? "11px" : "12px",
                   objectFit: "cover",
                   visibility: imageLoaded ? "visible" : "hidden",
                 }}
                 onLoad={handleImageLoad}
               />
             )}
-{ topBannerOverlayContent} 
+            {topBannerOverlayContent}
             {!isVideoFile(mediaUrl) &&
               mediaUrl === DefaultTemplate.src &&
               (eventDetails?.hostName || eventDetails?.venueName) && (

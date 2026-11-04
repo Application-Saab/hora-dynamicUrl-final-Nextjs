@@ -4,16 +4,16 @@
   gap: clamp(10px, 2.5vw, 16px);
   background: #fff;
   border-radius: clamp(12px, 3vw, 16px);
-  padding: clamp(6.34px, 1.97vw, 9.58px);
+  padding-inline: clamp(6.34px, 1.97vw, 9.58px);
   flex-wrap: wrap;
 }
 
 /* ── PIN AVATAR ── */
 .vas-pinAvatar {
   width: clamp(31.57px, 9.81vw, 47.13px);
-height: clamp(31.57px, 9.81vw, 47.13px);
+  height: clamp(31.57px, 9.81vw, 47.13px);
   border-radius: 50%;
-  background: #97538C;
+  background: #97538c;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -23,30 +23,32 @@ height: clamp(31.57px, 9.81vw, 47.13px);
 /* ── INFO ── */
 .vas-info {
   flex: 1;
- min-width: clamp(123.08px, 38.46vw, 184.62px);
+  min-width: clamp(123.08px, 38.46vw, 184.62px);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  /* gap: 4px; */
+  gap: clamp(3.26px, 1.018vw, 4.89px);
 }
 .vas-venueName {
   margin: 0;
-font-family: "Roboto", sans-serif;
-font-weight: 600;
-font-style: normal;
-font-size: clamp(15.3px, 4.58vw, 20.7px);
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  /* font-size: clamp(15.3px, 4.58vw, 20.7px); */
+  font-size: clamp(14.66px, 4.58vw, 21.98px);
   color: #000000;
 }
 .vas-address {
   margin: 0;
-color: #505050CC;
-font-family: "Roboto", sans-serif;
-font-weight: 400;
-font-style: normal;
-font-size: clamp(10.2px, 3.05vw, 13.8px);
-line-height: clamp(12.58px, 3.77vw, 17.02px);
-letter-spacing: 0;
   color: #505050CC;
-
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  /* font-size: clamp(10.2px, 3.05vw, 13.8px); */
+  font-size: clamp(9.77px, 3.053vw, 14.66px);
+  /* line-height: clamp(12.58px, 3.77vw, 17.02px); */
+  line-height: clamp(12.05px, 3.766vw, 18.08px);
+  letter-spacing: 0;
 }
 
 /* ── ACTIONS ── */
@@ -60,32 +62,38 @@ letter-spacing: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(4.76px, 1.49vw, 7.15px);
- padding: clamp(6.31px, 1.97vw, 9.52px);
- border-radius: clamp(3.96px, 1.239vw, 5.96px);
-font-family: "Roboto";
-font-weight: 600;
-font-size: clamp(11px, 3.859vw, 12.35px);
-line-height: clamp(12.25px, 4.303vw, 13.77px);
+  /* gap: clamp(4.76px, 1.49vw, 7.15px); */
+  gap: clamp(3.57px, 1.115vw, 5.35px);
+  /* padding: clamp(6.31px, 1.97vw, 9.52px); */
+  /* padding: clamp(4.3px, 1.346vw, 8px); */
+  padding: clamp(7.87px, 2.458vw, 11.8px);
+  border-radius: clamp(3.96px, 1.239vw, 5.96px);
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  /* font-size: clamp(11px, 3.859vw, 12.35px); */
+  font-size: clamp(10.06px, 3.142vw, 15.08px);
+  line-height: clamp(12.25px, 4.303vw, 13.77px);
   color: #fff;
   text-decoration: none;
   white-space: nowrap;
   border: none;
   cursor: pointer;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
 }
 .vas-btn:active {
   transform: scale(0.97);
 }
 .vas-btn--whatsapp {
-  background: #0D8708;
+  background: #0d8708;
 }
 .vas-btn--whatsapp:hover {
-  background: #0D8708;
+  background: #0d8708;
 }
 .vas-btn--map {
-  background: #97538C;
+  background: #97538c;
 }
 .vas-btn--map:hover {
-  background: #97538C;
+  background: #97538c;
 }

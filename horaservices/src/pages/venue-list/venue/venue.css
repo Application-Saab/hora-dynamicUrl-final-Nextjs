@@ -60,10 +60,10 @@
 }
 
 /* Address section css */
-.invite-address-section {
+.venue-address-section {
   max-width: 480px;
   width: 100%;
- margin-top: clamp(3px, 1.27vw, 5px);
+  margin-top: 8px;
 }
 .address-part-ctn {
   display: flex;
@@ -173,16 +173,18 @@
   margin-bottom: 24px;
 }
 
+.packages-container{
+  margin-top: 16px;
+}
+
 /* Event wall section */
-.event-wall-container {
+.venue-wall-container {
   margin-top: 0px !important;
 }
-.wall-heading {
-    font-family: Inter, sans-serif;
-    font-weight: 600;
-    color: #000000;
-    font-size: clamp(21.33px, 6.67vw, 32.00px);
+.img-grid-ctn-venue{
+  margin: clamp(9.77px, 3.053vw, 14.66px) auto;
 }
+
 .event-wall-action-ctn {
   display: flex;
   justify-content: center;
@@ -267,7 +269,7 @@
   position: relative;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
-  margin:10px 0px;
+  margin: 10px 0px;
 }
 .terms-strip:active {
   transform: scale(0.98);
@@ -337,42 +339,42 @@
   letter-spacing: 0.3px;
 }
 
-
 .trusted-heading {
   text-align: center;
   padding: clamp(16px, calc((20 / 393) * 100vw), 24px) 0 0 0;
- }
+}
 
 .trusted-title {
-font-family: Inter, sans-serif;
+  font-family: Inter, sans-serif;
   font-weight: 600;
 
   font-size: clamp(12.7px, calc((15.58 / 393) * 100vw), 19px);
   text-align: center;
 
-  color: #0F1524;
+  color: #0f1524;
   margin: 0 0 clamp(4px, calc((6 / 393) * 100vw), 8px);
 }
 
 .trusted-subtitle {
- font-family: Inter, sans-serif;
+  font-family: Inter, sans-serif;
   font-weight: 400;
   font-size: clamp(9.9px, calc((12.12 / 393) * 100vw), 14.8px);
   text-align: center;
-  color: #2E2E3D;
+  color: #2e2e3d;
   margin: 0;
 }
-.venue-container{
+
+.venue-container {
   max-width: 480px;
-  margin:auto;
+  margin: auto;
 }
-.enquire-card{
-border-radius: clamp(7.86px, 2.5vw, 9.82px);
-padding: clamp(3.5px, 1.018vw, 4px);
+.enquire-card {
+  border-radius: clamp(7.86px, 2.5vw, 9.82px);
+  padding: clamp(3.5px, 1.018vw, 4px);
 
-gap: clamp(6.4px, 2.036vw, 8px);
+  gap: clamp(6.4px, 2.036vw, 8px);
 
-opacity: 1;
+  opacity: 1;
 }
 
 .venue-tax-note {
@@ -398,15 +400,17 @@ opacity: 1;
 }
 
 .view-terms-btn {
-  border: 1px solid rgba(151, 83, 140, 1);
+  border: none;
+  /* border: 1px solid rgba(151, 83, 140, 1); */
   background: transparent;
-  color: rgba(151, 83, 140, 1);
-  font-size: 16px;
+  color: #6B6B6B;
+  font-size: clamp(11.4px, 3.562vw, 17.1px);
   font-family: "Inter", sans-serif;
-  padding: 6px 48px;
-  border-radius: 7px;
+  /* padding: 6px 48px; */
+  /* border-radius: 7px; */
   font-weight: 600;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.11);
+  text-decoration: underline;
+  /* box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.11); */
 }
 
 /* Accordion */
@@ -431,7 +435,7 @@ opacity: 1;
 }
 
 .cc-acc-btn.open {
-  padding-bottom: 4px; 
+  padding-bottom: 4px;
 }
 .cc-acc-preview {
   font-size: clamp(11px, 2.8vw, 13px);
@@ -446,18 +450,20 @@ opacity: 1;
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #E1F5EE;
+  background: #e1f5ee;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   transition: transform 0.3s ease;
 }
-.cc-acc-icon.open { transform: rotate(180deg); }
+.cc-acc-icon.open {
+  transform: rotate(180deg);
+}
 .cc-acc-icon svg {
   width: 16px;
   height: 16px;
-  stroke: #97538C;
+  stroke: #97538c;
   fill: none;
   stroke-width: 2.5;
 }
@@ -466,7 +472,9 @@ opacity: 1;
   overflow: hidden;
   transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.cc-acc-body.open { max-height: 400px; }
+.cc-acc-body.open {
+  max-height: 400px;
+}
 .cc-acc-text {
   padding: 0 clamp(12px, 3vw, 16px) clamp(12px, 3vw, 16px);
   font-size: clamp(11px, 2.8vw, 13px);
@@ -477,4 +485,109 @@ opacity: 1;
 
 .cc-acc-body.open {
   max-height: 200px;
+}
+
+.chat-banner-ctn-venue {
+  width: 100%;
+  max-width: 480px;
+  margin-top: clamp(7.33px, 2.29vw, 10.99px);
+  background: #0D87081A;
+  border-radius: clamp(9.32px, 2.911vw, 13.97px);
+  padding: clamp(6.91px, 2.16vw, 10.37px) clamp(6.95px, 2.173vw, 10.43px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+/* Left Section: Icon + Texts aligned horizontally */
+.venue-chat-left {
+  display: flex;
+  align-items: center;
+  gap: clamp(5.59px, 1.746vw, 8.38px);
+  min-width: 0;
+  flex: 1;
+}
+
+/* Headphone circular badge */
+.chat-banner-ctn-venue .calling-wrapper {
+  height: clamp(34px, 9vw, 38px);
+  width: clamp(34px, 9vw, 38px);
+  min-width: clamp(34px, 9vw, 38px);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #ccecd0;
+  border: 1px solid #2ea238;
+  flex-shrink: 0;
+}
+
+.calling-icon-img {
+  width: clamp(16px, 4.2vw, 19px);
+  height: clamp(16px, 4.2vw, 19px);
+  object-fit: contain;
+}
+
+.venue-chat-text-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.venue-chat-banner-title {
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: clamp(12px, 3.2vw, 14.5px);
+  color: #1a1a1a;
+  margin: 0 0 2px 0;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.venue-chat-banner-subtitle {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: clamp(6.51px, 2.036vw, 9.77px);
+  color: #555e68;
+  margin: 0;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Right Side WhatsApp Button */
+.venue-chat-banner-wa-btn {
+  background: #0f8a14; /* WhatsApp solid green */
+  color: #ffffff;
+  font-family: "Inter", sans-serif;
+  font-size: clamp(8.14px, 2.545vw, 12.21px);
+  font-weight: 600;
+  border: none;
+  border-radius: clamp(3.44px, 1.074vw, 5.15px);
+  padding: clamp(7px, 1.9vw, 9px) clamp(2.13px, 0.667vw, 3.2px) clamp(7px, 1.9vw, 9px) clamp(4.58px, 1.43vw, 6.86px);
+  display: flex;
+  align-items: center;
+  gap: clamp(2.84px, 0.888vw, 4.26px);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0px 3.38px 3.38px 0px #9289891A;
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+
+.wa-img-venue-chat-banner{
+  width: clamp(10.25px, 3.203vw, 15.37px);
+  height: clamp(10.25px, 3.203vw, 15.37px);
+}
+
+.venue-chat-banner-wa-btn:hover {
+  background: #0d7a12;
+}
+
+.venue-chat-banner-wa-btn:active {
+  transform: scale(0.97);
 }

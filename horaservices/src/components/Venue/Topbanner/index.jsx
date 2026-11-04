@@ -1,7 +1,7 @@
 import Image from "next/image";
 import "./topbanner.css";
 
-const TopBanner = ({ image, alt = "Banner" }) => {
+const TopBanner = ({ image, alt = "Banner", fromVenue = false }) => {
   return (
  
   <div className="bannerWrapper">
@@ -12,6 +12,7 @@ const TopBanner = ({ image, alt = "Banner" }) => {
         height={400}
         className="bannerImg"
         priority
+        style={{borderRadius: fromVenue ? "8px" : "0px"}}
       />
     </div>
   );

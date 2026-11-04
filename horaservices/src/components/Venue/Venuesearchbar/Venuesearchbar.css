@@ -1,31 +1,40 @@
-.vsb-wrap,
+/* .vsb-wrap,
 .vsb-wrap * {
   box-sizing: border-box;
 }
 
 .vsb-wrap {
-  background: #fff;
+  /* background: #fff; 
   width: clamp(300px, calc(380 * 100vw / 393), 480px);
-  margin: -20px auto 10px auto;
-  padding: clamp(6px, calc(9 * 100vw / 393), 11px);
-  border-radius: clamp(14px, calc(18 * 100vw / 393), 22px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  border: 1px solid #00000014;
+  margin: 10px auto 10px auto;
+  /* padding: clamp(6px, calc(9 * 100vw / 393), 11px); */
+  /* border-radius: clamp(14px, calc(18 * 100vw / 393), 22px); */
+  /* border: 1px solid #00000014; 
   box-sizing: border-box;
   position: relative;
   z-index: 10;
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; 
   gap: clamp(8px, calc(10 * 100vw / 393), 12px);
 }
 
-/* ── Search row ── */
 .vsb-search-row {
   display: flex;
   align-items: center;
   gap: clamp(8px, calc(10 * 100vw / 393), 12px);
   border: 1px solid #eee0ea;
   border-radius: clamp(8.51px, 2.66vw, 12.75px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  padding: clamp(4px, calc(5 * 100vw / 393), 6px);
+}
+
+.vsb-locality-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, calc(10 * 100vw / 393), 12px);
+  border: 1px solid #eee0ea;
+  border-radius: clamp(8.51px, 2.66vw, 12.75px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   padding: clamp(4px, calc(5 * 100vw / 393), 6px);
 }
 
@@ -62,7 +71,6 @@ height: clamp(25.44px, 7.95vw, 38.26px);
 .vsb-filters-row.menu-open {
   overflow: visible;
 }
-/* ── Filters row ── */
 .vsb-filters-row {
   display: flex;
   align-items: stretch;
@@ -70,7 +78,6 @@ height: clamp(25.44px, 7.95vw, 38.26px);
   flex-wrap: nowrap;
 }
 
-/* All three pills (event / guest / more-filter) share the row equally */
 .vsb-filter-item {
   position: relative;
   flex: 1 1 0;
@@ -106,7 +113,6 @@ height: clamp(25.44px, 7.95vw, 38.26px);
   word-break: break-word;
 }
 
-/* Icons inside the filter pills (event/guest/filter buttons) */
 .vsb-filter-icon {
   width: clamp(14px, calc(16 * 100vw / 393), 18px);
   height: clamp(14px, calc(16 * 100vw / 393), 18px);
@@ -114,7 +120,6 @@ height: clamp(25.44px, 7.95vw, 38.26px);
   flex-shrink: 0;
 }
 
-/* Icons inside each dropdown option row */
 .vsb-option-icon {
   width: 16px;
   height: 16px;
@@ -129,7 +134,6 @@ height: clamp(25.44px, 7.95vw, 38.26px);
   flex-shrink: 0;
 }
 
-/* Small "×" clear button shown inside a pill once that filter is set */
 .vsb-clear-btn {
   display: flex;
   align-items: center;
@@ -150,10 +154,8 @@ height: clamp(25.44px, 7.95vw, 38.26px);
   transform: rotate(180deg);
 }
 
-/* ── Dropdown ── */
 .vsb-dropdown {
   position: absolute;
-  /* top/left ab JS se aayega */
   min-width: clamp(140px, calc(170 * 100vw / 393), 200px);
   background: #fff;
   border: 1px solid #e8e8e8;
@@ -196,4 +198,361 @@ height: clamp(25.44px, 7.95vw, 38.26px);
 .vsb-option.active {
   color: #7C3FB1;
   font-weight: 600;
+} */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Container & Base Styles */
+.vsb-container,
+.vsb-container * {
+  box-sizing: border-box;
+}
+
+.vsb-container {
+  width: 100%;
+  max-width: 480px;
+  margin: 12px auto;
+  position: relative;
+  z-index: 20;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ── Top Bar (Search + Locality) ── */
+.vsb-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+}
+
+/* Common Purple Badges */
+.vsb-icon-badge {
+  width: 33px;
+  height: 33px;
+  background: #924286;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Search input container */
+.vsb-input-box {
+  flex: 1;
+  height: 48px;
+  background: #ffffff;
+  border: 1.5px solid #d9c8d6;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  cursor: text;
+}
+
+.vsb-input-box.focused {
+  border-color: #924286;
+}
+
+.vsb-text-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 500;
+  color: #7b3e74;
+}
+
+.vsb-text-input::placeholder {
+  color: #99558a;
+  opacity: 0.85;
+}
+
+/* Locality button on the right */
+.vsb-locality-btn {
+  height: 48px;
+  background: #ffffff;
+  border: 1.5px solid #d9c8d6;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px 0 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+.vsb-locality-text {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #924286;
+  white-space: nowrap;
+}
+
+/* ── Venue Dropdown Card (Image 1) ── */
+.vsb-dropdown-card {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1.2px solid #ecdfe9;
+  border-radius: 14px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  max-height: 290px;
+  overflow-y: auto;
+  z-index: 50;
+}
+
+.vsb-venue-item {
+  display: flex;
+  align-items: center;
+  padding: 11px 16px;
+  gap: 14px;
+  border-bottom: 1px solid #f2eaf0;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.vsb-venue-item:last-child {
+  border-bottom: none;
+}
+
+.vsb-venue-item:hover {
+  background: #fbf7fb;
+}
+
+.vsb-venue-img-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f1f1f1;
+}
+
+.vsb-venue-thumb {
+  object-fit: cover;
+}
+
+.vsb-venue-title {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+  color: #555555;
+  text-align: left;
+}
+
+.vsb-no-results {
+  padding: 16px;
+  text-align: center;
+  font-size: 14px;
+  color: #888;
+}
+
+/* ── Locality Modal (Image 2) ── */
+.vsb-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  padding-top: 130px;
+  padding-inline: 5px;
+  align-items: center;
+  /* justify-content: center; */
+}
+
+.vsb-modal-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 440px;
+  border-radius: 12.8px;
+  padding: 17px 11px 17px;
+  position: relative;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  animation: vsbPopIn 0.2s ease-out;
+}
+
+@keyframes vsbPopIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Floating round close button at the top */
+.vsb-modal-close {
+  position: absolute;
+  top: -64px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 37px;
+  height: 37px;
+  background: #ffffff;
+  border-radius: 50%;
+  border: none;
+  font-size: 17px;
+  font-weight: 700;
+  color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Modal Title & City Badge */
+.vsb-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.vsb-modal-title {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #000000;
+}
+
+.vsb-modal-city-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #97538C;
+  cursor: pointer;
+}
+
+.vsb-modal-city-badge .vsb-icon-badge {
+  /* width: 20px; */
+  /* height: 20px; */
+  background: transparent;
+  border-radius: 6px !important;
+}
+
+/* Modal Inner Search Input */
+.vsb-modal-input-box {
+  height: 42px;
+  background: #ffffff;
+  /* border: 1.5px solid #d9c8d6; */
+  border-radius: 10.38px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 10px;
+  margin-bottom: 12px;
+  border: 1.04px solid #E9E9E9;
+  box-shadow: 0px 4px 4px 0px #00000005;
+}
+
+/* Locality list styled as separate rounded rows */
+.vsb-locality-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-height: 250px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.vsb-locality-item {
+  /* height: 38px !important; */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9.5px 12.54px;
+  border: 1px solid #e7dce5;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vsb-locality-item:hover {
+  background: #fbf7fb;
+  border-color: #924286;
+}
+
+.vsb-locality-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #848181;
+  font-weight: 400;
+}
+
+
+.vsb-section-label {
+  padding: 10px 14px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #9b8a9a;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.vsb-venue-meta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 2px;
+}
+
+.vsb-venue-sub {
+  font-size: 12px;
+  color: #8a7a89;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vsb-venue-img-wrap--photo {
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.vsb-venue-img-wrap--photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vsb-venue-thumb-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #f0eaf0;
+  border-radius: 8px;
 }

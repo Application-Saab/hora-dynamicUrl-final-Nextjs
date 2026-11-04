@@ -932,13 +932,11 @@ useEffect(() => {
             </div>
           </div>
         ) : (
-          <div style={{ position: "relative", marginTop: "auto" }}>
+          <div style={{ position: "relative" }}>
             <div
-              style={{
-                margin: "10px auto",
-              }}
+            className="img-grid-ctn-venue"
             >
-              <VenueWallHeaderTabs
+              {subFolders ?.length > 0 && <VenueWallHeaderTabs
                 eventId={venueid}
                 subFolders={subFolders}
                 setSubFolders={setSubFolders}
@@ -953,7 +951,7 @@ useEffect(() => {
                 showCreateFolderPopup={showCreateFolderPopup}
                 setShowCreateFolderPopup={setShowCreateFolderPopup}
                  venueImageUrl={venueImageUrl}
-              />
+              />}
 
               {/* {activeTab !== "all" && !isMyPhotosTab && activeSubFolderId && (
                 <div className="buttons-container">

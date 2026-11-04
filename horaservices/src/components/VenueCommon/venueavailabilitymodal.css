@@ -1,0 +1,363 @@
+/* Backdrop Overlay */
+.vam-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* padding: 5px; */
+  box-sizing: border-box;
+}
+
+/* Modal Main Card */
+.vam-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 500px; /* ← changed */
+  min-width: 320px; /* ← added */
+  border-radius: 20px;
+  padding: 0px 0px 0px 0px;
+  position: relative;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+  animation: vamPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes vamPopIn {
+  from {
+    transform: scale(0.93);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Round Close Button Centered at Top */
+.vam-close-btn {
+  position: absolute;
+  top: -46px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 38px;
+  height: 38px;
+  background: #ffffff;
+  border-radius: 50%;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+}
+
+/* Header */
+.vam-header {
+  position: relative;
+  width: calc(100% + 28px);
+  margin: 0 -14px;
+  /* height: 138px; */
+  overflow: hidden;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* Banner Image */
+.vam-banner-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  /* height: 100%; */
+  object-fit: contain;
+  /* object-position: left center; */
+  display: block;
+}
+
+/* Heading and Description */
+.vam-header-text {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 0 16px 0 48%;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.vam-header-text h3 {
+  /* font-size: 22px; */
+  font-family: "Inter", sans-serif;
+  font-size: clamp(16.68px, 5.211vw, 25.01px);
+  font-weight: 700;
+  color: #000000;
+  line-height: clamp(14.75px, 4.611vw, 22.13px);
+  margin: 0 0 8px;
+}
+
+.vam-header-text p {
+  font-size: 15px;
+  font-weight: 400;
+  color: #444;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Mobile / Small screens */
+/* @media (max-width: 480px) {
+  .vam-header {
+    height: 128px;
+  }
+
+  .vam-header-text {
+    padding-left: 44%;
+    padding-right: 12px;
+  }
+
+  .vam-header-text h3 {
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+
+  .vam-header-text p {
+    font-size: 13.5px;
+  }
+}
+
+@media (max-width: 360px) {
+  .vam-header-text {
+    padding-left: 42%;
+  }
+
+  .vam-header-text h3 {
+    font-size: 17px;
+  }
+
+  .vam-header-text p {
+    font-size: 13px;
+  }
+} */
+
+/* Inner Calendar Box */
+.vam-calendar-box {
+  background: #ffffff;
+  border: 1.28px solid #0000001A;
+  border-radius: clamp(9.38px, 2.931vw, 14.07px);
+  padding: 10px 10px 12px;
+  box-shadow: 0px 5.12px 5.12px 0px #0000001F;
+  margin: clamp(0.41px, 0.127vw, 0.61px) clamp(11.56px, 3.613vw, 17.34px);
+}
+
+/* Month Navigation */
+.vam-month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 6px 8px;
+}
+
+.vam-month-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #3b3a4a;
+  letter-spacing: 0.5px;
+}
+
+.vam-nav-arrow {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #444;
+  border-radius: 6px;
+}
+
+.vam-nav-arrow:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+/* Weekday labels */
+.vam-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.vam-weekday {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #2b2b2b;
+}
+
+/* Days Grid */
+.vam-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 5px;
+  column-gap: 2px;
+}
+
+.vam-day-cell {
+  aspect-ratio: 1;
+  max-width: 38px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #282828;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vam-day-cell:hover:not(.disabled):not(.selected) {
+  background: #f2e7f0;
+}
+
+/* Selected Date Highlight (Purple Circle from reference) */
+.vam-day-cell.selected {
+  background: #924286 !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(146, 66, 134, 0.35);
+}
+
+.vam-day-cell.disabled {
+  color: #d1cbd0;
+  cursor: not-allowed;
+}
+
+.vam-day-empty {
+  visibility: hidden;
+}
+
+.vam-error {
+  margin: 0;
+  font-size: 12px;
+  color: #d32f2f;
+  text-align: center;
+}
+
+/* Footer Row */
+.vam-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(14.66px, 4.58vw, 21.98px);
+  /* padding-top: 4px; */
+  padding: clamp(17.64px, 5.511vw, 26.45px) clamp(6.93px, 2.165vw, 10.39px);
+  height: 88.32px;
+  background-color: #efecfb;
+}
+
+.vam-footer-date-info {
+  display: flex;
+  align-items: center;
+  gap: clamp(3.09px, 0.964vw, 4.63px);
+  flex: 1;
+  min-width: 0;
+}
+
+.vam-cal-icon-wrap {
+  width: 43.89px;
+  height: 43.89px;
+  border-radius: 50%;
+  background: #fbf5fb;
+  border: 1px solid #ebddea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vam-date-labels {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 0px;
+}
+
+.vam-date-subtitle {
+  font-family: "Inter", sans-serif;
+  font-size: clamp(11.29px, 3.527vw, 16.93px);
+  font-weight: 400;
+  color: #000000;
+  margin: 0;
+  padding: 0;
+}
+
+.vam-date-value {
+  font-family: "Inter", sans-serif;
+  font-size: clamp(11.29px, 3.527vw, 16.93px);
+  font-weight: 500;
+  color: #000000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+  padding: 0;
+}
+
+/* WhatsApp Action Button */
+.vam-wa-btn {
+  background: #0d8708;
+  color: #ffffff;
+  font-family: "Inter", sans-serif;
+  font-size: clamp(11.4px, 3.562vw, 17.1px);
+  font-weight: 600;
+  border: none;
+  border-radius: clamp(10.42px, 3.257vw, 15.63px);
+  padding: clamp(11.4px, 3.562vw, 17.1px) clamp(6.11px, 1.908vw, 9.16px);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  /* box-shadow: 0 4px 12px rgba(28, 178, 61, 0.28); */
+  transition:
+    transform 0.1s ease,
+    background 0.15s ease;
+}
+
+.vam-wa-btn:hover {
+  background: #189e36;
+}
+
+.vam-wa-btn:active {
+  transform: scale(0.97);
+}
+
+.vam-spinner {
+  animation: vamSpin 1s linear infinite;
+}
+
+@keyframes vamSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

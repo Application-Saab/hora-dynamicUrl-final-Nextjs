@@ -15,6 +15,7 @@ import axiosApi from "@/utils/axiosApi";
 import PhotographyHowItWorks from "@/components/PhotographyHowItWorks";
 import PhotographyComparison from "@/components/PhotographyComparison";
 import PhotographyPortfolio from "@/components/PhotographyPortfolio";
+import { CityPhotographyLandingPage } from "@/utils/Cityphotographylandingpage";
 
 const getDiscountedPrice = (price = 0) => {
   const discountedPrice = price / 0.78;

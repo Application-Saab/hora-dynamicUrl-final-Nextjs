@@ -47,6 +47,7 @@ const VenuelandMainPage = ({
   const [activeVenueType, setActiveVenueType] = useState(initialVenueType);
   const [guestCapacity, setGuestCapacity] = useState("");
   const [searchText, setSearchText] = useState("");
+  const [selectedLocality, setSelectedLocality] = useState(null);
   const hasRedirectedRef = useRef(false);
 
   // Login state — client only (hydration safe)
@@ -139,16 +140,20 @@ const VenuelandMainPage = ({
       </Head>
 
       <div className="venue-container">
-        <div style={{ position: "relative" }}>
-          <TopBanner image={venueTopBanner} alt="Venue" />
+        <div style={{ position: "relative", padding: "8px 7px 0px 7px" }}>
+          <TopBanner image={venueTopBanner} alt="Venue" fromVenue={true} />
           <VenueSearchBar
             searchValue={searchText}
             onSearchChange={setSearchText}
-            eventType={activeEvent}
-            onEventTypeChange={setActiveEvent}
-            guestCapacity={guestCapacity}
-            onGuestCapacityChange={setGuestCapacity}
-            onMoreFilterClick={() => {}}
+            selectedLocality={selectedLocality}
+            onSelectLocality={setSelectedLocality}
+            city={cityForSEO}
+            onSelectVenueType={(item) => {
+              // Venue type select hone par filter lagao
+              if (item?.id) {
+                setActiveVenueType(item.id);
+              }
+            }}
           />
         </div>
 
@@ -165,11 +170,12 @@ const VenuelandMainPage = ({
           guestCapacity={guestCapacity}
           city={cityForSEO}
           search={searchText}
+          locality={selectedLocality}
           initialVenues={
-            // Sirf tab use karo jab filters abhi default SSR wale hain
             activeEvent === initialEventType &&
             activeVenueType === initialVenueType &&
-            !guestCapacity
+            !guestCapacity &&
+            !selectedLocality
               ? initialVenues
               : null
           }

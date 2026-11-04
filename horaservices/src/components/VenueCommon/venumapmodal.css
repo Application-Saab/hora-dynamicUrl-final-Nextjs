@@ -1,0 +1,146 @@
+/* Modal Overlay */
+.vmm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(9.77px, 3.053vw, 14.66px) clamp(21.17px, 6.616vw, 31.76px);
+  box-sizing: border-box;
+}
+
+/* Modal Card */
+.vmm-card {
+  border-radius: clamp(11.65px, 3.641vw, 17.48px);
+  background: #ffffff;
+  width: 100%;
+  max-width: 420px;
+  padding: clamp(10.59px, 3.308vw, 15.88px) clamp(5.7px, 1.781vw, 8.55px);
+  display: flex;
+  flex-direction: column;
+  /* gap: 14px; */
+  /* box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25); */
+  animation: vmmPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+@keyframes vmmPop {
+  from {
+    transform: scale(0.93);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Header */
+.vmm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vmm-title {
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  font-size: clamp(14.66px, 4.58vw, 21.98px);
+  font-weight: 600;
+  color: #000000;
+}
+
+.vmm-close-btn {
+  background: transparent;
+  border: none;
+  font-size: clamp(13.84px, 4.326vw, 20.76px);
+  color: #000000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  justify-content: center;
+}
+
+/* Map Frame */
+.vmm-map-container {
+  width: 100%;
+  height: clamp(257.26px, 80.395vw, 385.9px);
+  margin-top: clamp(10.59px, 3.308vw, 15.88px);
+  border-radius: clamp(8.14px, 2.545vw, 12.21px);
+  overflow: hidden;
+  /* border: 1px solid #e7dce5; */
+  /* background: #f5f5f5; */
+  position: relative;
+}
+
+.vmm-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* Info Details Row */
+.vmm-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(9.77px, 3.053vw, 14.66px);
+  margin-top: clamp(8.14px, 2.545vw, 12.21px);
+}
+
+.vmm-pin-circle {
+  width: clamp(36.64px, 11.45vw, 54.96px);
+  height: clamp(36.64px, 11.45vw, 54.96px);
+  border-radius: 50%;
+  background: #97538c26;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.vmm-pin-circle .location-img {
+  width: 16.88px;
+  height: 29.53px;
+}
+
+.vmm-text-block {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.vmm-venue-name {
+  font-family: "Roboto", sans-serif;
+  font-size: clamp(11.4px, 3.562vw, 17.1px);
+  margin: 0;
+  font-weight: 600;
+  color: #000000;
+}
+
+.vmm-address {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  margin: 0;
+  font-size: clamp(9.77px, 3.053vw, 14.66px);
+  color: #505050cc;
+  line-height: clamp(12.05px, 3.766vw, 18.08px);
+  word-break: break-word;
+}
+
+.vmm-external-link {
+  font-size: 11.5px;
+  color: #924286;
+  font-weight: 600;
+  text-decoration: none;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+.vmm-external-link:hover {
+  text-decoration: underline;
+}
