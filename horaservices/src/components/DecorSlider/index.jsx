@@ -44,11 +44,24 @@ const DecorSlider = ({
     viewAllHref ||
     (catValue && categorySlug ? formatPath(`/${categorySlug}/${catValue}`) : "#");
 
+  const handleViewAllClick = () => {
+    window.dataLayer = window.dataLayer || [];
+
+    window.dataLayer.push({
+      event: city
+        ? "decoration_city_landing_page_view_all_clicked"
+        : "decoration_landing_page_view_all_clicked",
+      sectionTitle: title,
+      catValue: catValue || "N/A",
+      city: city || "default",
+      locality: locality || "default",
+    });
+  };
   return (
     <section className="premium-slide-decor">
       <div className="premium-slide-decor-header">
         <h2>{title}</h2>
-        <a href={finalViewAllHref} className="premium-slide-link">
+        <a href={finalViewAllHref} className="premium-slide-link" onClick={handleViewAllClick}>
           View All
         </a>
       </div>
@@ -100,7 +113,7 @@ const DecorSlider = ({
       </div>
 
       <div className="premium-footer">
-        <a href={finalViewAllHref} className="premium-view-all-bottom">
+      <a href={finalViewAllHref} className="premium-view-all-bottom" onClick={handleViewAllClick}>
           <span className="premium-view-all-text">{viewAllText}</span>
           <Image
             src={arrowIcon}
