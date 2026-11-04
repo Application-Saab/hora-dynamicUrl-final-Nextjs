@@ -1,0 +1,142 @@
+/* =====================================================
+   DecorationBlog.css — Balloon Decoration Blog listing
+   Accent: #d64c8a (magenta-pink, on-brand for decoration)
+   ===================================================== */
+
+/* ── Layout ─────────────────────────────────────────── */
+.dec-blog {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+/* ── Hero ────────────────────────────────────────────── */
+.dec-blog__hero {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.dec-blog__hero-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #d64c8a;
+  margin-bottom: 0.75rem;
+}
+
+.dec-blog__hero-title {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.25;
+  margin: 0 0 0.75rem;
+}
+
+.dec-blog__hero-subtitle {
+  font-size: 1rem;
+  color: #555;
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ── Grid ────────────────────────────────────────────── */
+.dec-blog__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ── Card ────────────────────────────────────────────── */
+.dec-blog__card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.2s, transform 0.2s;
+  background: #fff;
+}
+
+.dec-blog__card:hover {
+  box-shadow: 0 6px 24px rgba(214, 76, 138, 0.14);
+  transform: translateY(-3px);
+}
+
+/* ── Card body ───────────────────────────────────────── */
+.dec-blog__card-body {
+  padding: 1.1rem 1.25rem 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.dec-blog__card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.dec-blog__card-category {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #d64c8a;
+  background: #fdf0f6;
+  padding: 0.2rem 0.55rem;
+  border-radius: 20px;
+}
+
+.dec-blog__card-dot {
+  color: #ccc;
+  font-size: 0.75rem;
+}
+
+.dec-blog__card-time {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.dec-blog__card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.35;
+  margin: 0 0 0.5rem;
+}
+
+.dec-blog__card-excerpt {
+  font-size: 0.82rem;
+  color: #666;
+  line-height: 1.55;
+  margin: 0;
+  flex: 1;
+}
+
+/* ── Empty state ─────────────────────────────────────── */
+.dec-blog__empty {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: #999;
+}
+
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 480px) {
+  .dec-blog {
+    padding: 1.25rem 0.75rem 3rem;
+  }
+
+  .dec-blog__grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}

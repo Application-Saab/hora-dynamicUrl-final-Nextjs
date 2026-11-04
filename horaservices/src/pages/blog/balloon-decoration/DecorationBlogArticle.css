@@ -1,0 +1,178 @@
+/* =====================================================
+   DecorationBlogArticle.css — Balloon Decoration article
+   Accent: #d64c8a
+   ===================================================== */
+
+/* ── Outer wrapper ───────────────────────────────────── */
+.dec-article {
+  padding: 1.5rem 0 4rem;
+}
+
+/* ── Content column ──────────────────────────────────── */
+.dec-article__content {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ── Breadcrumb ──────────────────────────────────────── */
+.dec-article__breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: #888;
+  margin-bottom: 1.75rem;
+}
+
+.dec-article__breadcrumb a {
+  color: #d64c8a;
+  text-decoration: none;
+}
+
+.dec-article__breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+/* ── Header ──────────────────────────────────────────── */
+.dec-article__header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.dec-article__meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+
+.dec-article__category {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #d64c8a;
+  background: #fdf0f6;
+  padding: 0.22rem 0.6rem;
+  border-radius: 20px;
+}
+
+.dec-article__dot {
+  color: #ccc;
+}
+
+.dec-article__reading-time,
+.dec-article__date {
+  font-size: 0.78rem;
+  color: #888;
+}
+
+.dec-article__title {
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.25;
+  margin: 0 0 0.75rem;
+}
+
+.dec-article__excerpt {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ── Body ────────────────────────────────────────────── */
+.dec-article__body {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: #333;
+}
+
+/* ── Section ─────────────────────────────────────────── */
+.dec-article__section {
+  margin-bottom: 1.75rem;
+}
+
+.dec-article__section-heading {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem;
+  line-height: 1.35;
+}
+
+.dec-article__section-body {
+  margin: 0;
+  color: #444;
+  line-height: 1.75;
+}
+
+/* ── CTA block ───────────────────────────────────────── */
+.dec-article__cta {
+  margin-top: 2.5rem;
+  padding: 1.5rem 1.75rem;
+  background: linear-gradient(135deg, #fdf0f6 0%, #fff5fa 100%);
+  border-left: 4px solid #d64c8a;
+  border-radius: 8px;
+}
+
+.dec-article__cta-text {
+  font-size: 0.9rem;
+  color: #444;
+  margin: 0 0 1rem;
+  line-height: 1.6;
+}
+
+.dec-article__cta-button {
+  display: inline-block;
+  padding: 0.6rem 1.4rem;
+  background: #d64c8a;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.dec-article__cta-button:hover {
+  background: #c03d7a;
+}
+
+/* ── Back link ───────────────────────────────────────── */
+.dec-article__back {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e8e8e8;
+}
+
+.dec-article__back-link {
+  font-size: 0.85rem;
+  color: #d64c8a;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.dec-article__back-link:hover {
+  text-decoration: underline;
+}
+
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 480px) {
+  .dec-article__content {
+    padding: 0 0.75rem;
+  }
+
+  .dec-article__title {
+    font-size: 1.3rem;
+  }
+
+  .dec-article__cta {
+    padding: 1.25rem 1.25rem;
+  }
+}
