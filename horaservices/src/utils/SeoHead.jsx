@@ -352,17 +352,32 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false, parentCat
       }
     : null;
 
-  // BreadcrumbList schema
+  // BreadcrumbList schema — derived from parentCategory so it works for
+  // balloon-decoration, wedding-decoration, and any other parent category.
+  const parentCategoryLabel = String(parentCategory || "balloon-decoration")
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase()); // e.g. "Balloon Decoration"
+
+  // Global category hub URL: /balloon-decoration
+  const parentCategoryUrl = `https://horaservices.com/${parentCategory}`;
+
+  // City-specific category hub URL: /gurugram/balloon-decoration
+  const cityCategoryUrl = seoCitySlug
+    ? `https://horaservices.com/${seoCitySlug}/${parentCategory}`
+    : null;
+
   const breadcrumbItems = [
     { "@type": "ListItem", position: 1, name: "Home", item: "https://horaservices.com" },
-    { "@type": "ListItem", position: 2, name: "Balloon Decoration", item: "https://horaservices.com/balloon-decoration" },
+    { "@type": "ListItem", position: 2, name: parentCategoryLabel, item: parentCategoryUrl },
   ];
-  if (seoCityName && seoCitySlug) {
+
+  if (seoCityName && cityCategoryUrl) {
+    // /balloon-decoration → /[city]/balloon-decoration → [catValue]
     breadcrumbItems.push({
       "@type": "ListItem",
       position: 3,
       name: seoCityName,
-      item: `https://horaservices.com/${seoCitySlug}/balloon-decoration`,
+      item: cityCategoryUrl,
     });
     if (catValue) {
       const catLabel = String(catValue).replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -374,6 +389,7 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false, parentCat
       });
     }
   } else if (catValue) {
+    // No city: /balloon-decoration → [catValue]
     const catLabel = String(catValue).replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
     breadcrumbItems.push({
       "@type": "ListItem",
