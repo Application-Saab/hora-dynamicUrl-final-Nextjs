@@ -160,24 +160,63 @@ export const getDecorationCatOrganizationSchema = (catValue, city) => {
 
 
 
-export const getDecorationProductOrganizationSchema = (product) => ({
+export const getDecorationProductOrganizationSchema = (product, city) => {
+  const productName = product?.name || "";
+  const productPrice = String(product?.price || 999);
+  const productSlug = product?.slug || product?._id || "";
+  const catValue = product?.category || "";
+
+  const citySlug = city ? String(city).toLowerCase().replace(/\s+/g, "-") : null;
+  const cityName = city ? String(city).replace(/\b\w/g, (c) => c.toUpperCase()) : null;
+
+  // Build canonical URL for this product
+  const productUrl = citySlug && catValue
+    ? `https://horaservices.com/${citySlug}/balloon-decoration/${catValue}/product/${productSlug}`
+    : catValue
+    ? `https://horaservices.com/balloon-decoration/${catValue}/product/${productSlug}`
+    : `https://horaservices.com/balloon-decoration/product/${productSlug}`;
+
+  // Use product's own image if available; fall back to brand image
+  const productImage = product?.featured_image
+    ? `https://horaservices.com/api/uploads/compressed_webp/${String(product.featured_image).split(".")[0]}.webp`
+    : "https://horaservices.com/api/uploads/attachment-1706520980436.png";
+
+  // Build a product-specific description
+  const productDescription = cityName
+    ? `Book ${productName} decoration in ${cityName}. Professional decorators, premium balloon and flower setups. Starting ₹${productPrice}.`
+    : `Book ${productName} decoration across India. Professional decorators, premium balloon and flower setups. Starting ₹${productPrice}.`;
+
+  return {
     "@context": "https://schema.org",
     "@type": "Product",
-    "name": `${product.name}`,
-    "image": [
-      "https://horaservices.com/api/uploads/attachment-1706520980436.png",
-      "https://horaservices.com/api/uploads/attachment-1711520474508.png",
-      "https://horaservices.com/api/uploads/attachment-1706459457063.png"
-    ],
-    "description": `Book the Coolest Birthday Decorations for Kids in Bangalore. Themed, balloon decorations, or activities for kids, get only the best for your kid with Hora Services.`,
-    "brand": "Hora Services",
-    "priceRange": "999-39999",
+    "name": productName,
+    "url": productUrl,
+    "image": [productImage],
+    "description": productDescription,
+    "brand": {
+      "@type": "Brand",
+      "name": "Hora Services"
+    },
+    "sku": `hora-${productSlug}${citySlug ? `-${citySlug}` : ""}`,
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "INR",
+      "price": productPrice,
+      "priceValidUntil": "2027-12-31",
+      "availability": "https://schema.org/InStock",
+      "url": productUrl,
+      "seller": {
+        "@type": "Organization",
+        "name": "Hora Services"
+      }
+    },
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "4.5",
       "reviewCount": "5600"
     }
-  });
+  };
+};
 
 
   export const getHomeOrganizationSchema = () => ({
@@ -330,7 +369,7 @@ export const getDecorationProductOrganizationSchema = (product) => ({
         "name": "Tell us more about the design?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `For an unforgettable kids birthday celebration, our expert decoration services are tailored to match your vision and budget. ${product?.name} decoration under ₹${product?.price} is designed to create a stunning atmosphere. Our designs are crafted to enhance your event, ensuring a memorable experience for you and your guests. This is one of the 1000+ designs under kids' birthday decoration for kids under 15 years.`
+          "text": `${product?.name} decoration is crafted by our expert team to match your vision and budget. Starting under ₹${product?.price}, this design is built to create a stunning atmosphere for your event. It is one of 1000+ designs across all occasions — birthdays, baby showers, anniversaries, first nights, and more.`
         }
       },
       {
