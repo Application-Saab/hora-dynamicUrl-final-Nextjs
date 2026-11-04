@@ -310,7 +310,7 @@ const contactUsRedirection = () => {
                 console.error('Error retrieving userID');
                 return;
             }
-            const address2 = address + pinCode;
+            const address2 = address;
             const requestData = {
                 address1: address2,
                 address2: address2,
