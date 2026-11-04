@@ -879,6 +879,23 @@ const formatProductName = (productName) => {
 const toTitleCase = (str = "") =>
   str.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
 
+const buildCustomiseMessage = (catValue, city, theme = "") => {
+  const cityText = toTitleCase(city || "").trim();
+  const themeText = String(theme || "").trim();
+
+  // Theme mili to wahi dikhao, warna category
+  let categoryText;
+  if (themeText) {
+    categoryText = `${themeText} Decoration`;
+  } else {
+    const category = toTitleCase(catValue).replace(/\s*Decoration$/i, "").trim();
+    categoryText = category ? `${category} Decoration` : "Decoration";
+  }
+
+  return `Looking for a Customisation ${categoryText}${
+    cityText ? ` in ${cityText}` : ""
+  }!`;
+};
 // ---------- Component (NO getServerSideProps here) ----------
 function DecorationsCatDetails({
   initialProduct = null,
@@ -1179,33 +1196,48 @@ function DecorationsCatDetails({
     router.push(path);
   };
 
-  const handleCustomise = (type) => {
-    const messages = {
-      "kids-birthday-decoration":
-        "Hi, I want to customize a kids birthday decoration design, can you help me",
-      "birthday-decoration":
-        "Hi, I want to customize a birthday decoration design, can you help me",
-      "anniversary-decoration":
-        "Hi, I want to customize an anniversary decoration design, can you help me",
-      "baby-shower-decoration":
-        "Hi, I want to customize a baby shower decoration design, can you help me",
-      "welcome-baby-decoration":
-        "Hi, I want to customize a baby welcome decoration design, can you help me",
-      "first-night-decoration":
-        "Hi, I want to customize a first night decoration design, can you help me",
-      "premium-decoration":
-        "Hi, I want to customize a premium decoration design, can you help me",
-      "haldi-mehendi-decoration":
-        "Hi, I want to customize a haldi & mehendi decoration design, can you help me",
-      "wedding-decoration":
-        "Hi, I want to customize a wedding decoration design, can you help me",
-      "bachelorette-decoration":
-        "Hi, I want to customize a bachelorette decoration design, can you help me",
-    };
+  const handleCustomise = (type, cityArg) => {
+  const phoneNumber = "917338584828";
+ const message = buildCustomiseMessage(
+  type || catValue,
+  cityArg || selectedCityName || city,
+  themeNameForWA
+);
+
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "Customization_WhatsApp_Button",
+    eventCategory: "Product Page",
+    eventAction: "WhatsApp Click",
+    eventLabel: "Customization WhatsApp Button",
+  });
+
+  window.open(
+    `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
+    "_blank"
+  );
+};
+  // Sirf "Customize Design" button (ActionButtons) ke liye
+  const handleActionCustomise = (type, cityArg) => {
     const phoneNumber = "917338584828";
-    const message =
-      (messages[type] ||
-        "Hi, I want to customize a decoration design, can you help me") + "!";
+
+    const cityText = toTitleCase(cityArg || selectedCityName || city || "").trim();
+
+    // Theme mili to wahi ("car decoration"), warna category ("naming ceremony decoration")
+    let label;
+    if (themeNameForWA) {
+      label = `${themeNameForWA.toLowerCase()} decoration`;
+    } else {
+      label = toTitleCase(type || catValue || "").toLowerCase().trim();
+      if (!label) label = "decoration";
+      else if (!/decoration$/.test(label)) label += " decoration";
+    }
+
+    const article = /^[aeiou]/i.test(label) ? "an" : "a";
+
+    const message = `Hi, I want to customize ${article} ${label} design, can you help me${
+      cityText ? ` for ${cityText}` : ""
+    }!`;
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
@@ -1217,10 +1249,9 @@ function DecorationsCatDetails({
 
     window.open(
       `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
-      "_blank",
+      "_blank"
     );
   };
-
   const showAddOnmodal = () => {
     setIsModalOpen((p) => !p);
     setIsArrowDown((p) => !p);
@@ -1313,6 +1344,8 @@ function DecorationsCatDetails({
         productid: product?._id,
         selectedaddonids: JSON.stringify(selectedAddonSort),
         totalAmount: totalPrice,
+        city: selectedCitySlug || city || "",
+        catValue: catValue || "",
       },
     });
   };
@@ -1403,6 +1436,22 @@ function DecorationsCatDetails({
     if (productSlug) parts.push(productSlug);
     return `${SITE}/${parts.filter(Boolean).join("/")}`;
   };
+const themeTokens = String(productSlug || product?.name || "")
+  .toLowerCase()
+  .split(/[^a-z0-9]+/)
+  .filter(Boolean);
+
+const matchedTheme = themeFilters
+  .filter((t) =>
+    String(t.value)
+      .trim()
+      .toLowerCase()
+      .split("-")
+      .every((tok) => themeTokens.includes(tok))
+  )
+  .sort((a, b) => String(b.value).length - String(a.value).length)[0];
+
+const themeNameForWA = matchedTheme ? matchedTheme.label.trim() : "";
 
   const canonicalUrl = buildProductCanonical();
 
@@ -1556,7 +1605,7 @@ function DecorationsCatDetails({
                   catValue={catValue}
                   cityName={selectedCitySlug}
                   similarRef={similarRef}
-                  handleCustomise={handleCustomise}
+                  handleCustomise={handleActionCustomise}
                 />
 
                 <div className="addon-container" ref={customizationRef}>
@@ -1578,7 +1627,9 @@ function DecorationsCatDetails({
                 {getItemInclusion(product?.inclusion)}
               </div>
 
-              <MakeItYoursBanner />
+           <MakeItYoursBanner
+  message={buildCustomiseMessage(catValue, selectedCityName || city, themeNameForWA)}
+/>
 
               <div ref={addonRef}>
                 <AddonModal
@@ -1702,6 +1753,7 @@ function DecorationsCatDetails({
           router={router}
           categorySlug={getCategoryNameToSlug(passCategoryId?.name) || ""}
           citySlugProduct={selectedCityName}
+           theme={themeNameForWA}
         />
       </div>
     </>
