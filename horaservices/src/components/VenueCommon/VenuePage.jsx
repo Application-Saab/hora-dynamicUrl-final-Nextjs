@@ -291,28 +291,23 @@ const VenuePage = ({
 
   const PHONE = "7338584828";
 
-  const handleEnquire = () => {
+   const handleEnquire = () => {
     trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.VENUE_ENQUIRE_NOW_BTN, {
       button_name: "Enquire Now",
       button_type: "enquire_now_venue",
       page_path: window.location.pathname,
     });
     trackWAClicks();
-    const venueName = eventDetails?.venueName || "this venue";
-    const location = eventDetails?.city || eventDetails?.location || "";
-    const capacity = eventDetails?.guestCapacity;
-    const price = eventDetails?.startingPrice;
 
-    const message = `Hi, I'm interested in *${venueName}*${
-      location ? ` (${location})` : ""
-    }.
-${capacity ? `Guest Capacity: ${capacity}` : ""}
-${price ? `Starting Price: ₹${price}/plate` : ""}
+    const rawCity = eventDetails?.city || eventDetails?.location || "";
+    const cityName = rawCity.replace(/\b\w/g, (l) => l.toUpperCase());
 
-Please share more details and availability.`;
+    const message = `Hi, I want to book your venue & need more info${
+      cityName ? ` for ${cityName}` : ""
+    }!`;
 
     window.open(
-      `https://wa.me/91${PHONE}?text=${encodeURIComponent(message.trim())}`,
+      `https://wa.me/91${PHONE}?text=${encodeURIComponent(message)}`,
       "_blank",
     );
   };
