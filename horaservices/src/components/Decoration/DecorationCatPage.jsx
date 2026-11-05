@@ -778,24 +778,27 @@ const DecorationCatPage = ({
   };
 
   // Real product URL for <a href>
-  const getProductHref = (item) => {
-    if (!item) return "#";
-    const productSlug =
-      item.slug ||
-      item.product_slug ||
-      (item.name ? item.name.toLowerCase().replace(/\s+/g, "-") : "");
+ const getProductHref = (item) => {
+  if (!item) return "#";
+  const productSlug =
+    item.slug ||
+    item.product_slug ||
+    (item.name ? item.name.toLowerCase().replace(/\s+/g, "-") : "");
 
-    if (!productSlug || !catValue) return "#";
+  if (!productSlug || !catValue) return "#";
 
-    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+  const pathCategorySlug = getCategorySlugFromPath(pathname, city, locality);
+  if (!pathCategorySlug) return "#";
 
-    if (!categorySlug) return "#";
-    if (isDirectProductPage) {
-      return `/${categorySlug}/product/${productSlug}`;
-    } else {
-      return `${buildBasePath()}/${categorySlug}/${catValue}/product/${productSlug}`;
-    }
-  };
+  // Wedding hamesha direct product page par: /wedding-decoration/product/slug
+  if (isDirectProductPage || categorySlug === "wedding-decoration") {
+    const directSlug =
+      categorySlug === "wedding-decoration" ? categorySlug : pathCategorySlug;
+    return `/${directSlug}/product/${productSlug}`;
+  }
+
+  return `${buildBasePath()}/${pathCategorySlug}/${catValue}/product/${productSlug}`;
+};
 
   const getCategoryHref = (item) => {
     if (!item?.value || !catValue) return "#";

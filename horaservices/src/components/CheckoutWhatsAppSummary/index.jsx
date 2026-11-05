@@ -88,9 +88,13 @@ const cleanBasePath = basePath.split("/product")[0];
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("en-GB")
     : "N/A";
-
+  const cityText = String(city || "")
+   .replace(/-/g, " ")
+   .trim()
+   .replace(/\b\w/g, (l) => l.toUpperCase());
+   
   const message = `
-Hi, I want to place ${categoryText} order urgently.
+Hi, I want to place ${categoryText} order${cityText ? ` for ${cityText}` : ""} urgently.
 *Order Details:*
 Order Date: ${formattedDate}
 Address: ${address || "Not Provided"}
@@ -104,9 +108,9 @@ ${comment || "No Comments"}
 
 *Add-On Items:*
 ${
-selectedAddOnProduct?.length
-  ? selectedAddOnProduct.map(item => item.title).join(", ")
-  : "No Add-ons"
+  selectedAddOnProduct?.length
+    ? selectedAddOnProduct.map((item) => item.title).join(", ")
+    : "No Add-ons"
 }
 
 *Product Name:* ${productName}

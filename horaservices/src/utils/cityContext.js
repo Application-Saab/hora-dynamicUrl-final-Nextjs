@@ -40,6 +40,7 @@ const CITY_OPTIONAL_CHILD_ROUTES = [
   "/chef-near-me",
   "/photography/product",
   "/balloon-decoration/product",
+  "/wedding-decoration/product"
 ];
 
 const isCityOptionalChildRoute = (pathname) => {

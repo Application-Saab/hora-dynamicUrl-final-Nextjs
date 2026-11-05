@@ -6,7 +6,11 @@ import customize from "@/assets/Customizetationbanner.webp";
 import customiseIcon from "@/assets/customiselcon.webp";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
-const MakeItYoursBanner = ({  phone = "7338584828",  }) => {
+
+const MakeItYoursBanner = ({
+  phone = "7338584828",
+  message = "Looking for a Customisation Decoration!",
+}) => {
   const handleWhatsAppClick = () => {
     trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.MAKE_IT_YOURS_CUSTOMIZE_BANNER, {
       button_name: "Customize Design",
@@ -15,7 +19,7 @@ const MakeItYoursBanner = ({  phone = "7338584828",  }) => {
     });
     trackWAClicks();
     const PHONE = phone;
-    const text = `Looking for a Custom Decoration? Our support team is ready to help!`;
+    const text = message;
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
