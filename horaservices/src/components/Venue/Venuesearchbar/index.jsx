@@ -194,6 +194,7 @@ import "./Venuesearchbar.css";
 import MapLocalityIconPopup from "../../../assets/venue/locality_filter_popup_map.svg";
 import SearchLocalityIconPopup from "../../../assets/venue/locality_filter_popup_search.svg";
 import ArrowLocalityIconPopup from "../../../assets/venue/locality_filter_popup_arrow.svg";
+import SearchbarSearchIcon from '../../../assets/venue/search_bar_search_icon.svg';
 
 import all from "@/assets/venuelanding/All.webp";
 import banquet from "@/assets/venuelanding/Banquethall.webp";
@@ -406,18 +407,18 @@ const VenueSearchBar = ({
   return (
     <>
       <div className="vsb-container" ref={searchWrapRef}>
-        {/* Top Control Bar */}
         <div className="vsb-bar-row">
           <div
             className={`vsb-input-box ${shouldShowDropdown ? "focused" : ""}`}
           >
             <div className="vsb-icon-badge">
-              <SearchBadgeIcon />
+              <Image src={SearchbarSearchIcon} />
             </div>
             <input
               type="text"
+              name="search"
               className="vsb-text-input"
-              placeholder="Search Venues, areas, capacity..."
+              placeholder="Search Venues, area"
               value={searchValue}
               onFocus={() => {
                 if ((searchValue || "").trim().length > 0) {

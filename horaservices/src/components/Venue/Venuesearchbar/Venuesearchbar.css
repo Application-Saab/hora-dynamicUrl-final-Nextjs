@@ -8,8 +8,8 @@
   width: clamp(300px, calc(380 * 100vw / 393), 480px);
   margin: 10px auto 10px auto;
   /* padding: clamp(6px, calc(9 * 100vw / 393), 11px); */
-  /* border-radius: clamp(14px, calc(18 * 100vw / 393), 22px); */
-  /* border: 1px solid #00000014; 
+/* border-radius: clamp(14px, calc(18 * 100vw / 393), 22px); */
+/* border: 1px solid #00000014; 
   box-sizing: border-box;
   position: relative;
   z-index: 10;
@@ -200,24 +200,6 @@ height: clamp(25.44px, 7.95vw, 38.26px);
   font-weight: 600;
 } */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* Container & Base Styles */
 .vsb-container,
 .vsb-container * {
@@ -227,10 +209,11 @@ height: clamp(25.44px, 7.95vw, 38.26px);
 .vsb-container {
   width: 100%;
   max-width: 480px;
-  margin: 12px auto;
+  margin: clamp(7.33px, 2.29vw, 10.99px) auto clamp(9.77px, 3.053vw, 14.66px) auto;
   position: relative;
   z-index: 20;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 /* ── Top Bar (Search + Locality) ── */
@@ -243,10 +226,10 @@ height: clamp(25.44px, 7.95vw, 38.26px);
 
 /* Common Purple Badges */
 .vsb-icon-badge {
-  width: 33px;
-  height: 33px;
-  background: #924286;
-  border-radius: 9px;
+  width: clamp(22.06px, 6.894vw, 33.09px);
+  height: clamp(22.06px, 6.894vw, 33.09px);
+  background: #97538c;
+  border-radius: clamp(5.03px, 1.573vw, 7.55px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -256,15 +239,15 @@ height: clamp(25.44px, 7.95vw, 38.26px);
 /* Search input container */
 .vsb-input-box {
   flex: 1;
-  height: 48px;
   background: #ffffff;
-  border: 1.5px solid #d9c8d6;
-  border-radius: 12px;
+  border: 1.07px solid #97538c33;
+  border-radius: clamp(9.77px, 3.053vw, 14.66px);
   display: flex;
   align-items: center;
-  padding: 0 10px;
-  gap: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  /* padding:  10px; */
+  padding: clamp(4.97px, 1.552vw, 7.45px) clamp(8.14px, 2.545vw, 12.21px);
+  gap: clamp(6.97px, 2.178vw, 10.45px);
+  box-shadow: 0px 4px 4px 0px #97538c1a;
   cursor: text;
 }
 
@@ -277,7 +260,7 @@ height: clamp(25.44px, 7.95vw, 38.26px);
   border: none;
   outline: none;
   background: transparent;
-  font-size: 15px;
+  font-size: clamp(11.4px, 3.562vw, 17.1px);
   font-weight: 500;
   color: #7b3e74;
 }
@@ -289,15 +272,15 @@ height: clamp(25.44px, 7.95vw, 38.26px);
 
 /* Locality button on the right */
 .vsb-locality-btn {
-  height: 48px;
+  /* height: 48px; */
   background: #ffffff;
-  border: 1.5px solid #d9c8d6;
-  border-radius: 12px;
+  border: 1.07px solid #97538c33;
+  border-radius: clamp(9.77px, 3.053vw, 14.66px);
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 12px 0 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  gap: clamp(4.89px, 1.527vw, 7.33px);
+  padding: clamp(4.97px, 1.552vw, 7.45px) clamp(8.14px, 2.545vw, 12.21px);
+  box-shadow: 0px 4px 4px 0px #97538c1a;
   cursor: pointer;
 }
 
@@ -449,10 +432,10 @@ height: clamp(25.44px, 7.95vw, 38.26px);
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 16px;
   font-weight: 600;
-  color: #97538C;
+  color: #97538c;
   cursor: pointer;
 }
 
@@ -474,7 +457,7 @@ height: clamp(25.44px, 7.95vw, 38.26px);
   padding: 0 8px;
   gap: 10px;
   margin-bottom: 12px;
-  border: 1.04px solid #E9E9E9;
+  border: 1.04px solid #e9e9e9;
   box-shadow: 0px 4px 4px 0px #00000005;
 }
 
@@ -507,12 +490,11 @@ height: clamp(25.44px, 7.95vw, 38.26px);
 }
 
 .vsb-locality-name {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 14px;
   color: #848181;
   font-weight: 400;
 }
-
 
 .vsb-section-label {
   padding: 10px 14px 6px;

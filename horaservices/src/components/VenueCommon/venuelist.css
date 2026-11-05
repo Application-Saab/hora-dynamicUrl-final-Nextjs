@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: clamp(9.771px, calc(3.053vw), 14.656px);
-  padding: clamp(4.896px, calc(1.53vw), 7.344px);
+  padding: clamp(8.14px, 2.545vw, 12.21px) clamp(4.896px, calc(1.53vw), 7.344px);
   max-width: 480px;
   width: 100%;
   margin: 0 auto;
@@ -21,9 +21,9 @@
   display: flex;
   flex-direction: row;
   background: #fff;
-  border-radius: clamp(8.128px, calc(2.54vw), 12.192px);
-  box-shadow: 0px 4px 4px 0px #0000001A;
-  border: 1px solid #CCCCCC;
+  border-radius: clamp(8.14px, 2.545vw, 12.21px);
+  box-shadow: 0px 4px 4px 0px #0000001a;
+  border: 1px solid #cccccc;
   width: 100%;
   overflow: hidden;
 }
@@ -31,8 +31,8 @@
 /* ── Image ── */
 .venue-card-img-wrap {
   position: relative;
-  width: clamp(112.352px, calc(35.11vw), 168.528px);
-  height: clamp(162.848px, calc(50.89vw), 244.272px);
+  width: clamp(111.55px, calc(34.86vw), 167.33px);
+  /* height: clamp(154.71px, calc(48.346vw), 232.06px); */
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -46,29 +46,30 @@
 
 .see-photos-btn {
   position: absolute;
-  left: clamp(4.071px, calc(1.272vw), 6.107px);
- bottom: clamp(5.071px, calc(1.272vw), 7.107px);
+  left: clamp(4.89px, calc(1.527vw), 7.33px);
+  bottom: clamp(4.79px, calc(1.496vw), 7.18px);
   display: flex;
   align-items: center;
-  gap: clamp(4.071px, calc(1.272vw), 6.107px);
-  background: #97538CE5;
+  gap: clamp(2.44px, 0.763vw, 3.66px);
+  background: #97538ccc;
   color: #fff;
   border: none;
-  border-radius: clamp(3.39px, 1.06vw, 5.09px);
-  padding: clamp(4.071px, calc(1.272vw), 6.107px) clamp(8.142px, calc(2.545vw), 12.214px);
- font-family: Inter, sans-serif;
-font-weight: 500;
-font-style: normal;
-font-size: clamp(7px, 2.1875vw, 10.5px);
+  border-radius: clamp(3.35px, 1.046vw, 5.02px);
+  padding: clamp(4.071px, calc(1.272vw), 6.107px)
+    clamp(8.142px, calc(2.545vw), 12.214px);
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: clamp(5.34px, 1.669vw, 8.01px);
   cursor: pointer;
 }
-.gallery-icon{
+.gallery-icon {
   width: clamp(9.04px, 2.82vw, 13.49px);
-height: clamp(9.04px, 2.82vw, 13.49px);
+  height: clamp(9.04px, 2.82vw, 13.49px);
 }
 .see-photos-btn svg {
-  width: clamp(8.957px, calc(2.799vw), 13.435px);
-  height: clamp(8.957px, calc(2.799vw), 13.435px);
+  width: clamp(8.9px, calc(2.782vw), 13.35px);
+  height: clamp(8.9px, calc(2.782vw), 13.35px);
   flex-shrink: 0;
 }
 
@@ -79,42 +80,44 @@ height: clamp(9.04px, 2.82vw, 13.49px);
 /* ── Body ── */
 .venue-card-body {
   flex: 1;
-padding: clamp(3.2px, 1.018vw, 4px) clamp(6.4px, 2.036vw, 8px);
-  border-radius: 0 clamp(13.028px, calc(4.071vw), 19.542px) clamp(13.028px, calc(4.071vw), 19.542px) 0;
+  padding: clamp(9.46px, 2.957vw, 14.19px) clamp(7.33px, 2.29vw, 10.99px);
+  border-radius: 0 clamp(13.028px, calc(4.071vw), 19.542px)
+    clamp(13.028px, calc(4.071vw), 19.542px) 0;
   display: flex;
   flex-direction: column;
-  gap: clamp(4.064px, calc(1.27vw), 6.096px);
+  /* gap: clamp(4.064px, calc(1.27vw), 6.096px); */
   box-sizing: border-box;
   justify-content: space-around;
   min-width: 0;
 }
 
 .venue-name {
-  font-family: Roboto;
-  font-weight: 700;
-  font-style: Bold;
-  font-size: clamp(9.76px, calc(3.05vw), 14.64px);
-  line-height: clamp(12.384px, calc(3.87vw), 18.576px);
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-style: semi-bold;
+  font-size: clamp(13.03px, 4.071vw, 19.54px);
+  line-height: clamp(12.28px, 3.837vw, 18.42px);
   letter-spacing: 0%;
-  color: #1C191C;
+  color: #1c191c;
   margin: 0;
 }
 
 .venue-location {
   margin: 0;
-  color: #574737;
-  font-family: Inter;
-  font-weight: 400;
+  margin-top: clamp(3.66px, 1.145vw, 5.5px);
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  color: #676977;
+  font-size: clamp(9.77px, 3.053vw, 14.66px);
   font-style: Regular;
-  font-size: clamp(7.52px, calc(2.35vw), 11.28px);
   display: flex;
   align-items: center;
-  gap: clamp(4.885px, calc(1.527vw), 7.328px);
+  gap: clamp(2.31px, calc(0.723vw), 3.47px);
 }
 
 .location-icon {
-  width: clamp(6.144px, calc(1.92vw), 9.216px);
-  height: clamp(7.68px, calc(2.4vw), 11.52px);
+  width: clamp(8.14px, 2.545vw, 12.21px);
+  height: clamp(10.18px, 3.182vw, 15.27px);
   flex-shrink: 0;
 }
 
@@ -124,8 +127,9 @@ padding: clamp(3.2px, 1.018vw, 4px) clamp(6.4px, 2.036vw, 8px);
   flex-wrap: nowrap;
   overflow-x: auto;
   overflow-y: hidden;
-  gap: clamp(4.885px, calc(1.527vw), 7.328px);
-  margin: clamp(1.628px, calc(0.509vw), 2.443px) 0;
+  margin-top: clamp(8.14px, 2.545vw, 12.21px);
+  gap: clamp(4.84px, 1.514vw, 7.27px);
+  /* margin: clamp(1.628px, calc(0.509vw), 2.443px) 0; */
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -138,180 +142,116 @@ padding: clamp(3.2px, 1.018vw, 4px) clamp(6.4px, 2.036vw, 8px);
 .venue-tag-pill {
   display: flex;
   align-items: center;
-  gap: clamp(1.632px, calc(0.51vw), 2.448px);
-  background: #fff;
-  color: #97538C;
- font-family: "Inter", sans-serif;
-font-weight: 600;
-font-size: clamp(5.38px, 1.7vw, 8.02px);
- padding: clamp(1.6px, 0.509vw, 2px) clamp(3.2px, 1.018vw, 4px);
-  border: 0.58px solid #97538C;
-  border-radius: clamp(1.92px, calc(0.6vw), 2.88px);
+  padding: clamp(4.07px, 1.272vw, 6.11px) clamp(3.4px, 1.061vw, 5.09px);
+  gap: clamp(1.63px, 0.509vw, 2.44px);
+  font-size: clamp(7.33px, 2.29vw, 10.99px);
+  background: #97538c1a;
+  color: #97538c;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  border: 0.38px solid #97538c;
+  border-radius: clamp(1.89px, calc(0.59vw), 2.83px);
   white-space: nowrap;
   flex-shrink: 0;
 }
-.pill-icon-venue{
-width: clamp(5.65px, 1.785vw, 7.02px);
-height: clamp(5.65px, 1.785vw, 7.02px);
+.pill-icon-venue {
+  width: clamp(8.14px, 2.545vw, 12.21px);
+  height: clamp(8.14px, 2.545vw, 12.21px);
 }
 
 .venue-tag-pill svg {
-  width: clamp(5.728px, calc(1.79vw), 8.592px);
-  height: clamp(5.728px, calc(1.79vw), 8.592px);
+  width: clamp(8.14px, 2.545vw, 12.21px);
+  height: clamp(8.14px, 2.545vw, 12.21px);
   flex-shrink: 0;
 }
 
-/* ── Stats grid (guests / parking / halls / rooms) — 3 per row, auto dividers ── */
-.venue-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  row-gap: 10px;
-  column-gap: clamp(8.21px, 2.545vw, 12.31px);
-  position: relative;
-}
-
-.stat-item {
-  position: relative;
-  display: flex;
-  align-items: center;   /* icon text ke center mein rahega, image jaisa */
-  gap: clamp(2.85px, 0.891vw, 4.275px);
-  font-family: "Inter", sans-serif;
-  font-weight: 600;
-  font-size: clamp(6.94px, 2.176vw, 10.47px);
-  line-height: 130%;      /* 2-line text ke liye proper spacing */
-  color: #000000;
-  min-width: 0;
-}
-
-.stat-item strong {
-  font-weight: 600;
-}
-
-.stat-item svg,
-.stat-item img {
-  width: clamp(13.18px, 4.125vw, 19.84px);
-  height: clamp(12.61px, 3.95vw, 19.11px);
-  flex-shrink: 0;
-}
-
-/* Vertical dotted line between columns (col 1 only) */
-.stat-item:nth-child(odd)::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: calc(clamp(8.21px, 2.545vw, 12.31px) / 2 * -1);
-  transform: translateY(-50%);
- height: clamp(15px, 4.58vw, 18px);
-   border-right: 0.5px dotted #A4A3A3;
-}
-
-/* Horizontal dotted line before row 2 */
-.stat-item:nth-child(3)::before,
-.stat-item:nth-child(4)::before {
-  content: "";
-  position: absolute;
-  top: calc(10px / 2 * -1);
-  left: 0;
-  width: calc(200% + clamp(8.21px, 2.545vw, 12.31px));
-  border-top: 0.5px dotted #A4A3A3;
-}
-/* ── Food ── */
-.venue-food {
-  display: flex;
-  margin-top: clamp(2.432px, calc(0.76vw), 3.648px);
-  gap: clamp(8.142px, calc(2.545vw), 12.214px);
-  font-family: "Inter", sans-serif;
-}
-
-.veg {
-  color: #574737;
-  font-family: Inter;
-  font-weight: 400;
-  font-style: Regular;
-  font-size: clamp(6.528px, calc(2.04vw), 9.792px);
+.guest-capacity-row {
+  margin-top: clamp(9.77px, 3.053vw, 14.66px);
   display: flex;
   align-items: center;
-  gap: clamp(3.257px, calc(1.018vw), 4.885px);
 }
-
-.nonveg {
-  color: #574737;
-  font-family: Inter;
-  font-weight: 400;
-  font-size: clamp(6.528px, calc(2.04vw), 9.792px);
-  display: flex;
-  align-items: center;
-  gap: clamp(3.257px, calc(1.018vw), 4.885px);
+.guest-capacity-row .guest-capacity-icon {
+  width: clamp(14.16px, 4.425vw, 21.24px);
+  height: clamp(14.16px, 4.425vw, 21.24px);
 }
-
-.food-icon {
-  width: clamp(7.776px, calc(2.43vw), 11.664px);
-  height: clamp(7.776px, calc(2.43vw), 11.664px);
-  object-fit: contain;
-  flex-shrink: 0;
+.guest-capacity-row .guest-capacity-text {
+  font-family: "Inter", sans-serif;
+  color: #696b76;
+  font-weight: 500;
+  font-size: clamp(9.77px, 3.053vw, 14.66px);
+  margin-left: clamp(6.06px, 1.893vw, 9.09px);
+}
+.venue-card-divider {
+  border: 0.62px solid #a4a3a3;
+  /* height: 0.62px; */
+  border-style: dashed;
+  margin: clamp(8.14px, 2.545vw, 12.21px) 0;
 }
 
 /* ── Price ── */
 .venue-price {
-  font-family: "Rubik", sans-serif;
-  font-weight: 500;
-  font-size: clamp(11.136px, calc(3.48vw), 16.704px);
-  margin: clamp(1.628px, calc(0.509vw), 2.443px) 0 0;
-  color: #97538C;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: clamp(12.92px, 4.038vw, 19.38px);
+  /* margin: clamp(1.628px, calc(0.509vw), 2.443px) 0 0; */
+  color: #97538c;
+  margin: 0;
+  padding: 0;
+}
+.venue-price .price-closer {
+  font-size: clamp(10.59px, 3.308vw, 15.88px);
 }
 
-.venue-price span {
+.venue-price .price-starting-text {
   font-family: "Rubik", sans-serif;
   font-weight: 400;
-  font-size: clamp(8.128px, calc(2.54vw), 12.192px);
-  color: #6B6B6B;
-  margin-left: clamp(3.257px, calc(1.018vw), 4.885px);
+  font-size: clamp(8.88px, calc(2.776vw), 13.33px);
+  color: #696b76 !important;
+  margin-left: clamp(4.07px, calc(1.272vw), 6.11px);
+}
+.venue-price .price-divider {
+  font-family: "Rubik", sans-serif;
+  color: #696b76 !important;
+  font-size: clamp(10.59px, 3.308vw, 15.88px);
+  font-weight: 300;
 }
 /* ── CTA Container ── */
 .venue-card-btn-ctn {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  justify-content: space-between;
-  gap: clamp(3px, calc(1vw), 6px);
-  margin-block: clamp(3px, calc(1vw), 5px);
+  margin-top: clamp(8.14px, 2.545vw, 12.21px);;
   width: 100%;
 }
 
-.venue-card-btn-ctn > div {
+/* .venue-card-btn-ctn > div {
   flex: 1 1 0% !important;
   min-width: 0 !important;
   display: flex !important;
   align-items: center !important;
-}
+} */
 
 /* Dono buttons ke display, height aur padding ko strictly match karein */
-.venue-menu-btn,
-.check-availability-btn-venue {
+.venue-menu-btn{
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   width: 100% !important;
-  height: clamp(22px, calc(6.5vw), 28px) !important;
   box-sizing: border-box !important;
   white-space: nowrap !important;
   text-align: center !important;
   text-decoration: none !important;
   font-family: "Inter", sans-serif;
   font-weight: 600;
-  line-height: 1 !important;
   cursor: pointer;
-  border-radius: clamp(2.5px, calc(0.8vw), 4px);
-  padding: 0 clamp(2px, calc(0.8vw), 6px) !important;
-  font-size: clamp(6.8px, calc(2.2vw), 11px) !important;
-}
-
-.venue-menu-btn {
+  border-radius: clamp(3.08px, 0.962vw, 4.62px);
+  padding: clamp(6.11px, 1.908vw, 9.16px) clamp(2.44px, 0.763vw, 3.66px);;
+  font-size: clamp(11.4px, 3.562vw, 17.1px);
   background: #97538c;
-  border: 1px solid #97538c !important;
   color: #fff !important;
 }
 
+.venue-menu-btn .menu-button-arrow{
+  /* width: clamp(4.07px, 1.272vw, 6.11px) !important; */
+  margin-left: 5px;
+}
 .check-availability-btn-venue {
   background: transparent;
   border: 1px solid #219f54 !important;
@@ -340,7 +280,7 @@ height: clamp(5.65px, 1.785vw, 7.02px);
   border-radius: clamp(5.7px, calc(1.781vw), 8.55px);
   padding: clamp(4.071px, calc(1.272vw), 6.107px);
   gap: clamp(8.142px, calc(2.545vw), 12.214px);
-  background: #97538C;
+  background: #97538c;
   color: #fff;
   border: none;
   cursor: pointer;
@@ -356,14 +296,15 @@ height: clamp(5.65px, 1.785vw, 7.02px);
   background: #f8f3fb;
   border-radius: clamp(9.771px, calc(3.053vw), 14.656px);
   padding: clamp(13.028px, calc(4.071vw), 19.542px);
-  margin: clamp(13.028px, calc(4.071vw), 19.542px) clamp(6.514px, calc(2.036vw), 9.771px);
+  margin: clamp(13.028px, calc(4.071vw), 19.542px)
+    clamp(6.514px, calc(2.036vw), 9.771px);
 }
 
 .coming-soon-box h3 {
   margin: 0 0 clamp(4.885px, calc(1.527vw), 7.328px);
   font-size: clamp(10.585px, calc(3.308vw), 15.878px);
   font-weight: 600;
-  color: #7B4F9E;
+  color: #7b4f9e;
 }
 
 .coming-soon-box p {

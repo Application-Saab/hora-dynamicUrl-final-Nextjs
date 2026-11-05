@@ -1,14 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./venuelist.css";
-import vegIcon from "@/assets/venuelanding/Veg.svg";
-import nonVegIcon from "@/assets/venuelanding/Nonveg.svg";
-import locationIcon from "@/assets/venuelanding/location.svg";
+import locationIcon from "../../assets/venue/venue_card_location_icon.svg";
 import tagIcon from "@/assets/venuelanding/tagIcon.svg";
 import guestIcon from "@/assets/venuelanding/guest.svg";
-import parkingIcon from "@/assets/venuelanding/parking.svg";
-import hallIcon from "@/assets/venuelanding/halls.svg";
-import roomIcon from "@/assets/venuelanding/rooms.svg";
 import galleryIcon from "@/assets/venuelanding/galleryicon.svg";
+import { FaArrowRightLong } from "react-icons/fa6";
 import Image from "next/image";
 import {
   BASE_URL,
@@ -17,13 +13,9 @@ import {
 } from "@/utils/apiconstants";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
-import { trackWAClicks } from "@/utils/storeWhatsappClicks";
-import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 
 const BATCH_SIZE = 10;
-const WHATSAPP_PHONE = "7338584828";
 
-// ✅ locality bhi include kiya
 const getCacheKey = (eventType, venueType, guestCapacity, city, locality) =>
   `venue-list-${JSON.stringify({
     eventType,
@@ -36,7 +28,6 @@ const getCacheKey = (eventType, venueType, guestCapacity, city, locality) =>
 const getVenueRoute = (city) =>
   city ? `/${city.toLowerCase()}/venue-list/venue` : "/venue-list/venue";
 
-// ✅ helper – string ya object dono handle karega
 const getLocalityValue = (locality) => {
   if (!locality) return null;
   if (typeof locality === "string") return locality.trim() || null;
@@ -68,7 +59,7 @@ const VenueList = ({
     venueType,
     guestCapacity,
     city,
-    localityValue
+    localityValue,
   );
 
   const cached = typeof window !== "undefined" ? getPageCache(cacheKey) : null;
@@ -87,23 +78,6 @@ const VenueList = ({
     if (halls.length) params.set("halls", JSON.stringify(halls));
 
     return `${base}?${params.toString()}`;
-  };
-
-  const buildWhatsappLink = (venue) => {
-    const name = venue?.venueName || "this venue";
-    const address =
-      [venue?.locality, venue?.city].filter(Boolean).join(", ") ||
-      venue?.city ||
-      "";
-    const lines = [
-      `Hi, I'm interested in *${name}*.`,
-      address ? `Address: ${address}` : null,
-      "",
-      "Please share more details and availability.",
-    ].filter(Boolean);
-
-    const message = encodeURIComponent(lines.join("\n"));
-    return `https://wa.me/91${WHATSAPP_PHONE}?text=${message}`;
   };
 
   const [venues, setVenues] = useState(() => {
@@ -129,7 +103,7 @@ const VenueList = ({
       venueType,
       guestCapacity,
       city,
-      localityValue
+      localityValue,
     );
     const existing = typeof window !== "undefined" ? getPageCache(key) : null;
 
@@ -295,21 +269,11 @@ const VenueList = ({
             : v.hallType
               ? [v.hallType]
               : [];
-          const hallLabel = halls
-            .map((h) =>
-              h?.toLowerCase().startsWith("in")
-                ? "Indoor"
-                : h?.toLowerCase().startsWith("out")
-                  ? "Outdoor"
-                  : h,
-            )
-            .join(" & ");
 
           const shortLocation =
             [v.locality, v.city].filter(Boolean).join(", ") || v.city || "N/A";
 
           const href = getVenueHref(v, halls);
-          const whatsappUrl = buildWhatsappLink(v);
 
           return (
             <div
@@ -355,137 +319,62 @@ const VenueList = ({
               </div>
 
               <div className="venue-card-body">
-                <h3 className="venue-name">{v.venueName}</h3>
+                <div>
+                  <h3 className="venue-name">{v.venueName}</h3>
+                  <p className="venue-location">
+                    <Image
+                      src={locationIcon}
+                      alt="Location"
+                      className="location-icon"
+                    />
+                    <span className="location-text">{shortLocation}</span>
+                  </p>
 
-                <p className="venue-location">
-                  <Image
-                    src={locationIcon}
-                    alt="Location"
-                    className="location-icon"
-                  />
-                  <span className="location-text">{shortLocation}</span>
-                </p>
-
-                {tags.length > 0 && (
-                  <div className="venue-tags-row">
-                    {tags.map((t, i) => (
-                      <span className="venue-tag-pill" key={i}>
-                        <Image
-                          src={tagIcon}
-                          alt="Tag"
-                          className="pill-icon-venue"
-                          width={12}
-                          height={12}
-                        />
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {(() => {
-                  const statCells = [];
-
-                  if (v.guestCapacity) {
-                    statCells.push(
-                      <span className="stat-item" key="guests">
-                        <Image
-                          src={guestIcon}
-                          alt="Guests"
-                          className="stat-icon"
-                          width={18}
-                          height={18}
-                        />
+                  {tags.length > 0 && (
+                    <div className="venue-tags-row">
+                      {tags.map((t, i) => (
+                        <span className="venue-tag-pill" key={i}>
+                          <Image
+                            src={tagIcon}
+                            alt="Tag"
+                            className="pill-icon-venue"
+                            width={12}
+                            height={12}
+                          />
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <div className="guest-capacity-row">
+                    <span>
+                      <Image
+                        src={guestIcon}
+                        alt="Guests"
+                        className="guest-capacity-icon"
+                      />
+                      <span className="guest-capacity-text">
                         {v.minGuestCapacity && `${v?.minGuestCapacity} -`}{" "}
                         {v.guestCapacity} Guests
-                      </span>,
-                    );
-                  }
-
-                  if (v.isParkingAvailable) {
-                    statCells.push(
-                      <span className="stat-item" key="parking">
-                        <Image
-                          src={parkingIcon}
-                          alt="Parking"
-                          className="stat-icon"
-                          width={20}
-                          height={16}
-                        />
-                        <span>Parking Available</span>
-                      </span>,
-                    );
-                  }
-
-                  if (halls.length > 0) {
-                    statCells.push(
-                      <span className="stat-item" key="halls">
-                        <Image
-                          src={hallIcon}
-                          alt="Hall"
-                          className="stat-icon"
-                          width={18}
-                          height={18}
-                        />
-                        <span>
-                          {halls.length} Hall{halls.length > 1 ? "s" : ""}
-                          <br />
-                          {hallLabel}
-                        </span>
-                      </span>,
-                    );
-                  }
-
-                  if (v.totalRoomsAvailable > 0) {
-                    statCells.push(
-                      <span className="stat-item" key="rooms">
-                        <Image
-                          src={roomIcon}
-                          alt="Rooms"
-                          className="stat-icon"
-                          width={20}
-                          height={16}
-                        />
-                        {v.totalRoomsAvailable} Room Available
-                      </span>,
-                    );
-                  }
-
-                  if (statCells.length === 0) return null;
-
-                  return <div className="venue-stats-grid">{statCells}</div>;
-                })()}
-
-                {(v.foodTypes?.includes("veg") ||
-                  v.foodTypes?.includes("non-veg")) && (
-                  <div className="venue-food">
-                    {v.foodTypes?.includes("veg") && (
-                      <span className="veg">
-                        <Image src={vegIcon} alt="Veg" className="food-icon" />
-                        Veg Available
                       </span>
-                    )}
-                    {v.foodTypes?.includes("non-veg") && (
-                      <span className="nonveg">
-                        <Image
-                          src={nonVegIcon}
-                          alt="Non Veg"
-                          className="food-icon"
-                        />
-                        Non-Veg Available
-                      </span>
-                    )}
+                    </span>
                   </div>
-                )}
+                </div>
+                <div className="venue-card-divider"></div>
+                <div>
+                  <p className="venue-price">
+                    ₹{v.startingPrice?.toLocaleString("en-IN") || "N/A"}
+                    <span className="price-closer">/-</span>{" "}
+                    <span className="price-divider">|</span>
+                    <span className="price-starting-text">Starting Price</span>
+                  </p>
 
-                <p className="venue-price">
-                  ₹{v.startingPrice?.toLocaleString("en-IN") || "N/A"}/-{" "}
-                  <span>Starting Price</span>
-                </p>
-
-                <div className="venue-card-btn-ctn">
-                  <div>
-                    <span className="venue-menu-btn">View Package ➜</span>
+                  <div className="venue-card-btn-ctn">
+                    <div>
+                      <span className="venue-menu-btn">
+                        View Package <FaArrowRightLong className="menu-button-arrow" />
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -13,6 +13,7 @@ import VenueSearchBar from "@/components/Venue/Venuesearchbar";
 import Head from "next/head";
 import { venueData } from "@/utils/venueCircleData.js";
 import EventDateBanner from "../Eventdatebanner";
+import VenueReviews from "../Venue/VenueReviews/VenueReviews";
 
 function getCitySlugFromPath(pathname) {
   if (!pathname) return "";
@@ -182,6 +183,7 @@ const VenuelandMainPage = ({
         />
 
         <VenueFeatures />
+        <VenueReviews />
       </div>
     </>
   );
