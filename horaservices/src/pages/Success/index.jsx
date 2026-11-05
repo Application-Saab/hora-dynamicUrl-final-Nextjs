@@ -1,4 +1,4 @@
-import React, { useEffect , useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../css/success.css";
 import confirmOrder from "../../assets/confirmOrder.png";
 import { useRouter } from "next/router";
@@ -7,14 +7,17 @@ import axiosApi from "@/utils/axiosApi";
 import { safeGetItem } from "@/utils/safeStorage";
 import { WHATSAPP_TEMPLATE_ENDPOINT } from "@/utils/apiconstants";
 import { WHATSAPP_API_TOKEN } from "@/utils/constants";
+import { trackMetaCustomEvent } from "@/utils/fpixel";
 
 const Success = () => {
-const router = useRouter();
-const [mobileNumber, setMobileNumber] = useState(() => safeGetItem("mobileNumber") || '');
+  const router = useRouter();
+  const [mobileNumber, setMobileNumber] = useState(
+    () => safeGetItem("mobileNumber") || "",
+  );
   const contactUsRedirection = async () => {
     try {
       window.open(
-        `whatsapp://send?phone=+917338584828&text=I've canceled my order, kindly assist with the refund process. Thanks!`
+        `whatsapp://send?phone=+917338584828&text=I've canceled my order, kindly assist with the refund process. Thanks!`,
       );
     } catch (error) {
       console.log("contactUsRedirection error", error);
@@ -25,61 +28,102 @@ const [mobileNumber, setMobileNumber] = useState(() => safeGetItem("mobileNumber
     router.push("/orderlist");
   };
 
-      // Function to send the WhatsApp message
-const sendWelcomeMessage = async (mobileNumber) => {
-  let formattedMobileNumber = mobileNumber;
+  // Function to send the WhatsApp message
+  const sendWelcomeMessage = async (mobileNumber) => {
+    let formattedMobileNumber = mobileNumber;
 
-  // Ensure the mobile number starts with '+91'
-  if (!formattedMobileNumber.startsWith('+91')) {
-      formattedMobileNumber = '+91' + formattedMobileNumber;
-  }
+    // Ensure the mobile number starts with '+91'
+    if (!formattedMobileNumber.startsWith("+91")) {
+      formattedMobileNumber = "+91" + formattedMobileNumber;
+    }
 
-  // Remove any extra spaces or special characters
-  formattedMobileNumber = formattedMobileNumber.replace(/\s+/g, '');
+    // Remove any extra spaces or special characters
+    formattedMobileNumber = formattedMobileNumber.replace(/\s+/g, "");
 
-  console.log('Sending WhatsApp message to mobile number:', formattedMobileNumber);
+    console.log(
+      "Sending WhatsApp message to mobile number:",
+      formattedMobileNumber,
+    );
 
-  const options = {
-      method: 'POST',
+    const options = {
+      method: "POST",
       url: WHATSAPP_TEMPLATE_ENDPOINT,
       headers: {
-          accept: 'application/json',
-          'content-type': 'application/json',
-          Authorization: WHATSAPP_API_TOKEN
+        accept: "application/json",
+        "content-type": "application/json",
+        Authorization: WHATSAPP_API_TOKEN,
       },
       data: {
-          messages: [
-              {
-                  content: {
-                      language: 'en',
-                      templateData: {
-                          header: {
-                              type: 'IMAGE',
-                              mediaUrl: 'https://quickscale-template-media.s3.ap-south-1.amazonaws.com/org_FGdNfMoTi9/2a2f1b0c-63e0-4c3e-a0fb-7ba269f23014.jpeg'
-                          },
-                          body: { placeholders: ['Hora Services'] } // Use dynamic placeholders if needed
-                      },
-                      templateName: 'order_confirmation_message__v3'
-                  },
-                  from: '+917338584828',
-                  to: formattedMobileNumber // Send to the formatted mobile number
-              }
-          ]
-      }
+        messages: [
+          {
+            content: {
+              language: "en",
+              templateData: {
+                header: {
+                  type: "IMAGE",
+                  mediaUrl:
+                    "https://quickscale-template-media.s3.ap-south-1.amazonaws.com/org_FGdNfMoTi9/2a2f1b0c-63e0-4c3e-a0fb-7ba269f23014.jpeg",
+                },
+                body: { placeholders: ["Hora Services"] }, // Use dynamic placeholders if needed
+              },
+              templateName: "order_confirmation_message__v3",
+            },
+            from: "+917338584828",
+            to: formattedMobileNumber, // Send to the formatted mobile number
+          },
+        ],
+      },
+    };
+
+    try {
+      const response = await axiosApi.request(options);
+      console.log("WhatsApp message response:", response.data);
+    } catch (error) {
+      console.error("Error sending WhatsApp message:", error);
+    }
   };
 
-  try {
-      const response = await axiosApi.request(options);
-      console.log('WhatsApp message response:', response.data);
-  } catch (error) {
-      console.error('Error sending WhatsApp message:', error);
-  }
-};
+  useEffect(() => {
+    if (mobileNumber) {
+      sendWelcomeMessage(mobileNumber);
+    }
+  }, [mobileNumber]);
 
+  useEffect(() => {
+    if (!router.isReady) return;
 
-  useEffect(()=>{
-    sendWelcomeMessage(mobileNumber);
-  },[]);
+    const currentMobile = safeGetItem("mobileNumber") || mobileNumber || "";
+    const currentUserId = safeGetItem("userID") || "";
+
+    const trackEventSafely = () => {
+      const params = {
+        popup_name: "order_success_page",
+        user_id: currentUserId,
+        mobile_number: currentMobile,
+        page_path: window.location.pathname || router.asPath || "",
+      };
+
+      if (typeof window !== "undefined" && typeof window.fbq === "function") {
+        trackMetaCustomEvent("order_success_page_view", params);
+      } else {
+        let attempts = 0;
+        const interval = setInterval(() => {
+          attempts++;
+          if (
+            typeof window !== "undefined" &&
+            typeof window.fbq === "function"
+          ) {
+            trackMetaCustomEvent("order_success_page_view", params);
+            clearInterval(interval);
+          } else if (attempts >= 10) {
+            clearInterval(interval);
+          }
+        }, 500);
+      }
+    };
+
+    trackEventSafely();
+  }, [router.isReady]);
 
   return (
     <div className="confirm-order">
@@ -94,13 +138,12 @@ const sendWelcomeMessage = async (mobileNumber) => {
       <div className="confirm-order-details">
         <h2>Your order is confirmed!</h2>
         <p>
-          Our Executor will contact 5 hours before the scheduled time. Have a great
-          feast!
+          Our Executor will contact 5 hours before the scheduled time. Have a
+          great feast!
         </p>
-        {/* <Link to="/" className="track-order">
-          Track Order
-        </Link> */}
-        <div className="need-help" onClick={contactUsRedirection}>Need help? Call us.</div>
+        <div className="need-help" onClick={contactUsRedirection}>
+          Need help? Call us.
+        </div>
         <button className="continue-button" onClick={handleContinue}>
           Continue
         </button>
