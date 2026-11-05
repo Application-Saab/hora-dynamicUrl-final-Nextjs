@@ -249,6 +249,43 @@ const getCheckoutCity = () => {
         message = `Hi, I saw your ${themeLabel} decoration designs and want to know more about it in ${toTitle(city)}.`;
         break;
       }
+        case '/wedding-decoration/[catValue]':
+        eventName = 'decoration_productlistedpage_whatsapp_click';
+        productNameEvent = `decoration_productlist_categorypage_whatsapp_click_${catValue}`;
+        message = messagesByCategory[catValue] || defaultMessage;
+        break;
+
+        case '/[city]/wedding-decoration/[catValue]': {
+        eventName = 'decoration_productlistedcitypage_whatsapp_click';
+        productNameEvent = 'decoration_productlistedcitypage_whatsapp_click';
+        const base = messagesByCategory[catValue] || defaultMessage;
+        message = addCityToMessage(base, formattedCity);
+        break;
+      }
+       case '/[city]/wedding-decoration/[catValue]/product/[productName]': {
+        eventName = 'decoration_productcitypage_whatsapp_click';
+        productNameEvent = `decoration_productcitypage_whatsapp_click_${productName}`;
+        const base1 = productMessagesByCategoryCity[catValue] || defaultMessage;
+        message = addCityToMessage(base1, formattedCity);
+        break;
+      }
+
+            case '/wedding-decoration/product/[productName]': {
+        eventName = 'decoration_productcitypage_whatsapp_click';
+        productNameEvent = `decoration_productcitypage_whatsapp_click_${productName}`;
+
+        const waCity = toTitle(formattedCity || citySlugProduct);
+
+        if (theme) {
+          message = `Hi, I liked your ${theme.toLowerCase()} decor design, can you help me in booking process${
+            waCity ? ` in ${waCity}` : ""
+          }.`;
+        } else {
+          const base1 = productMessagesByCategoryCity[categorySlug] || defaultMessage;
+          message = addCityToMessage(base1, waCity);
+        }
+        break;
+      }
     case '/checkout': {
   eventName = 'decoration_checkoutpage_whatsapp_click';
   productNameEvent = 'decoration_checkoutpage_whatsapp_click';

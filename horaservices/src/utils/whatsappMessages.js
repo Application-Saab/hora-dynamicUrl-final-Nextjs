@@ -76,6 +76,20 @@ export const messagesByCategory = {
     "Hi, I saw your wedding decoration designs and would like more details",
   "bachelorette-decoration":
     "Hi, I saw your bachelorette decoration designs and would like more details",
+  "haldi-decoration":
+    "Hi, I saw your haldi decoration designs and would like more details",
+  "mehendi-decoration":
+    "Hi, I saw your mehendi decoration designs and would like more details",
+  "mandap-decoration":
+    "Hi, I saw your mandap decoration designs and would like more details",
+  "wedding-car-decoration":
+    "Hi, I saw your wedding car decoration designs and would like more details",
+  "reception-decoration":
+    "Hi, I saw your reception decoration designs and would like more details",
+  "sangeet-decoration":
+    "Hi, I saw your sangeet decoration designs and would like more details",
+  "engagement-decoration":
+    "Hi, I saw your engagement decoration designs and would like more details",
 };
 
 /* =========================================================
@@ -103,6 +117,20 @@ export const productMessagesByCategory = {
     "Hi, I liked your wedding decoration design. Please help me with booking details.",
   "bachelorette-decoration":
     "Hi, I liked your bachelorette decoration design. Please help me with booking details.",
+  "haldi-decoration":
+    "Hi, I liked your haldi decoration design. Please help me with booking details.",
+  "mehendi-decoration":
+    "Hi, I liked your mehendi decoration design. Please help me with booking details.",
+  "mandap-decoration":
+    "Hi, I liked your mandap decoration design. Please help me with booking details.",
+  "wedding-car-decoration":
+    "Hi, I liked your wedding car decoration design. Please help me with booking details.",
+  "reception-decoration":
+    "Hi, I liked your reception decoration design. Please help me with booking details.",
+  "sangeet-decoration":
+    "Hi, I liked your sangeet decoration design. Please help me with booking details.",
+  "engagement-decoration":
+    "Hi, I liked your engagement decoration design. Please help me with booking details.",
 };
 
 /* =========================================================
@@ -120,28 +148,43 @@ export const checkoutMessagesByCategory = {
     "premium-decoration": "Hi, can you help me book a premium decor design",
     "haldi-mehendi-decoration": "Hi, can you help me book a haldi & mehendi decor design",
     "wedding-decoration": "Hi, can you help me book a wedding decor design",
-    "bachelorette-decoration": "Hi, can you help me book a bachelorette decor design"
-  };
+    "bachelorette-decoration": "Hi, can you help me book a bachelorette decor design",
+    "haldi-decoration": "Hi, can you help me book a haldi decor design",
+    "mehendi-decoration": "Hi, can you help me book a mehendi decor design",
+    "mandap-decoration": "Hi, can you help me book a mandap decor design",
+    "wedding-car-decoration": "Hi, can you help me book a wedding car decor design",
+    "reception-decoration": "Hi, can you help me book a reception decor design",
+    "sangeet-decoration": "Hi, can you help me book a sangeet decor design",
+    "engagement-decoration": "Hi, can you help me book an engagement decor design",
+};
+
 /* =========================================================
    City-Based Product Messages
 ========================================================= */
 
 
 
- export  const productMessagesByCategoryCity = {
-    "kids-birthday-decoration": "Hi, I liked your kids birthday decor design, can you help me in booking process",
-    "birthday-decoration": "Hi, I liked your birthday decor design, can you help me in booking process",
-    "anniversary-decoration": "Hi, I liked your anniversary decor design, can you help me in booking process",
-    "first-night-decoration": "Hi, I liked your first night decor design, can you help me in booking process",
-    "premium-decoration": "Hi, I liked your premium decor design, can you help me in booking process",
-    "baby-shower-decoration": "Hi, I liked your baby shower decor design, can you help me in booking process",
-    "welcome-baby-decoration": "Hi, I liked your baby welcome decor design, can you help me in booking process",
-    "haldi-mehendi-decoration": "Hi, I liked your haldi & mehendi decor design, can you help me in booking process",
-    "wedding-decoration": "Hi, I liked your wedding decor design, can you help me in booking process",
-    "bachelorette-decoration": "Hi, I liked your bachelorette decor design, can you help me in booking process"
-  };
+export const productMessagesByCategoryCity = {
+  "kids-birthday-decoration": "Hi, I liked your kids birthday decor design, can you help me in booking process",
+  "birthday-decoration": "Hi, I liked your birthday decor design, can you help me in booking process",
+  "anniversary-decoration": "Hi, I liked your anniversary decor design, can you help me in booking process",
+  "first-night-decoration": "Hi, I liked your first night decor design, can you help me in booking process",
+  "premium-decoration": "Hi, I liked your premium decor design, can you help me in booking process",
+  "baby-shower-decoration": "Hi, I liked your baby shower decor design, can you help me in booking process",
+  "welcome-baby-decoration": "Hi, I liked your baby welcome decor design, can you help me in booking process",
+  "haldi-mehendi-decoration": "Hi, I liked your haldi & mehendi decor design, can you help me in booking process",
+  "wedding-decoration": "Hi, I liked your wedding decor design, can you help me in booking process",
+  "bachelorette-decoration": "Hi, I liked your bachelorette decor design, can you help me in booking process",
+  "haldi-decoration": "Hi, I liked your haldi decor design, can you help me in booking process",
+  "mehendi-decoration": "Hi, I liked your mehendi decor design, can you help me in booking process",
+  "mandap-decoration": "Hi, I liked your mandap decor design, can you help me in booking process",
+  "wedding-car-decoration": "Hi, I liked your wedding car decor design, can you help me in booking process",
+  "reception-decoration": "Hi, I liked your reception decor design, can you help me in booking process",
+  "sangeet-decoration": "Hi, I liked your sangeet decor design, can you help me in booking process",
+  "engagement-decoration": "Hi, I liked your engagement decor design, can you help me in booking process",
+};
 
-  export const photographyMessagesByCategory = {
+export const photographyMessagesByCategory = {
   "birthday-photography":
     "Hi, I saw your birthday photography services and would like more details",
 
@@ -229,10 +272,10 @@ export const instagramMessage =
   "Hi, Found your decoration on Instagram. Need details for";
 
  export const instagramCategoryPageMessage =
- "Hi, Found your decoration on Instagram. Need details."
+ "Hi, Found your decoration on Instagram. Need details.";
 
  export const instagramProductPageMessage =
- "Hi, Found your decoration on Instagram. Need details."
+ "Hi, Found your decoration on Instagram. Need details.";
 
 export const foodDeliveryMessage =
   "Hi, I am interested in your party food delivery service. Please share menu and pricing details.";
