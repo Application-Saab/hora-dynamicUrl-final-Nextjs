@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import OrderDetailTab from "../../components/OrderDetailTab";
 import {
   BASE_URL,
@@ -9,6 +9,9 @@ import {
 } from "../../utils/apiconstants";
 import { fetchWithError } from "@/utils/fetchWithError";
 import Head from "next/head";
+import { trackMetaCustomEvent } from "@/utils/fpixel";
+import { safeGetItem } from "@/utils/safeStorage";
+import { useRouter } from "next/router";
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -27,6 +30,46 @@ const OrderDetail = ({
   orderType,
   error,
 }) => {
+  const router = useRouter();
+  
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const currentMobile = safeGetItem("mobileNumber") || "";
+    const currentUserId = safeGetItem("userID") || "";
+
+    const trackEventSafely = () => {
+      const params = {
+        popup_name: "order_details_page",
+        order_id: orderDetail?._id || "",
+        order_type: orderType || "",
+        user_id: currentUserId,
+        mobile_number: currentMobile,
+        page_path: window.location.pathname || router.asPath || "",
+      };
+
+      if (typeof window !== "undefined" && typeof window.fbq === "function") {
+        trackMetaCustomEvent("order_details_page_view", params);
+      } else {
+        let attempts = 0;
+        const interval = setInterval(() => {
+          attempts++;
+          if (
+            typeof window !== "undefined" &&
+            typeof window.fbq === "function"
+          ) {
+            trackMetaCustomEvent("order_details_page_view", params);
+            clearInterval(interval);
+          } else if (attempts >= 10) {
+            clearInterval(interval);
+          }
+        }, 500);
+      }
+    };
+
+    trackEventSafely();
+  }, [router.isReady]);
+  
   if (error) {
     return (
       <center>
