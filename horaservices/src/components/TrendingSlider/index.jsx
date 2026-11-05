@@ -63,7 +63,7 @@ const TrendingSlider = ({
   const handleClick = (item) => {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
-      event: "trending_collection_clicked",
+      event: "trending_wedding_collection_clicked",
       sectionTitle: title,
       title: item.title,
       catValue: item.catValue || "N/A",

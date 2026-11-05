@@ -294,8 +294,11 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false, parentCat
   console.log('%c [ theme ]', 'font-size:13px; background:pink; color:#bf2c9f;', theme)
   console.log('%c [ city ]', 'font-size:13px; background:pink; color:#bf2c9f;', city)
   console.log('%c [ catValue ]', 'font-size:13px; background:pink; color:#bf2c9f;', catValue)
-  const schemaOrg = getDecorationCatOrganizationSchema(catValue);
-  const scriptTag = JSON.stringify(schemaOrg);
+  const seoCity = city;
+  const seoCityName = seoCity
+    ? String(seoCity).replace(/\b\w/g, (c) => c.toUpperCase())
+    : null;
+  const seoCitySlug = seoCity ? String(seoCity).toLowerCase().replace(/\s+/g, "-") : null;
 
   // SEO sheet copy (category, kids theme, city × category, city × theme)
   // takes priority; anything not in the sheet keeps the existing copy.
@@ -319,6 +322,89 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false, parentCat
     parentCategory,
   });
 
+  // Product schema
+  const schemaOrg = getDecorationCatOrganizationSchema(catValue, seoCity);
+  const scriptTag = JSON.stringify(schemaOrg);
+
+  // LocalBusiness schema — city-specific for local SEO
+  const localBusinessSchema = seoCityName
+    ? {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        name: "HORA Services",
+        url: canonicalUrl,
+        telephone: "+917338584828",
+        priceRange: "₹999 - ₹39,999",
+        description: description,
+        areaServed: { "@type": "City", name: seoCityName },
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: seoCityName,
+          addressCountry: "IN",
+        },
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: "4.5",
+          reviewCount: "4566",
+        },
+        logo: "https://horaservices.com/api/uploads/logo-icon.png",
+        image: "https://horaservices.com/api/uploads/attachment-1706520980436.png",
+      }
+    : null;
+
+  // BreadcrumbList schema — derived from parentCategory so it works for
+  // balloon-decoration, wedding-decoration, and any other parent category.
+  const parentCategoryLabel = String(parentCategory || "balloon-decoration")
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase()); // e.g. "Balloon Decoration"
+
+  // Global category hub URL: /balloon-decoration
+  const parentCategoryUrl = `https://horaservices.com/${parentCategory}`;
+
+  // City-specific category hub URL: /gurugram/balloon-decoration
+  const cityCategoryUrl = seoCitySlug
+    ? `https://horaservices.com/${seoCitySlug}/${parentCategory}`
+    : null;
+
+  const breadcrumbItems = [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://horaservices.com" },
+    { "@type": "ListItem", position: 2, name: parentCategoryLabel, item: parentCategoryUrl },
+  ];
+
+  if (seoCityName && cityCategoryUrl) {
+    // /balloon-decoration → /[city]/balloon-decoration → [catValue]
+    breadcrumbItems.push({
+      "@type": "ListItem",
+      position: 3,
+      name: seoCityName,
+      item: cityCategoryUrl,
+    });
+    if (catValue) {
+      const catLabel = String(catValue).replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      breadcrumbItems.push({
+        "@type": "ListItem",
+        position: 4,
+        name: catLabel,
+        item: canonicalUrl,
+      });
+    }
+  } else if (catValue) {
+    // No city: /balloon-decoration → [catValue]
+    const catLabel = String(catValue).replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    breadcrumbItems.push({
+      "@type": "ListItem",
+      position: 3,
+      name: catLabel,
+      item: canonicalUrl,
+    });
+  }
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: breadcrumbItems,
+  };
+
   return (
     <Head>
       <title>{title}</title>
@@ -336,6 +422,15 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false, parentCat
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:type" content="website" />
 
+      {/* Twitter Card */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta
+        name="twitter:image"
+        content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
+      />
+
       <meta name="robots" content="index, follow" />
       <meta name="author" content="Hora Services" />
       <link
@@ -344,7 +439,22 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false, parentCat
         type="image/x-icon"
       />
 
+      {/* Product schema */}
       <script type="application/ld+json">{scriptTag}</script>
+
+      {/* LocalBusiness schema — city-specific */}
+      {localBusinessSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+        />
+      )}
+
+      {/* BreadcrumbList schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
     </Head>
   );
 };
