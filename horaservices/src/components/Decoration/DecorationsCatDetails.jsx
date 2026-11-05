@@ -879,6 +879,24 @@ const formatProductName = (productName) => {
 const toTitleCase = (str = "") =>
   str.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
 
+const WEDDING_SUBCATEGORIES = [
+  { slug: "wedding-car-decoration", words: ["car"] },
+  { slug: "first-night-decoration", words: ["night"] },
+  { slug: "haldi-decoration", words: ["haldi"] },
+  { slug: "mehendi-decoration", words: ["mehendi", "mehandi", "mehndi"] },
+  { slug: "mandap-decoration", words: ["mandap"] },
+  { slug: "reception-decoration", words: ["reception"] },
+  { slug: "sangeet-decoration", words: ["sangeet"] },
+  { slug: "engagement-decoration", words: ["engagement"] },
+  { slug: "bachelorette-decoration", words: ["bachelorette"] },
+];
+const GENERIC_CATEGORIES = [
+  "",
+  "wedding",
+  "wedding-decoration",
+  "balloon-decoration",
+];
+
 const buildCustomiseMessage = (catValue, city, theme = "") => {
   const cityText = toTitleCase(city || "").trim();
   const themeText = String(theme || "").trim();
@@ -892,9 +910,8 @@ const buildCustomiseMessage = (catValue, city, theme = "") => {
     categoryText = category ? `${category} Decoration` : "Decoration";
   }
 
-  return `Looking for a Customisation ${categoryText}${
-    cityText ? ` in ${cityText}` : ""
-  }!`;
+  return `Looking for a Customisation ${categoryText}${cityText ? ` in ${cityText}` : ""
+    }!`;
 };
 // ---------- Component (NO getServerSideProps here) ----------
 function DecorationsCatDetails({
@@ -1143,7 +1160,7 @@ function DecorationsCatDetails({
         setSelectedAddOnProduct(parsed.selectedAddOnProduct || []);
         setItemQuantities(parsed.itemQuantities || {});
       }
-    } catch (e) {}
+    } catch (e) { }
   }, [product?._id]);
 
   useEffect(() => {
@@ -1153,7 +1170,7 @@ function DecorationsCatDetails({
         `addons_${product._id}`,
         JSON.stringify({ selectedAddOnProduct, itemQuantities }),
       );
-    } catch (e) {}
+    } catch (e) { }
   }, [selectedAddOnProduct, itemQuantities, product?._id]);
 
   // Fetch addon details — SSR data ho to skip
@@ -1197,26 +1214,26 @@ function DecorationsCatDetails({
   };
 
   const handleCustomise = (type, cityArg) => {
-  const phoneNumber = "917338584828";
- const message = buildCustomiseMessage(
-  type || catValue,
-  cityArg || selectedCityName || city,
-  themeNameForWA
-);
+    const phoneNumber = "917338584828";
+    const message = buildCustomiseMessage(
+      type || catValue,
+      cityArg || selectedCityName || city,
+      themeNameForWA
+    );
 
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: "Customization_WhatsApp_Button",
-    eventCategory: "Product Page",
-    eventAction: "WhatsApp Click",
-    eventLabel: "Customization WhatsApp Button",
-  });
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "Customization_WhatsApp_Button",
+      eventCategory: "Product Page",
+      eventAction: "WhatsApp Click",
+      eventLabel: "Customization WhatsApp Button",
+    });
 
-  window.open(
-    `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
-    "_blank"
-  );
-};
+    window.open(
+      `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
+      "_blank"
+    );
+  };
   // Sirf "Customize Design" button (ActionButtons) ke liye
   const handleActionCustomise = (type, cityArg) => {
     const phoneNumber = "917338584828";
@@ -1235,9 +1252,8 @@ function DecorationsCatDetails({
 
     const article = /^[aeiou]/i.test(label) ? "an" : "a";
 
-    const message = `Hi, I want to customize ${article} ${label} design, can you help me${
-      cityText ? ` for ${cityText}` : ""
-    }!`;
+    const message = `Hi, I want to customize ${article} ${label} design, can you help me${cityText ? ` for ${cityText}` : ""
+      }!`;
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
@@ -1350,34 +1366,34 @@ function DecorationsCatDetails({
     });
   };
 
-const handleShare = () => {
-  const cleanUrl = window.location.origin + window.location.pathname;
+  const handleShare = () => {
+    const cleanUrl = window.location.origin + window.location.pathname;
 
-  // GTM Event
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: "product-details_page_share_clicked",
-    product_name: product?.name || "Hora Services",
-    share_url: cleanUrl,
-    share_method: navigator.share ? "native_share" : "copy_link",
-    page_path: window.location.pathname,
-  });
-
-  if (navigator.share) {
-    navigator.share({
-      title: product?.name || "Hora Services",
-      url: cleanUrl,
-    }).catch((error) => {
-      if (error.name !== "AbortError") {
-        console.error("Share failed:", error);
-      }
+    // GTM Event
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "product-details_page_share_clicked",
+      product_name: product?.name || "Hora Services",
+      share_url: cleanUrl,
+      share_method: navigator.share ? "native_share" : "copy_link",
+      page_path: window.location.pathname,
     });
-  } else {
-    navigator.clipboard.writeText(cleanUrl)
-      .then(() => alert("Link copied!"))
-      .catch(() => alert("Unable to copy link"));
-  }
-};
+
+    if (navigator.share) {
+      navigator.share({
+        title: product?.name || "Hora Services",
+        url: cleanUrl,
+      }).catch((error) => {
+        if (error.name !== "AbortError") {
+          console.error("Share failed:", error);
+        }
+      });
+    } else {
+      navigator.clipboard.writeText(cleanUrl)
+        .then(() => alert("Link copied!"))
+        .catch(() => alert("Unable to copy link"));
+    }
+  };
 
   const getItemInclusion = (inclusion) => {
     if (!Array.isArray(inclusion) || !inclusion.length) return null;
@@ -1452,23 +1468,47 @@ const handleShare = () => {
     if (productSlug) parts.push(productSlug);
     return `${SITE}/${parts.filter(Boolean).join("/")}`;
   };
-const themeTokens = String(productSlug || product?.name || "")
-  .toLowerCase()
-  .split(/[^a-z0-9]+/)
-  .filter(Boolean);
+  const themeTokens = String(productSlug || product?.name || "")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
 
-const matchedTheme = themeFilters
-  .filter((t) =>
-    String(t.value)
-      .trim()
-      .toLowerCase()
-      .split("-")
-      .every((tok) => themeTokens.includes(tok))
-  )
-  .sort((a, b) => String(b.value).length - String(a.value).length)[0];
+  const matchedTheme = themeFilters
+    .filter((t) =>
+      String(t.value)
+        .trim()
+        .toLowerCase()
+        .split("-")
+        .every((tok) => themeTokens.includes(tok))
+    )
+    .sort((a, b) => String(b.value).length - String(a.value).length)[0];
 
-const themeNameForWA = matchedTheme ? matchedTheme.label.trim() : "";
+  const isWedding = /wedding/i.test(categorySlug);
 
+  const themeNameForWA =
+    matchedTheme && !isWedding ? matchedTheme.label.trim() : "";
+
+  // Wedding product par sub-category (haldi, mandap...) naam se pakdo
+  const detectedSubCat =
+    WEDDING_SUBCATEGORIES.find((s) =>
+      s.words.some((w) => themeTokens.includes(w))
+    )?.slug || "";
+
+  const specificCat =
+    catValue && !GENERIC_CATEGORIES.includes(catValue.toLowerCase())
+      ? catValue
+      : "";
+
+  // WhatsApp ko jaane wali category
+ const normalizedCatValue = catValue === "wedding" ? "wedding-decoration" : catValue;
+
+const waCategory = isWedding
+  ? specificCat ||
+    detectedSubCat ||
+    normalizedCatValue ||
+    getCategoryNameToSlug(passCategoryId?.name) ||
+    "wedding-decoration"
+  : catValue || getCategoryNameToSlug(passCategoryId?.name) || "";
   const canonicalUrl = buildProductCanonical();
 
   // Breadcrumb: catValue ho to /<categorySlug>/<catValue>, warna sirf /<categorySlug>
@@ -1476,9 +1516,9 @@ const themeNameForWA = matchedTheme ? matchedTheme.label.trim() : "";
   const breadcrumbText = toTitleCase(catValue || categorySlug);
 
   const metaDescription = `${product?.name || "Decoration"} from Hora Services – Beautiful ${catLabelShort} decoration${categoryConfig.startingPrice
-      ? ` starting at just ₹${categoryConfig.startingPrice}`
-      : ""
-  }. Book for birthdays, anniversaries, weddings & more!`;
+    ? ` starting at just ₹${categoryConfig.startingPrice}`
+    : ""
+    }. Book for birthdays, anniversaries, weddings & more!`;
 
   const reviewsForCategory =
     REVIEWS_BY_CATEGORY[categorySlug] || balloonreviewsproduct;
@@ -1643,9 +1683,9 @@ const themeNameForWA = matchedTheme ? matchedTheme.label.trim() : "";
                 {getItemInclusion(product?.inclusion)}
               </div>
 
-           <MakeItYoursBanner
-  message={buildCustomiseMessage(catValue, selectedCityName || city, themeNameForWA)}
-/>
+              <MakeItYoursBanner
+                message={buildCustomiseMessage(catValue, selectedCityName || city, themeNameForWA)}
+              />
 
               <div ref={addonRef}>
                 <AddonModal
@@ -1767,9 +1807,9 @@ const themeNameForWA = matchedTheme ? matchedTheme.label.trim() : "";
       <div className="whatsapp-container">
         <WhatsAppIcon
           router={router}
-          categorySlug={getCategoryNameToSlug(passCategoryId?.name) || ""}
+          categorySlug={waCategory}
           citySlugProduct={selectedCityName}
-           theme={themeNameForWA}
+          theme={themeNameForWA}
         />
       </div>
     </>

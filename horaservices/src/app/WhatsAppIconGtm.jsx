@@ -270,22 +270,20 @@ const getCheckoutCity = () => {
         break;
       }
 
-            case '/wedding-decoration/product/[productName]': {
-        eventName = 'decoration_productcitypage_whatsapp_click';
-        productNameEvent = `decoration_productcitypage_whatsapp_click_${productName}`;
+    case '/wedding-decoration/product/[productName]':
+case '/[city]/wedding-decoration/product/[productName]': {
+  eventName = 'decoration_productcitypage_whatsapp_click';
+  productNameEvent = `decoration_productcitypage_whatsapp_click_${productName}`;
 
-        const waCity = toTitle(formattedCity || citySlugProduct);
+  const waCity = toTitle(formattedCity || citySlugProduct);
 
-        if (theme) {
-          message = `Hi, I liked your ${theme.toLowerCase()} decor design, can you help me in booking process${
-            waCity ? ` in ${waCity}` : ""
-          }.`;
-        } else {
-          const base1 = productMessagesByCategoryCity[categorySlug] || defaultMessage;
-          message = addCityToMessage(base1, waCity);
-        }
-        break;
-      }
+  const base1 =
+    productMessagesByCategoryCity[categorySlug] ||
+    productMessagesByCategoryCity["wedding-decoration"] ||
+    defaultMessage;
+  message = addCityToMessage(base1, waCity);
+  break;
+}
     case '/checkout': {
   eventName = 'decoration_checkoutpage_whatsapp_click';
   productNameEvent = 'decoration_checkoutpage_whatsapp_click';
