@@ -56,20 +56,18 @@ const VenueList = ({
     return `${base}?${params.toString()}`;
   };
 
-  const buildWhatsappLink = (venue) => {
-    const name = venue?.venueName || "this venue";
-    const address =
-      [venue?.locality, venue?.city].filter(Boolean).join(", ") ||
-      venue?.city ||
-      "";
-    const lines = [
-      `Hi, I'm interested in *${name}*.`,
-      address ? `Address: ${address}` : null,
-      "",
-      "Please share more details and availability.",
-    ].filter(Boolean);
+    const buildWhatsappLink = (venue) => {
+    const rawCity = venue?.city || city || "";
+    const cityName = rawCity
+      ? rawCity.charAt(0).toUpperCase() + rawCity.slice(1).toLowerCase()
+      : "";
 
-    const message = encodeURIComponent(lines.join("\n"));
+    const message = encodeURIComponent(
+      `Hi, give me offline booking support for venue services${
+        cityName ? ` in ${cityName}` : ""
+      }.`
+    );
+
     return `https://wa.me/91${WHATSAPP_PHONE}?text=${message}`;
   };
 

@@ -557,8 +557,30 @@ case '/[city]/wedding-decoration/product/[productName]': {
           default:
         message = defaultMessage;
         break;
-    }
 
+              case '/venue-list':
+        eventName = 'venue_listpage_whatsapp_click';
+        productNameEvent = 'venue_listpage_whatsapp_click';
+        message = "Hi, I saw your website and want to know more about Venue services.";
+        break;
+
+            case '/[city]/venue-list':
+        eventName = 'venue_citypage_whatsapp_click';
+        productNameEvent = 'venue_citypage_whatsapp_click';
+        message = formattedCity
+          ? `Hi, I saw your website and want to know more about Venue services in ${formattedCity}.`
+          : "Hi, I saw your website and want to know more about Venue services.";
+        break;
+
+      case '/[city]/venue-list/venue':
+        eventName = 'venue_detailpage_whatsapp_click';
+        productNameEvent = 'venue_detailpage_whatsapp_click';
+        message = formattedCity
+          ? `Hi, I'm interested in your venue services. Please share your packages, pricing, and availability for ${formattedCity}.`
+          : "Hi, I'm interested in your venue services. Please share your packages, pricing, and availability.";
+        break;
+    }
+      
     openWhatsApp(message);
     pushToDataLayer(eventName, productNameEvent);
   };

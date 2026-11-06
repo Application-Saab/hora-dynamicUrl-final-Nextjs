@@ -7,23 +7,19 @@ import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEve
 
 const PHONE = "7338584828";
 
-const VenueAddressSection = ({ eventData, hideDateAndTime }) => {
+const VenueAddressSection = ({ eventData, hideDateAndTime ,city  }) => {
   const venueName = eventData?.venueName;
   const address = eventData?.location; // location = full address string in your API
   const mapLink = eventData?.googleMapLink;
 
   // 👇 NEW — pre-filled WhatsApp message
-  const buildWhatsappLink = () => {
-    const name = venueName || "this venue";
-    const lines = [
-      `Hi, I'm interested in *${name}*.`,
-      address ? `Address: ${address}` : null,
-      "",
-      "Please share more details and availability.",
-    ].filter(Boolean);
+   const buildWhatsappLink = () => {
+    const cityName = eventData?.city || city || "";
+    const message = `Hi, I liked your this venue, can you help me in booking process${
+      cityName ? ` in ${cityName}` : ""
+    }.`;
 
-    const message = encodeURIComponent(lines.join("\n"));
-    return `https://wa.me/91${PHONE}?text=${message}`;
+    return `https://wa.me/91${PHONE}?text=${encodeURIComponent(message)}`;
   };
 
   const whatsappLink = buildWhatsappLink();
