@@ -793,12 +793,24 @@ orderId={orderDetail?.order_id}
               <div className="myOrder-decDetails">
                 <div className="myOrder-decDetailsLeft">
                   <div>
+                    <div>
+                      {orderDetail?.customProductImage ? (
+                      <Image
+                        src={`${BASE_URL}/api/uploads/compressed_webp/${orderDetail?.customProductImage}`}
+                        width={300}
+                        height={300}
+                        alt="Custom Product"
+                        style={{ height: "auto", width: "100%" }}
+                      />
+                    ) : (
                     <Image
-                      src={`https://horaservices.com/api/uploads/${product.featured_image}`}
+                      src={`https://horaservices.com/api/uploads/compressed_webp/${product?.featured_images?.length > 0 && product?.featured_images[0]?.fileName?.split(".")[0]}.webp`}
                       style={{ width: "100%", height: "auto" }}
                       width={300}
                       height={300}
                     />
+                    )}
+                    </div>
                     <div
                       style={{
                         position: "absolute",
