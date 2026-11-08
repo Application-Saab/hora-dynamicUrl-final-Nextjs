@@ -794,10 +794,10 @@ import TopBrandIMg from "@/assets/TpBrandsIMG.png";
 import ShareIcon from "@/assets/shareIcon.svg";
 import pencil from "@/assets/pencil.svg";
 import SimiliarThemes from "@/assets/SimilarThemes.svg";
-import StarIcon from "@/assets/StarIcon.svg";
+import StarIcon from "@/assets/StarIcon.webp";
 import fireIcon from "@/assets/fireIcon.svg";
 import hearticon from "@/assets/hearticon.svg";
-import fallbackImg from "@/assets/fallback-image.png";
+import fallbackImg from "@/assets/fallback-image.webp";
 import VideoClint from "@/assets/ourclientvideo.mp4";
 
 import "../../pages/balloon-decoration/[catValue]/product/[productName]/Decorproduct.css";

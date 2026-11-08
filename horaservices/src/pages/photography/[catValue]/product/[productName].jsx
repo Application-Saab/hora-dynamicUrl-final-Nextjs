@@ -25,7 +25,7 @@ import BrandBanner from "@/components/BrandBanner";
 import AdditionalServices from "@/components/AdditionalServices";
 import PhotographySimilarSlider from "@/components/PhotographySimilarSlider";
 import { SeoWork } from "@/utils/photoGraphyHead";
-import fallbackImg from "@/assets/fallback-image.png";
+import fallbackImg from "@/assets/fallback-image.webp";
 import pencil from "@/assets/pencil.svg";
 import AddonModal from "@/components/AddonModal";
 import AddOnsList from "@/components/AddOnsList";

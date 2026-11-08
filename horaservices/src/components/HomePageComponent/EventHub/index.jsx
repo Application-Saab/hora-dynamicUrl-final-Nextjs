@@ -8,7 +8,7 @@ import "./Eventhub.css";
 import Image from "next/image";
 import celebrationRight from "@/assets/Homepageimages/celebration-right.webp";
 import celebrationLeft from "@/assets/Homepageimages/celebration-left.webp";
-import promoimage from "@/assets/Homepageimages/promoimage.svg";
+import promoimage from "@/assets/Homepageimages/promoimage.webp";
 
 // Har letter ke liye consistent color generate karne ke liye
 const AVATAR_COLORS = [

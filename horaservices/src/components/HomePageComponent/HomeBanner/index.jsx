@@ -11,7 +11,15 @@ export default function HomeBanner() {
       </div>
 
       <div className="banner-carousel">
-        <Image src={topBanner} alt="Celebration moments" className="banner-image" />
+        {/* First thing customers see: load it eagerly at the size actually shown. */}
+        <Image
+          src={topBanner}
+          alt="Celebration moments"
+          className="banner-image"
+          priority
+          sizes="(max-width: 768px) 100vw, 1200px"
+        />
+
       </div>
     </div>
   );

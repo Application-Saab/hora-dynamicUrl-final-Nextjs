@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import "./VenueFinder.css";
 import { venueData } from "@/utils/venueCircleData";
 import arrowIcon from "@/assets/arrowicon.svg";
-import celebrationBanner from "@/assets/Homepageimages/celebration-banner.svg";
+import celebrationBanner from "@/assets/Homepageimages/celebration-banner.webp";
 
 const venues = venueData.filter((v) => v.id !== "all");
 

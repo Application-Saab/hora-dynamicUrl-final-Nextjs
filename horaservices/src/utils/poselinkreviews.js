@@ -4,7 +4,7 @@ import review3 from "@/assets/poselink/reviewsimages/birthday.jpg";
 import review4 from "@/assets/poselink/reviewsimages/pre-wedding.jpg"
 import review5 from "@/assets/poselink/reviewsimages/haldi.jpg"
 import review6 from "@/assets/poselink/reviewsimages/babyshower.jpg"
-import review7 from "@/assets/poselink/reviewsimages/nanming-cermony.jpg"
+import review7 from "@/assets/poselink/reviewsimages/nanming-cermony.webp"
 import review8 from "@/assets/poselink/reviewsimages/newborn.jpg"
 import review9 from "@/assets/poselink/reviewsimages/engagement.jpg"
 import review10 from "@/assets/poselink/reviewsimages/anniversary.jpg"

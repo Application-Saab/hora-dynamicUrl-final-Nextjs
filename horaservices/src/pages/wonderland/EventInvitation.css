@@ -695,7 +695,7 @@ body {
 }
 
 .popup-luckdraw-container {
-  background-image: url("../../assets/lucky_draw_bg.png"); /* Use absolute path if in public/ */
+  background-image: url("../../assets/lucky_draw_bg.webp"); /* Use absolute path if in public/ */
   background-size: cover; /* Make sure it fills */
   background-repeat: no-repeat;
   background-position: center;

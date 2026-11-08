@@ -4,7 +4,7 @@ import parkingIcon from "@/assets/venuelanding/parking.svg";
 import roomIcon from "@/assets/venuelanding/rooms.svg";
 import hallIcon from "@/assets/venuelanding/halls.svg";
 import enquiryBg from "@/assets/venuelanding/enquiry-bg.webp";
-import enquiryIcon from "@/assets/venuelanding/enquiryIcon.png"
+import enquiryIcon from "@/assets/venuelanding/enquiryIcon.webp"
 import "./VenueHighlights.css"
 import arrowImage from "@/assets/venuelanding/venuearrow.svg"
 // Backend field naming abhi consistent nahi hai (listing API vs details API

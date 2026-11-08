@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import "./PhotographySimilarSlider.css";
-import fallbackImg from "@/assets/fallback-image.png";
+import fallbackImg from "@/assets/fallback-image.webp";
 
 const getDiscountedDifference = (price) => {
   const numericPrice =

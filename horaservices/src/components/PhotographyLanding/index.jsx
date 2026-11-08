@@ -84,7 +84,8 @@ const PhotographyLanding = ({
                   layout="responsive"
                   width={1200}
                   height={400}
-                  quality={100}
+                  quality={80}
+                  sizes="(max-width: 768px) 100vw, 1200px"
                   priority={index === 0}
                 />
               </SwiperSlide>

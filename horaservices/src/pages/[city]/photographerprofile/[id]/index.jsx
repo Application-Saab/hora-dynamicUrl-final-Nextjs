@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
-import profileBanner from "../../../../assets/photographerprofile/profileBanner.jpg";
+import profileBanner from "../../../../assets/photographerprofile/profileBanner.webp";
 import profileImage from "../../../../assets/photographerprofile/profileImage.svg";
 import location from "../../../../assets/photographerprofile/location.svg";
 import experience from "../../../../assets/photographerprofile/experience.svg";
@@ -9,9 +9,9 @@ import userProfile from "../../../../assets/photographerprofile/userProfile.svg"
 import aboutUser from "../../../../assets/photographerprofile/aboutUser.svg";
 import star from "../../../../assets/photographerprofile/star.svg";
 import recent from "../../../../assets/photographerprofile/recent.svg";
-import Icon1 from "../../../../assets/photographerprofile/Icon1.svg";
-import Icon2 from "../../../../assets/photographerprofile/Icon2.svg";
-import Icon3 from "../../../../assets/photographerprofile/Icon3.svg";
+import Icon1 from "../../../../assets/photographerprofile/Icon1.webp";
+import Icon2 from "../../../../assets/photographerprofile/Icon2.webp";
+import Icon3 from "../../../../assets/photographerprofile/Icon3.webp";
 import star2 from "../../../../assets/photographerprofile/star2.svg";
 import arrow1 from "../../../../assets/photographerprofile/arrow1.svg";
 import arrow2 from "../../../../assets/photographerprofile/arrow2.svg";

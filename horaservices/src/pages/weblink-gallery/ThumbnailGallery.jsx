@@ -43,13 +43,13 @@ import {
   getPreviewFromOPFS,
   saveFileToOPFS,
 } from "@/utils/opfsUploadStore";
-import capsuleTopBanner from "../../assets/capsuleTopBanner.svg";
+import capsuleTopBanner from "../../assets/capsuleTopBanner.webp";
 import guest from "../../assets/Guest.svg";
 import GuestBanner from "../../assets/GuestBanner.svg";
 import FolderBanner from "../../assets/FolderBanner.svg";
 import FaceRecognitionBanner from "../../assets/FaceRecognitionBanner.svg";
 import MyPhotos2 from '../../assets/MyPhotos2.svg';
-import imageBox from "../../assets/imageBox.png";
+import imageBox from "../../assets/imageBox.webp";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import ArrowImg from "../../assets/backarrow.svg";
 import { fetchWithError } from "@/utils/fetchWithError";

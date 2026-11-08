@@ -13,7 +13,7 @@ import { createSubfolder, updateSubfolderDP } from "@/services/weblinkServices";
 import Image from "next/image";
 import CommonPopup from "../../components/CommonPop";
 import { FACE_FINDER_URL } from '../../utils/apiconstants'
-import LockerFolderIcon from "../../assets/my_locker_folder_icon.svg";
+import LockerFolderIcon from "../../assets/my_locker_folder_icon.webp";
 import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
 import LoginModal from "../wonderland/common/login/LoginModal";
 import { fetchWithError } from "@/utils/fetchWithError";

@@ -6,7 +6,7 @@ import WeddingAffair from "../assets/WeddingAffairImg.svg";
 import preWedding from "../assets/preWedding.webp";
 import HaldiMehndi from "../assets/HaldiMehndi.webp";
 import GrandWeddingAffair from "../assets/GrandWeddingAffairImg.svg";
-// import preWedding from "../assets/pre-wed.png";
+// import preWedding from "../assets/pre-wed.webp";
 const productsData = {
     "6710f33c21847b9ca0554940": {
       name: "Traditional PhotoGraphy",
