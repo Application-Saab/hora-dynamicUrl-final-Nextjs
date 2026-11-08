@@ -1,6 +1,6 @@
 import birthday from "@/assets/photography/Birthday-Photography.svg";
 import anniversary from "@/assets/photography/Anniversary-Photography.svg";
-import housewarming from "@/assets/photography/House-warming-Photography.svg";
+import housewarming from "@/assets/photography/House-warming-Photography.webp";
 import naming from "@/assets/photography/Naming-ceremony-Photography.svg";
 import bachelorette from "@/assets/photography/Bachelorette-Photography.svg";
 import babyshower from "@/assets/photography/Baby-Shower-Photography.svg";

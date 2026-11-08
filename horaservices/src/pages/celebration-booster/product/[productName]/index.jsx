@@ -6,11 +6,11 @@ import Image from "next/image";
 
 import axiosApi from "@/utils/axiosApi";
 import { fetchWithError } from "@/utils/fetchWithError";
-import fallbackImg from "@/assets/fallback-image.png";
+import fallbackImg from "@/assets/fallback-image.webp";
 import logo from "@/assets/new_logo_light.png";
 import checkImage from "@/assets/tick.svg";
 import ShareIcon from "@/assets/shareIcon.svg";
-import StarIcon from "@/assets/StarIcon.svg";
+import StarIcon from "@/assets/StarIcon.webp";
 import hearticon from "@/assets/hearticon.svg";
 import fireIcon from "@/assets/fireIcon.svg";
 import SimiliarThemes from "@/assets/SimilarThemes.svg";

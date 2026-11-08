@@ -4,7 +4,7 @@ import bgImage from "@/assets/landing-top-banner-bg.webp";
 import iconDesigns from "@/assets/icon-designs.svg";
 import iconSetup from "@/assets/icon-setup.svg";
 import iconCelebrations from "@/assets/icon-celebrations.svg";
-import iconWhatsapp from "@/assets/icon-whatsapp.svg";
+import iconWhatsapp from "@/assets/icon-whatsapp.webp";
 import Image from "next/image";
 
 const FEATURES = [
@@ -62,7 +62,8 @@ export default function HoraBanner() {
             alt="Round floral arch with white drapes, fairy lights and a tufted bench"
             width="2048"
             height="712"
-            fetchpriority="high"
+            priority
+            sizes="(max-width: 768px) 100vw, 1200px"
           />
         </figure>
 

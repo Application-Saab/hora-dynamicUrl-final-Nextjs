@@ -1,10 +1,10 @@
 import React from "react";
 import Image from "next/image";
-import topBg from "@/assets/review/top-bg.svg";
-import couponBg from "@/assets/review/coupon-bg.svg";
+import topBg from "@/assets/review/top-bg.webp";
+import couponBg from "@/assets/review/coupon-bg.webp";
 import giftIcon from "@/assets/review/gift_box.svg";
-import smallBg from "@/assets/review/small-bg.svg";
-import finalImage from "@/assets/review/final_image.svg";
+import smallBg from "@/assets/review/small-bg.webp";
+import finalImage from "@/assets/review/final_image.webp";
 import instagramIcon from "@/assets/review/instagram.svg";
 import googleIcon from "@/assets/review/google.svg";
 

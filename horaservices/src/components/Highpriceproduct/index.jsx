@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
-import fallbackImg from "@/assets/fallback-image.png";
+import fallbackImg from "@/assets/fallback-image.webp";
 import "./highpriceproduct.css";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 import CustomizationModal from "../CustomizationModal";
@@ -25,7 +25,7 @@ const HighPriceProduct = ({ data, onCardClick, getHref, catValue }) => {
   const getImageUrl = (item) =>
     item.featured_images?.[0]?.fileName
       ? `${COMPRESSED_WEBP_IMG_URL}${item.featured_images[0].fileName.split(".")[0]}.webp`
-      : "/fallback-image.png";
+      : fallbackImg.src; // "/fallback-image.png" did not exist in public/
 
   const href = getHref?.(highest) || "#";
 

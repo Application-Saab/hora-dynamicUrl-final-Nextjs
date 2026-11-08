@@ -4,7 +4,7 @@ import { CalendarDays } from "lucide-react";
 import Image from "next/image";
 import Head from "next/head";
 import "./Eventdatebanner.css";
-import bannerBg from "@/assets/eventDateBanner.svg";
+import bannerBg from "@/assets/eventDateBanner.webp";
 import calendarBarBgimage from "../../assets/calendarBarBgimage.webp";
 import plannerImage from "@/assets/Planner.webp";
 import approachingImage from "@/assets/Approaching.webp";

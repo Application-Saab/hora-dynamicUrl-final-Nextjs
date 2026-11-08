@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import "./Addon.css";
 import giftIcon from "@/assets/giftIcon.svg";
-import StarIcon from "../../assets/StarIcon.svg";
+import StarIcon from "../../assets/StarIcon.webp";
 import Image from "next/image";
 
 const DESCRIPTION_LIMIT = 50; // yaha se control karo kitna text pehle dikhana hai

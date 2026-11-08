@@ -243,6 +243,9 @@ function MyApp({ Component, pageProps }) {
 
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/new_logo_light.png" />
+        {/* Open the font connections early so text isn't held up by DNS/TLS. */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Rubik:wght@400;500;600;700&family=Just+Another+Hand&display=swap"
           rel="stylesheet"

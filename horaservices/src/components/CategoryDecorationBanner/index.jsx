@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import starSparkle from "@/assets/star-sparkle.svg";
-import heartStarGroup from "@/assets/heart-star-group.svg";
+import starSparkle from "@/assets/star-sparkle.webp";
+import heartStarGroup from "@/assets/heart-star-group.webp";
 import "./CategoryDecorationBanner.css";
 
 const categoryTitleMap = {

@@ -10,7 +10,7 @@ import { getImagesbyFolderName } from "@/services/categoryCapsuleServices";
 import whiteShareIcon from "../../assets/whiteShareIcon.svg";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { BASE_URL } from "@/utils/apiconstants";
-import capsuleTopBanner from "../../assets/capsuleTopBanner.svg";
+import capsuleTopBanner from "../../assets/capsuleTopBanner.webp";
 import HeaderCardsFlashLoader from "@/components/Gallery/HeaderCardsFlashLoader";
 import PaginationControls from "../../pages/weblink-gallery/capsulePagination";
 

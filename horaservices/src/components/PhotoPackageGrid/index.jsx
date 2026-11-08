@@ -1,5 +1,5 @@
 import Image from "next/image";
-import fallbackImg from "@/assets/fallback-image.png";
+import fallbackImg from "@/assets/fallback-image.webp";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 import "./PhotoPackageGrid.css";
 
