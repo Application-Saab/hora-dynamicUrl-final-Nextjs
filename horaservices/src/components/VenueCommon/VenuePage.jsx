@@ -291,31 +291,28 @@ const VenuePage = ({
 
   const PHONE = "7338584828";
 
-  const handleEnquire = () => {
-    trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.VENUE_ENQUIRE_NOW_BTN, {
+ const handleEnquire = () => {
+  trackWhatsAppButtonClick(
+    MARKETING_EVENTS.WHATSAPP_BUTTONS.VENUE_ENQUIRE_NOW_BTN,
+    {
       button_name: "Enquire Now",
       button_type: "enquire_now_venue",
       page_path: window.location.pathname,
-    });
-    trackWAClicks();
-    const venueName = eventDetails?.venueName || "this venue";
-    const location = eventDetails?.city || eventDetails?.location || "";
-    const capacity = eventDetails?.guestCapacity;
-    const price = eventDetails?.startingPrice;
+    },
+  );
+  trackWAClicks();
 
-    const message = `Hi, I'm interested in *${venueName}*${
-      location ? ` (${location})` : ""
-    }.
-${capacity ? `Guest Capacity: ${capacity}` : ""}
-${price ? `Starting Price: ₹${price}/plate` : ""}
+  const cityName = eventDetails?.city || city || "";
 
-Please share more details and availability.`;
+  const message = `Hi, I want to book your venue & need more info${
+    cityName ? ` for ${cityName}` : ""
+  }!`;
 
-    window.open(
-      `https://wa.me/91${PHONE}?text=${encodeURIComponent(message.trim())}`,
-      "_blank",
-    );
-  };
+  window.open(
+    `https://wa.me/91${PHONE}?text=${encodeURIComponent(message)}`,
+    "_blank",
+  );
+};
 
   // Sirf tab full loader jab kuch bhi data na ho
   if (fullPageLoader && !eventDetails && venuePackages.length === 0) {
@@ -378,6 +375,7 @@ Please share more details and availability.`;
               <VenueAddressSection
                 eventData={eventDetails}
                 hideDateAndTime={true}
+                  city={city}
               />
             </div>
           )}
