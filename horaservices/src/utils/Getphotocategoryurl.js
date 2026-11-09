@@ -14,6 +14,18 @@ const folderToSubCategory = {
   bacherrolerate: "bachelorette-photography",
   corporatePoselink: "corporate-photography",
   welcomeBaby_poseLink: "welcome-baby-photography",
+  // ✅ NEW (folder naam wahi rakhna jo photographyData.js ke weblink mein hai)
+  "half saree weblink": "half-saree-photography",
+  "retirement weblink": "retirement-photography",
+  "cocktail party weblink": "cocktail-party-photography",
+  "farewell party weblink": "farewell-party-photography",
+  "proposal weblink": "proposal-photography",
+  "cradle ceremony weblink": "cradle-ceremony-photography",
+  "car delivery weblink": "car-delivery-photography",
+  "portfolio shoot weblink": "portfolio-shoot-photography",
+  "baptism weblink": "baptism-and-holy-communion-photography",
+  "family shoot weblink": "family-shoot-photography",
+  "annaprashan weblink": "annaprashan-ceremony-photography",
 };
 
 export const getWeblinkPhotosUrl = (folderName) => {
@@ -38,4 +50,16 @@ export const categoryNameToSlug = {
   "PreWeddingPhotography": "pre-wedding",
   "HaldiMehendiPhotography": "haldi-mehndi",
   "Wedding-Photography": "wedding",
+  // ✅ NEW
+  "Half-saree-Photography": "half-saree-photography",
+  "Retirement-Photography": "retirement-photography",
+  "Cocktail-Party-Photography": "cocktail-party-photography",
+  "Farewell-Party-Photography": "farewell-party-photography",
+  "Proposal-Photography": "proposal-photography",
+  "Cradle-Ceremony-Photography": "cradle-ceremony-photography",
+  "Car-Delivery-Photography": "car-delivery-photography",
+  "Portfolio-Shoot-Photography": "portfolio-shoot-photography",
+  "Baptism-and-Holy-Communion-Photography": "baptism-and-holy-communion-photography",
+  "Family-Shoot-Photography": "family-shoot-photography",
+  "Annaprashan-Ceremony-Photography": "annaprashan-ceremony-photography",
 };
