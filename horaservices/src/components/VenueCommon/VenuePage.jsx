@@ -96,8 +96,8 @@ const VenuePage = ({
   const venueCityLabel = city || "";
 
   const venueTitle = eventDetails?.venueName
-    ? `${eventDetails.venueName}${venueCityLabel ? `, ${venueCityLabel}` : ""} | Book Venue | HORA`
-    : "Venue Details & Booking | HORA";
+    ? `${eventDetails.venueName}${venueCityLabel ? `, ${venueCityLabel}` : ""} | Book Venue for Birthday & Events | HORA`
+    : "Venue Details & Booking for Birthday & Events | HORA";
 
   const venueDescription = eventDetails?.venueName
     ? `Book ${eventDetails.venueName}${venueCityLabel ? ` in ${venueCityLabel}` : ""} for birthdays, corporate events & parties. View packages, photos & guest capacity on HORA.`

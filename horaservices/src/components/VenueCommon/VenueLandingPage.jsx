@@ -201,7 +201,12 @@ const VenuelandMainPage = ({
         </h1>
 
         <div style={{ position: "relative" }}>
-          <TopBanner image={venueTopBanner} alt="Venue" />
+          <TopBanner
+            image={venueTopBanner}
+            alt={cityForSEO
+              ? `${categoryLabel ? `${categoryLabel} ` : ""}Party venues in ${cityForSEO} — book birthday, anniversary & event venues on HORA`
+              : "Party venues near you — book birthday, anniversary & event venues on HORA"}
+          />
           <VenueSearchBar
             searchValue={searchText}
             onSearchChange={setSearchText}
@@ -235,6 +240,13 @@ const VenuelandMainPage = ({
               : null
           }
         />
+
+        {/* H2 for SEO — section heading visible on page */}
+        <h2 style={{ fontSize: "18px", fontWeight: "600", padding: "12px 16px 4px", margin: 0, color: "#222" }}>
+          {cityForSEO
+            ? `Why Book ${categoryLabel ? `a ${categoryLabel} ` : ""}Venue in ${cityForSEO} with HORA`
+            : `Why Book Your${categoryLabel ? ` ${categoryLabel}` : ""} Venue with HORA`}
+        </h2>
 
         <VenueFeatures />
       </div>
