@@ -132,6 +132,61 @@ const VenuelandMainPage = ({
     itemListElement: breadcrumbItems,
   };
 
+  // --- Intro paragraph (thin-content fix) ---
+  const introText = (() => {
+    const cat = categoryLabel ? categoryLabel.toLowerCase() : "party venue";
+    const city = cityForSEO || "your city";
+    if (categoryLabel && cityForSEO) {
+      return `Looking for the perfect ${cat} in ${city}? HORA brings you a curated list of the best ${cat.toLowerCase()} venues for birthdays, anniversaries, baby showers, kitty parties, and corporate events. Browse verified venues with real photos, transparent pricing, and instant booking — all in one place.`;
+    }
+    if (categoryLabel) {
+      return `Explore HORA's handpicked selection of ${cat} venues near you. Whether you're planning a birthday bash, an anniversary dinner, or a corporate event, our verified ${cat} venues offer the best packages, prices, and photos — book online in minutes.`;
+    }
+    if (cityForSEO) {
+      return `Discover the best party venues in ${city} on HORA. From banquet halls and rooftops to poolside spots and farmhouses, compare packages, check real photos, and book your ideal birthday or event venue online — hassle-free.`;
+    }
+    return `Find and book the best party venues near you on HORA. Compare banquet halls, rooftops, poolside venues, farmhouses, and more. Browse verified listings with photos, packages, and prices — and book your next birthday or event in minutes.`;
+  })();
+
+  // --- FAQ data (dynamic by city + category) ---
+  const faqs = (() => {
+    const cat = categoryLabel || "party venue";
+    const catL = cat.toLowerCase();
+    const city = cityForSEO || "your city";
+    return [
+      {
+        q: `How do I book a ${catL} in ${city} on HORA?`,
+        a: `Booking a ${catL} in ${city} through HORA is simple. Browse the listing, select your preferred venue, choose a date and package, and confirm your booking online in minutes. Our team is available 24/7 to assist you.`,
+      },
+      {
+        q: `What is the average cost of a ${catL} in ${city}?`,
+        a: `The cost of a ${catL} in ${city} varies depending on the venue size, location, amenities, and package selected. HORA lists venues across all budgets with transparent pricing — no hidden charges. Use the filters to find options that fit your budget.`,
+      },
+      {
+        q: `Can I visit the venue before booking?`,
+        a: `Yes! All venues listed on HORA are personally verified. You can request a site visit through the venue's listing page, or contact our support team to arrange a walkthrough before you confirm your booking.`,
+      },
+      {
+        q: `What events can I host at a ${catL} in ${city}?`,
+        a: `${cat} venues in ${city} on HORA are ideal for birthdays, anniversaries, baby showers, kitty parties, bachelorette parties, corporate events, and family get-togethers. Many venues also offer customised décor and catering packages.`,
+      },
+      {
+        q: `Does HORA offer any price guarantee?`,
+        a: `Yes. HORA offers a Best Price Guarantee — if you find the same venue at a lower price elsewhere, we'll match it. All listed prices are inclusive of taxes with no surprise fees at checkout.`,
+      },
+    ];
+  })();
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map(({ q, a }) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: { "@type": "Answer", text: a },
+    })),
+  };
+
   useLayoutEffect(() => {
     let timer;
     if (isUserLoggedIn && loggedinUserId && !hasRedirectedRef.current) {
@@ -192,6 +247,10 @@ const VenuelandMainPage = ({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
       </Head>
 
       <div className="venue-container">
@@ -219,6 +278,11 @@ const VenuelandMainPage = ({
           citySlug={rawCitySlug}
         />
 
+        {/* Intro paragraph — thin content fix */}
+        <p style={{ fontSize: "14px", color: "#555", lineHeight: "1.6", padding: "8px 16px 0", margin: 0 }}>
+          {introText}
+        </p>
+
         <EventDateBanner userId={loggedinUserId} visitorId={visitorId} />
         <VenueList
           eventType={activeEvent}
@@ -237,6 +301,24 @@ const VenuelandMainPage = ({
         />
 
         <VenueFeatures />
+
+        {/* FAQ Section */}
+        <section style={{ padding: "24px 16px 32px", maxWidth: "800px", margin: "0 auto" }} aria-label="Frequently Asked Questions">
+          <h2 style={{ fontSize: "20px", fontWeight: "700", marginBottom: "16px", color: "#111" }}>
+            Frequently Asked Questions
+          </h2>
+          {faqs.map(({ q, a }, i) => (
+            <details key={i} style={{ borderBottom: "1px solid #e5e5e5", paddingBottom: "12px", marginBottom: "12px" }}>
+              <summary style={{ fontSize: "15px", fontWeight: "600", color: "#222", cursor: "pointer", listStyle: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                {q}
+                <span style={{ fontSize: "18px", color: "#888", marginLeft: "8px", flexShrink: 0 }}>+</span>
+              </summary>
+              <p style={{ fontSize: "14px", color: "#555", lineHeight: "1.65", marginTop: "8px", marginBottom: 0 }}>
+                {a}
+              </p>
+            </details>
+          ))}
+        </section>
       </div>
     </>
   );
