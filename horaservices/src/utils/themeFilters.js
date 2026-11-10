@@ -52,7 +52,20 @@ import CricketImg from "@/assets/Cricket.webp";
 import LeloImg from "@/assets/Lelo.webp";
 import NarutoImg from "@/assets/Naruto.webp";
 import BowThemeImg from "@/assets/BowTheme.webp";
-
+import husbandImg from "@/assets/husband.webp";
+import wifeImg from "@/assets/wife.webp";
+import girlfriendImg from "@/assets/girlfriend.webp";
+import boyfriendImg from "@/assets/boyfriend.webp";
+import surpriseImg from "@/assets/surprise.webp";
+import cowImg from "@/assets/cow.webp";
+import parrotImg from "@/assets/parrot.webp";
+import fairyImg from "@/assets/fairy.webp";
+import harryPotterImg from "@/assets/harry-potter.webp";
+import cardGamesImg from "@/assets/card-games.webp";
+import binnyImg from "@/assets/binny-the-pow.webp";
+import spiderManImg from "@/assets/spider-man.webp";
+import firstBirthdayImg from "@/assets/1st-birthday.webp";
+import sixMonthImg from "@/assets/6-month-birthday.webp";
 export const themeFilters = [
   { label: "Astronaut space ", value: "astronaut-space", image: astronautImg },
   { label: "Super Hero ", value: "hero", image: heroImg },
@@ -104,6 +117,16 @@ export const themeFilters = [
   { label: "Lelo ", value: "lelo", image: LeloImg },
   { label: "Naruto ", value: "naruto", image: NarutoImg },
   { label: "Bow theme ", value: "bow-theme", image: BowThemeImg },
+
+  { label: "Cow", value: "cow", image: cowImg },
+  { label: "Parrot", value: "parrot", image: parrotImg },
+  { label: "Fairy", value: "fairy", image: fairyImg },
+  { label: "Harry Potter", value: "harry-potter", image: harryPotterImg },
+  { label: "Card Games", value: "card-games", image: cardGamesImg },
+  { label: "Binny the Pow", value: "binny-the-pow", image: binnyImg },
+  { label: "Spider Man", value: "spider-man", image: spiderManImg },
+  { label: "1st Birthday", value: "1st-birthday", image: firstBirthdayImg },
+  { label: "6 Month Birthday", value: "6-month-birthday", image: sixMonthImg },
 ];
 
 export const NamingCeremonyThemes = [
@@ -111,4 +134,14 @@ export const NamingCeremonyThemes = [
   { label: "Name Revealing ", value: "revealing", image: NameRevealing },
   { label: "Annaprashan ", value: "annaprashan", image: Annaprashan },
   { label: "Baptism ", value: "baptism", image: Baptism },
+];
+
+
+
+export const BirthdayCategories = [
+  { label: "Husband", value: "husband", image: husbandImg },
+  { label: "Wife", value: "wife", image: wifeImg },
+  { label: "Girlfriend", value: "girlfriend", image: girlfriendImg },
+  { label: "Boyfriend", value: "boyfriend", image: boyfriendImg },
+  { label: "Surprise", value: "surprise", image: surpriseImg },
 ];
