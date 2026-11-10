@@ -3,11 +3,11 @@ import "./topbanner.css";
 
 const TopBanner = ({ image, alt = "Banner" }) => {
   return (
- 
+
   <div className="bannerWrapper">
       <Image
         src={image}
-        alt="Banner"
+        alt={alt}
         width={800}
         height={400}
         className="bannerImg"

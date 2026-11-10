@@ -35,7 +35,7 @@ const EventwallGalleryItem = ({
         <EventLazyImage
           key={id}
           src={imageUrl}
-          alt={`Event Image ${indexOnPage + 1}`}
+          alt={`Venue photo ${indexOnPage + 1}`}
           progress={progress}
           wrapperClassName={`event-masonry-item`}
           postType={postType}
@@ -96,7 +96,7 @@ export const EventwallGalleryItemWonderland = ({
         <EventLazyImage
           key={thumbnail?._id}
           src={imageUrl}
-          alt={`Event Image ${indexOnPage + 1}`}
+          alt={thumbnail?.caption || `Venue photo ${indexOnPage + 1}`}
           progress={thumbnail.progress || null}
           wrapperClassName={`event-masonry-item`}
           postType={thumbnail.postType || null}
