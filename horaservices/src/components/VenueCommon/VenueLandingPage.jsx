@@ -200,8 +200,31 @@ const VenuelandMainPage = ({
           {h1Label}
         </h1>
 
+        {/* Visible breadcrumb nav */}
+        <nav aria-label="Breadcrumb" style={{ padding: "10px 16px", fontSize: "13px", color: "#666" }}>
+          <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexWrap: "wrap", gap: "4px", alignItems: "center" }}>
+            <li><a href="/" style={{ color: "#e63c6e", textDecoration: "none" }}>Home</a></li>
+            <li style={{ margin: "0 4px" }}>›</li>
+            <li>
+              {selectedVenueCategory && selectedVenueCategory.id !== "all" ? (
+                <a href={rawCitySlug ? `/${rawCitySlug}/venue-list` : "/venue-list"} style={{ color: "#e63c6e", textDecoration: "none" }}>
+                  {cityForSEO ? `${cityForSEO} Party Venues` : "Party Venues"}
+                </a>
+              ) : (
+                <span>{cityForSEO ? `${cityForSEO} Party Venues` : "Party Venues"}</span>
+              )}
+            </li>
+            {selectedVenueCategory && selectedVenueCategory.id !== "all" && (
+              <>
+                <li style={{ margin: "0 4px" }}>›</li>
+                <li><span>{categoryLabel}</span></li>
+              </>
+            )}
+          </ol>
+        </nav>
+
         <div style={{ position: "relative" }}>
-          <TopBanner image={venueTopBanner} alt="Venue" />
+          <TopBanner image={venueTopBanner} alt={`Party venues in ${cityForSEO || "your city"} — book birthday, anniversary & event venues`} />
           <VenueSearchBar
             searchValue={searchText}
             onSearchChange={setSearchText}

@@ -296,13 +296,13 @@ const VenueList = ({
               <div className="venue-card-img-wrap">
                 <img
                   src={v.venueImageUrl || "/placeholder.jpg"}
-                  alt={v.venueName}
+                  alt={v.venueName ? `${v.venueName} — party venue for birthdays & events` : "Party venue"}
                   className="venue-card-img"
                 />
                 <span className="see-photos-btn">
                   <Image
                     src={galleryIcon}
-                    alt="Gallery"
+                    alt=""
                     className="stat-icon"
                     width={14}
                     height={14}
@@ -319,7 +319,7 @@ const VenueList = ({
                 <p className="venue-location">
                   <Image
                     src={locationIcon}
-                    alt="Location"
+                    alt=""
                     className="location-icon"
                   />
                   <span className="location-text">{shortLocation}</span>
@@ -331,7 +331,7 @@ const VenueList = ({
                       <span className="venue-tag-pill" key={i}>
                         <Image
                           src={tagIcon}
-                          alt="Tag"
+                          alt=""
                           className="pill-icon-venue"
                           width={12}
                           height={12}
@@ -350,7 +350,7 @@ const VenueList = ({
                       <span className="stat-item" key="guests">
                         <Image
                           src={guestIcon}
-                          alt="Guests"
+                          alt=""
                           className="stat-icon"
                           width={18}
                           height={18}
@@ -366,7 +366,7 @@ const VenueList = ({
                       <span className="stat-item" key="parking">
                         <Image
                           src={parkingIcon}
-                          alt="Parking"
+                          alt=""
                           className="stat-icon"
                           width={20}
                           height={16}
@@ -381,7 +381,7 @@ const VenueList = ({
                       <span className="stat-item" key="halls">
                         <Image
                           src={hallIcon}
-                          alt="Hall"
+                          alt=""
                           className="stat-icon"
                           width={18}
                           height={18}
@@ -400,7 +400,7 @@ const VenueList = ({
                       <span className="stat-item" key="rooms">
                         <Image
                           src={roomIcon}
-                          alt="Rooms"
+                          alt=""
                           className="stat-icon"
                           width={20}
                           height={16}

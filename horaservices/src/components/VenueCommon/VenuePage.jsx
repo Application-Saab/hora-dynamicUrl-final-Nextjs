@@ -96,8 +96,8 @@ const VenuePage = ({
   const venueCityLabel = city || "";
 
   const venueTitle = eventDetails?.venueName
-    ? `${eventDetails.venueName}${venueCityLabel ? `, ${venueCityLabel}` : ""} | Book Venue | HORA`
-    : "Venue Details & Booking | HORA";
+    ? `${eventDetails.venueName}${venueCityLabel ? `, ${venueCityLabel}` : ""} | Book Venue for Birthday & Events | HORA`
+    : "Venue Details & Booking for Birthday & Events | HORA";
 
   const venueDescription = eventDetails?.venueName
     ? `Book ${eventDetails.venueName}${venueCityLabel ? ` in ${venueCityLabel}` : ""} for birthdays, corporate events & parties. View packages, photos & guest capacity on HORA.`
@@ -405,6 +405,25 @@ const VenuePage = ({
       </Head>
 
       <div className="invite-page">
+        {/* Visible breadcrumb nav */}
+        <nav aria-label="Breadcrumb" style={{ padding: "10px 16px", fontSize: "13px", color: "#666" }}>
+          <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexWrap: "wrap", gap: "4px", alignItems: "center" }}>
+            <li><a href="/" style={{ color: "#e63c6e", textDecoration: "none" }}>Home</a></li>
+            <li style={{ margin: "0 4px" }}>›</li>
+            <li>
+              <a href={citySlug ? `/${citySlug}/venue-list` : "/venue-list"} style={{ color: "#e63c6e", textDecoration: "none" }}>
+                {venueCityLabel ? `${venueCityLabel} Party Venues` : "Party Venues"}
+              </a>
+            </li>
+            {eventDetails?.venueName && (
+              <>
+                <li style={{ margin: "0 4px" }}>›</li>
+                <li><span>{eventDetails.venueName}</span></li>
+              </>
+            )}
+          </ol>
+        </nav>
+
         <div className="invite-page-container">
           {/* Template / Banner */}
           <div
