@@ -90,6 +90,48 @@ const VenuelandMainPage = ({
     ? `Explore the best ${categoryLabel ? `${categoryLabel.toLowerCase()} ` : ""}venues in ${cityForSEO} for birthdays, anniversaries, baby showers, kitty parties & more. Compare packages, prices and photos, and book online.`
     : `Explore the best ${categoryLabel ? `${categoryLabel.toLowerCase()} ` : ""}venues near you for birthdays, anniversaries, baby showers, kitty parties & more. Compare packages, prices and photos, and book online.`;
 
+  const SITE = "https://horaservices.com";
+  const OG_IMAGE = `${SITE}/_next/static/media/Topbanner.939f3a16.webp`;
+
+  // Canonical: /{city}/venue-list or /{city}/venue-list/{cat}
+  const canonicalUrl = (() => {
+    const cityPart = rawCitySlug ? `/${rawCitySlug}` : "";
+    const catPart =
+      selectedVenueCategory && selectedVenueCategory.id !== "all"
+        ? `/${selectedVenueCategory.slug}`
+        : "";
+    return `${SITE}${cityPart}/venue-list${catPart}`;
+  })();
+
+  // H1 label for the page
+  const h1Label = cityForSEO
+    ? `${categoryLabel ? `${categoryLabel} ` : ""}Party Venues in ${cityForSEO}`
+    : `${categoryLabel ? `${categoryLabel} ` : ""}Party Venues Near You`;
+
+  // JSON-LD: WebSite (root) + BreadcrumbList
+  const breadcrumbItems = [
+    { "@type": "ListItem", position: 1, name: "Home", item: SITE },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: `${cityForSEO || ""}${cityForSEO ? " " : ""}Party Venues`,
+      item: rawCitySlug ? `${SITE}/${rawCitySlug}/venue-list` : `${SITE}/venue-list`,
+    },
+  ];
+  if (selectedVenueCategory && selectedVenueCategory.id !== "all") {
+    breadcrumbItems.push({
+      "@type": "ListItem",
+      position: 3,
+      name: categoryLabel,
+      item: canonicalUrl,
+    });
+  }
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: breadcrumbItems,
+  };
+
   useLayoutEffect(() => {
     let timer;
     if (isUserLoggedIn && loggedinUserId && !hasRedirectedRef.current) {
@@ -126,19 +168,38 @@ const VenuelandMainPage = ({
       <Head>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={canonicalUrl} />
+
+        {/* Open Graph */}
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
         <meta property="og:type" content="website" />
-        <meta
-          property="og:image"
-          content={venueTopBanner.src || venueTopBanner}
-        />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:site_name" content="HORA" />
+        <meta property="og:locale" content="en_IN" />
+
+        {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content={OG_IMAGE} />
+        <meta name="twitter:site" content="@horaservices" />
+
+        {/* JSON-LD */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        />
       </Head>
 
       <div className="venue-container">
+        {/* Visually hidden H1 — for SEO; visible heading is inside the banner */}
+        <h1 style={{ position: "absolute", width: "1px", height: "1px", padding: 0, margin: "-1px", overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap", border: 0 }}>
+          {h1Label}
+        </h1>
+
         <div style={{ position: "relative" }}>
           <TopBanner image={venueTopBanner} alt="Venue" />
           <VenueSearchBar
