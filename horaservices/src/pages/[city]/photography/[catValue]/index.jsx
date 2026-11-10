@@ -43,7 +43,7 @@ function getCitySlugFromPath(pathname) {
   return parts[0] || "";
 }
 
-// ---------- SSR (is route ke liye — CatValuePage ka GSSP yahan nahi chalta) ----------
+// ---------- SSR (is route ke liye — CatValuePage ka GSSP yahan nahi chalega) ----------
 export async function getServerSideProps(context) {
   const { city, locality, catValue } = context.params || {};
   const query = context.query || {};
@@ -76,7 +76,19 @@ export async function getServerSideProps(context) {
     "haldi-mehndi": "Wedding-Photography",
     "wedding": "Wedding-Photography",
     "corporate-photography":"Corporate-Photography",
-    "welcome-baby-photography":"Welcome-Baby-Photography"
+    "welcome-baby-photography":"Welcome-Baby-Photography",
+    // ✅ NEW
+    "half-saree-photography": "Half-saree-Photography",
+    "retirement-photography": "Retirement-Photography",
+    "cocktail-party-photography": "Cocktail-Party-Photography",
+    "farewell-party-photography": "Farewell-Party-Photography",
+    "proposal-photography": "Proposal-Photography",
+    "cradle-ceremony-photography": "Cradle-Ceremony-Photography",
+    "car-delivery-photography": "Car-Delivery-Photography",
+    "portfolio-shoot-photography": "Portfolio-Shoot-Photography",
+    "baptism-and-holy-communion-photography": "Baptism-and-Holy-Communion-Photography",
+    "family-shoot-photography": "Family-Shoot-Photography",
+    "annaprashan-ceremony-photography": "Annaprashan-Ceremony-Photography",
   };
 
   function capitalizeHyphenatedString(str) {
