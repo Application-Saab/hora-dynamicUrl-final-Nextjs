@@ -92,19 +92,16 @@ const VenuePage = ({
     propCity ||
     (queryCity ? queryCity.charAt(0).toUpperCase() + queryCity.slice(1) : "");
 
-  const venueLocationLabel = eventDetails?.location || city;
+  // Use city name for title/meta — NOT the full street address (location field)
+  const venueCityLabel = city || "";
 
   const venueTitle = eventDetails?.venueName
-    ? `${eventDetails.venueName}${
-        venueLocationLabel ? `, ${venueLocationLabel}` : ""
-      } — Book Now`
-    : "Venue Details & Booking";
+    ? `${eventDetails.venueName}${venueCityLabel ? `, ${venueCityLabel}` : ""} | Book Venue | HORA`
+    : "Venue Details & Booking | HORA";
 
   const venueDescription = eventDetails?.venueName
-    ? `Book ${eventDetails.venueName}${
-        venueLocationLabel ? ` in ${venueLocationLabel}` : ""
-      } for your next event. Check packages, guest capacity & real photos.`
-    : "View venue packages, capacity, and photos for your next event.";
+    ? `Book ${eventDetails.venueName}${venueCityLabel ? ` in ${venueCityLabel}` : ""} for birthdays, corporate events & parties. View packages, photos & guest capacity on HORA.`
+    : "View venue packages, capacity, and photos for your next event on HORA.";
 
   const SITE = "https://horaservices.com";
 
@@ -326,6 +323,8 @@ const VenuePage = ({
         <meta name="description" content={venueDescription} />
         <meta name="robots" content="index, follow" />
         {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+
+        {/* Open Graph */}
         <meta property="og:title" content={venueTitle} />
         <meta property="og:description" content={venueDescription} />
         <meta property="og:type" content="place" />
@@ -334,11 +333,74 @@ const VenuePage = ({
           <meta property="og:image" content={eventDetails.venueImageUrl} />
         )}
         <meta property="og:locale" content="en_IN" />
+        <meta property="og:site_name" content="HORA" />
+
+        {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={venueTitle} />
         <meta name="twitter:description" content={venueDescription} />
         {eventDetails?.venueImageUrl && (
           <meta name="twitter:image" content={eventDetails.venueImageUrl} />
+        )}
+        <meta name="twitter:site" content="@horaservices" />
+
+        {/* JSON-LD: LocalBusiness + BreadcrumbList */}
+        {eventDetails?.venueName && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify([
+                {
+                  "@context": "https://schema.org",
+                  "@type": "LocalBusiness",
+                  name: eventDetails.venueName,
+                  ...(eventDetails.location
+                    ? {
+                        address: {
+                          "@type": "PostalAddress",
+                          streetAddress: eventDetails.location,
+                          addressLocality: venueCityLabel || "India",
+                          addressCountry: "IN",
+                        },
+                      }
+                    : {}),
+                  ...(eventDetails.venueImageUrl
+                    ? { image: eventDetails.venueImageUrl }
+                    : {}),
+                  ...(canonicalUrl ? { url: canonicalUrl } : {}),
+                  ...(eventDetails.googleMapLink
+                    ? { hasMap: eventDetails.googleMapLink }
+                    : {}),
+                },
+                {
+                  "@context": "https://schema.org",
+                  "@type": "BreadcrumbList",
+                  itemListElement: [
+                    {
+                      "@type": "ListItem",
+                      position: 1,
+                      name: "Home",
+                      item: "https://horaservices.com",
+                    },
+                    {
+                      "@type": "ListItem",
+                      position: 2,
+                      name: `${venueCityLabel ? `${venueCityLabel} ` : ""}Party Venues`,
+                      item: venueCityLabel
+                        ? `https://horaservices.com/${venueCityLabel.toLowerCase()}/venue-list`
+                        : "https://horaservices.com/venue-list",
+                    },
+                    {
+                      "@type": "ListItem",
+                      position: 3,
+                      name: eventDetails.venueName,
+                      item: canonicalUrl,
+                    },
+                  ],
+                },
+              ]),
+            }}
+          />
         )}
       </Head>
 

@@ -32,7 +32,7 @@ const VenueAddressSection = ({ eventData, hideDateAndTime ,city  }) => {
   
       {/* MIDDLE — Venue name + address */}
       <div className="vas-info">
-        {venueName && <h4 className="vas-venueName">{venueName}</h4>}
+        {venueName && <h1 className="vas-venueName">{venueName}</h1>}
         {address && <p className="vas-address">{address}</p>}
       </div>
 
