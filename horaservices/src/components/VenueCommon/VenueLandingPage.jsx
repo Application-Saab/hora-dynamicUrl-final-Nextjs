@@ -48,6 +48,7 @@ const VenuelandMainPage = ({
   const [activeVenueType, setActiveVenueType] = useState(initialVenueType);
   const [guestCapacity, setGuestCapacity] = useState("");
   const [searchText, setSearchText] = useState("");
+  const [introOpen, setIntroOpen] = useState(false);
   const hasRedirectedRef = useRef(false);
 
   // Login state — client only (hydration safe)
@@ -148,6 +149,11 @@ const VenuelandMainPage = ({
     }
     return `Find and book the best party venues near you on HORA. Compare banquet halls, rooftops, poolside venues, farmhouses, and more. Browse verified listings with photos, packages, and prices — and book your next birthday or event in minutes.`;
   })();
+
+  // Split intro for accordion preview (first 8 words shown, rest in body)
+  const introWords = introText.split(" ");
+  const introFirstLine = introWords.slice(0, 8).join(" ");
+  const introRestText = introWords.slice(8).join(" ");
 
   // --- FAQ data (dynamic by city + category) ---
   const faqs = (() => {
@@ -279,12 +285,27 @@ const VenuelandMainPage = ({
           citySlug={rawCitySlug}
         />
 
-        {/* Intro accordion — thin content fix */}
-        <div style={{ padding: "8px 0 0" }}>
-          <FAQSection
-            faqData={[{ question: `About ${categoryLabel ? `${categoryLabel} ` : ""}Venues${cityForSEO ? ` in ${cityForSEO}` : " Near You"}`, answer: introText }]}
-            heading=""
-          />
+        {/* Intro accordion — thin content fix, same pattern as photography pages */}
+        <div style={{ margin: "8px 16px 0" }}>
+          <div className="cc-accordion">
+            <button
+              className={`cc-acc-btn ${introOpen ? "open" : ""}`}
+              onClick={() => setIntroOpen(!introOpen)}
+            >
+              <span className="cc-acc-preview">
+                {introFirstLine}
+                {!introOpen && "…"}
+              </span>
+              <span className={`cc-acc-icon ${introOpen ? "open" : ""}`}>
+                <svg viewBox="0 0 24 24">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </span>
+            </button>
+            <div className={`cc-acc-body ${introOpen ? "open" : ""}`}>
+              <p className="cc-acc-text">{introRestText}</p>
+            </div>
+          </div>
         </div>
 
         <EventDateBanner userId={loggedinUserId} visitorId={visitorId} />
