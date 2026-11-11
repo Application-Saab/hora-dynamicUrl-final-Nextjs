@@ -7,6 +7,7 @@ import VenueCircle from "@/components/Venue/VenueCircle";
 import VenueList from "./InvitesListing";
 import VenueFeatures from "@/components/Venue/VenueFeatures";
 import "@/pages/venue-list/venue/venue.css";
+import Link from "next/link";
 import { useCity } from "@/utils/cityContext";
 import { safeGetItem } from "@/utils/safeStorage";
 import VenueSearchBar from "@/components/Venue/Venuesearchbar";
@@ -399,6 +400,34 @@ const VenuelandMainPage = ({
           faqData={faqs.map(({ q, a }) => ({ question: q, answer: a }))}
           heading="Frequently Asked Questions"
         />
+
+        {/* Blog cross-link — venue listing → decoration blog */}
+        <div style={{ padding: "12px 16px 24px" }}>
+          <Link
+            href="/blog/balloon-decoration"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              textDecoration: "none",
+              background: "#faf5fd",
+              border: "1px solid #e8d5f0",
+              borderRadius: "10px",
+              padding: "12px 14px",
+            }}
+          >
+            <span style={{ fontSize: "20px", lineHeight: 1 }}>🎉</span>
+            <span style={{ flex: 1 }}>
+              <span style={{ fontSize: "14px", fontWeight: 500, color: "#97538c", display: "block", lineHeight: "1.4" }}>
+                Party planning tips &amp; decoration guides
+              </span>
+              <span style={{ fontSize: "12px", color: "#888", marginTop: "2px", display: "block" }}>
+                Read our blog for birthday decoration ideas, cost guides and party planning tips.
+              </span>
+            </span>
+            <span style={{ fontSize: "14px", color: "#97538c", fontWeight: 500 }}>→</span>
+          </Link>
+        </div>
       </div>
     </>
   );
