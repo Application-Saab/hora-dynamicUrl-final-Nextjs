@@ -1,0 +1,128 @@
+/* ===== Heading ===== */
+.fd-heading {
+  margin: 18px 0 2px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #8e3b9a;
+}
+.fd-sub {
+  margin: 0 0 14px;
+  text-align: center;
+  font-size: 12.5px;
+  color: #777;
+}
+
+/* ===== Grid ===== */
+.fd-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+/* ===== Card =====
+   Sab sizes cqw (card ki width ka %) me hain, isliye card chhota/bada
+   ho to text, icon, arrow sab proportion me scale honge.
+   Pehle px fallback hai, purane browser ke liye. */
+.fd-card {
+  container-type: inline-size;
+  position: relative;          /* next/image fill ke liye zaroori */
+  display: block;              /* Link <a> hai */
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 20px;
+  aspect-ratio: 1 / 1.08;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+  -webkit-tap-highlight-color: transparent;
+}
+.fd-card:active { transform: scale(0.98); }
+.fd-card:focus-visible { outline: 3px solid #8e3b9a; outline-offset: 2px; }
+
+.fd-card-img { object-fit: cover; }
+
+/* ===== Neeche ki strip ===== */
+.fd-card-info {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 80px;
+  height: 27cqw;
+  padding: 0 10px 4px 10px;
+  padding: 0 4cqw 1cqw 4cqw;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  gap: 2.4cqw;
+  background: #fff;
+}
+
+/* wavy top edge: strip ke upar SVG wave (white fill) */
+.fd-card-info::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  margin-bottom: -1px;         /* beech me line na dikhe */
+  height: 28px;
+  height: 10cqw;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 40' preserveAspectRatio='none'><path d='M0 40V16C0 6 10 0 26 3C70 11 110 36 180 34C250 32 310 10 360 18V40Z' fill='white'/></svg>") no-repeat center bottom / 100% 100%;
+  pointer-events: none;
+}
+
+/* ===== Icon ===== */
+.fd-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  width: 15cqw;
+  height: 15cqw;
+  object-fit: contain;
+}
+
+/* ===== Text ===== */
+.fd-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.2;
+}
+.fd-text strong {
+  font-size: 15px;
+  font-size: 6.6cqw;
+  font-weight: 700;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fd-text span {
+  font-size: 15px;
+  font-size: 6.6cqw;
+  font-weight: 400;
+  color: #111;
+}
+
+/* ===== Arrow button ===== */
+.fd-arrow {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  width: 14cqw;
+  height: 14cqw;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  color: #8e3b9a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.fd-arrow svg {
+  width: 45%;
+  height: 45%;
+}
