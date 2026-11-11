@@ -1,3 +1,4 @@
+import React from "react";
 import Head from "next/head";
 import Link from "next/link";
 import {
@@ -173,12 +174,54 @@ export default function DecorationBlogArticle({ article }) {
           {/* Article Sections */}
           <div className="decoration-article__body">
             {article.sections.map((section, i) => (
-              <section key={i} className="decoration-article__section">
-                <h2 className="decoration-article__section-heading">
-                  {section.heading}
-                </h2>
-                <p className="decoration-article__section-body">{section.body}</p>
-              </section>
+              <React.Fragment key={i}>
+                <section className="decoration-article__section">
+                  <h2 className="decoration-article__section-heading">
+                    {section.heading}
+                  </h2>
+                  <p className="decoration-article__section-body">{section.body}</p>
+                </section>
+                {/* Inline CTA after 3rd section */}
+                {i === 2 && article.closingCtaLink && (
+                  <div style={{
+                    background: "linear-gradient(135deg, #faf5fd 0%, #f3e8f8 100%)",
+                    border: "1px solid #d4a8e8",
+                    borderRadius: "12px",
+                    padding: "16px 18px",
+                    margin: "8px 0 20px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "12px",
+                    flexWrap: "wrap",
+                  }}>
+                    <div>
+                      <p style={{ margin: 0, fontSize: "14px", fontWeight: 600, color: "#2d2d2d", lineHeight: "1.4" }}>
+                        Looking to book {article.category.toLowerCase()} for your event?
+                      </p>
+                      <p style={{ margin: "3px 0 0", fontSize: "12px", color: "#666" }}>
+                        Compare packages, prices & photos on HORA
+                      </p>
+                    </div>
+                    <Link
+                      href={article.closingCtaLink}
+                      style={{
+                        display: "inline-block",
+                        background: "#97538c",
+                        color: "#fff",
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        padding: "9px 18px",
+                        borderRadius: "8px",
+                        textDecoration: "none",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      Browse &amp; Book →
+                    </Link>
+                  </div>
+                )}
+              </React.Fragment>
             ))}
 
             {/* City Links */}

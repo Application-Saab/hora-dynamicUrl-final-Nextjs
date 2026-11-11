@@ -7,12 +7,14 @@ import VenueCircle from "@/components/Venue/VenueCircle";
 import VenueList from "./InvitesListing";
 import VenueFeatures from "@/components/Venue/VenueFeatures";
 import "@/pages/venue-list/venue/venue.css";
+import Link from "next/link";
 import { useCity } from "@/utils/cityContext";
 import { safeGetItem } from "@/utils/safeStorage";
 import VenueSearchBar from "@/components/Venue/Venuesearchbar";
 import Head from "next/head";
 import { venueData } from "@/utils/venueCircleData.js";
 import EventDateBanner from "../Eventdatebanner";
+import { VENUE_BLOG_LINK } from "@/utils/blogServiceLinks";
 
 function getCitySlugFromPath(pathname) {
   if (!pathname) return "";
@@ -237,6 +239,34 @@ const VenuelandMainPage = ({
         />
 
         <VenueFeatures />
+
+        {/* Blog cross-link — venue listing → decoration blog */}
+        <div style={{ padding: "12px 16px 20px" }}>
+          <Link
+            href={VENUE_BLOG_LINK.href}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              textDecoration: "none",
+              background: "#faf5fd",
+              border: "1px solid #e8d5f0",
+              borderRadius: "10px",
+              padding: "12px 14px",
+            }}
+          >
+            <span style={{ fontSize: "20px", lineHeight: 1 }}>🎉</span>
+            <span style={{ flex: 1 }}>
+              <span style={{ fontSize: "14px", fontWeight: 500, color: "#97538c", display: "block", lineHeight: "1.4" }}>
+                {VENUE_BLOG_LINK.label}
+              </span>
+              <span style={{ fontSize: "12px", color: "#888", marginTop: "2px", display: "block" }}>
+                {VENUE_BLOG_LINK.description}
+              </span>
+            </span>
+            <span style={{ fontSize: "14px", color: "#97538c", fontWeight: 500 }}>→</span>
+          </Link>
+        </div>
       </div>
     </>
   );
