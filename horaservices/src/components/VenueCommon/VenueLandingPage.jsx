@@ -13,6 +13,7 @@ import VenueSearchBar from "@/components/Venue/Venuesearchbar";
 import Head from "next/head";
 import { venueData } from "@/utils/venueCircleData.js";
 import EventDateBanner from "../Eventdatebanner";
+import FAQSection from "@/components/FAQSection";
 
 function getCitySlugFromPath(pathname) {
   if (!pathname) return "";
@@ -47,6 +48,7 @@ const VenuelandMainPage = ({
   const [activeVenueType, setActiveVenueType] = useState(initialVenueType);
   const [guestCapacity, setGuestCapacity] = useState("");
   const [searchText, setSearchText] = useState("");
+  const [introOpen, setIntroOpen] = useState(false);
   const hasRedirectedRef = useRef(false);
 
   // Login state — client only (hydration safe)
@@ -132,6 +134,66 @@ const VenuelandMainPage = ({
     itemListElement: breadcrumbItems,
   };
 
+  // --- Intro paragraph (thin-content fix) ---
+  const introText = (() => {
+    const cat = categoryLabel ? categoryLabel.toLowerCase() : "party venue";
+    const city = cityForSEO || "your city";
+    if (categoryLabel && cityForSEO) {
+      return `Looking for the perfect ${cat} in ${city}? HORA brings you a curated list of the best ${cat.toLowerCase()} venues for birthdays, anniversaries, baby showers, kitty parties, and corporate events. Browse verified venues with real photos, transparent pricing, and instant booking — all in one place.`;
+    }
+    if (categoryLabel) {
+      return `Explore HORA's handpicked selection of ${cat} venues near you. Whether you're planning a birthday bash, an anniversary dinner, or a corporate event, our verified ${cat} venues offer the best packages, prices, and photos — book online in minutes.`;
+    }
+    if (cityForSEO) {
+      return `Discover the best party venues in ${city} on HORA. From banquet halls and rooftops to poolside spots and farmhouses, compare packages, check real photos, and book your ideal birthday or event venue online — hassle-free.`;
+    }
+    return `Find and book the best party venues near you on HORA. Compare banquet halls, rooftops, poolside venues, farmhouses, and more. Browse verified listings with photos, packages, and prices — and book your next birthday or event in minutes.`;
+  })();
+
+  // Split intro for accordion preview (first 8 words shown, rest in body)
+  const introWords = introText.split(" ");
+  const introFirstLine = introWords.slice(0, 8).join(" ");
+  const introRestText = introWords.slice(8).join(" ");
+
+  // --- FAQ data (dynamic by city + category) ---
+  const faqs = (() => {
+    const cat = categoryLabel || "party venue";
+    const catL = cat.toLowerCase();
+    const city = cityForSEO || "your city";
+    return [
+      {
+        q: `How do I book a ${catL} in ${city} on HORA?`,
+        a: `Booking a ${catL} in ${city} through HORA is simple. Browse the listing, select your preferred venue, choose a date and package, and confirm your booking online in minutes. Our team is available 24/7 to assist you.`,
+      },
+      {
+        q: `What is the average cost of a ${catL} in ${city}?`,
+        a: `The cost of a ${catL} in ${city} varies depending on the venue size, location, amenities, and package selected. HORA lists venues across all budgets with transparent pricing — no hidden charges. Use the filters to find options that fit your budget.`,
+      },
+      {
+        q: `Can I visit the venue before booking?`,
+        a: `Yes! All venues listed on HORA are personally verified. You can request a site visit through the venue's listing page, or contact our support team to arrange a walkthrough before you confirm your booking.`,
+      },
+      {
+        q: `What events can I host at a ${catL} in ${city}?`,
+        a: `${cat} venues in ${city} on HORA are ideal for birthdays, anniversaries, baby showers, kitty parties, bachelorette parties, corporate events, and family get-togethers. Many venues also offer customised décor and catering packages.`,
+      },
+      {
+        q: `Does HORA offer any price guarantee?`,
+        a: `Yes. HORA offers a Best Price Guarantee — if you find the same venue at a lower price elsewhere, we'll match it. All listed prices are inclusive of taxes with no surprise fees at checkout.`,
+      },
+    ];
+  })();
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map(({ q, a }) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: { "@type": "Answer", text: a },
+    })),
+  };
+
   useLayoutEffect(() => {
     let timer;
     if (isUserLoggedIn && loggedinUserId && !hasRedirectedRef.current) {
@@ -192,6 +254,10 @@ const VenuelandMainPage = ({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
       </Head>
 
       <div className="venue-container">
@@ -224,6 +290,29 @@ const VenuelandMainPage = ({
           citySlug={rawCitySlug}
         />
 
+        {/* Intro accordion — thin content fix, same pattern as photography pages */}
+        <div style={{ margin: "8px 16px 0" }}>
+          <div className="cc-accordion">
+            <button
+              className={`cc-acc-btn ${introOpen ? "open" : ""}`}
+              onClick={() => setIntroOpen(!introOpen)}
+            >
+              <span className="cc-acc-preview">
+                {introFirstLine}
+                {!introOpen && "…"}
+              </span>
+              <span className={`cc-acc-icon ${introOpen ? "open" : ""}`}>
+                <svg viewBox="0 0 24 24">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </span>
+            </button>
+            <div className={`cc-acc-body ${introOpen ? "open" : ""}`}>
+              <p className="cc-acc-text">{introRestText}</p>
+            </div>
+          </div>
+        </div>
+
         <EventDateBanner userId={loggedinUserId} visitorId={visitorId} />
         <VenueList
           eventType={activeEvent}
@@ -249,6 +338,12 @@ const VenuelandMainPage = ({
         </h2>
 
         <VenueFeatures />
+
+        {/* FAQ Section */}
+        <FAQSection
+          faqData={faqs.map(({ q, a }) => ({ question: q, answer: a }))}
+          heading="Frequently Asked Questions"
+        />
       </div>
     </>
   );
