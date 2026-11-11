@@ -442,6 +442,13 @@ const VenuePage = ({
             </div>
           )}
 
+          {/* Keyword tagline — ensures primary keyword appears in first 100 words for SEO */}
+          {eventDetails?.venueName && (
+            <p style={{ fontSize: "13px", color: "#666", lineHeight: "1.5", margin: "6px 16px 4px", padding: 0 }}>
+              {`Book ${eventDetails.venueName}${venueCityLabel ? ` in ${venueCityLabel}` : ""} for birthdays, anniversaries & private events — view packages, photos and guest capacity on HORA.`}
+            </p>
+          )}
+
           {eventDetails?.description && (
             <div className="cc-accordion">
               <button

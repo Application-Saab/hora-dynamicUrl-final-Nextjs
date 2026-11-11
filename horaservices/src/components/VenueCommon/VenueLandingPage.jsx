@@ -219,6 +219,13 @@ const VenuelandMainPage = ({
           citySlug={rawCitySlug}
         />
 
+        {/* Keyword line — primary keyword in first 100 words for SEO */}
+        <p style={{ fontSize: "13px", color: "#666", lineHeight: "1.5", margin: "4px 16px 0", padding: 0 }}>
+          {cityForSEO
+            ? `Explore verified ${categoryLabel ? `${categoryLabel.toLowerCase()} ` : ""}party venues in ${cityForSEO} — compare packages, photos & prices and book online on HORA.`
+            : `Explore verified ${categoryLabel ? `${categoryLabel.toLowerCase()} ` : ""}party venues near you — compare packages, photos & prices and book online on HORA.`}
+        </p>
+
         <EventDateBanner userId={loggedinUserId} visitorId={visitorId} />
         <VenueList
           eventType={activeEvent}
