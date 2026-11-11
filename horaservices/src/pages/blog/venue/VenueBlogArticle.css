@@ -1,0 +1,225 @@
+/* ── Venue Blog — Article page ── */
+
+.venue-article {
+  min-height: 100vh;
+  background: #fff;
+}
+
+.venue-article__content {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px 16px 56px;
+}
+
+/* Breadcrumb */
+.venue-article__breadcrumb {
+  font-size: 0.75rem;
+  color: #999;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.venue-article__breadcrumb a {
+  color: #888;
+  text-decoration: none;
+}
+
+.venue-article__breadcrumb a:hover {
+  color: #97538c;
+}
+
+/* Header */
+.venue-article__header {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.venue-article__meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.venue-article__category {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #97538c;
+}
+
+.venue-article__dot {
+  color: #ccc;
+  font-size: 0.8rem;
+}
+
+.venue-article__reading-time,
+.venue-article__date {
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.venue-article__title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #111;
+  line-height: 1.3;
+  margin: 0 0 14px;
+}
+
+.venue-article__excerpt {
+  font-size: 0.92rem;
+  color: #555;
+  line-height: 1.7;
+  margin: 0;
+  font-style: italic;
+  border-left: 3px solid #97538c;
+  padding-left: 12px;
+}
+
+/* Body */
+.venue-article__body {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.venue-article__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.venue-article__section-heading {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #222;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.venue-article__section-body {
+  font-size: 0.88rem;
+  color: #444;
+  line-height: 1.75;
+  margin: 0;
+}
+
+/* City links block */
+.venue-article__cities {
+  background: #faf5fd;
+  border: 1px solid #e8d5f0;
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 8px;
+}
+
+.venue-article__cities-heading {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #97538c;
+  margin: 0 0 10px;
+}
+
+.venue-article__cities-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.venue-article__cities-list a {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #97538c;
+  text-decoration: none;
+  background: #fff;
+  border: 1px solid #d4a8e8;
+  border-radius: 20px;
+  padding: 4px 12px;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.venue-article__cities-list a:hover {
+  background: #97538c;
+  color: #fff;
+  border-color: #97538c;
+}
+
+/* CTA block */
+.venue-article__cta {
+  background: #faf5fd;
+  border: 1px solid #d4a8e8;
+  border-radius: 10px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.venue-article__cta-text {
+  font-size: 0.88rem;
+  color: #333;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.venue-article__cta-button {
+  display: inline-block;
+  background: #97538c;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 6px;
+  text-decoration: none;
+  align-self: flex-start;
+  transition: background 0.15s;
+}
+
+.venue-article__cta-button:hover {
+  background: #7a4272;
+}
+
+/* Back link */
+.venue-article__back {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.venue-article__back-link {
+  font-size: 0.84rem;
+  color: #888;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.venue-article__back-link:hover {
+  color: #97538c;
+}
+
+@media (min-width: 768px) {
+  .venue-article__title {
+    font-size: 1.5rem;
+  }
+
+  .venue-article__section-heading {
+    font-size: 1.05rem;
+  }
+
+  .venue-article__section-body {
+    font-size: 0.92rem;
+  }
+}
