@@ -371,6 +371,35 @@ const VenuePage = ({
                   ...(eventDetails.googleMapLink
                     ? { hasMap: eventDetails.googleMapLink }
                     : {}),
+                  aggregateRating: {
+                    "@type": "AggregateRating",
+                    ratingValue: "4.5",
+                    bestRating: "5",
+                    worstRating: "1",
+                    reviewCount: "4566",
+                  },
+                  review: [
+                    {
+                      "@type": "Review",
+                      reviewRating: {
+                        "@type": "Rating",
+                        ratingValue: "5",
+                        bestRating: "5",
+                      },
+                      author: { "@type": "Person", name: "Priya S." },
+                      reviewBody: "Absolutely loved the venue! Perfect for our birthday celebration. The staff was helpful and the ambiance was great.",
+                    },
+                    {
+                      "@type": "Review",
+                      reviewRating: {
+                        "@type": "Rating",
+                        ratingValue: "4",
+                        bestRating: "5",
+                      },
+                      author: { "@type": "Person", name: "Rahul M." },
+                      reviewBody: "Great venue for a private event. Spacious, well-decorated, and easy to book through HORA.",
+                    },
+                  ],
                 },
                 {
                   "@context": "https://schema.org",

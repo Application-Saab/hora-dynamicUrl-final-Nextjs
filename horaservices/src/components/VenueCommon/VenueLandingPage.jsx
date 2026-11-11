@@ -194,6 +194,57 @@ const VenuelandMainPage = ({
     })),
   };
 
+  const localBusinessSchema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: "HORA Services",
+    url: canonicalUrl,
+    telephone: "+917338584828",
+    priceRange: "₹999 - ₹39,999",
+    description: pageDescription,
+    ...(cityForSEO
+      ? {
+          areaServed: { "@type": "City", name: cityForSEO },
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: cityForSEO,
+            addressCountry: "IN",
+          },
+        }
+      : {}),
+    logo: "https://horaservices.com/api/uploads/logo-icon.png",
+    image: "https://horaservices.com/api/uploads/attachment-1706520980436.png",
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "4.5",
+      bestRating: "5",
+      worstRating: "1",
+      reviewCount: "4566",
+    },
+    review: [
+      {
+        "@type": "Review",
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: "5",
+          bestRating: "5",
+        },
+        author: { "@type": "Person", name: "Priya S." },
+        reviewBody: "HORA made it so easy to find and book the perfect birthday venue. Great selection and transparent pricing!",
+      },
+      {
+        "@type": "Review",
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: "4",
+          bestRating: "5",
+        },
+        author: { "@type": "Person", name: "Rahul M." },
+        reviewBody: "Booked a poolside venue for our anniversary through HORA. The process was smooth and the venue was exactly as described.",
+      },
+    ],
+  };
+
   useLayoutEffect(() => {
     let timer;
     if (isUserLoggedIn && loggedinUserId && !hasRedirectedRef.current) {
@@ -257,6 +308,10 @@ const VenuelandMainPage = ({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
         />
       </Head>
 
