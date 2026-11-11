@@ -28,7 +28,7 @@
 }
 
 .decoration-article__breadcrumb a:hover {
-  color: #1a3a2a;
+  color: var(--hora-purple);
 }
 
 /* Header */
@@ -51,7 +51,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #1a3a2a;
+  color: var(--hora-purple);
 }
 
 .decoration-article__dot {
@@ -79,7 +79,7 @@
   line-height: 1.7;
   margin: 0;
   font-style: italic;
-  border-left: 3px solid #1a3a2a;
+  border-left: 3px solid var(--hora-purple);
   padding-left: 12px;
 }
 
@@ -125,7 +125,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #1a3a2a;
+  color: var(--hora-purple);
   margin: 0 0 10px;
 }
 
@@ -141,7 +141,7 @@
 .decoration-article__cities-list a {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #1a3a2a;
+  color: var(--hora-purple);
   text-decoration: none;
   background: #fff;
   border: 1px solid #c5ddd0;
@@ -151,9 +151,9 @@
 }
 
 .decoration-article__cities-list a:hover {
-  background: #1a3a2a;
+  background: var(--hora-purple);
   color: #fff;
-  border-color: #1a3a2a;
+  border-color: var(--hora-purple);
 }
 
 /* CTA block */
@@ -177,7 +177,7 @@
 
 .decoration-article__cta-button {
   display: inline-block;
-  background: #1a3a2a;
+  background: var(--hora-purple);
   color: #fff;
   font-size: 0.85rem;
   font-weight: 700;
@@ -207,7 +207,7 @@
 }
 
 .decoration-article__back-link:hover {
-  color: #1a3a2a;
+  color: var(--hora-purple);
 }
 
 @media (min-width: 768px) {

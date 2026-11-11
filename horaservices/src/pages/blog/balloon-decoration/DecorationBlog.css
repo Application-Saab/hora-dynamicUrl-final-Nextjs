@@ -6,7 +6,7 @@
 }
 
 .decoration-listing__header {
-  background: #1a3a2a;
+  background: var(--hora-purple);
   padding: 36px 16px 32px;
 }
 
@@ -71,7 +71,7 @@
 }
 
 .decoration-listing__card:hover {
-  border-color: #1a3a2a;
+  border-color: var(--hora-purple);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
 }
 
@@ -86,7 +86,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #1a3a2a;
+  color: var(--hora-purple);
 }
 
 .decoration-listing__reading-time {
@@ -116,6 +116,6 @@
 .decoration-listing__read-more {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #1a3a2a;
+  color: var(--hora-purple);
   margin-top: 4px;
 }
