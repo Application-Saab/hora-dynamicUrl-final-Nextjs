@@ -1162,7 +1162,7 @@ const renderChip = (chip) => (
                     onCardClick={handleViewDetails}
                     getHref={getProductHref}
                   />
-                  <MakeItYoursBanner />
+                  <MakeItYoursBanner catValue={catValue} city={city} />
                   <ProductGrid
                     data={sortedCatalogueData.slice(4, 10)}
                     onCardClick={handleViewDetails}

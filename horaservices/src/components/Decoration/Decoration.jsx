@@ -486,8 +486,8 @@ const Decoration = ({ city, locality }) => {
     : "";
 
   const waMessage = cityName
-    ? `Hi, how can we help in your balloon decor services for ${cityName}`
-    : "Hi, how can we help in your balloon decor services";
+    ? `Hi, how can we help in your balloon decor services for ${cityName}.`
+    : "Hi, how can we help in your balloon decor services.";
 
   const waLink = `https://wa.me/917338584828?text=${encodeURIComponent(waMessage)}`;
   return (
