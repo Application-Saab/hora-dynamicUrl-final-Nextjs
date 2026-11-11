@@ -198,7 +198,7 @@ const getCheckoutCity = () => {
         eventName = 'decoration_citypage_whatsappclick';
         productNameEvent = 'decoration page whatsapp button clicked';
         message = addCityToMessage(
-          "Hi, I saw your website and want to know more about decoration services ",
+          "Hi, I saw your website and want to know more about decoration services",
           formattedCity
         );
         break;

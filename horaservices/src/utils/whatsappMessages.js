@@ -57,9 +57,9 @@ export const parseFromPath = (from) => {
 
 export const messagesByCategory = {
   "birthday-decoration":
-    "Hi, I saw your birthday party decoration designs and want to know more about it",
+    "Hi, I saw your birthday decoration designs and want to know more about it",
    "kids-birthday-decoration":
-    "Hi, I saw your kids birthday party decoration designs and want to know more about it",
+    "Hi, I saw your kids birthday decoration designs and want to know more about it",
    "premium-decoration":
     "Hi, I saw your premium decoration designs and want to know more about it",
    "baby-shower-decoration":
