@@ -1,0 +1,269 @@
+import React from "react";
+import Head from "next/head";
+import Link from "next/link";
+import {
+  getVenueBlogArticle,
+  getAllVenueBlogArticles,
+} from "../../../utils/venueBlogData";
+import "./VenueBlogArticle.css";
+
+const CITY_LABELS = {
+  mumbai: "Mumbai",
+  bangalore: "Bangalore",
+  delhi: "Delhi",
+  hyderabad: "Hyderabad",
+  noida: "Noida",
+  gurugram: "Gurugram",
+  ghaziabad: "Ghaziabad",
+  faridabad: "Faridabad",
+};
+
+function formatDate(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  return d.toLocaleDateString("en-IN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+export default function VenueBlogArticle({ article }) {
+  if (!article) return null;
+
+  const canonicalUrl = `https://www.horaservices.com/blog/venue/${article.slug}`;
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://www.horaservices.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Party Venues",
+        item: "https://www.horaservices.com/venue-list",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: "Blog",
+        item: "https://www.horaservices.com/blog/venue",
+      },
+      {
+        "@type": "ListItem",
+        position: 4,
+        name: article.title,
+        item: canonicalUrl,
+      },
+    ],
+  };
+
+  const blogPostingSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: article.title,
+    description: article.metaDescription,
+    url: canonicalUrl,
+    datePublished: article.publishedDate,
+    dateModified: article.publishedDate,
+    author: {
+      "@type": "Organization",
+      name: "HORA Services",
+      url: "https://www.horaservices.com",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "HORA Services",
+      url: "https://www.horaservices.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://www.horaservices.com/logo.png",
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": canonicalUrl,
+    },
+  };
+
+  return (
+    <>
+      <Head>
+        <title>{article.metaTitle}</title>
+        <meta name="description" content={article.metaDescription} />
+        <link rel="canonical" href={canonicalUrl} />
+
+        {/* Open Graph */}
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={article.metaTitle} />
+        <meta property="og:description" content={article.metaDescription} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:site_name" content="HORA Services" />
+        <meta
+          property="article:published_time"
+          content={`${article.publishedDate}T00:00:00+05:30`}
+        />
+        <meta property="article:section" content={article.category} />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={article.metaTitle} />
+        <meta name="twitter:description" content={article.metaDescription} />
+
+        <meta name="robots" content="index, follow" />
+
+        {/* Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostingSchema) }}
+        />
+      </Head>
+
+      <main className="venue-article">
+        <div className="venue-article__content">
+          {/* Breadcrumb */}
+          <nav className="venue-article__breadcrumb" aria-label="Breadcrumb">
+            <Link href="/">Home</Link>
+            <span>›</span>
+            <Link href="/venue-list">Party Venues</Link>
+            <span>›</span>
+            <Link href="/blog/venue">Blog</Link>
+            <span>›</span>
+            <span>{article.category}</span>
+          </nav>
+
+          {/* Article Header */}
+          <header className="venue-article__header">
+            <div className="venue-article__meta-row">
+              <span className="venue-article__category">{article.category}</span>
+              <span className="venue-article__dot">·</span>
+              <span className="venue-article__reading-time">
+                {article.readingTime} min read
+              </span>
+              <span className="venue-article__dot">·</span>
+              <time
+                className="venue-article__date"
+                dateTime={article.publishedDate}
+              >
+                {formatDate(article.publishedDate)}
+              </time>
+            </div>
+            <h1 className="venue-article__title">{article.title}</h1>
+            <p className="venue-article__excerpt">{article.excerpt}</p>
+          </header>
+
+          {/* Article Sections */}
+          <div className="venue-article__body">
+            {article.sections.map((section, i) => (
+              <React.Fragment key={i}>
+                <section className="venue-article__section">
+                  <h2 className="venue-article__section-heading">
+                    {section.heading}
+                  </h2>
+                  <p className="venue-article__section-body">{section.body}</p>
+                </section>
+                {/* Inline CTA after 3rd section */}
+                {i === 2 && article.closingCtaLink && (
+                  <div style={{
+                    background: "linear-gradient(135deg, #faf5fd 0%, #f3e8f8 100%)",
+                    border: "1px solid #d4a8e8",
+                    borderRadius: "12px",
+                    padding: "16px 18px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "12px",
+                    flexWrap: "wrap",
+                  }}>
+                    <div>
+                      <p style={{ margin: 0, fontSize: "14px", fontWeight: 600, color: "#2d2d2d", lineHeight: "1.4" }}>
+                        Looking to book a {article.category.toLowerCase()} for your event?
+                      </p>
+                      <p style={{ margin: "3px 0 0", fontSize: "12px", color: "#666" }}>
+                        Compare packages, prices &amp; photos on HORA
+                      </p>
+                    </div>
+                    <Link
+                      href={article.closingCtaLink}
+                      style={{
+                        display: "inline-block",
+                        background: "#97538c",
+                        color: "#fff",
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        padding: "9px 18px",
+                        borderRadius: "8px",
+                        textDecoration: "none",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      Browse &amp; Book →
+                    </Link>
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+
+            {/* City Links */}
+            {article.relatedCities && article.relatedCities.length > 0 && (
+              <div className="venue-article__cities">
+                <p className="venue-article__cities-heading">
+                  Find venues in your city
+                </p>
+                <ul className="venue-article__cities-list">
+                  {article.relatedCities.map((city) => (
+                    <li key={city}>
+                      <Link href={`/${city}/venue-list`}>
+                        {CITY_LABELS[city] || city}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Closing CTA */}
+            {article.closingCta && (
+              <div className="venue-article__cta">
+                <p className="venue-article__cta-text">{article.closingCta}</p>
+                <Link
+                  href={article.closingCtaLink}
+                  className="venue-article__cta-button"
+                >
+                  {article.closingCtaLabel}
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Back Link */}
+          <div className="venue-article__back">
+            <Link href="/blog/venue" className="venue-article__back-link">
+              ← Back to Venue Blog
+            </Link>
+          </div>
+        </div>
+      </main>
+    </>
+  );
+}
+
+export async function getServerSideProps({ params }) {
+  const article = getVenueBlogArticle(params.slug);
+  if (!article) {
+    return { notFound: true };
+  }
+  return {
+    props: { article },
+  };
+}
