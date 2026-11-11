@@ -13,6 +13,7 @@ import VenueSearchBar from "@/components/Venue/Venuesearchbar";
 import Head from "next/head";
 import { venueData } from "@/utils/venueCircleData.js";
 import EventDateBanner from "../Eventdatebanner";
+import FAQSection from "@/components/FAQSection";
 
 function getCitySlugFromPath(pathname) {
   if (!pathname) return "";
@@ -278,10 +279,13 @@ const VenuelandMainPage = ({
           citySlug={rawCitySlug}
         />
 
-        {/* Intro paragraph — thin content fix */}
-        <p style={{ fontSize: "14px", color: "#555", lineHeight: "1.6", padding: "8px 16px 0", margin: 0 }}>
-          {introText}
-        </p>
+        {/* Intro accordion — thin content fix */}
+        <div style={{ padding: "8px 0 0" }}>
+          <FAQSection
+            faqData={[{ question: `About ${categoryLabel ? `${categoryLabel} ` : ""}Venues${cityForSEO ? ` in ${cityForSEO}` : " Near You"}`, answer: introText }]}
+            heading=""
+          />
+        </div>
 
         <EventDateBanner userId={loggedinUserId} visitorId={visitorId} />
         <VenueList
@@ -303,22 +307,10 @@ const VenuelandMainPage = ({
         <VenueFeatures />
 
         {/* FAQ Section */}
-        <section style={{ padding: "24px 16px 32px", maxWidth: "800px", margin: "0 auto" }} aria-label="Frequently Asked Questions">
-          <h2 style={{ fontSize: "20px", fontWeight: "700", marginBottom: "16px", color: "#111" }}>
-            Frequently Asked Questions
-          </h2>
-          {faqs.map(({ q, a }, i) => (
-            <details key={i} style={{ borderBottom: "1px solid #e5e5e5", paddingBottom: "12px", marginBottom: "12px" }}>
-              <summary style={{ fontSize: "15px", fontWeight: "600", color: "#222", cursor: "pointer", listStyle: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                {q}
-                <span style={{ fontSize: "18px", color: "#888", marginLeft: "8px", flexShrink: 0 }}>+</span>
-              </summary>
-              <p style={{ fontSize: "14px", color: "#555", lineHeight: "1.65", marginTop: "8px", marginBottom: 0 }}>
-                {a}
-              </p>
-            </details>
-          ))}
-        </section>
+        <FAQSection
+          faqData={faqs.map(({ q, a }) => ({ question: q, answer: a }))}
+          heading="Frequently Asked Questions"
+        />
       </div>
     </>
   );
