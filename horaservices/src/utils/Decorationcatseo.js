@@ -108,6 +108,20 @@ const genericFallback = {
 
 export const getPageTitleCategory = (catValue, city, locality, theme) => {
   const catKey = catValue?.toLowerCase();
+  const catLabel = catKey ? slugToLabel(catKey) : "";
+
+  // Theme pages must never share a title with their parent category page.
+  // The SEO sheet (balloonDecorationSeo.json) covers most of them and is
+  // applied before this helper is reached, but any theme outside the sheet
+  // used to fall through to the parent's title verbatim — which is part of
+  // why Search Console reported the theme pages as duplicates.
+  if (theme) {
+    const themeLabel = slugToLabel(String(theme).toLowerCase());
+    const base = catLabel || "Balloon Decoration";
+    return city
+      ? `${themeLabel} ${base} in ${city} | HORA`
+      : `${themeLabel} ${base} at Home | HORA`;
+  }
 
   if (city) {
     // 1. Specific city+category override table takes top priority
@@ -125,15 +139,23 @@ export const getPageTitleCategory = (catValue, city, locality, theme) => {
 
   // 3. Auto-generate from slug so new categories always get a clean title
   if (catKey) {
-    const label = slugToLabel(catKey);
-    return city ? `${label} in ${city} | HORA` : `${label} at Home | HORA`;
+    return city ? `${catLabel} in ${city} | HORA` : `${catLabel} at Home | HORA`;
   }
 
   return genericFallback.title;
 };
 
-export const getPageMetaDescriptionCategory = (catValue, city, locality) => {
+export const getPageMetaDescriptionCategory = (catValue, city, locality, theme) => {
   const catKey = catValue?.toLowerCase();
+
+  // Same reasoning as the title: a theme page outside the SEO sheet must not
+  // reuse its parent category page's meta description.
+  if (theme) {
+    const themeLabel = slugToLabel(String(theme).toLowerCase());
+    const base = (catKey ? slugToLabel(catKey) : "Balloon Decoration").toLowerCase();
+    const where = city ? ` in ${city}` : " at home";
+    return `Book ${themeLabel} ${base}${where} from Rs 1,499. Browse real ${themeLabel} setups with photos and prices, personalised name boards, and same-day or midnight slots by verified HORA decorators.`;
+  }
 
   if (city) {
     const cityData = getCityCategoryLanding(catValue, city);

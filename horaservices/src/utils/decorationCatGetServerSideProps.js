@@ -49,6 +49,9 @@ export async function getDecorationCatServerSideProps(context, options = {}) {
     city: cityName,
     citySlug,
     locality: locality || null,
+    // SSR-safe theme — router.query is empty during the server render, so the
+    // theme has to travel as a prop for theme-specific copy to reach Googlebot.
+    theme: theme && theme !== "all" ? theme : null,
     initialCatalogueData: [],
     initialCatId: "",
     initialHasMore: false,

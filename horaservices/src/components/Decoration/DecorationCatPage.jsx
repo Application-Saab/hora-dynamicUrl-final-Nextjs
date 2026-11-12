@@ -104,6 +104,7 @@ const buildCacheKey = (path, sort, priceThemeId, search, designTypes = []) =>
 const DecorationCatPage = ({
   city: cityProp = "",
   serverCity = null,   // SSR-safe city name from getServerSideProps — use for <Head> only
+  serverTheme = null,  // SSR-safe theme slug from getServerSideProps — use for <Head> only
   locality = null,
   catValue: catValueProp = "",
   initialCatalogueData = [],
@@ -960,7 +961,7 @@ const renderChip = (chip) => (
         catValue={normalizedCat}
         city={serverCity || cityProp}
         locality={locality}
-        theme={theme}
+        theme={serverTheme || theme}
         parentCategory={categorySlug}
       />
 
