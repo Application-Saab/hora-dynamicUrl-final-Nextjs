@@ -595,3 +595,93 @@ export const getThemeFaqSchema = (faqs = []) => {
 };
 
 export default THEME_DATA;
+
+/* ──────────────────────────────────────────────────────────────
+ * Theme link lists (internal linking)
+ *
+ * Theme pages were only reachable from the image pill carousel,
+ * whose anchor text is a single word ("Mermaid"). Search Console
+ * showed the only referring page for one theme page being another
+ * theme page, which is a weak discovery and relevance signal for a
+ * page we want indexed in its own right.
+ *
+ * The lists below back a plain text-link block with descriptive
+ * anchors ("Mermaid Birthday Decoration in Gurugram"), rendered in
+ * the body copy of the category and theme pages.
+ * ────────────────────────────────────────────────────────────── */
+
+const THEMES_BY_CATEGORY = {
+  "kids-birthday-decoration": themeFilters,
+  "naming-ceremony-decoration": NamingCeremonyThemes,
+};
+
+/** Theme options for a category, or [] when the category has none. */
+export const getThemesForCategory = (catValue) => {
+  if (!catValue) return [];
+  const key = String(catValue).trim().toLowerCase();
+  return THEMES_BY_CATEGORY[key] || [];
+};
+
+/** Relative path to a theme page, matching buildDecorationCategoryCanonical. */
+export const buildThemePath = ({
+  citySlug,
+  localitySlug,
+  catValue,
+  theme,
+  parentCategory = "balloon-decoration",
+}) => {
+  const slug = (v) =>
+    String(v || "").trim().toLowerCase().replace(/\s+/g, "-");
+
+  const parts = [];
+  if (citySlug) parts.push(slug(citySlug));
+  if (localitySlug) parts.push(slug(localitySlug));
+  parts.push(parentCategory);
+  if (catValue) parts.push(catValue);
+  if (theme) parts.push(slug(theme));
+
+  return "/" + parts.filter(Boolean).join("/");
+};
+
+/**
+ * Descriptive internal links to the theme pages of a category.
+ *
+ * `currentTheme` is excluded, so a theme page links to its siblings
+ * rather than to itself. Returns [] for categories without themes.
+ */
+export const getThemeLinks = ({
+  catValue,
+  city,
+  citySlug,
+  localitySlug,
+  currentTheme = null,
+  parentCategory = "balloon-decoration",
+} = {}) => {
+  const options = getThemesForCategory(catValue);
+  if (!options.length) return [];
+
+  const current = currentTheme
+    ? String(currentTheme).trim().toLowerCase()
+    : null;
+
+  const base = catShort(catValue) || "birthday";
+  const where = city ? ` in ${city}` : "";
+
+  return options
+    .filter((t) => String(t.value).trim().toLowerCase() !== current)
+    .map((t) => ({
+      value: String(t.value).trim(),
+      label: t.label.trim(),
+      text: `${t.label.trim()} ${base} decoration${where}`.replace(
+        /\b\w/,
+        (c) => c.toUpperCase(),
+      ),
+      href: buildThemePath({
+        citySlug,
+        localitySlug,
+        catValue,
+        theme: t.value,
+        parentCategory,
+      }),
+    }));
+};
