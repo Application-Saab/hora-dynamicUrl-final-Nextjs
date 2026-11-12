@@ -347,7 +347,7 @@ const VenuelandMainPage = ({
         />
 
         {/* Intro accordion — thin content fix, same pattern as photography pages */}
-        <div style={{ margin: "8px 16px 0" }}>
+        <div style={{ margin: "8px 4px 0" }}>
           <div className="cc-accordion">
             <button
               className={`cc-acc-btn ${introOpen ? "open" : ""}`}
