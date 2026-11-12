@@ -11,7 +11,7 @@ import { planningCategories } from "@/utils/HomePageData";
 
 const NO_CITY_PATH_PREFIXES = [
   "/party-food-delivery-live-catering-buffet",
-  "/celebration-booster",
+  "/party-props",
 ];
 
 export default function PlanningCategories({ onSelect, isNotFound = false }) {

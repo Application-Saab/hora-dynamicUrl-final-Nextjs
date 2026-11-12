@@ -234,7 +234,7 @@ export const buildDecorationCategoryCanonical = ({
   if (localitySlug) parts.push(localitySlug);
 
   if (isBooster) {
-    parts.push("celebration-booster");
+    parts.push("party-props");
   } else {
     parts.push(parentCategory);
   }
