@@ -563,7 +563,7 @@ const Decoration = ({ city, locality }) => {
           showSort={false}
         />
       </div>
-      {sheetH1 && <DecorationBanner title={sheetH1} />}
+      {/* {sheetH1 && <DecorationBanner title={sheetH1} />} */}
       {/* CIRCLE TABS */}
       <div ref={smallCardRef}>
         <SmallCardGrid

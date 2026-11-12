@@ -1091,7 +1091,8 @@ const renderChip = (chip) => (
                     />
                   </div>
                 )}
-                {catValue?.toLowerCase() === "birthday-decoration" &&
+
+                {/* {catValue?.toLowerCase() === "birthday-decoration" &&
   !isSearchActive && (
     <div className="category-tabs-outer">
       <CategoryTabs
@@ -1110,7 +1111,8 @@ const renderChip = (chip) => (
         activeValue={themeFilter}
       />
     </div>
-  )}
+  )} */}
+
               <EventDateBanner userId={userId} visitorId={visitorId} />
 
               {isPriceThemeActive || isSearchActive ? (
