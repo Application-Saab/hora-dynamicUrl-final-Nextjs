@@ -1,5 +1,15 @@
-import DecorationCatCityPage from "@/components/Decoration/DecorationCatCityPage";
+import Head from "next/head";
+import DecorationCatPage from "@/components/Decoration/DecorationCatPage";
+import SectionDescription from "@/components/Description";
+import FAQSection from "@/components/FAQSection";
 import { getDecorationCatServerSideProps } from "@/utils/decorationCatGetServerSideProps";
+import { getCategoryContent } from "@/utils/Decorationcategorycontent";
+import {
+  getThemeIntro,
+  getThemeFaqs,
+  getThemeFaqSchema,
+  getThemeLabel,
+} from "@/utils/themePageContent";
 
 export async function getServerSideProps(context) {
   return getDecorationCatServerSideProps(context);
@@ -8,12 +18,71 @@ export async function getServerSideProps(context) {
 /**
  * Non-city theme page, e.g. /balloon-decoration/kids-birthday-decoration/mermaid.
  *
- * Previously this rendered a bare DecorationCatPage: no description section,
- * no FAQ section, and the theme was dropped entirely rather than passed down.
- * It now shares DecorationCatCityPage with the city theme route, so it gets
- * the same theme-specific intro, theme FAQs and FAQPage schema. The component
- * handles a missing city, so no city-only markup is rendered here.
+ * Same shape as the sibling /balloon-decoration/[catValue] page, with two
+ * additions: the description and FAQ sections were missing here entirely, and
+ * the theme-specific intro and FAQs below are what keep this page distinct
+ * from the category page it sits under.
  */
-export default function ThemePage(props) {
-  return <DecorationCatCityPage {...props} />;
+export default function ThemePage({
+  catValue,
+  city,
+  locality,
+  theme = null,
+  initialCatalogueData,
+  initialCatId,
+  initialHasMore,
+}) {
+  const categoryContent = getCategoryContent(catValue);
+
+  // Theme copy — empty when the route somehow resolves without a theme.
+  const themeIntro = getThemeIntro(theme, catValue, city);
+  const themeFaqs = getThemeFaqs(theme, catValue, city);
+  const themeLabel = theme ? getThemeLabel(theme) : "";
+  const themeFaqSchema = getThemeFaqSchema(themeFaqs);
+
+  // Category FAQs, same source the sibling [catValue] page uses. Guarded
+  // because not every entry in AllCategoryDescriptions defines faqData.
+  const categoryFaqs =
+    typeof categoryContent?.faqData === "function"
+      ? categoryContent.faqData()
+      : [];
+
+  const faqData = [...themeFaqs, ...categoryFaqs];
+
+  return (
+    <>
+      {themeFaqSchema && (
+        <Head>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(themeFaqSchema) }}
+          />
+        </Head>
+      )}
+
+      <DecorationCatPage
+        catValue={catValue}
+        city={city}
+        locality={locality}
+        serverTheme={theme}
+        initialCatalogueData={initialCatalogueData}
+        initialCatId={initialCatId}
+        initialHasMore={initialHasMore}
+      />
+
+      {(categoryContent || themeIntro) && (
+        <SectionDescription
+          title={themeLabel ? `About ${themeLabel} Decoration` : "Description"}
+          intro={themeIntro}
+          sections={categoryContent ? categoryContent.description : []}
+        />
+      )}
+
+      {faqData.length > 0 && (
+        <div className="tab-section-details-productpage">
+          <FAQSection faqData={faqData} />
+        </div>
+      )}
+    </>
+  );
 }
