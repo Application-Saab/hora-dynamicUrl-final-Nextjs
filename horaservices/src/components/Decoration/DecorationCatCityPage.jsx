@@ -109,8 +109,18 @@ function DecorationCatCityPage({
   const themeLabel = theme ? getThemeLabel(theme) : "";
   const themeFaqSchema = getThemeFaqSchema(themeFaqs);
 
-  // Theme FAQs first, then city FAQ + general FAQ
-  const cityDecorationFAQ = [...themeFaqs, ...cityFaqs, ...generalFaqs];
+  /* Non-city routes (/balloon-decoration/[catValue]/[theme]) have no city FAQ
+     set, so fall back to the category's own FAQs — that is what the sibling
+     /balloon-decoration/[catValue] page renders, and they are category-scoped
+     rather than site-wide generic. */
+  const baseFaqs = city
+    ? [...cityFaqs, ...generalFaqs]
+    : typeof categoryContent?.faqData === "function"
+      ? categoryContent.faqData()
+      : generalFaqs;
+
+  // Theme FAQs first, then the city or category FAQ set
+  const cityDecorationFAQ = [...themeFaqs, ...baseFaqs];
 
   const descriptionTitle = themeLabel
     ? `About ${themeLabel} Decoration${city ? ` in ${city}` : ""}`
