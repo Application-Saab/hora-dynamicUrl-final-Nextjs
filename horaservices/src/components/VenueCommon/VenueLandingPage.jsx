@@ -345,6 +345,7 @@ const VenuelandMainPage = ({
           onSelect={setActiveVenueType}
           citySlug={rawCitySlug}
         />
+      <EventDateBanner userId={userId} visitorId={visitorId} />
 
         {/* Intro accordion — thin content fix, same pattern as photography pages */}
         <div style={{ margin: "8px 16px 0" }}>
