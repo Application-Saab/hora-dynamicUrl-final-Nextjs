@@ -9,7 +9,9 @@ import {
   getThemeFaqs,
   getThemeFaqSchema,
   getThemeLabel,
+  getThemeLinks,
 } from "@/utils/themePageContent";
+import ThemeLinks from "@/components/Decoration/ThemeLinks";
 
 export async function getServerSideProps(context) {
   return getDecorationCatServerSideProps(context);
@@ -49,6 +51,14 @@ export default function ThemePage({
 
   const faqData = [...themeFaqs, ...categoryFaqs];
 
+  // Descriptive links to the sibling theme pages, self excluded.
+  const themeLinks = getThemeLinks({
+    catValue,
+    city: null,
+    citySlug: null,
+    currentTheme: theme,
+  });
+
   return (
     <>
       {themeFaqSchema && (
@@ -77,6 +87,8 @@ export default function ThemePage({
           sections={categoryContent ? categoryContent.description : []}
         />
       )}
+
+      <ThemeLinks links={themeLinks} heading="Other Themes" />
 
       {faqData.length > 0 && (
         <div className="tab-section-details-productpage">
