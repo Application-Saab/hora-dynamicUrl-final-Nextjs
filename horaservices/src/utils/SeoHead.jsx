@@ -336,6 +336,7 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false, parentCat
   const schemaOrg = getDecorationCatOrganizationSchema(catValue, seoCity, {
     url: canonicalUrl,
     description,
+    parentCategory,
   });
   const scriptTag = JSON.stringify(schemaOrg);
 

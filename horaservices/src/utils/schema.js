@@ -123,11 +123,12 @@ export const getDecorationCatOrganizationSchema = (catValue, city, opts = {}) =>
     : null;
   const citySlug = city ? String(city).toLowerCase().replace(/\s+/g, "-") : null;
 
+  const parent = opts.parentCategory || "balloon-decoration";
   const productUrl =
     opts.url ||
     (citySlug
-      ? `https://horaservices.com/${citySlug}/balloon-decoration/${catValue}`
-      : `https://horaservices.com/balloon-decoration/${catValue}`);
+      ? `https://horaservices.com/${citySlug}/${parent}/${catValue}`
+      : `https://horaservices.com/${parent}/${catValue}`);
 
   const productName = cityName
     ? `${humanName} in ${cityName}`
