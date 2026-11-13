@@ -23,6 +23,13 @@ import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEve
 const BATCH_SIZE = 10;
 const WHATSAPP_PHONE = "7338584828";
 
+// GTM dataLayer push (inline helper — no extra file needed)
+const pushToDataLayer = (eventName, params = {}) => {
+  if (typeof window === "undefined") return;
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: eventName, ...params });
+};
+
 const getCacheKey = (eventType, venueType, guestCapacity, city) =>
   `venue-list-${JSON.stringify({ eventType, venueType, guestCapacity, city })}`;
 
@@ -56,7 +63,7 @@ const VenueList = ({
     return `${base}?${params.toString()}`;
   };
 
-    const buildWhatsappLink = (venue) => {
+  const buildWhatsappLink = (venue) => {
     const rawCity = venue?.city || city || "";
     const cityName = rawCity
       ? rawCity.charAt(0).toUpperCase() + rawCity.slice(1).toLowerCase()
@@ -269,6 +276,17 @@ const VenueList = ({
           const href = getVenueHref(v, halls);
           const whatsappUrl = buildWhatsappLink(v);
 
+          // Common GTM payload for this venue card
+          const gtmPayload = {
+            venue_id: v._id,
+            venue_name: v.venueName,
+            venue_city: v.city || city || "",
+            venue_locality: v.locality || "",
+            starting_price: v.startingPrice || null,
+            page_path:
+              typeof window !== "undefined" ? window.location.pathname : "",
+          };
+
           return (
             <div
               key={v._id}
@@ -283,6 +301,7 @@ const VenueList = ({
               <a
                 href={href}
                 aria-label={v.venueName}
+                onClick={() => pushToDataLayer("venue_card_click", gtmPayload)}
                 style={{
                   position: "absolute",
                   top: 0,
@@ -444,7 +463,27 @@ const VenueList = ({
 
                 <div className="venue-card-btn-ctn">
                   <div>
-                    <span className="venue-menu-btn">View Package ➜</span>
+                    {/* View Package — overlay anchor ke upar (zIndex 2) taaki click alag se track ho */}
+                    <a
+                      href={href}
+                      className="venue-menu-btn"
+                      style={{
+                        position: "relative",
+                        zIndex: 2,
+                        display: "inline-block",
+                        textDecoration: "none",
+                        color: "inherit",
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        pushToDataLayer("view_venue_package_click", {
+                          ...gtmPayload,
+                          button_name: "View Package",
+                        });
+                      }}
+                    >
+                      View Package ➜
+                    </a>
                   </div>
                   <div>
                     <a
@@ -459,12 +498,17 @@ const VenueList = ({
                         textDecoration: "none",
                       }}
                       onClick={(e) => {
+                        pushToDataLayer("venue_landing_page_check_availability_click", {
+                          ...gtmPayload,
+                          button_name: "Check Availability",
+                          button_type: "whatsapp",
+                        });
                         trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.CHECK_AVAILABILITY_VENUE_LANDING, {
                           button_name: "Check Availability",
                           button_type: "check_availibility_venue_landing",
                           page_path: window.location.pathname,
                         });
-                        e.stopPropagation(); 
+                        e.stopPropagation();
                         trackWAClicks();
                       }}
                     >
