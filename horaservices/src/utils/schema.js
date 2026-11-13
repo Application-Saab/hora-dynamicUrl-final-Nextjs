@@ -113,16 +113,21 @@ const slugToTitle = (slug) =>
     .replace(/-/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
 
-export const getDecorationCatOrganizationSchema = (catValue, city) => {
+// opts.url and opts.description let the caller pass the page's own canonical URL
+// and visible meta description, so the Product schema never disagrees with the
+// canonical (e.g. wedding-decoration pages used to point at /balloon-decoration/).
+export const getDecorationCatOrganizationSchema = (catValue, city, opts = {}) => {
   const humanName = slugToTitle(catValue);
   const cityName = city
     ? String(city).replace(/\b\w/g, (c) => c.toUpperCase())
     : null;
   const citySlug = city ? String(city).toLowerCase().replace(/\s+/g, "-") : null;
 
-  const productUrl = citySlug
-    ? `https://horaservices.com/${citySlug}/balloon-decoration/${catValue}`
-    : `https://horaservices.com/balloon-decoration/${catValue}`;
+  const productUrl =
+    opts.url ||
+    (citySlug
+      ? `https://horaservices.com/${citySlug}/balloon-decoration/${catValue}`
+      : `https://horaservices.com/balloon-decoration/${catValue}`);
 
   const productName = cityName
     ? `${humanName} in ${cityName}`
@@ -133,7 +138,7 @@ export const getDecorationCatOrganizationSchema = (catValue, city) => {
     "@type": "Product",
     "brand": { "@type": "Brand", "name": "Hora Services" },
     "name": productName,
-    "description": getPageMetaDescription(catValue),
+    "description": opts.description || getPageMetaDescription(catValue),
     "url": productUrl,
     "image": [
       "https://horaservices.com/api/uploads/attachment-1706520980436.png",

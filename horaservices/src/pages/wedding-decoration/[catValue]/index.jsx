@@ -27,6 +27,7 @@ export default function WeddingCatPage({
         initialCatalogueData={initialCatalogueData}
         initialCatId={initialCatId}
         initialHasMore={initialHasMore}
+        categorySlug="wedding-decoration"
       />
 
       {categoryContent && (
