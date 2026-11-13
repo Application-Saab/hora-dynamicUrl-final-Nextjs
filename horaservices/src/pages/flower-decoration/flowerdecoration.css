@@ -60,27 +60,30 @@ height: clamp(11.36px, 3.39vw, 13.36px);
 }
 
 .fc-section {
-  margin: 22px 0 8px;
+  margin: clamp(15.47px, 4.83vw, 23.21px) 0 clamp(6.52px, 2.04vw, 9.77px);
 }
 .fc-title {
   margin: 0 0 2px;
   text-align: center;
-  font-size: 18px;
+  color: #97538C;
+  font-family: "Inter", sans-serif;
   font-weight: 700;
-  color: #8e3b9a;
+  font-size: clamp(16.28px, 5.09vw, 24.43px);
+  text-align: center;
 }
 .fc-sub {
-  margin: 0 0 12px;
+  margin: 0 auto 12px;
+  color: #838383;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: clamp(9.77px, 3.05vw, 14.66px);
   text-align: center;
-  font-size: 12.5px;
-  line-height: 1.35;
-  color: #777;
+  width:80%;
 }
 .fc-image {
   width: 100%;
   height: auto;
   display: block;
-  border-radius: 8px;
 }
 
 .why-people-love-us {
@@ -88,6 +91,7 @@ height: clamp(11.36px, 3.39vw, 13.36px);
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-bottom: 10px;
 }
 
 .why-people-love-us h2 {

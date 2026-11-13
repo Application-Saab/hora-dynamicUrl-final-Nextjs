@@ -8,7 +8,7 @@ import whatsappbanner from "@/assets/Whatsaap_banner.webp";
 import whatsappIcon from "@/assets/whatsapp-icon.png";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
-import flowerCollageImg from "@/assets/flower/flowerCollageImg.webp";
+import flowerCollageImg from "@/assets/flower/flowerCollageImg.jpg";
 import whypeople1 from "../../assets/whypeople1.jpg";
 import whypeople2 from "../../assets/whypeople2.jpg";
 import whypeople3 from "../../assets/whypeople3.jpg";
@@ -22,6 +22,8 @@ import TopBrandIMg from "../../assets/TpBrandsIMG.png";
 import BrandBannerIMG from "../../assets/BrandBannerIMG.webp";
 import { balloonreviewsproduct } from "@/utils/balloonReviews";
 import GoogleReviewsCard from "@/components/PhotoGalleryPose/GoogleReviewsCard";
+import WhyPeopleLoveUs from "@/components/WhyPeopleLoveUs";
+import { stats, brandItems } from "@/utils/whylovebranddata"
 const SITE = "https://horaservices.com";
 const slugify = (v) => String(v || "").trim().toLowerCase().replace(/\s+/g, "-");
 
@@ -47,56 +49,9 @@ const FlowerDecorationLanding = ({ city = "", locality = "" }) => {
     ? `Hi, how can we help in your flower decoration services for ${cityName}`
     : "Hi, how can we help in your flower decoration services";
   const waLink = `https://wa.me/917338584828?text=${encodeURIComponent(waMessage)}`;
-const stats = [
-  {
-    icon: whypeople1,
-    number: "20k",
-    label: "Balloon Designs In Stock",
-  },
-  {
-    icon: whypeople2,
-    number: "45+",
-    label: "Decorations Themes",
-  },
-  {
-    icon: whypeople3,
-    number: "15M",
-    label: "Satisfied Customers",
-  },
-  {
-    icon: whypeople4,
-    number: "10k",
-    label: "Completed Decoration",
-  },
-];
-const brandItems = [
-  {
-    img: HappyCustomerIMG,
-    alt: "Happy Customers",
-    bold: "1L+ HAPPY",
-    sub: "CUSTOMERS",
-  },
-  {
-    img: GoogleRatingIMG,
-    alt: "Google Rating",
-    bold: "4.8+ GOOGLE",
-    sub: "RATING",
-  },
-  {
-    img: SocialMediaIMG,
-    alt: "Social Media",
-    bold: "OUR",
-    sub: "SOCIAL MEDIA",
-  },
-  {
-    img: TopBrandIMg,
-    alt: "Top Brands",
-    bold: "TOP BRANDS",
-    sub: "PARTNERED",
-  },
-];
+
   return (
-    <div style={{ maxWidth: "480px", margin: "auto", padding: "12px 10px 24px" }}>
+  <div style={{ maxWidth: "480px",  margin: "auto", padding: "clamp(12.22px, 3.82vw, 18.32px) clamp(7.33px, 2.29vw, 10.99px) clamp(19.08px, 6.11vw, 29.31px)", }}>
       <Head>
         <title>{title}</title>
         <meta name="description" content={description} />
@@ -165,26 +120,7 @@ const brandItems = [
           sizes="(max-width: 480px) 100vw, 480px"
         />
       </section>
-       <section className="why-people-love-us">
-              <div className="page-width">
-                <h2>Why People Love Us</h2>
-                <div className="stats-line-container">
-                  {stats.map((item, index) => (
-                    <div key={index} className="stat-item">
-                      <Image
-                        src={item.icon}
-                        alt={item.label}
-                        width={70}
-                        height={50}
-                      />{" "}
-                      {/* IMAGE */}
-                      <h3>{item.number}</h3>
-                      <p>{item.label}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </section>
+       <WhyPeopleLoveUs stats={stats} />
        <section className="BabyShowerBanner">
         <Image
           src={BrandBannerIMG}

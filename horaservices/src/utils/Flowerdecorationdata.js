@@ -36,7 +36,7 @@ export const flowerThemes = [
   { id: 8, title: "First Night", catValue: "first-night-decoration", image: firstnight, icon: firstnightIcon },
   { id: 9, title: "Naming Ceremony", catValue: "naming-ceremony-decoration", image: naming, icon: namingIcon },
   { id: 10, title: "Wedding Car", catValue: "wedding-car-decoration", image: weddingcar, icon: weddingcarIcon },
-  { id: 11, title: "mandap-decoration", catValue: "mandap-decoration", image: Mandapdecoration, icon: MandapIcon },
-  { id: 12, title: "pooja-decoration", catValue: "pooja-decoration", image: pooja, icon: PoojaIcon},
+  { id: 11, title: "mandap", catValue: "mandap-decoration", image: Mandapdecoration, icon: MandapIcon },
+  { id: 12, title: "pooja", catValue: "pooja-decoration", image: pooja, icon: PoojaIcon},
 
 ];
