@@ -117,6 +117,7 @@ import {
 import { NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
 import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 import { stats, brandItems } from "@/utils/whylovebranddata.js"
+import FlowerBanner from "../Flowerlandingpagebanner";
 
 const slugify = (val) =>
   String(val || "")
@@ -682,6 +683,7 @@ const Decoration = ({ city, locality }) => {
           </section>
         </div>
       </div>
+      <FlowerBanner href="/flower-decoration" />
       <section className="couple-sec">
         {/* background image */}
         <div className="couple-sec__bg" aria-hidden="true">
