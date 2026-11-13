@@ -116,56 +116,8 @@ import {
 } from "@/utils/apiconstants";
 import { NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
 import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
-
-const stats = [
-  {
-    icon: whypeople1,
-    number: "20k",
-    label: "Balloon Designs In Stock",
-  },
-  {
-    icon: whypeople2,
-    number: "45+",
-    label: "Decorations Themes",
-  },
-  {
-    icon: whypeople3,
-    number: "15M",
-    label: "Satisfied Customers",
-  },
-  {
-    icon: whypeople4,
-    number: "10k",
-    label: "Completed Decoration",
-  },
-];
-
-const brandItems = [
-  {
-    img: HappyCustomerIMG,
-    alt: "Happy Customers",
-    bold: "1L+ HAPPY",
-    sub: "CUSTOMERS",
-  },
-  {
-    img: GoogleRatingIMG,
-    alt: "Google Rating",
-    bold: "4.8+ GOOGLE",
-    sub: "RATING",
-  },
-  {
-    img: SocialMediaIMG,
-    alt: "Social Media",
-    bold: "OUR",
-    sub: "SOCIAL MEDIA",
-  },
-  {
-    img: TopBrandIMg,
-    alt: "Top Brands",
-    bold: "TOP BRANDS",
-    sub: "PARTNERED",
-  },
-];
+import { stats, brandItems } from "@/utils/whylovebranddata.js"
+import FlowerBanner from "../Flowerlandingpagebanner";
 
 const slugify = (val) =>
   String(val || "")
@@ -731,6 +683,7 @@ const Decoration = ({ city, locality }) => {
           </section>
         </div>
       </div>
+      <FlowerBanner href="/flower-decoration" />
       <section className="couple-sec">
         {/* background image */}
         <div className="couple-sec__bg" aria-hidden="true">

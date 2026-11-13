@@ -73,6 +73,10 @@ export function getSubCategory(catValue) {
     if (catValue === "name-reveal-decoration") {
     return "NameRevealDecoration";
   }
+   if (catValue === "pooja-decoration") {
+    return "PoojaDecoration";
+  }
+
        if (catValue === "proposal-decoration") {
     return "Proposal-Decoration";
   }

@@ -1,0 +1,151 @@
+.fd-banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+}
+
+
+/* container: andar ke saare cqw is wrapper ki width se bante hain */
+.wa-banner {
+  position: relative;
+  container-type: inline-size;
+  width: 100%;
+  max-width: 480px;          /* apne banner ki max-width ke barabar rakhein */
+   display: block;
+    text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.wa-banner__btn {
+  position: absolute;
+  left: clamp(11px, 11cqw, 11cqw);
+  bottom: clamp(4.6px, 4.6cqw, 4.6cqw);
+  width: clamp(120px, 35.88vw, 155px);
+  height: clamp(23.35px, 6.95vw, 27.48px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6cqw;
+  background: #1C7E2B;
+  color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 0.8cqw 1.6cqw rgba(58, 130, 16, 0.35);
+
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: clamp(7.4px, 2.2vw, 8.69px);
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.wa-banner__btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 1.2cqw 2cqw rgba(58, 130, 16, 0.45);
+}
+
+.wa-banner__btn:focus-visible {
+  outline: 2px solid #599911;
+  outline-offset: 2px;
+}
+
+.wa-banner__icon {
+width: clamp(11.3px, 3.37vw, 13.3px);
+height: clamp(11.36px, 3.39vw, 13.36px);
+  flex-shrink: 0;
+}
+
+.fc-section {
+  margin: clamp(15.47px, 4.83vw, 23.21px) 0 clamp(6.52px, 2.04vw, 9.77px);
+}
+.fc-title {
+  margin: 0 0 2px;
+  text-align: center;
+  color: #97538C;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: clamp(16.28px, 5.09vw, 24.43px);
+  text-align: center;
+}
+.fc-sub {
+  margin: 0 auto 12px;
+  color: #838383;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: clamp(9.77px, 3.05vw, 14.66px);
+  text-align: center;
+  width:80%;
+}
+.fc-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.why-people-love-us {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.why-people-love-us h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #97538C;
+  margin-top: 10px;
+}
+
+.stats-line-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap:10px
+}
+
+
+
+/* .stat-item img {
+  width: 80px;
+} */
+
+.stat-item h3 {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.stat-item p {
+  font-size: 7px;
+  color: #000;
+  margin-top: 4px;
+  margin-bottom: 0px !important;
+}
+
+.why-choose-hora {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.why-choose-image {
+  width: 100%;
+  height: auto;
+  
+}
+.decorationBanner{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.decorationBanner-image {
+  width: 100%;
+  height: auto;
+  
+}

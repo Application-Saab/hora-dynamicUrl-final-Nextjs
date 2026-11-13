@@ -66,7 +66,8 @@ export const contactUsRedirect = ({
       "annaprashan-decoration":"Annaprashan Decoration",
       "wedding-car-decoration":"Wedding Car Decoration",
       "baptism-decoration":" Baptism Decoration",
-      "name-reveal-decoration":"Name reveal decoration"
+      "name-reveal-decoration":"Name reveal decoration",
+      "pooja-decoration":"Pooja Decoration"
     },
   };
 
