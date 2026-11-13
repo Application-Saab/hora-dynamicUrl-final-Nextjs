@@ -10,8 +10,10 @@ import {
   getThemeFaqs,
   getThemeFaqSchema,
   getThemeLabel,
+  getThemeLinks,
 } from "@/utils/themePageContent";
 import CityDecorationlanding from "./cityDecorationlanding";
+import ThemeLinks from "./ThemeLinks";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
@@ -116,6 +118,24 @@ function DecorationCatCityPage({
     ? `About ${themeLabel} Decoration${city ? ` in ${city}` : ""}`
     : "Description";
 
+  /* Descriptive in-body links to the sibling theme pages. The image pill
+     carousel already links to them, but with one-word anchor text — Search
+     Console showed a theme page's only referring page being another theme
+     page. Links are built from the SSR-safe city/locality slugs so they are
+     present in the server-rendered HTML. */
+  const themeLinks = getThemeLinks({
+    catValue,
+    city: serverCity || city,
+    citySlug: serverCitySlug,
+    localitySlug: locality,
+    currentTheme: theme,
+    parentCategory: categorySlug,
+  });
+
+  const themeLinksHeading = `${theme ? "Other" : "Popular"} Themes${
+    city ? ` in ${city}` : ""
+  }`;
+
   return (
     <>
       {themeFaqSchema && (
@@ -162,6 +182,8 @@ function DecorationCatCityPage({
           sections={categoryContent ? categoryContent.description : []}
         />
       )}
+
+      <ThemeLinks links={themeLinks} heading={themeLinksHeading} />
 
       <div className="tab-section-details-productpage">
         <FAQSection faqData={cityDecorationFAQ} />
