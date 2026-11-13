@@ -234,7 +234,7 @@ export const buildDecorationCategoryCanonical = ({
   if (localitySlug) parts.push(localitySlug);
 
   if (isBooster) {
-    parts.push("celebration-booster");
+    parts.push("party-props");
   } else {
     parts.push(parentCategory);
   }
@@ -268,7 +268,17 @@ export const getPageTitle = (catValue, city, locality, theme) => {
       ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${location} – Starting at ₹1199`
       : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
 
-  return theme ? `HORA Decorations - <${theme}> - ${baseTitle}` : baseTitle;
+  // Theme pages that aren't in the SEO sheet fall back to this. The theme name
+  // leads so the title is distinct from the parent category page's title —
+  // identical titles across themes were part of why Google treated the theme
+  // pages as duplicates of their parent.
+  if (!theme) return baseTitle;
+
+  const themeLabel = String(theme)
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+
+  return `${themeLabel} Theme — ${baseTitle}`;
 };
 
 // ─────────────────────────────────────────────
@@ -310,7 +320,7 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false, parentCat
     sheetSeo?.title || getPageTitleCategory(catValue, city, locality, theme);
   const description =
     sheetSeo?.description ||
-    getPageMetaDescriptionCategory(catValue, city, locality);
+    getPageMetaDescriptionCategory(catValue, city, locality, theme);
 
   // one source for canonical + og:url
   const canonicalUrl = buildDecorationCategoryCanonical({
@@ -371,8 +381,21 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false, parentCat
     { "@type": "ListItem", position: 2, name: parentCategoryLabel, item: parentCategoryUrl },
   ];
 
+  const toLabel = (slug) =>
+    String(slug || "").replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+  // Category page URL — the theme page's real parent. On a theme page the
+  // canonical points at the theme, so the category level must not reuse it.
+  const categoryPageUrl = buildDecorationCategoryCanonical({
+    city,
+    locality,
+    catValue,
+    isBooster,
+    parentCategory,
+  });
+
   if (seoCityName && cityCategoryUrl) {
-    // /balloon-decoration → /[city]/balloon-decoration → [catValue]
+    // /balloon-decoration → /[city]/balloon-decoration → [catValue] → [theme]
     breadcrumbItems.push({
       "@type": "ListItem",
       position: 3,
@@ -380,21 +403,30 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false, parentCat
       item: cityCategoryUrl,
     });
     if (catValue) {
-      const catLabel = String(catValue).replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
       breadcrumbItems.push({
         "@type": "ListItem",
         position: 4,
-        name: catLabel,
-        item: canonicalUrl,
+        name: toLabel(catValue),
+        item: categoryPageUrl,
       });
     }
   } else if (catValue) {
-    // No city: /balloon-decoration → [catValue]
-    const catLabel = String(catValue).replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    // No city: /balloon-decoration → [catValue] → [theme]
     breadcrumbItems.push({
       "@type": "ListItem",
       position: 3,
-      name: catLabel,
+      name: toLabel(catValue),
+      item: categoryPageUrl,
+    });
+  }
+
+  // Theme is its own level. Without it the structured data said the theme
+  // page *was* the category page, reinforcing Google's duplicate verdict.
+  if (theme) {
+    breadcrumbItems.push({
+      "@type": "ListItem",
+      position: breadcrumbItems.length + 1,
+      name: toLabel(theme),
       item: canonicalUrl,
     });
   }

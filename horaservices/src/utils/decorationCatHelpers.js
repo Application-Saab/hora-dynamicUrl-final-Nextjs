@@ -77,6 +77,9 @@ export function getSubCategory(catValue) {
     return "PoojaDecoration";
   }
 
+       if (catValue === "proposal-decoration") {
+    return "Proposal-Decoration";
+  }
   const parts = catValue.split("-");
   return parts
     .slice(0, 2)

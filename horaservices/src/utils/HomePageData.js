@@ -44,9 +44,9 @@ export const planningCategories = [
     path: "/party-food-delivery-live-catering-buffet?type=liveCatering",
   },
   {
-    title: "Celebration Boosters",
+    title: "Party Props",
     subtitle: "Balloons, Light & beautiful setups",
     image: fireworksImg,
-    path: "/celebration-booster",
+    path: "/party-props",
   },
 ];

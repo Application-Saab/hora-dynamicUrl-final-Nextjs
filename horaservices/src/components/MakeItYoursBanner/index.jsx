@@ -7,10 +7,29 @@ import customiseIcon from "@/assets/customiselcon.webp";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 
+const slugToText = (slug = "") =>
+  String(slug).replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
+
+const slugToTitle = (slug = "") =>
+  slugToText(slug).replace(/\b\w/g, (c) => c.toUpperCase());
+
 const MakeItYoursBanner = ({
   phone = "7338584828",
-  message = "Looking for a Customisation Decoration!",
+  catValue = "",
+  city = "",
+  message,
 }) => {
+  // "first-night-decoration" -> "first night Decor"
+  const catText = (slugToText(catValue) || "Decoration").replace(
+    /\bdecoration\b/i,
+    "Decor"
+  );
+  const cityText = slugToTitle(city);
+
+  const finalMessage =
+    message ||
+    `Looking for a Custom ${catText}${cityText ? ` in ${cityText}` : ""}? Our support team is ready to help!`;
+
   const handleWhatsAppClick = () => {
     trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.MAKE_IT_YOURS_CUSTOMIZE_BANNER, {
       button_name: "Customize Design",
@@ -18,8 +37,6 @@ const MakeItYoursBanner = ({
       page_path: window.location.pathname,
     });
     trackWAClicks();
-    const PHONE = phone;
-    const text = message;
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
@@ -30,7 +47,7 @@ const MakeItYoursBanner = ({
     });
 
     window.open(
-      `https://wa.me/${PHONE}?text=${encodeURIComponent(text)}`,
+      `https://wa.me/${phone}?text=${encodeURIComponent(finalMessage)}`,
       "_blank"
     );
   };
@@ -53,7 +70,7 @@ const MakeItYoursBanner = ({
       <button
         className="makeItYoursCta"
         onClick={(e) => {
-          e.stopPropagation(); // parent click dobara na fire ho
+          e.stopPropagation();
           handleWhatsAppClick();
         }}
       >

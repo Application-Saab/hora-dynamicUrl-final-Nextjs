@@ -31,7 +31,19 @@ export const contactUsRedirect = ({
       "wedding"  : "wedding photography",
       "haldi-mehndi" : "haldi / mehandi photography",
       "corporate-photography":"Corporate-Photography",
-      "welcome-baby-photography":"Welcome-Baby-Photography"
+      "welcome-baby-photography":"Welcome-Baby-Photography",
+      // ✅ NEW
+      "half-saree-photography": "half saree photography",
+      "retirement-photography": "retirement photography",
+      "cocktail-party-photography": "cocktail party photography",
+      "farewell-party-photography": "farewell party photography",
+      "proposal-photography": "proposal photography",
+      "cradle-ceremony-photography": "cradle ceremony photography",
+      "car-delivery-photography": "car delivery photography",
+      "portfolio-shoot-photography": "portfolio shoot photography",
+      "baptism-and-holy-communion-photography": "baptism and holy communion photography",
+      "family-shoot-photography": "family shoot photography",
+      "annaprashan-ceremony-photography": "annaprashan ceremony photography"
     },
     decoration: {
       "kids-birthday-decoration": "kids birthday decoration",

@@ -16,7 +16,7 @@ import {
   getRandomNumber,
   getRandomRating,
 } from "@/utils/decorationCatHelpers";
-import { NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
+import { BirthdayCategories, NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
 import "@/pages/balloon-decoration/[catValue]/catvaluedecor.css";
 import ProductGrid from "@/components/productGrid";
 import FilterBar from "@/components/FilterBar";
@@ -104,6 +104,7 @@ const buildCacheKey = (path, sort, priceThemeId, search, designTypes = []) =>
 const DecorationCatPage = ({
   city: cityProp = "",
   serverCity = null,   // SSR-safe city name from getServerSideProps — use for <Head> only
+  serverTheme = null,  // SSR-safe theme slug from getServerSideProps — use for <Head> only
   locality = null,
   catValue: catValueProp = "",
   initialCatalogueData = [],
@@ -960,7 +961,7 @@ const renderChip = (chip) => (
         catValue={normalizedCat}
         city={serverCity || cityProp}
         locality={locality}
-        theme={theme}
+        theme={serverTheme || theme}
         parentCategory={categorySlug}
       />
 
@@ -1048,26 +1049,27 @@ const renderChip = (chip) => (
               )}
 
               {catValue?.toLowerCase() === "kids-birthday-decoration" &&
-                !isSearchActive && (
-                  <div className="category-tabs-container">
-                    <CategoryTabs
-                      data={themeFilters.map((item) => ({
-                        id: item.value,
-                        name: item.label,
-                        image: item.image,
-                        value: item.value,
-                        catValue: "kids-birthday-decoration",
-                      }))}
-                      onSelect={(item) => openCatItems(item, themeFilter)}
-                      city={city}
-                      hasCityPageParam={hasCityPageParam}
-                      locality={locality}
-                      variant="grid"
-                      catValue="kids-birthday-decoration"
-                      activeValue={themeFilter}
-                    />
-                  </div>
-                )}
+  !isSearchActive && (
+    <div className="category-tabs-container">
+      <CategoryTabs
+        data={themeFilters.map((item) => ({
+          id: item.value,
+          name: item.label,
+          image: item.image,
+          value: item.value,
+          catValue: "kids-birthday-decoration",
+        }))}
+        onSelect={(item) => openCatItems(item, themeFilter)}
+        city={city}
+        hasCityPageParam={hasCityPageParam}
+        locality={locality}
+        variant="grid"
+        catValue="kids-birthday-decoration"
+        activeValue={themeFilter}
+        rows={isThemeRoute ? 1 : 2}   
+      />
+    </div>
+  )}
 
               {catValue?.toLowerCase() === "naming-ceremony-decoration" &&
                 !isSearchActive && (
@@ -1090,6 +1092,28 @@ const renderChip = (chip) => (
                     />
                   </div>
                 )}
+
+                {/* {catValue?.toLowerCase() === "birthday-decoration" &&
+  !isSearchActive && (
+    <div className="category-tabs-outer">
+      <CategoryTabs
+        data={BirthdayCategories.map((item) => ({
+          id: item.value,
+          name: item.label,
+          image: item.image,
+          value: item.value,
+          catValue: "birthday-decoration",
+        }))}
+        city={city}
+        hasCityPageParam={hasCityPageParam}
+        locality={locality}
+        variant="grid"
+        catValue="birthday-decoration"
+        activeValue={themeFilter}
+      />
+    </div>
+  )} */}
+
               <EventDateBanner userId={userId} visitorId={visitorId} />
 
               {isPriceThemeActive || isSearchActive ? (
@@ -1141,7 +1165,7 @@ const renderChip = (chip) => (
                     onCardClick={handleViewDetails}
                     getHref={getProductHref}
                   />
-                  <MakeItYoursBanner />
+                  <MakeItYoursBanner catValue={catValue} city={city} />
                   <ProductGrid
                     data={sortedCatalogueData.slice(4, 10)}
                     onCardClick={handleViewDetails}

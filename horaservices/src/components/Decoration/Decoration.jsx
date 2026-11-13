@@ -438,8 +438,8 @@ const Decoration = ({ city, locality }) => {
     : "";
 
   const waMessage = cityName
-    ? `Hi, how can we help in your balloon decor services for ${cityName}`
-    : "Hi, how can we help in your balloon decor services";
+    ? `Hi, how can we help in your balloon decor services for ${cityName}.`
+    : "Hi, how can we help in your balloon decor services.";
 
   const waLink = `https://wa.me/917338584828?text=${encodeURIComponent(waMessage)}`;
   return (
@@ -515,7 +515,7 @@ const Decoration = ({ city, locality }) => {
           showSort={false}
         />
       </div>
-      {sheetH1 && <DecorationBanner title={sheetH1} />}
+      {/* {sheetH1 && <DecorationBanner title={sheetH1} />} */}
       {/* CIRCLE TABS */}
       <div ref={smallCardRef}>
         <SmallCardGrid

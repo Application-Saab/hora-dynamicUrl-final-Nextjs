@@ -18,12 +18,15 @@ const CategoryTabs = ({
   fireIcon,
   isDirectProductPage = false,
   activeValue,
+  rows = 1, // 1 = single row (default) | 2 = two-row circle grid
 }) => {
   const pathname = usePathname();
   const scrollRef = useRef(null);
-  const itemRefs = useRef({}); 
+  const itemRefs = useRef({});
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const isMultiRow = variant === "grid" && rows > 1;
 
   // Build path with city + locality
   const formatPath = (path) => {
@@ -71,8 +74,8 @@ const CategoryTabs = ({
     if (isDirectProductPage) {
       if (city) {
         path = `/${city}/balloon-decoration/${cat.catValue}/${cat.value}`;
-      }else {
-        path = `/balloon-decoration/${cat.catValue}/${cat.value}`
+      } else {
+        path = `/balloon-decoration/${cat.catValue}/${cat.value}`;
       }
     } else {
       const baseRoute = getCategorySlugFromPath(pathname, city, locality);
@@ -100,7 +103,8 @@ const CategoryTabs = ({
   const scrollByAmount = (amount) => {
     const el = scrollRef.current;
     if (!el) return;
-    el.scrollBy({ left: amount, behavior: "smooth" });
+    const delta = isMultiRow ? Math.sign(amount) * el.clientWidth * 0.8 : amount;
+    el.scrollBy({ left: delta, behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -117,12 +121,19 @@ const CategoryTabs = ({
       el.removeEventListener("scroll", updateArrowVisibility);
       window.removeEventListener("resize", updateArrowVisibility);
     };
-  }, [variant, data, updateArrowVisibility]);
+  }, [variant, data, rows, updateArrowVisibility]);
 
   useEffect(() => {
     if (variant !== "grid" || !activeValue) return;
     const el = itemRefs.current[activeValue];
-    if (el) {
+    if (el && isMultiRow) {
+      // page ko vertical scroll kiye bina active circle ko beech mein laao
+      const sc = scrollRef.current;
+      if (sc) {
+        sc.scrollLeft = el.offsetLeft - (sc.clientWidth - el.offsetWidth) / 2;
+        updateArrowVisibility();
+      }
+    } else if (el) {
       el.scrollIntoView({
         behavior: "auto",
         inline: "center",
@@ -130,6 +141,90 @@ const CategoryTabs = ({
       });
     }
   }, [activeValue, variant, data]);
+
+  // ================= 2-ROW CIRCLE GRID (rows={2}) =================
+  if (isMultiRow) {
+    const items = data.filter((cat) => cat.image);
+
+    return (
+      <div className="ctm-slider">
+        <div className="ctm-viewport">
+          <div className="ctm-grid" ref={scrollRef}>
+            {items.map((cat) => {
+              const isActive = !!activeValue && cat.value === activeValue;
+              return (
+                <a
+                  key={cat.id}
+                  ref={(el) => {
+                    itemRefs.current[cat.value] = el;
+                  }}
+                  href={getGridHref(cat)}
+                  className={`ctm-item${isActive ? " is-active" : ""}`}
+                  aria-current={isActive ? "true" : undefined}
+                  onClick={() => GridhandleClick(cat)}
+                >
+                  <div className="ctm-circle">
+                    <Image
+                      src={cat.image}
+                      alt={cat.name}
+                      fill
+                      sizes="(max-width: 600px) 24vw, 150px"
+                      style={{ objectFit: "cover" }}
+                    />
+                  </div>
+                  <p className="ctm-name">{cat.name}</p>
+                </a>
+              );
+            })}
+          </div>
+
+          {/* arrows: har row ke circle ke beech mein */}
+          {[1, 2].map((row) => (
+            <span key={row}>
+              {canScrollLeft && (
+                <button
+                  type="button"
+                  aria-label="Previous"
+                  className={`ctm-arrow ctm-arrow--prev ctm-arrow--row${row}`}
+                  onClick={() => scrollByAmount(-1)}
+                >
+                  <svg viewBox="0 0 24 24" width="55%" height="55%" aria-hidden="true">
+                    <path
+                      d="M9 5l7 7-7 7"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              )}
+              {canScrollRight && (
+                <button
+                  type="button"
+                  aria-label="Next"
+                  className={`ctm-arrow ctm-arrow--next ctm-arrow--row${row}`}
+                  onClick={() => scrollByAmount(1)}
+                >
+                  <svg viewBox="0 0 24 24" width="55%" height="55%" aria-hidden="true">
+                    <path
+                      d="M9 5l7 7-7 7"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              )}
+            </span>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return variant === "grid" ? (
     <div className={`category-tabs-outer ${hasBg ? "has-bg" : ""}`}>
