@@ -1,6 +1,6 @@
 .vh-container {
   width: 100%;
-  max-width: 440px;
+  max-width: 480px;
   margin-top: clamp(6.51px, 2.036vw, 9.77px);
   margin-bottom: clamp(8.14px, 2.545vw, 12.21px);
   background: #ffffff;
@@ -30,7 +30,7 @@
   margin: 0;
   font-size: clamp(9.77px, 3.053vw, 14.66px);
   line-height: clamp(14.66px, 4.58vw, 21.98px);
-  color: #6C6F74;
+  color: #6c6f74;
   font-weight: 400;
 }
 
@@ -40,10 +40,11 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding: 2px 2px 8px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .vh-grid-scroll::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  display: none;
 }
 
 .vh-grid {
@@ -51,16 +52,15 @@
   grid-template-rows: repeat(2, 86px);
   grid-auto-flow: column;
   grid-auto-columns: clamp(92px, 25vw, 102px);
-  /* gap: 10px; */
   gap: clamp(11.4px, 3.562vw, 17.1px);
   width: max-content;
   margin: 0 auto;
 }
 
-/* Individual Card */
+/* Card */
 .vh-card {
   background: #ffffff;
-  border: 0.2px solid #97538C8A;
+  border: 0.2px solid #97538c8a;
   border-radius: clamp(8.14px, 2.545vw, 12.21px);
   display: flex;
   flex-direction: column;
@@ -68,7 +68,7 @@
   justify-content: center;
   padding: clamp(6.35px, 1.985vw, 9.53px) clamp(0.65px, 0.204vw, 0.98px);
   text-align: center;
-  box-shadow: 0px 4px 4px 0px #0000000F;
+  box-shadow: 0px 4px 4px 0px #0000000f;
 }
 
 .vh-icon-box {
@@ -88,7 +88,29 @@
   object-fit: contain;
 }
 
-/* Text inside card */
+/* Inline SVG from suggestions */
+.vh-icon-svg {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vh-icon-svg svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Fallback when no icon found */
+.vh-icon-fallback {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: #d4c4d2;
+  opacity: 0.6;
+}
+
 .vh-info {
   display: flex;
   flex-direction: column;
@@ -101,25 +123,12 @@
   font-size: clamp(8.14px, 2.545vw, 12.21px);
   font-weight: 600;
   color: #505050;
-  /* line-height: 1.2; */
-  /* white-space: nowrap; */
-  /* overflow: hidden; */
-  /* text-overflow: ellipsis; */
   max-width: 90%;
+  line-height: 1.25;
+  word-break: break-word;
 }
 
-.vh-lbl {
-  font-size: 9.5px;
-  font-weight: 500;
-  color: #555555;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 90%;
-}
-
-/* Bottom Progress / Scroll Track Indicator */
+/* Scroll indicator */
 .vh-indicator-track {
   width: 58px;
   height: 4px;
@@ -133,6 +142,8 @@
 .vh-indicator-thumb {
   width: 28px;
   height: 100%;
-  background-color: #924286; /* Brand purple */
+  background-color: #924286;
   border-radius: 4px;
+  transition: transform 0.08s linear;
+  will-change: transform;
 }

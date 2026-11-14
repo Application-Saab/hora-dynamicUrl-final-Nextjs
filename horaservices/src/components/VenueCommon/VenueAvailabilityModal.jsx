@@ -293,7 +293,7 @@ export default function VenueAvailabilityModal({
             src={Banner}
             alt="Check Availability"
             className="vam-banner-img"
-            fill // if using Next.js Image
+            fill
             priority
           />
           <div className="vam-header-text">
@@ -312,7 +312,7 @@ export default function VenueAvailabilityModal({
               onClick={handlePrevMonth}
               disabled={isPrevMonthDisabled}
             >
-              <ChevronLeft size={18} strokeWidth={2.4} />
+              <ChevronLeft size={22} strokeWidth={2.4} />
             </button>
             <span className="vam-month-title">{MONTH_NAMES[viewMonth]}</span>
             <button
@@ -320,7 +320,7 @@ export default function VenueAvailabilityModal({
               className="vam-nav-arrow"
               onClick={handleNextMonth}
             >
-              <ChevronRight size={18} strokeWidth={2.4} />
+              <ChevronRight size={22} strokeWidth={2.4} />
             </button>
           </div>
 

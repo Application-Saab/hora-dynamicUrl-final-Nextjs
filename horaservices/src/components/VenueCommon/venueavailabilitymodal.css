@@ -6,7 +6,7 @@
   backdrop-filter: blur(2px);
   z-index: 10000;
   display: flex;
-  align-items: center;
+  align-items: end;
   justify-content: center;
   /* padding: 5px; */
   box-sizing: border-box;
@@ -16,7 +16,7 @@
 .vam-card {
   background: #ffffff;
   width: 100%;
-  max-width: 500px; /* ← changed */
+  max-width: 480px; /* ← changed */
   min-width: 320px; /* ← added */
   border-radius: 20px;
   padding: 0px 0px 0px 0px;
@@ -65,10 +65,10 @@
 /* Header */
 .vam-header {
   position: relative;
-  width: calc(100% + 28px);
-  margin: 0 -14px;
-  /* height: 138px; */
-  overflow: hidden;
+  /* width: calc(100% + 28px); */
+  /* margin: 0 -14px; */
+  height: 100px;
+  /* overflow: hidden; */
   border-radius: 20px 20px 0 0;
   display: flex;
   align-items: center;
@@ -79,9 +79,10 @@
 .vam-banner-img {
   position: absolute;
   inset: 0;
+  max-width: 480px;
   width: 100%;
   /* height: 100%; */
-  object-fit: contain;
+  /* object-fit: contain; */
   /* object-position: left center; */
   display: block;
 }
@@ -91,13 +92,12 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  padding: 0 16px 0 48%;
+  padding: 0 5px 0 48%;
   box-sizing: border-box;
   text-align: left;
 }
 
 .vam-header-text h3 {
-  /* font-size: 22px; */
   font-family: "Inter", sans-serif;
   font-size: clamp(16.68px, 5.211vw, 25.01px);
   font-weight: 700;
@@ -107,10 +107,11 @@
 }
 
 .vam-header-text p {
-  font-size: 15px;
-  font-weight: 400;
-  color: #444;
-  line-height: 1.4;
+  font-family: "Inter", sans-serif;
+  font-size: clamp(10.42px, 3.257vw, 15.63px);
+  font-weight: 300;
+  color: #000000;
+  line-height: clamp(13.76px, 4.3vw, 20.64px);
   margin: 0;
 }
 
@@ -152,10 +153,10 @@
 /* Inner Calendar Box */
 .vam-calendar-box {
   background: #ffffff;
-  border: 1.28px solid #0000001A;
+  border: 1.28px solid #0000001a;
   border-radius: clamp(9.38px, 2.931vw, 14.07px);
   padding: 10px 10px 12px;
-  box-shadow: 0px 5.12px 5.12px 0px #0000001F;
+  box-shadow: 0px 5.12px 5.12px 0px #0000001f;
   margin: clamp(0.41px, 0.127vw, 0.61px) clamp(11.56px, 3.613vw, 17.34px);
 }
 
@@ -163,15 +164,18 @@
 .vam-month-nav {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 2px 6px 8px;
+  justify-content: center;
+  gap: clamp(38.27px, 11.959vw, 57.4px);
+  margin-bottom: clamp(22.21px, 6.941vw, 33.32px);
+  /* padding: 2px 6px 8px; */
 }
 
 .vam-month-title {
-  font-size: 14.5px;
-  font-weight: 700;
-  color: #3b3a4a;
-  letter-spacing: 0.5px;
+  font-family: "Inter", sans-serif;
+  font-size: clamp(14.59px, 4.56vw, 21.89px);
+  font-weight: 600;
+  color: #4a5660;
+  letter-spacing: 0%;
 }
 
 .vam-nav-arrow {
@@ -200,20 +204,24 @@
 }
 
 .vam-weekday {
-  font-size: 10.5px;
-  font-weight: 700;
-  color: #2b2b2b;
+  font-size: clamp(8.18px, 2.555vw, 12.26px);
+  font-family: "Inter", sans-serif;
+  font-weight: 800;
+  color: #424242;
+  line-height: clamp(3.84px, 1.198vw, 5.75px);
+  letter-spacing: clamp(0.48px, 0.15vw, 0.72px);
 }
 
 /* Days Grid */
 .vam-days-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  row-gap: 5px;
-  column-gap: 2px;
+  /* row-gap: 5px; */
+  /* column-gap: 2px; */
 }
 
 .vam-day-cell {
+  font-family: "Roboto", sans-serif;
   aspect-ratio: 1;
   max-width: 38px;
   margin: 0 auto;
@@ -223,12 +231,14 @@
   justify-content: center;
   background: transparent;
   border: none;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: #282828;
+  font-size: clamp(13.84px, 4.326vw, 20.76px);
+  font-weight: 500;
+  color: #424242;
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.15s ease;
+  line-height: clamp(15.57px, 4.865vw, 23.35px);
+  letter-spacing: 0px;
 }
 
 .vam-day-cell:hover:not(.disabled):not(.selected) {
@@ -237,10 +247,10 @@
 
 /* Selected Date Highlight (Purple Circle from reference) */
 .vam-day-cell.selected {
-  background: #924286 !important;
+  background: #97538c !important;
   color: #ffffff !important;
-  font-weight: 700;
-  box-shadow: 0 4px 10px rgba(146, 66, 134, 0.35);
+  /* font-weight: 700; */
+  /* box-shadow: 0 4px 10px rgba(146, 66, 134, 0.35); */
 }
 
 .vam-day-cell.disabled {
@@ -265,7 +275,6 @@
   align-items: center;
   justify-content: space-between;
   gap: clamp(14.66px, 4.58vw, 21.98px);
-  /* padding-top: 4px; */
   padding: clamp(17.64px, 5.511vw, 26.45px) clamp(6.93px, 2.165vw, 10.39px);
   height: 88.32px;
   background-color: #efecfb;

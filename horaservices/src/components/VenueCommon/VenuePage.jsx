@@ -47,17 +47,7 @@ const VenuePage = ({
 
   // SSR data ko seedha state mein daalo
   const [eventDetails, setEventDetails] = useState(initialEventDetails);
-  console.log(
-    "%c [ eventDetails ]",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    eventDetails,
-  );
   const [venuePackages, setVenuePackages] = useState(initialPackages || []);
-  console.log(
-    "%c [ venuePackages ]",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    venuePackages,
-  );
   const [venueCategories, setVenueCategories] = useState(
     initialCategories || [],
   );

@@ -183,7 +183,7 @@ const VenuelandMainPage = ({
         />
 
         <VenueFeatures />
-        <VenueReviews />
+        {/* <VenueReviews /> */}
       </div>
     </>
   );

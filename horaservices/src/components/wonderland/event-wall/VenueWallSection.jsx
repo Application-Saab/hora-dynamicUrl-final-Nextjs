@@ -51,18 +51,18 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "../../../pages/weblink-gallery/gallery.css";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
-import CommonImagePopup from "@/components/CommonImagePopup";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { safeGetItem } from "@/utils/safeStorage";
+import VenueImagePopup from "@/components/Venue/VenueImagePopup/VenueImagePopup";
 const VenueWallSection = ({
   userData,
   rsvpSubmitted,
   setPushRsvpClick,
   isHost,
-    venueImageUrl, 
+  venueImageUrl,
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -101,7 +101,7 @@ const VenueWallSection = ({
   const [initialPopupFolders, setInitialPopupFolders] = useState([]);
   const [showCreateFolderPopup, setShowCreateFolderPopup] = useState(false);
   const [localPhoneNumber, setLocalPhoneNumber] = useState(
-      safeGetItem("mobileNumber") || "",
+    safeGetItem("mobileNumber") || "",
   );
   const [rawPhoneNumber, setRawPhoneNumber] = useState(null);
   const [likedImages, setLikedImages] = useState({});
@@ -172,45 +172,53 @@ const VenueWallSection = ({
     imagesRef.current = allImages;
   }, [allImages]);
 
-useEffect(() => {
-  if (!userId || !venueid) return;
+  useEffect(() => {
+    if (!userId || !venueid) return;
 
-  const fetchLikes = async () => {
-    try {
-      const initialLikes = {};
+    const fetchLikes = async () => {
+      try {
+        const initialLikes = {};
 
-      const resp = await getAllLikes(
-        `${LIKED_POST_BY_EVENT_AND_USERID}/${venueid}/${userId}`,
-        "GET",
-      );
+        const resp = await getAllLikes(
+          `${LIKED_POST_BY_EVENT_AND_USERID}/${venueid}/${userId}`,
+          "GET",
+        );
 
-      resp?.posts?.forEach((post) => {
-        initialLikes[post._id] = true;
-      });
+        resp?.posts?.forEach((post) => {
+          initialLikes[post._id] = true;
+        });
 
-      setLikedImages((prev) => ({
-        ...prev,
-        ...initialLikes,
-      }));
-    } catch (error) {
-      console.error("Failed to fetching likes", error);
-    }
-  };
+        setLikedImages((prev) => ({
+          ...prev,
+          ...initialLikes,
+        }));
+      } catch (error) {
+        console.error("Failed to fetching likes", error);
+      }
+    };
 
-  fetchLikes();
-}, [venueid, userId]);
+    fetchLikes();
+  }, [venueid, userId]);
 
   useEffect(() => {
     if (!venueid) return;
     const loadFolders = async () => {
       try {
         const resp = await getEventInvite(
-            `${GET_VENUE_DETAILS_BY_ID}/${venueid}`,
-            "GET",
+          `${GET_VENUE_DETAILS_BY_ID}/${venueid}`,
+          "GET",
         );
-        console.log('%c [ resp subfolder ]', 'font-size:13px; background:pink; color:#bf2c9f;', resp)
+        console.log(
+          "%c [ resp subfolder ]",
+          "font-size:13px; background:pink; color:#bf2c9f;",
+          resp,
+        );
         const folders = resp?.data?.subFolders || [];
-        console.log('%c [ folders ]', 'font-size:13px; background:pink; color:#bf2c9f;', folders)
+        console.log(
+          "%c [ folders ]",
+          "font-size:13px; background:pink; color:#bf2c9f;",
+          folders,
+        );
         setSubFolders(Array.isArray(folders) ? folders : []);
       } catch (e) {
         console.error("Failed to load event subfolders", e);
@@ -220,7 +228,7 @@ useEffect(() => {
   }, [venueid]);
 
   const pauseAllVideos = () => {
-    const videos = document.querySelectorAll(".popupContent video");
+    const videos = document.querySelectorAll(".venue-img-pop-content video");
     videos.forEach((video) => {
       video.pause();
       video.currentTime = 0;
@@ -228,7 +236,9 @@ useEffect(() => {
   };
 
   const playActiveVideo = () => {
-    const activeVideo = document.querySelector(".slick-current video");
+    const activeVideo = document.querySelector(
+      ".venue-img-pop-slider-wrapper .slick-current video",
+    );
     if (!activeVideo) return;
 
     activeVideo.currentTime = 0;
@@ -247,7 +257,6 @@ useEffect(() => {
   async function loadEventPosts() {
     if (!venueid) return;
     const resp = await getAllPosts(`${GET_ALL_VENUE_IMAGES}/${venueid}`, "GET");
-    console.log('%c [ resp ]', 'font-size:13px; background:pink; color:#bf2c9f;', resp)
 
     if (resp?.data) {
       let fresh = [...resp.data];
@@ -354,7 +363,9 @@ useEffect(() => {
     if (!Array.isArray(current) || current.length === 0) return;
 
     const updatedList = current.map((item) =>
-      item.id === id ? { ...item, postUrl, postWebpUrl: thumbnailUrl, _id : imageId } : item,
+      item.id === id
+        ? { ...item, postUrl, postWebpUrl: thumbnailUrl, _id: imageId }
+        : item,
     );
 
     // UI updates immediately
@@ -407,7 +418,12 @@ useEffect(() => {
         );
 
         const post = posts[0];
-        await updateUploadedUrls(item.id, post.postUrl, post.postWebpUrl, post?._id);
+        await updateUploadedUrls(
+          item.id,
+          post.postUrl,
+          post.postWebpUrl,
+          post?._id,
+        );
         updateStatus(item.id, "done");
 
         await removeFromQueue(item.id);
@@ -688,11 +704,14 @@ useEffect(() => {
     addImageIds = [],
     removeImageIds = [],
   }) => {
-    const res = await fetchWithError(`${BASE_URL}${ASSIGN_TO_EVENT_SUBFOLDER}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ subFolderId, addImageIds, removeImageIds }),
-    });
+    const res = await fetchWithError(
+      `${BASE_URL}${ASSIGN_TO_EVENT_SUBFOLDER}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subFolderId, addImageIds, removeImageIds }),
+      },
+    );
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data?.message || "Failed to update folder");
     return data;
@@ -790,9 +809,12 @@ useEffect(() => {
     setShowActionMenu(false);
 
     try {
-      const res = await fetchWithError(`${BASE_URL}${DELETE_EVENT_POST}/${toDeleteId}`, {
-        method: "POST",
-      });
+      const res = await fetchWithError(
+        `${BASE_URL}${DELETE_EVENT_POST}/${toDeleteId}`,
+        {
+          method: "POST",
+        },
+      );
       if (!res.ok) {
         const txt = await res.text();
         throw new Error(txt || "Delete failed");
@@ -845,16 +867,19 @@ useEffect(() => {
     );
 
     try {
-      await fetchWithError(`${BASE_URL}${EVENT_POST_LIKE_UNLIKE}/${imageId}/like`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      await fetchWithError(
+        `${BASE_URL}${EVENT_POST_LIKE_UNLIKE}/${imageId}/like`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            likedById: userId,
+            likedByName: userData?.name || "Guest",
+          }),
         },
-        body: JSON.stringify({
-          likedById: userId,
-          likedByName: userData?.name || "Guest",
-        }),
-      });
+      );
     } catch (error) {
       console.error(error);
 
@@ -918,7 +943,7 @@ useEffect(() => {
       </div> */}
 
       <div>
-        {allImages.length === 0  ? (
+        {allImages.length === 0 ? (
           <div className="eventwall-nopost-ctn">
             <div className="nopost-box d-flex justify-content-center align-items-center flex-column">
               <img src={NopostCamera.src} alt="No Post Camera" className="" />
@@ -933,25 +958,25 @@ useEffect(() => {
           </div>
         ) : (
           <div style={{ position: "relative" }}>
-            <div
-            className="img-grid-ctn-venue"
-            >
-              {subFolders ?.length > 0 && <VenueWallHeaderTabs
-                eventId={venueid}
-                subFolders={subFolders}
-                setSubFolders={setSubFolders}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                onSelectSubFolder={handleSubFolderSelect}
-                setIsSearching={setIsSearching}
-                onSearchResults={handleSearchResults}
-                setIsStreamSearching={setIsStreamSearching}
-                setMatchedKeys={setMatchedKeys}
-                setIsActualMyPhotos={setIsActualMyPhotos}
-                showCreateFolderPopup={showCreateFolderPopup}
-                setShowCreateFolderPopup={setShowCreateFolderPopup}
-                 venueImageUrl={venueImageUrl}
-              />}
+            <div className="img-grid-ctn-venue">
+              {subFolders?.length > 0 && (
+                <VenueWallHeaderTabs
+                  eventId={venueid}
+                  subFolders={subFolders}
+                  setSubFolders={setSubFolders}
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
+                  onSelectSubFolder={handleSubFolderSelect}
+                  setIsSearching={setIsSearching}
+                  onSearchResults={handleSearchResults}
+                  setIsStreamSearching={setIsStreamSearching}
+                  setMatchedKeys={setMatchedKeys}
+                  setIsActualMyPhotos={setIsActualMyPhotos}
+                  showCreateFolderPopup={showCreateFolderPopup}
+                  setShowCreateFolderPopup={setShowCreateFolderPopup}
+                  venueImageUrl={venueImageUrl}
+                />
+              )}
 
               {/* {activeTab !== "all" && !isMyPhotosTab && activeSubFolderId && (
                 <div className="buttons-container">
@@ -996,128 +1021,100 @@ useEffect(() => {
                 setSelectedImages={setSelectedImages}
               />
 
-              <CommonImagePopup
+              <VenueImagePopup
                 images={popupImages}
                 selectedIndex={selectedIndex}
                 setSelectedIndex={setSelectedIndex}
                 onClose={closePopup}
                 isEventWall={true}
                 renderActions={(currentImage, index) => (
-                  <div>
-                    <div style={{ position: "relative" }}>
-                      <Image
-                        src={multiGroup}
-                        alt="More"
-                        width={25}
-                        height={25}
-                        onClick={() => setShowActionMenu((prev) => !prev)}
-                      />
+                  <div style={{ position: "relative" }} ref={actionMenuRef}>
+                    {/* OLD
+      <Image
+        src={multiGroup}
+        alt="More"
+        width={25}
+        height={25}
+        onClick={() => setShowActionMenu((prev) => !prev)}
+      />
+      */}
+                    <button
+                      type="button"
+                      className="venue-img-pop-more-btn"
+                      aria-label="More options"
+                      onClick={() => setShowActionMenu((prev) => !prev)}
+                    >
+                      <span />
+                      <span />
+                      <span />
+                    </button>
 
-                      {showActionMenu && (
-                        <div className="action-menu" ref={actionMenuRef}>
-                          <div className="action-item">
-                            <strong>Shared by:</strong>
-                            <p>{currentImage?.postByName || "Unknown User"}</p>
-                          </div>
+                    {showActionMenu && (
+                      <div className="venue-img-pop-menu">
+                        {/* <div className="venue-img-pop-menu-item venue-img-pop-shared-by">
+                          <strong>Shared by</strong>
+                          <p>{currentImage?.postByName || "Unknown User"}</p>
+                        </div> */}
 
-                          <div className="action-inner-container">
-                            {/* <div
-                              className="action-item flex"
-                              onClick={() => {
-                                if (!currentImage) return;
-                                setFolderSelection(
-                                  currentImage.folderIds || [],
-                                );
-                                setInitialPopupFolders(
-                                  currentImage.folderIds || [],
-                                );
-                                setShowAddToFolderPopup(true);
-                                setShowActionMenu(false);
-                              }}
-                            >
-                              <Image src={plusVector} width={19} height={15} />
-                              <span>Add to Folder</span>
-                            </div> */}
-                            {/* {currentImage?.type !== "video" && (
-                              <div
-                                className="action-item flex"
-                                onClick={() => {
-                                  const current = allImages[selectedIndex];
-                                  downloadFile(current.postUrl);
-                                  setShowActionMenu(false);
-                                }}
-                              >
-                                <Image
-                                  src={downloadVector}
-                                  width={15}
-                                  height={15}
-                                />
-                                <span>Download</span>
-                              </div>
-                            )} */}
+                        <div className="venue-img-pop-menu-inner">
+                          {/* ...purana commented Add to Folder / Download / Delete code yahin rahega... */}
 
-                            <div
-                              onClick={() => {
-                                const current = allImages[selectedIndex];
-                                if (!current) return;
-                                handleImageShare(current?.postUrl);
-                                setShowActionMenu(false);
-                              }}
-                              className="action-item flex gallery-share-icon"
-                            >
-                              <Image src={shareVector} width={13} height={14} />
-                              <span>Share</span>
-                            </div>
-                            {/* {(isHost ||
-                              String(currentImage?.postById) ===
-                                String(userId)) && (
-                              <div
-                                className="action-item flex"
-                                onClick={handleDeletePost}
-                              >
-                                <Image
-                                  src={deleteVector}
-                                  width={13}
-                                  height={17}
-                                />
-                                <span>Delete</span>
-                              </div>
-                            )} */}
+                          <div
+                            onClick={() => {
+                              if (!currentImage) return;
+                              handleImageShare(currentImage?.postUrl);
+                              setShowActionMenu(false);
+                            }}
+                            className="venue-img-pop-menu-item venue-img-pop-menu-row venue-img-pop-share-item"
+                          >
+                            {/* OLD: <Image src={shareVector} width={13} height={14} /> */}
+                            <Image
+                              src={whiteShareIcon}
+                              alt="Share"
+                              width={20}
+                              height={20}
+                            />
+                            <span>Share</span>
                           </div>
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 )}
                 renderFooter={(currentImage, index) => {
                   const imageId = currentImage?._id;
                   // const isLiked = likedImages[imageId];
                   return (
-                    <div className="imagepopup-footer">
-                      {/* <div>
-                        <Image
-                          src={isLiked ? like : unLike}
-                          alt="Like"
-                          width={30}
-                          height={32}
-                          style={{ filter: "none", cursor: "pointer" }}
-                          onClick={() => handleLikeToggle(imageId)}
-                        />
-                      </div> */}
+                    <div className="venue-img-pop-footer-actions">
+                      {/* <button
+          type="button"
+          className="venue-img-pop-action-btn"
+          onClick={() => handleLikeToggle(imageId)}
+        >
+          <span className="venue-img-pop-action-circle">
+            <Image src={isLiked ? like : unLike} alt="Like" width={22} height={22} />
+          </span>
+          <span>Like</span>
+        </button> */}
 
-                      <div>
-                        <Image
-                          src={whiteShareIcon}
-                          alt="Share"
-                          width={30}
-                          height={32}
-                          style={{ filter: "none", cursor: "pointer" }}
-                          onClick={() => {
-                            if (!currentImage) return;
-                            handleImageShare(currentImage?.postUrl);
-                          }}
-                        />
-                      </div>
+                      <button
+                        type="button"
+                        className="venue-img-pop-action-btn"
+                        onClick={() => {
+                          if (!currentImage) return;
+                          handleImageShare(currentImage?.postUrl);
+                        }}
+                      >
+                        <span className="venue-img-pop-action-circle">
+                          <Image
+                            src={whiteShareIcon}
+                            alt="Share"
+                            width={20}
+                            height={22}
+                          />
+                        </span>
+                        <span>Share</span>
+                      </button>
                     </div>
                   );
                 }}

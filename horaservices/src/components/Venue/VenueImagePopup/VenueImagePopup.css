@@ -1,0 +1,333 @@
+/* =====================================================================
+   VenueImagePopup: sab classes "venue-img-pop-" prefix ke saath.
+   slick-* classes react-slick ki hain, isliye wo hamesha
+   .venue-img-pop-slider-wrapper ke andar scope hain.
+   ===================================================================== */
+
+.venue-img-pop-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.venue-img-pop-content {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  background-color: #000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ---------- Header ---------- */
+.venue-img-pop-header {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px 14px 16px 14px;
+}
+.venue-img-pop-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.venue-img-pop-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+}
+.venue-img-pop-back-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 16px 4px 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+}
+.venue-img-pop-back-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.venue-img-pop-index {
+  margin-bottom: 0;
+  color: white;
+  font-size: 16px;
+}
+
+/* ---------- Slider ---------- */
+.venue-img-pop-slider-wrapper {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  background: black;
+  overflow: hidden;
+}
+.venue-img-pop-slider-wrapper .slick-slider,
+.venue-img-pop-slider-wrapper .slick-list,
+.venue-img-pop-slider-wrapper .slick-track,
+.venue-img-pop-slider-wrapper .slick-slide,
+.venue-img-pop-slider-wrapper .slick-slide > div {
+  height: 100%;
+}
+.venue-img-pop-slide-item {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- Zoom ---------- */
+.venue-img-pop-zoom-viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: none; /* pinch/pan hum khud handle karte hain */
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: zoom-in;
+}
+.venue-img-pop-zoom-viewport.venue-img-pop-is-grabbing {
+  cursor: grabbing;
+}
+.venue-img-pop-zoom-layer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+.venue-img-pop-zoom-layer img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* ---------- Thumbnail strip (5 visible, center aligned, scrollable) ---------- */
+.venue-img-pop-thumb-strip {
+  --thumb: 46px;
+  --gap: 8px;
+  flex-shrink: 0;
+  position: relative; /* offsetLeft calculation ke liye zaroori */
+  display: flex;
+  gap: var(--gap);
+  align-items: center;
+  width: calc(var(--thumb) * 5 + var(--gap) * 4);
+  max-width: 100%;
+  margin: 14px auto 6px;
+  padding: 6px calc((var(--thumb) + var(--gap)) * 2);
+  box-sizing: content-box;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+.venue-img-pop-thumb-strip::-webkit-scrollbar {
+  display: none;
+}
+.venue-img-pop-thumb-strip--few {
+  padding-left: 0;
+  padding-right: 0;
+  justify-content: center;
+  overflow-x: hidden;
+}
+.venue-img-pop-thumb-item {
+  position: relative;
+  flex: 0 0 var(--thumb);
+  width: var(--thumb);
+  height: var(--thumb);
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #1a1a1a;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.2s, transform 0.2s, border-color 0.2s;
+}
+.venue-img-pop-thumb-item img,
+.venue-img-pop-thumb-item video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+.venue-img-pop-thumb-item.venue-img-pop-active {
+  opacity: 1;
+  border-color: #fff;
+  transform: scale(1.08);
+}
+.venue-img-pop-thumb-play {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+}
+.venue-img-pop-thumb-play::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-35%, -50%);
+  border-style: solid;
+  border-width: 4px 0 4px 7px;
+  border-color: transparent transparent transparent #fff;
+}
+
+/* ---------- Footer ---------- */
+.venue-img-pop-footer {
+  flex-shrink: 0;
+  padding: 10px 0 calc(18px + env(safe-area-inset-bottom, 0px));
+}
+.venue-img-pop-footer a {
+  font-size: 15px;
+  color: #bfbfbf;
+}
+.venue-img-pop-footer img {
+  cursor: pointer;
+}
+.venue-img-pop-footer-actions {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 32px;
+}
+.venue-img-pop-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #bfbfbf;
+  font-size: 13px;
+}
+.venue-img-pop-action-circle {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- More (...) button ---------- */
+.venue-img-pop-more-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 0;
+}
+.venue-img-pop-more-btn span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+/* ---------- Action menu (dark glass) ---------- */
+.venue-img-pop-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 240px;
+  padding: 8px;
+  background: rgba(18, 18, 18, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+}
+.venue-img-pop-menu-item {
+  color: #fff;
+  font-family: "Roboto", sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* "Shared by" info line */
+.venue-img-pop-menu-item.venue-img-pop-shared-by {
+  padding: 4px 10px 8px;
+  cursor: default;
+}
+.venue-img-pop-shared-by strong {
+  display: block;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+  font-weight: 400;
+}
+.venue-img-pop-shared-by p {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 2px 0 0;
+}
+
+/* Andar ka dark rounded box */
+.venue-img-pop-menu-inner {
+  margin: 0;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  box-shadow: none;
+  overflow: hidden;
+}
+.venue-img-pop-menu-inner .venue-img-pop-menu-item {
+  padding: 14px 16px;
+  transition: background 0.15s;
+}
+.venue-img-pop-menu-inner .venue-img-pop-menu-item:hover,
+.venue-img-pop-menu-inner .venue-img-pop-menu-item:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+.venue-img-pop-menu-inner .venue-img-pop-menu-item + .venue-img-pop-menu-item {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.venue-img-pop-menu-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.venue-img-pop-menu-row img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
