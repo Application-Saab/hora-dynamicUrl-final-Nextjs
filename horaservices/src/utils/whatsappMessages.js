@@ -58,38 +58,62 @@ export const parseFromPath = (from) => {
 export const messagesByCategory = {
   "birthday-decoration":
     "Hi, I saw your birthday decoration designs and want to know more about it",
-   "kids-birthday-decoration":
+  "kids-birthday-decoration":
     "Hi, I saw your kids birthday decoration designs and want to know more about it",
-   "premium-decoration":
-    "Hi, I saw your premium decoration designs and want to know more about it",
-   "baby-shower-decoration":
+  "baby-shower-decoration":
     "Hi, I saw your baby shower decoration designs and want to know more about it",
-   "welcome-baby-decoration":
-    "Hi, I saw your welcome baby decoration designs and would like more details",
-   "anniversary-decoration":
-    "Hi, I saw your anniversary decoration designs and would like more details",
-   "first-night-decoration":
-    "Hi, I saw your first night decoration designs and would like more details",
-   "haldi-mehendi-decoration":
-    "Hi, I saw your haldi & mehendi decoration designs and would like more details",
-   "wedding-decoration":
-    "Hi, I saw your wedding decoration designs and would like more details",
+  "premium-decoration":
+    "Hi, I saw your stage decoration designs and want to know more about it",
+  "welcome-baby-decoration":
+    "Hi, I saw your welcome baby decoration designs and want to know more about it",
+  "naming-ceremony-decoration":
+    "Hi, I saw your naming ceremony decoration designs and want to know more about it",
+  "anniversary-decoration":
+    "Hi, I saw your anniversary decoration designs and want to know more about it",
+  "house-warming-decoration":
+    "Hi, I saw your house warming decoration designs and want to know more about it",
+  "first-night-decoration":
+    "Hi, I saw your first night decoration designs and want to know more about it",
+  "corporate-showrooms-decoration":
+    "Hi, I saw your corporate showroom decoration designs and want to know more about it",
+  "car-decoration":
+    "Hi, I saw your car decoration designs and want to know more about it",
+  "pet-animals-decoration":
+    "Hi, I saw your pet decoration designs and want to know more about it",
+  "festivals-decoration":
+    "Hi, I saw your festival decoration designs and want to know more about it",
+  "nation-pride-decoration":
+    "Hi, I saw your nation pride decoration designs and want to know more about it",
+  "haldi-mehendi-decoration":
+    "Hi, I saw your haldi mehendi decoration designs and want to know more about it",
+  "wedding-decoration":
+    "Hi, I saw your wedding decoration designs and want to know more about it",
   "bachelorette-decoration":
-    "Hi, I saw your bachelorette decoration designs and would like more details",
-  "haldi-decoration":
-    "Hi, I saw your haldi decoration designs and would like more details",
-  "mehendi-decoration":
-    "Hi, I saw your mehendi decoration designs and would like more details",
-  "mandap-decoration":
-    "Hi, I saw your mandap decoration designs and would like more details",
-  "wedding-car-decoration":
-    "Hi, I saw your wedding car decoration designs and would like more details",
-  "reception-decoration":
-    "Hi, I saw your reception decoration designs and would like more details",
-  "sangeet-decoration":
-    "Hi, I saw your sangeet decoration designs and would like more details",
+    "Hi, I saw your bachelorette decoration designs and want to know more about it",
+  "Proposal-Decorations":
+    "Hi, I saw your proposal decoration designs and want to know more about it",
   "engagement-decoration":
-    "Hi, I saw your engagement decoration designs and would like more details",
+    "Hi, I saw your engagement decoration designs and want to know more about it",
+  "reception-decoration":
+    "Hi, I saw your reception decoration designs and want to know more about it",
+  "sangeet-decoration":
+    "Hi, I saw your sangeet decoration designs and want to know more about it",
+  "mandap-decoration":
+    "Hi, I saw your mandap decoration designs and want to know more about it",
+  "wedding-car-decoration":
+    "Hi, I saw your wedding car decoration designs and want to know more about it",
+  "mehendi-decoration":
+    "Hi, I saw your mehendi decoration designs and want to know more about it",
+  "haldi-decoration":
+    "Hi, I saw your haldi decoration designs and want to know more about it",
+  "annaprashan-decoration":
+    "Hi, I saw your annaprashan decoration designs and want to know more about it",
+  "name-reveal-decoration":
+    "Hi, I saw your name reveal decoration designs and want to know more about it",
+  "baptism-decoration":
+    "Hi, I saw your baptism decoration designs and want to know more about it",
+  "pooja-decoration":
+    "Hi, I saw your pooja decoration designs and want to know more about it",
 };
 
 /* =========================================================
@@ -98,90 +122,136 @@ export const messagesByCategory = {
 
 export const productMessagesByCategory = {
   "birthday-decoration":
-    "Hi, I liked your birthday decoration design. Please help me with booking details.",
+    "Hi, I liked your birthday decor design, can you help me in booking process",
   "kids-birthday-decoration":
-    "Hi, I liked your kids birthday decoration design. Please help me with booking details.",
-  "premium-decoration":
-    "Hi, I liked your premium decoration design. Please help me with booking details.",
+    "Hi, I liked your kids birthday decor design, can you help me in booking process",
   "baby-shower-decoration":
-    "Hi, I liked your baby shower decoration design. Please help me with booking details.",
+    "Hi, I liked your baby shower decor design, can you help me in booking process",
+  "premium-decoration":
+    "Hi, I liked your stage decor design, can you help me in booking process",
   "welcome-baby-decoration":
-    "Hi, I liked your welcome baby decoration design. Please help me with booking details.",
+    "Hi, I liked your welcome baby decor design, can you help me in booking process",
+  "naming-ceremony-decoration":
+    "Hi, I liked your naming ceremony decor design, can you help me in booking process",
   "anniversary-decoration":
-    "Hi, I liked your anniversary decoration design. Please help me with booking details.",
+    "Hi, I liked your anniversary decor design, can you help me in booking process",
+  "house-warming-decoration":
+    "Hi, I liked your house warming decor design, can you help me in booking process",
   "first-night-decoration":
-    "Hi, I liked your first night decoration design. Please help me with booking details.",
+    "Hi, I liked your first night decor design, can you help me in booking process",
+  "corporate-showrooms-decoration":
+    "Hi, I liked your corporate showroom decor design, can you help me in booking process",
+  "car-decoration":
+    "Hi, I liked your car decor design, can you help me in booking process",
+  "pet-animals-decoration":
+    "Hi, I liked your pet decor design, can you help me in booking process",
+  "festivals-decoration":
+    "Hi, I liked your festival decor design, can you help me in booking process",
+  "nation-pride-decoration":
+    "Hi, I liked your nation pride decor design, can you help me in booking process",
   "haldi-mehendi-decoration":
-    "Hi, I liked your haldi & mehendi decoration design. Please help me with booking details.",
+    "Hi, I liked your haldi mehendi decor design, can you help me in booking process",
   "wedding-decoration":
-    "Hi, I liked your wedding decoration design. Please help me with booking details.",
+    "Hi, I liked your wedding decor design, can you help me in booking process",
   "bachelorette-decoration":
-    "Hi, I liked your bachelorette decoration design. Please help me with booking details.",
-  "haldi-decoration":
-    "Hi, I liked your haldi decoration design. Please help me with booking details.",
-  "mehendi-decoration":
-    "Hi, I liked your mehendi decoration design. Please help me with booking details.",
-  "mandap-decoration":
-    "Hi, I liked your mandap decoration design. Please help me with booking details.",
-  "wedding-car-decoration":
-    "Hi, I liked your wedding car decoration design. Please help me with booking details.",
-  "reception-decoration":
-    "Hi, I liked your reception decoration design. Please help me with booking details.",
-  "sangeet-decoration":
-    "Hi, I liked your sangeet decoration design. Please help me with booking details.",
+    "Hi, I liked your bachelorette decor design, can you help me in booking process",
+  "Proposal-Decorations":
+    "Hi, I liked your proposal decor design, can you help me in booking process",
   "engagement-decoration":
-    "Hi, I liked your engagement decoration design. Please help me with booking details.",
+    "Hi, I liked your engagement decor design, can you help me in booking process",
+  "reception-decoration":
+    "Hi, I liked your reception decor design, can you help me in booking process",
+  "sangeet-decoration":
+    "Hi, I liked your sangeet decor design, can you help me in booking process",
+  "mandap-decoration":
+    "Hi, I liked your mandap decor design, can you help me in booking process",
+  "wedding-car-decoration":
+    "Hi, I liked your wedding car decor design, can you help me in booking process",
+  "mehendi-decoration":
+    "Hi, I liked your mehendi decor design, can you help me in booking process",
+  "haldi-decoration":
+    "Hi, I liked your haldi decor design, can you help me in booking process",
+  "annaprashan-decoration":
+    "Hi, I liked your annaprashan decor design, can you help me in booking process",
+  "name-reveal-decoration":
+    "Hi, I liked your name reveal decor design, can you help me in booking process",
+  "baptism-decoration":
+    "Hi, I liked your baptism decor design, can you help me in booking process",
+  "pooja-decoration":
+    "Hi, I liked your pooja decor design, can you help me in booking process",
 };
 
 /* =========================================================
    Checkout Messages
+   (checkout uses catValue.toLowerCase(), so Proposal key is lowercase here)
 ========================================================= */
 
-
 export const checkoutMessagesByCategory = {
-    "kids-birthday-decoration": "Hi, can you help me book a kids birthday decor design",
     "birthday-decoration": "Hi, can you help me book a birthday decor design",
-    "anniversary-decoration": "Hi, can you help me book an anniversary decor design",
+    "kids-birthday-decoration": "Hi, can you help me book a kids birthday decor design",
     "baby-shower-decoration": "Hi, can you help me book a baby shower decor design",
-    "welcome-baby-decoration": "Hi, can you help me book a baby welcome decor design",
+    "premium-decoration": "Hi, can you help me book a stage decor design",
+    "welcome-baby-decoration": "Hi, can you help me book a welcome baby decor design",
+    "naming-ceremony-decoration": "Hi, can you help me book a naming ceremony decor design",
+    "anniversary-decoration": "Hi, can you help me book an anniversary decor design",
+    "house-warming-decoration": "Hi, can you help me book a house warming decor design",
     "first-night-decoration": "Hi, can you help me book a first night decor design",
-    "premium-decoration": "Hi, can you help me book a premium decor design",
-    "haldi-mehendi-decoration": "Hi, can you help me book a haldi & mehendi decor design",
+    "corporate-showrooms-decoration": "Hi, can you help me book a corporate showroom decor design",
+    "car-decoration": "Hi, can you help me book a car decor design",
+    "pet-animals-decoration": "Hi, can you help me book a pet decor design",
+    "festivals-decoration": "Hi, can you help me book a festival decor design",
+    "nation-pride-decoration": "Hi, can you help me book a nation pride decor design",
+    "haldi-mehendi-decoration": "Hi, can you help me book a haldi mehendi decor design",
     "wedding-decoration": "Hi, can you help me book a wedding decor design",
     "bachelorette-decoration": "Hi, can you help me book a bachelorette decor design",
-    "haldi-decoration": "Hi, can you help me book a haldi decor design",
-    "mehendi-decoration": "Hi, can you help me book a mehendi decor design",
-    "mandap-decoration": "Hi, can you help me book a mandap decor design",
-    "wedding-car-decoration": "Hi, can you help me book a wedding car decor design",
+    "proposal-decorations": "Hi, can you help me book a proposal decor design",
+    "engagement-decoration": "Hi, can you help me book an engagement decor design",
     "reception-decoration": "Hi, can you help me book a reception decor design",
     "sangeet-decoration": "Hi, can you help me book a sangeet decor design",
-    "engagement-decoration": "Hi, can you help me book an engagement decor design",
+    "mandap-decoration": "Hi, can you help me book a mandap decor design",
+    "wedding-car-decoration": "Hi, can you help me book a wedding car decor design",
+    "mehendi-decoration": "Hi, can you help me book a mehendi decor design",
+    "haldi-decoration": "Hi, can you help me book a haldi decor design",
+    "annaprashan-decoration": "Hi, can you help me book an annaprashan decor design",
+    "name-reveal-decoration": "Hi, can you help me book a name reveal decor design",
+    "baptism-decoration": "Hi, can you help me book a baptism decor design",
+    "pooja-decoration": "Hi, can you help me book a pooja decor design",
 };
 
 /* =========================================================
    City-Based Product Messages
 ========================================================= */
 
-
-
 export const productMessagesByCategoryCity = {
-  "kids-birthday-decoration": "Hi, I liked your kids birthday decor design, can you help me in booking process",
   "birthday-decoration": "Hi, I liked your birthday decor design, can you help me in booking process",
-  "anniversary-decoration": "Hi, I liked your anniversary decor design, can you help me in booking process",
-  "first-night-decoration": "Hi, I liked your first night decor design, can you help me in booking process",
-  "premium-decoration": "Hi, I liked your premium decor design, can you help me in booking process",
+  "kids-birthday-decoration": "Hi, I liked your kids birthday decor design, can you help me in booking process",
   "baby-shower-decoration": "Hi, I liked your baby shower decor design, can you help me in booking process",
-  "welcome-baby-decoration": "Hi, I liked your baby welcome decor design, can you help me in booking process",
-  "haldi-mehendi-decoration": "Hi, I liked your haldi & mehendi decor design, can you help me in booking process",
+  "premium-decoration": "Hi, I liked your stage decor design, can you help me in booking process",
+  "welcome-baby-decoration": "Hi, I liked your welcome baby decor design, can you help me in booking process",
+  "naming-ceremony-decoration": "Hi, I liked your naming ceremony decor design, can you help me in booking process",
+  "anniversary-decoration": "Hi, I liked your anniversary decor design, can you help me in booking process",
+  "house-warming-decoration": "Hi, I liked your house warming decor design, can you help me in booking process",
+  "first-night-decoration": "Hi, I liked your first night decor design, can you help me in booking process",
+  "corporate-showrooms-decoration": "Hi, I liked your corporate showroom decor design, can you help me in booking process",
+  "car-decoration": "Hi, I liked your car decor design, can you help me in booking process",
+  "pet-animals-decoration": "Hi, I liked your pet decor design, can you help me in booking process",
+  "festivals-decoration": "Hi, I liked your festival decor design, can you help me in booking process",
+  "nation-pride-decoration": "Hi, I liked your nation pride decor design, can you help me in booking process",
+  "haldi-mehendi-decoration": "Hi, I liked your haldi mehendi decor design, can you help me in booking process",
   "wedding-decoration": "Hi, I liked your wedding decor design, can you help me in booking process",
   "bachelorette-decoration": "Hi, I liked your bachelorette decor design, can you help me in booking process",
-  "haldi-decoration": "Hi, I liked your haldi decor design, can you help me in booking process",
-  "mehendi-decoration": "Hi, I liked your mehendi decor design, can you help me in booking process",
-  "mandap-decoration": "Hi, I liked your mandap decor design, can you help me in booking process",
-  "wedding-car-decoration": "Hi, I liked your wedding car decor design, can you help me in booking process",
+  "Proposal-Decorations": "Hi, I liked your proposal decor design, can you help me in booking process",
+  "engagement-decoration": "Hi, I liked your engagement decor design, can you help me in booking process",
   "reception-decoration": "Hi, I liked your reception decor design, can you help me in booking process",
   "sangeet-decoration": "Hi, I liked your sangeet decor design, can you help me in booking process",
-  "engagement-decoration": "Hi, I liked your engagement decor design, can you help me in booking process",
+  "mandap-decoration": "Hi, I liked your mandap decor design, can you help me in booking process",
+  "wedding-car-decoration": "Hi, I liked your wedding car decor design, can you help me in booking process",
+  "mehendi-decoration": "Hi, I liked your mehendi decor design, can you help me in booking process",
+  "haldi-decoration": "Hi, I liked your haldi decor design, can you help me in booking process",
+  "annaprashan-decoration": "Hi, I liked your annaprashan decor design, can you help me in booking process",
+  "name-reveal-decoration": "Hi, I liked your name reveal decor design, can you help me in booking process",
+  "baptism-decoration": "Hi, I liked your baptism decor design, can you help me in booking process",
+  "pooja-decoration": "Hi, I liked your pooja decor design, can you help me in booking process",
 };
 
 export const photographyMessagesByCategory = {
