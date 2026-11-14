@@ -333,7 +333,11 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false, parentCat
   });
 
   // Product schema
-  const schemaOrg = getDecorationCatOrganizationSchema(catValue, seoCity);
+  const schemaOrg = getDecorationCatOrganizationSchema(catValue, seoCity, {
+    url: canonicalUrl,
+    description,
+    parentCategory,
+  });
   const scriptTag = JSON.stringify(schemaOrg);
 
   // LocalBusiness schema — city-specific for local SEO
