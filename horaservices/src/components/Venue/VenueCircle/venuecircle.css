@@ -52,13 +52,13 @@ height: clamp(59px, calc((72 / 393) * 100vw), 88px);
 
 /* ── Label ── */
 .venue-item p {
-  margin-top: 5px;
-  margin-bottom: 0;
-  font-size: clamp(10px, 2.6vw, 12px);
-  font-weight: 500;
-  white-space: nowrap;
-  color: #97538C;                              /* default — grey */
   font-family: 'Inter', sans-serif;
+  margin-top: 6px;
+  margin-bottom: 0;
+  font-size: clamp(8.14px, 2.545vw, 12.21px);
+  font-weight: 600;
+  white-space: nowrap;
+  color: #97538C;
   transition: color 0.2s ease, font-weight 0.2s ease;
 }
 

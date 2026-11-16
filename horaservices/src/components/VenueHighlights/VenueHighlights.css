@@ -52,7 +52,7 @@
   grid-template-rows: repeat(2, 86px);
   grid-auto-flow: column;
   grid-auto-columns: clamp(92px, 25vw, 102px);
-  gap: clamp(11.4px, 3.562vw, 17.1px);
+  gap: clamp(8.14px, 2.545vw, 12.21px);
   width: max-content;
   margin: 0 auto;
 }
@@ -60,7 +60,7 @@
 /* Card */
 .vh-card {
   background: #ffffff;
-  border: 0.2px solid #97538c8a;
+  border: 0.2px solid #97538C8A;
   border-radius: clamp(8.14px, 2.545vw, 12.21px);
   display: flex;
   flex-direction: column;
@@ -68,7 +68,7 @@
   justify-content: center;
   padding: clamp(6.35px, 1.985vw, 9.53px) clamp(0.65px, 0.204vw, 0.98px);
   text-align: center;
-  box-shadow: 0px 4px 4px 0px #0000000f;
+ box-shadow: 0px 4px 4px 0px #0000000F;
 }
 
 .vh-icon-box {

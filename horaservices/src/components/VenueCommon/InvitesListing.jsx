@@ -9,7 +9,6 @@ import Image from "next/image";
 import {
   BASE_URL,
   VENUE_PUBLIC_LISTING,
-  GET_ALL_VENUE_IMAGES,
 } from "@/utils/apiconstants";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
@@ -92,10 +91,7 @@ const VenueList = ({
     return true;
   });
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
-  const [loadingMore, setLoadingMore] = useState(false);
   const loadTimerRef = useRef(null);
-  const [imageCounts, setImageCounts] = useState({});
-  const fetchedIdsRef = useRef(new Set());
 
   useEffect(() => {
     const key = getCacheKey(
@@ -127,7 +123,7 @@ const VenueList = ({
     if (venueType && venueType !== "all") params.append("venueType", venueType);
     if (guestCapacity) params.append("guestCapacity", guestCapacity);
     if (city) params.append("city", city);
-    if (localityValue) params.append("locality", localityValue); // ✅ clean value
+    if (localityValue) params.append("locality", localityValue);
 
     let cancelled = false;
 
@@ -147,7 +143,7 @@ const VenueList = ({
     return () => {
       cancelled = true;
     };
-  }, [eventType, venueType, guestCapacity, city, localityValue]); // ✅ localityValue
+  }, [eventType, venueType, guestCapacity, city, localityValue]);
 
   const filteredVenues = useMemo(() => {
     const q = (search || "").trim().toLowerCase();
@@ -176,12 +172,10 @@ const VenueList = ({
     if (loading) return;
     if (visibleCount >= filteredVenues.length) return;
 
-    setLoadingMore(true);
     loadTimerRef.current = setTimeout(() => {
       setVisibleCount((prev) =>
         Math.min(prev + BATCH_SIZE, filteredVenues.length),
       );
-      setLoadingMore(false);
       loadTimerRef.current = null;
     }, 1000);
 
@@ -192,35 +186,6 @@ const VenueList = ({
       }
     };
   }, [loading, visibleCount, filteredVenues.length]);
-
-  useEffect(() => {
-    const displayed = filteredVenues.slice(0, visibleCount);
-    const idsToFetch = displayed
-      .map((v) => v._id)
-      .filter((id) => id && !fetchedIdsRef.current.has(id));
-
-    if (idsToFetch.length === 0) return;
-
-    idsToFetch.forEach((id) => fetchedIdsRef.current.add(id));
-
-    idsToFetch.forEach((id) => {
-      const cacheKey = `venue-image-count-${id}`;
-      const cached = getPageCache(cacheKey);
-      if (cached) {
-        setImageCounts((prev) => ({ ...prev, [id]: cached.data }));
-        return;
-      }
-
-      fetchWithError(`${BASE_URL}${GET_ALL_VENUE_IMAGES}/${id}`)
-        .then((r) => r.json())
-        .then((res) => {
-          const count = Array.isArray(res?.data) ? res.data.length : 0;
-          setPageCache(cacheKey, count);
-          setImageCounts((prev) => ({ ...prev, [id]: count }));
-        })
-        .catch(() => {});
-    });
-  }, [filteredVenues, visibleCount]);
 
   if (loading) return null;
 
@@ -304,18 +269,18 @@ const VenueList = ({
                   alt={v.venueName}
                   className="venue-card-img"
                 />
-                <span className="see-photos-btn">
-                  <Image
-                    src={galleryIcon}
-                    alt="Gallery"
-                    className="stat-icon"
-                    width={14}
-                    height={14}
-                  />
-                  {imageCounts[v._id] != null
-                    ? `See Photos (${imageCounts[v._id]}+)`
-                    : "See Photos"}
-                </span>
+                {v?.imageCount > 0 && (
+                  <span className="see-photos-btn">
+                    <Image
+                      src={galleryIcon}
+                      alt="Gallery"
+                      className="stat-icon"
+                      width={14}
+                      height={14}
+                    />
+                    {`See Photos (${v?.imageCount}+)`}
+                  </span>
+                )}
               </div>
 
               <div className="venue-card-body">
@@ -363,7 +328,7 @@ const VenueList = ({
                 <div className="venue-card-divider"></div>
                 <div>
                   <p className="venue-price">
-                    ₹{v.startingPrice?.toLocaleString("en-IN") || "N/A"}
+                    ₹{v?.startingPrice?.toLocaleString("en-IN") || "N/A"}
                     <span className="price-closer">/-</span>{" "}
                     <span className="price-divider">|</span>
                     <span className="price-starting-text">Starting Price</span>
@@ -372,7 +337,8 @@ const VenueList = ({
                   <div className="venue-card-btn-ctn">
                     <div>
                       <span className="venue-menu-btn">
-                        View Package <FaArrowRightLong className="menu-button-arrow" />
+                        View Package{" "}
+                        <FaArrowRightLong className="menu-button-arrow" />
                       </span>
                     </div>
                   </div>

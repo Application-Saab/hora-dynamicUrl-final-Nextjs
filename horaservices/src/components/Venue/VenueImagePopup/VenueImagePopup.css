@@ -1,13 +1,7 @@
-/* =====================================================================
-   VenueImagePopup: sab classes "venue-img-pop-" prefix ke saath.
-   slick-* classes react-slick ki hain, isliye wo hamesha
-   .venue-img-pop-slider-wrapper ke andar scope hain.
-   ===================================================================== */
-
 .venue-img-pop-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: #000000;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -23,13 +17,12 @@
   overflow: hidden;
 }
 
-/* ---------- Header ---------- */
 .venue-img-pop-header {
   flex-shrink: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 28px 14px 16px 14px;
+  padding: clamp(13.84px, 4.326vw, 20.76px) clamp(9.77px, 3.053vw, 14.66px) clamp(21.17px, 6.616vw, 31.76px) clamp(7.33px, 2.29vw, 10.99px);
 }
 .venue-img-pop-header-left {
   display: flex;
@@ -45,11 +38,11 @@
 .venue-img-pop-back-pill {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 4px 16px 4px 4px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.08);
+  gap: 5px;
+  padding: 2.14px 10px 2.14px 2.14px;
+  border-radius: 33px;
+  border: 1.07px solid #35343D;
+  background: #111013;
   cursor: pointer;
 }
 .venue-img-pop-back-circle {
@@ -60,14 +53,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(195.12deg, rgba(46, 45, 49, 0.2) 12.48%, rgba(27, 28, 28, 0.2) 64.57%);
 }
 .venue-img-pop-index {
   margin-bottom: 0;
   color: white;
-  font-size: 16px;
+  font-size: clamp(13.93px, 4.354vw, 20.9px);
 }
 
-/* ---------- Slider ---------- */
 .venue-img-pop-slider-wrapper {
   flex: 1;
   min-height: 0;
@@ -90,13 +83,12 @@
   justify-content: center;
 }
 
-/* ---------- Zoom ---------- */
 .venue-img-pop-zoom-viewport {
   position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  touch-action: none; /* pinch/pan hum khud handle karte hain */
+  touch-action: none;
   user-select: none;
   -webkit-user-select: none;
   cursor: zoom-in;
@@ -121,12 +113,11 @@
   user-select: none;
 }
 
-/* ---------- Thumbnail strip (5 visible, center aligned, scrollable) ---------- */
 .venue-img-pop-thumb-strip {
   --thumb: 46px;
   --gap: 8px;
   flex-shrink: 0;
-  position: relative; /* offsetLeft calculation ke liye zaroori */
+  position: relative;
   display: flex;
   gap: var(--gap);
   align-items: center;
@@ -197,7 +188,6 @@
   border-color: transparent transparent transparent #fff;
 }
 
-/* ---------- Footer ---------- */
 .venue-img-pop-footer {
   flex-shrink: 0;
   padding: 10px 0 calc(18px + env(safe-area-inset-bottom, 0px));
@@ -227,17 +217,16 @@
   font-size: 13px;
 }
 .venue-img-pop-action-circle {
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.08);
+  background: #3F3E4C33;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* ---------- More (...) button ---------- */
 .venue-img-pop-more-btn {
   width: 40px;
   height: 40px;
@@ -258,16 +247,15 @@
   background: #fff;
 }
 
-/* ---------- Action menu (dark glass) ---------- */
 .venue-img-pop-menu {
   position: absolute;
-  top: calc(100% + 10px);
+  top: calc(100% + 5px);
   right: 0;
   width: 240px;
-  padding: 8px;
-  background: rgba(18, 18, 18, 0.96);
+  padding: clamp(8.75px, 2.735vw, 13.13px) clamp(3.7px, 1.155vw, 5.55px) ;
+  background: #00000033;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 18px;
+  border-radius: clamp(10.02px, 3.13vw, 15.02px);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -282,7 +270,6 @@
   cursor: pointer;
 }
 
-/* "Shared by" info line */
 .venue-img-pop-menu-item.venue-img-pop-shared-by {
   padding: 4px 10px 8px;
   cursor: default;
@@ -300,18 +287,18 @@
   margin: 2px 0 0;
 }
 
-/* Andar ka dark rounded box */
 .venue-img-pop-menu-inner {
   margin: 0;
   padding: 0;
-  background: rgba(255, 255, 255, 0.06);
+  background: #0F0E1182;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
   box-shadow: none;
   overflow: hidden;
+  box-shadow: 0px 4.92px 18.44px 0px #00000040;
 }
 .venue-img-pop-menu-inner .venue-img-pop-menu-item {
-  padding: 14px 16px;
+  padding: clamp(12.12px, 3.786vw, 18.17px) clamp(10.02px, 3.13vw, 15.02px);
   transition: background 0.15s;
 }
 .venue-img-pop-menu-inner .venue-img-pop-menu-item:hover,

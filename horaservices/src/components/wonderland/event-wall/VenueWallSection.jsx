@@ -17,6 +17,7 @@ import downloadVector from "@/assets/downloadVector.svg";
 import shareVector from "@/assets/shareVector.svg";
 import deleteVector from "@/assets/deleteVector.svg";
 import whiteShareIcon from "@/assets/whiteShareIcon.svg";
+import VenueShareImgPopup from '../../../assets/share_venue_image_popup.svg'
 import unLike from "@/assets/unLike.svg";
 import like from "@/assets/like.svg";
 import {
@@ -1071,8 +1072,8 @@ const VenueWallSection = ({
                             <Image
                               src={whiteShareIcon}
                               alt="Share"
-                              width={20}
-                              height={20}
+                              width={19}
+                              height={19}
                             />
                             <span>Share</span>
                           </div>
@@ -1107,13 +1108,13 @@ const VenueWallSection = ({
                       >
                         <span className="venue-img-pop-action-circle">
                           <Image
-                            src={whiteShareIcon}
+                            src={VenueShareImgPopup}
                             alt="Share"
-                            width={20}
-                            height={22}
+                            width={13}
+                            height={16}
                           />
                         </span>
-                        <span>Share</span>
+                        <span style={{fontSize: "13px", fontWeight : "300"}}>Share</span>
                       </button>
                     </div>
                   );

@@ -2,21 +2,8 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import Slider from "react-slick";
 import ArrowImg from "../../../assets/arrow.svg";
-import nextIcon from "../../../assets/nextIcon.svg";
 import Image from "next/image";
 import "./VenueImagePopup.css";
-
-const PrevArrow = ({ className, onClick }) => (
-  <div className={`${className} custom-arrow prev-arrow`} onClick={onClick}>
-    <Image src={ArrowImg} alt="Back" width={30} height={30} />
-  </div>
-);
-
-const NextArrow = ({ className, onClick }) => (
-  <div className={`${className} custom-arrow next-arrow`} onClick={onClick}>
-    <Image src={nextIcon} alt="Next" width={30} height={30} />
-  </div>
-);
 
 const pauseAllVideos = () => {
   const videos = document.querySelectorAll(".venue-img-pop-content video");
@@ -30,11 +17,6 @@ const MAX_SCALE = 4;
 const DOUBLE_TAP_SCALE = 2.5;
 const isVideoItem = (item) => item?.type === "video";
 
-/* -------------------------------------------------------------------------- */
-/*  ZoomableImage: pinch / wheel / double-tap zoom (focal point based)         */
-/*  - transform direct DOM pe lagta hai (no React re-render while zooming)     */
-/*  - sirf isi slide ka transform change hota hai                              */
-/* -------------------------------------------------------------------------- */
 const ZoomableImage = memo(function ZoomableImage({
   src,
   alt,
@@ -84,7 +66,6 @@ const ZoomableImage = memo(function ZoomableImage({
       return { x: cx - r.left, y: cy - r.top };
     };
 
-    // (fx, fy) = viewport ke andar wo point jo zoom ke time fixed rahega
     const zoomTo = (next, fx, fy) => {
       const s = t.current;
       let ns = Math.min(MAX_SCALE, Math.max(1, next));
@@ -109,10 +90,9 @@ const ZoomableImage = memo(function ZoomableImage({
       schedule();
     };
 
-    /* ----------------------------- touch ----------------------------- */
     let pinch = null;
     let pan = null;
-    let gestureLock = false; // pinch ke baad saari ungliyan uthne tak slick ko events nahi jayenge
+    let gestureLock = false;
     let tapStart = null;
     let lastTap = null;
 
@@ -133,7 +113,7 @@ const ZoomableImage = memo(function ZoomableImage({
         const p = e.touches[0];
         tapStart = { x: p.clientX, y: p.clientY, time: Date.now() };
         if (t.current.scale > 1) {
-          e.stopPropagation(); // zoomed hai to slick swipe nahi karega
+          e.stopPropagation();
           pan = { x: p.clientX, y: p.clientY };
         }
       }
@@ -147,7 +127,7 @@ const ZoomableImage = memo(function ZoomableImage({
         const d = dist(e.touches[0], e.touches[1]);
         const m = mid(e.touches[0], e.touches[1]);
         const s = t.current;
-        s.tx += m.x - pinch.mx; // do ungliyon ka beech ka point hilne se pan
+        s.tx += m.x - pinch.mx;
         s.ty += m.y - pinch.my;
         zoomTo(s.scale * (d / pinch.d), m.x, m.y);
         pinch.d = d;
@@ -209,13 +189,12 @@ const ZoomableImage = memo(function ZoomableImage({
       }
     };
 
-    /* ----------------------------- mouse ----------------------------- */
     const onWheel = (e) => {
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && t.current.scale === 1)
         return;
       e.preventDefault();
       const p = local(e.clientX, e.clientY);
-      const k = e.ctrlKey ? 0.01 : 0.0025; // ctrlKey = trackpad pinch
+      const k = e.ctrlKey ? 0.01 : 0.0025;
       zoomTo(t.current.scale * Math.exp(-e.deltaY * k), p.x, p.y);
     };
 
@@ -237,7 +216,7 @@ const ZoomableImage = memo(function ZoomableImage({
     };
     const onMouseDown = (e) => {
       if (e.button !== 0 || t.current.scale <= 1) return;
-      e.stopPropagation(); // slick ka mouse-drag nahi chalega
+      e.stopPropagation();
       e.preventDefault();
       drag = { x: e.clientX, y: e.clientY };
       viewport.classList.add("venue-img-pop-is-grabbing");
@@ -276,7 +255,6 @@ const ZoomableImage = memo(function ZoomableImage({
     };
   }, []);
 
-  // slide change hone par zoom reset
   useEffect(() => {
     if (!active && resetRef.current) resetRef.current();
   }, [active]);
@@ -290,9 +268,6 @@ const ZoomableImage = memo(function ZoomableImage({
   );
 });
 
-/* -------------------------------------------------------------------------- */
-/*  Thumbnail strip                                                            */
-/* -------------------------------------------------------------------------- */
 const ThumbItem = memo(function ThumbItem({ item, index, isActive, onSelect }) {
   const poster =
     item?.postSmallThumbUrl ||
@@ -369,7 +344,6 @@ const ThumbnailStrip = ({ images, selectedIndex, onSelect }) => {
     </div>
   );
 };
-/* -------------------------------------------------------------------------- */
 
 const VenueImagePopup = ({
   images = [],
@@ -392,11 +366,9 @@ const VenueImagePopup = ({
     slidesToShow: 1,
     slidesToScroll: 1,
     adaptiveHeight: false,
-    arrows: false, // New UI me arrows nahi hain (PrevArrow/NextArrow upar defined hain)
-    swipe: !isZoomed, // zoomed ho to slide swipe band
+    arrows: false,
+    swipe: !isZoomed,
     draggable: !isZoomed,
-    // prevArrow: <PrevArrow />,
-    // nextArrow: <NextArrow />,
     beforeChange: (current, next) => {
       pauseAllVideos();
       setImageNumber(next + 1);
@@ -440,7 +412,6 @@ const VenueImagePopup = ({
   useEffect(() => {
     if (selectedIndex !== null) {
       setImageNumber(selectedIndex + 1);
-      // Slight delay to ensure slider is mounted and classes are applied
       setTimeout(() => {
         playActiveVideo();
       }, 0);
@@ -484,7 +455,6 @@ const VenueImagePopup = ({
     return () => (document.body.style.overflow = "");
   }, [selectedIndex]);
 
-  // Desktop keyboard: ← → Esc
   useEffect(() => {
     if (selectedIndex === null) return;
     const onKey = (e) => {
@@ -512,16 +482,6 @@ return (
   >
     <div className="venue-img-pop-content" onClick={(e) => e.stopPropagation()}>
       <div className="venue-img-pop-header">
-        {/* OLD HEADER
-        <div className="venue-img-pop-header-left">
-          <button className="venue-img-pop-close" onClick={onClose}>
-            <Image src={Crossicon} alt="Close" width={18} height={18} />
-          </button>
-          <div className="venue-img-pop-index">
-            {`${imageNumber} / ${images.length}`}
-          </div>
-        </div>
-        */}
         <div className="venue-img-pop-header-left">
           <button
             className="venue-img-pop-back-pill"
@@ -540,7 +500,6 @@ return (
         {renderActions && renderActions(images[selectedIndex], selectedIndex)}
       </div>
 
-      {/* Slider */}
       <div className="venue-img-pop-slider-wrapper">
         <Slider
           {...sliderSettings}

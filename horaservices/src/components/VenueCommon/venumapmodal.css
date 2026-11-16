@@ -1,4 +1,3 @@
-/* Modal Overlay */
 .vmm-overlay {
   position: fixed;
   inset: 0;
@@ -12,7 +11,6 @@
   box-sizing: border-box;
 }
 
-/* Modal Card */
 .vmm-card {
   border-radius: clamp(11.65px, 3.641vw, 17.48px);
   background: #ffffff;
@@ -21,8 +19,6 @@
   padding: clamp(10.59px, 3.308vw, 15.88px) clamp(5.7px, 1.781vw, 8.55px);
   display: flex;
   flex-direction: column;
-  /* gap: 14px; */
-  /* box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25); */
   animation: vmmPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
 }
@@ -38,7 +34,6 @@
   }
 }
 
-/* Header */
 .vmm-header {
   display: flex;
   align-items: center;
@@ -56,24 +51,25 @@
 .vmm-close-btn {
   background: transparent;
   border: none;
-  font-size: clamp(13.84px, 4.326vw, 20.76px);
+  /* font-size: clamp(13.84px, 4.326vw, 20.76px); */
   color: #000000;
   cursor: pointer;
   display: flex;
   align-items: center;
   font-weight: 600;
   justify-content: center;
+  height: 17px;
+  width: 17px;
+  margin: 0px;
+  padding: 0px;
 }
 
-/* Map Frame */
 .vmm-map-container {
   width: 100%;
   height: clamp(257.26px, 80.395vw, 385.9px);
   margin-top: clamp(10.59px, 3.308vw, 15.88px);
   border-radius: clamp(8.14px, 2.545vw, 12.21px);
   overflow: hidden;
-  /* border: 1px solid #e7dce5; */
-  /* background: #f5f5f5; */
   position: relative;
 }
 
@@ -84,7 +80,6 @@
   display: block;
 }
 
-/* Info Details Row */
 .vmm-info-row {
   display: flex;
   align-items: flex-start;
