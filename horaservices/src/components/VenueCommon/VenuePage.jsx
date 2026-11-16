@@ -28,6 +28,13 @@ import TermsModal from "./TermsModal";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
 
+// GTM dataLayer push (inline helper — no extra file needed)
+const pushToDataLayer = (eventName, params = {}) => {
+  if (typeof window === "undefined") return;
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: eventName, ...params });
+};
+
 const VenuePage = ({
   city: propCity = null,
   initialEventDetails = null,
@@ -288,28 +295,39 @@ const VenuePage = ({
 
   const PHONE = "7338584828";
 
- const handleEnquire = () => {
-  trackWhatsAppButtonClick(
-    MARKETING_EVENTS.WHATSAPP_BUTTONS.VENUE_ENQUIRE_NOW_BTN,
-    {
+  const handleEnquire = () => {
+    const cityName = eventDetails?.city || city || "";
+
+    // GTM event
+    pushToDataLayer("enquire_now_click", {
+      venue_id: eventDetails?._id || idForCanonical || "",
+      venue_name: eventDetails?.venueName || "",
+      venue_city: cityName,
+      venue_locality: eventDetails?.locality || "",
       button_name: "Enquire Now",
-      button_type: "enquire_now_venue",
+      button_type: "whatsapp",
       page_path: window.location.pathname,
-    },
-  );
-  trackWAClicks();
+    });
 
-  const cityName = eventDetails?.city || city || "";
+    trackWhatsAppButtonClick(
+      MARKETING_EVENTS.WHATSAPP_BUTTONS.VENUE_ENQUIRE_NOW_BTN,
+      {
+        button_name: "Enquire Now",
+        button_type: "enquire_now_venue",
+        page_path: window.location.pathname,
+      },
+    );
+    trackWAClicks();
 
-  const message = `Hi, I want to book your venue & need more info${
-    cityName ? ` for ${cityName}` : ""
-  }!`;
+    const message = `Hi, I want to book your venue & need more info${
+      cityName ? ` for ${cityName}` : ""
+    }!`;
 
-  window.open(
-    `https://wa.me/91${PHONE}?text=${encodeURIComponent(message)}`,
-    "_blank",
-  );
-};
+    window.open(
+      `https://wa.me/91${PHONE}?text=${encodeURIComponent(message)}`,
+      "_blank",
+    );
+  };
 
   // Sirf tab full loader jab kuch bhi data na ho
   if (fullPageLoader && !eventDetails && venuePackages.length === 0) {
@@ -466,7 +484,7 @@ const VenuePage = ({
               <VenueAddressSection
                 eventData={eventDetails}
                 hideDateAndTime={true}
-                  city={city}
+                city={city}
               />
             </div>
           )}
@@ -514,7 +532,7 @@ const VenuePage = ({
                 {venuePackages.map((item) => (
                   <VenueFoodCard
                     key={item._id || item.title}
-                    item={item}
+                    item={{ ...item, venueId: item.venueId || venueId }}
                     onView={() => setSelectedPackage(item)}
                   />
                 ))}

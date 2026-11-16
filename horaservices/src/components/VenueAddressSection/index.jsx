@@ -7,13 +7,20 @@ import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEve
 
 const PHONE = "7338584828";
 
-const VenueAddressSection = ({ eventData, hideDateAndTime ,city  }) => {
+// GTM dataLayer push (inline helper — no extra file needed)
+const pushToDataLayer = (eventName, params = {}) => {
+  if (typeof window === "undefined") return;
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: eventName, ...params });
+};
+
+const VenueAddressSection = ({ eventData, hideDateAndTime, city }) => {
   const venueName = eventData?.venueName;
   const address = eventData?.location; // location = full address string in your API
   const mapLink = eventData?.googleMapLink;
 
-  // 👇 NEW — pre-filled WhatsApp message
-   const buildWhatsappLink = () => {
+  // Pre-filled WhatsApp message
+  const buildWhatsappLink = () => {
     const cityName = eventData?.city || city || "";
     const message = `Hi, I liked your this venue, can you help me in booking process${
       cityName ? ` in ${cityName}` : ""
@@ -26,10 +33,17 @@ const VenueAddressSection = ({ eventData, hideDateAndTime ,city  }) => {
 
   if (!venueName && !address) return null;
 
+  // Common GTM payload
+  const gtmPayload = {
+    venue_id: eventData?._id || "",
+    venue_name: venueName || "",
+    venue_city: eventData?.city || city || "",
+    venue_locality: eventData?.locality || "",
+    page_path: typeof window !== "undefined" ? window.location.pathname : "",
+  };
+
   return (
     <div className="vas-card">
-      {/* LEFT — Pin avatar */}
-  
       {/* MIDDLE — Venue name + address */}
       <div className="vas-info">
         {venueName && <h1 className="vas-venueName">{venueName}</h1>}
@@ -44,13 +58,19 @@ const VenueAddressSection = ({ eventData, hideDateAndTime ,city  }) => {
           rel="noopener noreferrer"
           className="vas-btn vas-btn--whatsapp"
           onClick={(e) => {
+            pushToDataLayer("check_availability_click", {
+              ...gtmPayload,
+              button_name: "Check Availability",
+              button_type: "whatsapp",
+              button_location: "venue_detail_address_section",
+            });
             trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.CHECK_AVAILABILITY_VENUE_INNER, {
               button_name: "Check Availability",
               button_type: "check_availibility_venue_address_section",
               page_path: window.location.pathname,
-            }); 
-            e.stopPropagation(); 
-            trackWAClicks()
+            });
+            e.stopPropagation();
+            trackWAClicks();
           }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -65,7 +85,14 @@ const VenueAddressSection = ({ eventData, hideDateAndTime ,city  }) => {
             target="_blank"
             rel="noopener noreferrer"
             className="vas-btn vas-btn--map"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              pushToDataLayer("view_map_click", {
+                ...gtmPayload,
+                button_name: "View on Map",
+                map_link: mapLink,
+              });
+              e.stopPropagation();
+            }}
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
               <path d="M9 3L3 6v15l6-3l6 3l6-3V3l-6 3l-6-3z" strokeLinejoin="round" />
