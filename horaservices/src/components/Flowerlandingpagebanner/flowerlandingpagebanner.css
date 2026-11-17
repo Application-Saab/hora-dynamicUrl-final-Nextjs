@@ -1,0 +1,62 @@
+.flower-banner {
+  margin-bottom: 10px;
+}
+
+/* Wrapper relative hai, taaki button image ke upar absolute ho sake */
+.flower-banner__wrap {
+  position: relative;
+  width: 100%;
+  border-radius: 11px;
+  overflow: hidden;
+}
+
+.flower-banner__img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Button: image ke bottom-left mein */
+.flower-banner__btn {
+  position: absolute;
+  left: 2.4%;
+  bottom: 8%;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+
+  width: clamp(105.98px, 33.08vw, 129.92px);
+  height: clamp(22.79px, 7.12vw, 27.97px);
+  padding: clamp(7.82px, 2.44vw, 9.59px);
+  gap: clamp(7.82px, 2.44vw, 9.59px);
+  border-radius: clamp(4.89px, 1.53vw, 6px);
+
+  background: #8b4f85;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: clamp(9.38px, 2.93vw, 14.07px);
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+
+  box-shadow: 0 6px 16px rgba(97, 40, 90, 0.3);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.flower-banner__btn:hover {
+  background: #97538c;
+  transform: translateY(-2px);
+}
+
+.flower-banner__btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+.flower-banner__arrow {
+  width: clamp(9.38px, 2.93vw, 14.07px);
+  height: auto;
+  flex-shrink: 0;
+}

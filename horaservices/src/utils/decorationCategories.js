@@ -28,4 +28,6 @@ export const decCat = [
   { id: "27", image: "", name: "Annaprashan Decoration", subCategory: "AnnaprashanDecoration", catValue: "annaprashan-decoration", imgAlt: "Sweet annaprashan decoration for a baby's first rice-eating ceremony with pastel balloons and traditional Indian decor" },
   { id: "28", image: "", name: "Name Reveal Decoration", subCategory: "NameRevealDecoration", catValue: "name-reveal-decoration", imgAlt: "Creative name reveal decoration setup with personalised letter balloons, floral arrangements, and surprise reveal props" },
   { id: "29", image: "", name: "Baptism Decoration", subCategory: "BaptismDecoration", catValue: "baptism-decoration", imgAlt: "Elegant baptism decoration with white and gold theme, cross motifs, candles, and floral arrangements for a christening ceremony" },
+   { id: "30", image: "", name: "Pooja Decoration", subCategory: "PoojaDecoration", catValue: "pooja-decoration", imgAlt: "Elegant baptism decoration with white and gold theme, cross motifs, candles, and floral arrangements for a christening ceremony" },
+  
 ];
