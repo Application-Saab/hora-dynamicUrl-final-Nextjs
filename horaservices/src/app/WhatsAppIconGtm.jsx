@@ -198,7 +198,7 @@ const getCheckoutCity = () => {
         eventName = 'decoration_citypage_whatsappclick';
         productNameEvent = 'decoration page whatsapp button clicked';
         message = addCityToMessage(
-          "Hi, I saw your website and want to know more about decoration services ",
+          "Hi, I saw your website and want to know more about decoration services",
           formattedCity
         );
         break;
@@ -236,17 +236,17 @@ const getCheckoutCity = () => {
         }
         break;
       }
-      
-      case '/balloon-decoration/[catValue]/[theme]':
-        eventName = 'decoration_themepage_whatsapp_click';
-        productNameEvent = `decoration_themepage_whatsapp_click_${themeSlug}`;
-        message = `Hi, I saw your ${themeLabel} decoration designs and want to know more about it.`;
+         case '/balloon-decoration/[catValue]/[theme]':
+        eventName = 'decoration_productlistedpage_whatsapp_click';
+        productNameEvent = `decoration_productlist_categorypage_whatsapp_click_${catValue}`;
+        message = messagesByCategory[catValue] || defaultMessage;
         break;
 
-      case '/[city]/balloon-decoration/[catValue]/[theme]': {
-        eventName = 'decoration_themecitypage_whatsapp_click';
-        productNameEvent = `decoration_themecitypage_whatsapp_click_${themeSlug}`;
-        message = `Hi, I saw your ${themeLabel} decoration designs and want to know more about it in ${toTitle(city)}.`;
+          case '/[city]/balloon-decoration/[catValue]/[theme]': {
+        eventName = 'decoration_productlistedcitypage_whatsapp_click';
+        productNameEvent = 'decoration_productlistedcitypage_whatsapp_click';
+        const base = messagesByCategory[catValue] || defaultMessage;
+        message = addCityToMessage(base, formattedCity);
         break;
       }
         case '/wedding-decoration/[catValue]':

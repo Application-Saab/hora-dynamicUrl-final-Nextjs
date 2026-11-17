@@ -41,6 +41,8 @@ function MyApp({ Component, pageProps }) {
   const hideWhatsApp =
     pathOnly === "/weblink-gallery" ||
     pathOnly.startsWith("/weblink-gallery/") ||
+    pathOnly === "/video-viewer" ||
+    pathOnly.startsWith("/video-viewer/") ||
     pathOnly?.includes("/photography/product") ||
     pathOnly?.includes("/balloon-decoration/product");
 

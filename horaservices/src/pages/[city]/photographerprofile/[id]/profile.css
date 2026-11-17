@@ -81,10 +81,17 @@
 }
 
 .profile-info-text {
-    font-size: 14px;
+    font-size: 10px;
     font-weight: 500;
     line-height: 1.2;
     margin: 0;
+    min-width: 0;
+}
+
+@media (min-width: 400px) {
+    .profile-info-text {
+        font-size: 12px;
+    }
 }
 
 .profile-name {
@@ -477,10 +484,16 @@
 
 .highlight-content h2 {
     margin: 0;
-    font-size: 14.7px;
+    font-size: 10px;
     font-weight: 700;
     line-height: 1.1;
     color: #1a1a1a;
+}
+
+@media (min-width: 400px) {
+    .highlight-content h2 {
+        font-size: 14.7px;
+    }
 }
 
 .highlight-content h3 {

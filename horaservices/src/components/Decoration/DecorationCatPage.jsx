@@ -104,6 +104,7 @@ const buildCacheKey = (path, sort, priceThemeId, search, designTypes = []) =>
 const DecorationCatPage = ({
   city: cityProp = "",
   serverCity = null,   // SSR-safe city name from getServerSideProps — use for <Head> only
+  serverTheme = null,  // SSR-safe theme slug from getServerSideProps — use for <Head> only
   locality = null,
   catValue: catValueProp = "",
   initialCatalogueData = [],
@@ -960,7 +961,7 @@ const renderChip = (chip) => (
         catValue={normalizedCat}
         city={serverCity || cityProp}
         locality={locality}
-        theme={theme}
+        theme={serverTheme || theme}
         parentCategory={categorySlug}
       />
 
@@ -1091,7 +1092,8 @@ const renderChip = (chip) => (
                     />
                   </div>
                 )}
-                {catValue?.toLowerCase() === "birthday-decoration" &&
+
+                {/* {catValue?.toLowerCase() === "birthday-decoration" &&
   !isSearchActive && (
     <div className="category-tabs-outer">
       <CategoryTabs
@@ -1110,7 +1112,8 @@ const renderChip = (chip) => (
         activeValue={themeFilter}
       />
     </div>
-  )}
+  )} */}
+
               <EventDateBanner userId={userId} visitorId={visitorId} />
 
               {isPriceThemeActive || isSearchActive ? (
@@ -1162,7 +1165,7 @@ const renderChip = (chip) => (
                     onCardClick={handleViewDetails}
                     getHref={getProductHref}
                   />
-                  <MakeItYoursBanner />
+                  <MakeItYoursBanner catValue={catValue} city={city} />
                   <ProductGrid
                     data={sortedCatalogueData.slice(4, 10)}
                     onCardClick={handleViewDetails}

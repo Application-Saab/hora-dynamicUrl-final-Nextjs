@@ -9,7 +9,7 @@ import ProductGrid from "@/components/productGrid";
 import CardSkeleton from "@/components/CardSkeleton";
 import SearchSortBar from "@/components/SearchSortBar";
 import SeoHead from "@/utils/SeoHead";
-import boosterBanner from "@/assets/celebrationboosters.webp";
+import boosterBanner from "@/assets/partyprops.webp";
 import "./celebrationbooster.css";
 import Head from "next/head";
 
@@ -23,7 +23,7 @@ const CELEBRATION_BOOSTER_API =
 const BOOSTER_IMAGE_BASE_URL = "https://horaservices.com/api/uploads/";
 
 // Used to build the product-detail route — adjust to match your actual route
-const CATEGORY_SLUG = "celebration-booster";
+const CATEGORY_SLUG = "party-props";
 
 const CelebrationBoosterPage = () => {
   const router = useRouter();
@@ -175,7 +175,7 @@ const CelebrationBoosterPage = () => {
           name="description"
           content={`Elevate your wedding or birthday with our premium party props! Book cold pyro entries, fog matkas, money guns, and more celebration boosters today.`}
         />
-        <link rel="canonical" href="https://horaservices.com/celebration-booster" />
+        <link rel="canonical" href="https://horaservices.com/party-props" />
         <meta
           name="keywords"
           content={`Elevate your wedding or birthday with our premium party props! Book cold pyro entries, fog matkas, money guns, and more celebration boosters today.`}
@@ -184,7 +184,7 @@ const CelebrationBoosterPage = () => {
         <meta property="og:title" content="Book Party Props & Celebration Boosters for Events | HORA Services" />
         <meta
           property="og:url"
-          content={`https://horaservices.com/celebration-booster`}
+          content={`https://horaservices.com/party-props`}
         />
         <meta property="og:type" content="website" />
       </Head>

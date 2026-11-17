@@ -5,7 +5,14 @@ import { getCategoryContent } from "@/utils/Decorationcategorycontent";
 import { decorationCityFAQData } from "@/utils/DecorationCityFAQ";
 import { CityDecorationlandingPage } from "@/utils/CityDecorationlanding";
 import { getCityCategoryLanding } from "@/utils/Citycategorydecorationlanding";
+import {
+  getThemeIntro,
+  getThemeFaqs,
+  getThemeFaqSchema,
+  getThemeLabel,
+} from "@/utils/themePageContent";
 import CityDecorationlanding from "./cityDecorationlanding";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 
@@ -20,6 +27,7 @@ function DecorationCatCityPage({
   citySlug: serverCitySlug,
   locality,
   catValue,
+  theme = null,                          // SSR-safe theme slug, e.g. "mermaid"
   initialCatalogueData,
   initialCatId,
   initialHasMore,
@@ -89,11 +97,38 @@ function DecorationCatCityPage({
   // General FAQ
   const generalFaqs = decorationCityFAQData();
 
-  // City FAQ + General FAQ
-  const cityDecorationFAQ = [...cityFaqs, ...generalFaqs];
+  /* Theme pages (/[city]/balloon-decoration/[catValue]/[theme]) previously
+     rendered exactly the same body copy as their parent category page, which
+     is why Search Console reported them as "Duplicate, Google chose different
+     canonical than user" and canonicalised them onto the parent. The theme
+     intro and the theme FAQs below are the per-theme content that makes each
+     one a distinct page. Both are null/empty on a plain category page, so
+     that page is unchanged. */
+  const themeIntro = getThemeIntro(theme, catValue, city);
+  const themeFaqs = getThemeFaqs(theme, catValue, city);
+  const themeLabel = theme ? getThemeLabel(theme) : "";
+  const themeFaqSchema = getThemeFaqSchema(themeFaqs);
+
+  // Theme FAQs first, then city FAQ + general FAQ
+  const cityDecorationFAQ = [...themeFaqs, ...cityFaqs, ...generalFaqs];
+
+  const descriptionTitle = themeLabel
+    ? `About ${themeLabel} Decoration${city ? ` in ${city}` : ""}`
+    : "Description";
 
   return (
     <>
+      {themeFaqSchema && (
+        <Head>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(themeFaqSchema),
+            }}
+          />
+        </Head>
+      )}
+
       {/* Pass serverCity (SSR-safe, from getServerSideProps context.params)
           as a separate prop so DecorationCatPage can hand it to SeoHead.
           The city useState value is empty at SSR time — Googlebot sees blank
@@ -103,6 +138,7 @@ function DecorationCatCityPage({
         serverCity={serverCity}
         locality={locality}
         catValue={catValue}
+        serverTheme={theme}
         initialCatalogueData={initialCatalogueData}
         initialCatId={initialCatId}
         initialHasMore={initialHasMore}
@@ -119,8 +155,12 @@ function DecorationCatCityPage({
         />
       )}
 
-      {categoryContent && (
-        <SectionDescription sections={categoryContent.description} />
+      {(categoryContent || themeIntro) && (
+        <SectionDescription
+          title={descriptionTitle}
+          intro={themeIntro}
+          sections={categoryContent ? categoryContent.description : []}
+        />
       )}
 
       <div className="tab-section-details-productpage">
