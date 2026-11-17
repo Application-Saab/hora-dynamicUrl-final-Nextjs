@@ -4,6 +4,7 @@ import { trackMetaCustomEvent } from "./fpixel";
    ALL MARKETING EVENT NAMES — SINGLE SOURCE
 ========================================= */
 
+
 export const MARKETING_EVENTS = {
   LOGIN_SUCCESS: "login_success",
 
@@ -27,11 +28,6 @@ export const MARKETING_EVENTS = {
     DECORATION_CHECKOUT_CONTACT_US : "decoration_checkout_contact_us",
     FOOD_CHECKOUT_CONTACT_US : "food_checkout_contact_us",
     PHOTOGRAPHY_CHECKOUT_CONTACT_US : "photography_checkout_contact_us",
-
-    ENQUIRY: "whatsapp_enquiry_click",
-    CUSTOMIZATION: "whatsapp_customization_click",
-    GENERAL_SUPPORT: "whatsapp_general_support_click",
-    CHECKOUT_BOOKING: "whatsapp_checkout_booking_click",
   },
 };
 

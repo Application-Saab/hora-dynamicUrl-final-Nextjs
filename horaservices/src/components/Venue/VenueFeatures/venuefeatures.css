@@ -1,19 +1,20 @@
 .venue-features {
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: stretch;
   padding: clamp(4px, calc((5 / 393) * 100vw), 6px);
   gap: 0;
- margin: clamp(16px, calc((20 / 393) * 100vw), 24px) 0px;
+  margin: clamp(11.98px, 3.743vw, 17.97px) 0px;
 }
 
 .venue-feature-item {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  border-right: 0.5px solid #E0E0E0;
-  padding: clamp(0.8px, calc((1 / 393) * 100vw), 1.2px);
+  border-right: 0.5px solid #0000001A;
+  padding-inline: clamp(4.49px, 1.405vw, 6.74px);
 }
 
 .venue-feature-item:last-child {
@@ -24,7 +25,7 @@
   width: clamp(22px, calc((30.28 / 393) * 100vw), 38px);
   height: clamp(22px, calc((30.28 / 393) * 100vw), 38px);
   border-radius: 50%;
-  background-color: #F3EBF9;
+  background-color: #f3ebf9;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,9 +39,9 @@
 }
 
 .feature-title {
-  font-family: Inter, sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 600;
- font-size: clamp(6.85px, calc((8.4 / 393) * 100vw), 10.26px);
+  font-size: clamp(6.9px, 2.158vw, 10.36px);
   text-align: center;
   color: #000000;
   margin: 0 0 clamp(2px, calc((4 / 393) * 100vw), 5px);
@@ -48,11 +49,11 @@
 }
 
 .feature-desc {
-  font-family: Inter, sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 300;
-  font-size: clamp(5px, calc((6.06 / 393) * 100vw), 7.4px);
+  font-size: clamp(4.93px, 1.542vw, 7.4px);
   text-align: center;
   color: #000000;
   margin: 0;
-  line-height: 1.4;
+  line-height: 100%;
 }

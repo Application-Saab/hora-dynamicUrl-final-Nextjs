@@ -1,110 +1,230 @@
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import Image from "next/image";
-import guestIcon from "@/assets/venuelanding/guest.svg";
-import parkingIcon from "@/assets/venuelanding/parking.svg";
-import roomIcon from "@/assets/venuelanding/rooms.svg";
-import hallIcon from "@/assets/venuelanding/halls.svg";
-import enquiryBg from "@/assets/venuelanding/enquiry-bg.webp";
-import enquiryIcon from "@/assets/venuelanding/enquiryIcon.png"
-import "./VenueHighlights.css"
-import arrowImage from "@/assets/venuelanding/venuearrow.svg"
-// Backend field naming abhi consistent nahi hai (listing API vs details API
-// alag keys bhej sakte hain) — isliye har field ke multiple possible names try karte hain.
-const pick = (obj, keys) => {
-  for (const k of keys) {
-    if (obj?.[k] !== undefined && obj?.[k] !== null && obj?.[k] !== "") return obj[k];
+import "./VenueHighlights.css";
+
+import ParkingIcon from "../../assets/venue/highlights/car_parking_icon.svg";
+import GuestIcon from "../../assets/venue/highlights/guest_icon.svg";
+import HallsIcon from "../../assets/venue/highlights/halls_building.svg";
+import RoomIcon from "../../assets/venue/highlights/room_bed_icon.svg";
+import { fetchVenueSuggestion } from "@/services/venueServices";
+
+const TINT_COLORS = [
+  "#F2EAFA",
+  "#FDF1F7",
+  "#EAF6FF",
+  "#EAFBF0",
+  "#FFF6E8",
+  "#F3F0FF",
+  "#FFF0F0",
+  "#F0F7FF",
+  "#F5FFF5",
+  "#FFF8F0",
+];
+
+const buildBaseHighlights = (data = {}) => {
+  const items = [];
+
+  // Max Guests
+  if (data.guestCapacity !== undefined && data.guestCapacity !== null) {
+    items.push({
+      id: "max-guests",
+      value: `${data.guestCapacity} Maximum Guest`,
+      icon: GuestIcon,
+      isSvgFile: true,
+      bgColor: "#F2EAFA",
+    });
   }
-  return undefined;
+
+  // Parking
+  if (data.isParkingAvailable) {
+    items.push({
+      id: "parking",
+      value: "Parking Area",
+      icon: ParkingIcon,
+      isSvgFile: true,
+      bgColor: "#FDF1F7",
+    });
+  }
+
+  // Outdoor / Indoor Halls
+  const halls = Array.isArray(data.hallType) ? data.hallType : [];
+  const outdoorCount = halls.filter((h) =>
+    String(h).toLowerCase().includes("out"),
+  ).length;
+  const indoorCount = halls.filter((h) =>
+    String(h).toLowerCase().includes("in"),
+  ).length;
+
+  if (outdoorCount > 0 || halls.length > 0) {
+    items.push({
+      id: "outdoor-halls",
+      value: `${outdoorCount || halls.length} Maximum Halls Outdoor`,
+      icon: HallsIcon,
+      isSvgFile: true,
+      bgColor: "#FDF1F7",
+    });
+  }
+
+  if (indoorCount > 0) {
+    items.push({
+      id: "indoor-halls",
+      value: `${indoorCount} Maximum Hall Indoor`,
+      icon: HallsIcon,
+      isSvgFile: true,
+      bgColor: "#FDF1F7",
+    });
+  }
+
+  // Rooms
+  if (data.totalRoomsAvailable > 0) {
+    items.push({
+      id: "rooms",
+      value: `${data.totalRoomsAvailable} Ac Room`,
+      icon: RoomIcon,
+      isSvgFile: true,
+      bgColor: "#FDF1F7",
+    });
+  }
+
+  // Min Guests
+  if (data.minGuestCapacity !== undefined && data.minGuestCapacity !== null) {
+    items.push({
+      id: "min-guests",
+      value: `${data.minGuestCapacity} Minimum Guest`,
+      icon: GuestIcon,
+      isSvgFile: true,
+      bgColor: "#F2EAFA",
+    });
+  }
+
+  return items;
 };
 
-const VenueHighlights = ({ venue, onEnquire }) => {
-  if (!venue) return null;
+const VenueHighlights = ({ venueDetails }) => {
+  const [featureSuggestions, setFeatureSuggestions] = useState([]);
+  const [showScrollbar, setShowScrollbar] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
-  const guestCapacity = pick(venue, ["guestCapacity", "maxGuestCapacity", "capacity"]);
-  const isParkingAvailable = pick(venue, ["isParkingAvailable", "parkingAvailable", "parking"]);
-  const totalRoomsAvailable = pick(venue, ["totalRoomsAvailable", "roomsAvailable", "totalRooms"]);
-  const rawHalls = pick(venue, ["hallType", "halls", "hallTypes"]);
+  const scrollRef = useRef(null);
 
-  const halls = Array.isArray(rawHalls) ? rawHalls : rawHalls ? [rawHalls] : [];
-  const hallLabel = halls
-    .map((h) =>
-      h?.toLowerCase?.().startsWith("in") ? "Indoor" : h?.toLowerCase?.().startsWith("out") ? "Outdoor" : h
-    )
-    .join(" & ");
+  useEffect(() => {
+    fetchVenueSuggestion("SPECIAL_FEATURES")
+      .then((data) => setFeatureSuggestions(data || []))
+      .catch(() => setFeatureSuggestions([]));
+  }, []);
 
-  const hasStats = !!guestCapacity || !!isParkingAvailable || totalRoomsAvailable > 0 || halls.length > 0;
+  const items = useMemo(() => {
+    const base = buildBaseHighlights(venueDetails || {});
+
+    const features = Array.isArray(venueDetails?.venueFeatures)
+      ? venueDetails.venueFeatures
+      : [];
+
+    const featureItems = features.filter(Boolean).map((name, index) => {
+      const matched = featureSuggestions.find(
+        (s) => s?.title?.toLowerCase() === String(name).toLowerCase(),
+      );
+
+      return {
+        id: `feature-${index}-${name}`,
+        value: name,
+        iconSvg: matched?.iconSvg || null,
+        isSvgFile: false,
+      };
+    });
+
+    const all = [...base, ...featureItems].map((item, idx) => ({
+      ...item,
+      tint: TINT_COLORS[idx % TINT_COLORS.length],
+    }));
+
+    return all;
+  }, [venueDetails, featureSuggestions]);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const checkScroll = () => {
+      const canScroll = el.scrollWidth > el.clientWidth + 4;
+      setShowScrollbar(canScroll);
+
+      if (canScroll) {
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const progress = maxScroll > 0 ? el.scrollLeft / maxScroll : 0;
+        setScrollProgress(progress);
+      }
+    };
+
+    checkScroll();
+    el.addEventListener("scroll", checkScroll, { passive: true });
+    window.addEventListener("resize", checkScroll);
+
+    const timer = setTimeout(checkScroll, 300);
+
+    return () => {
+      el.removeEventListener("scroll", checkScroll);
+      window.removeEventListener("resize", checkScroll);
+      clearTimeout(timer);
+    };
+  }, [items]);
+
+  if (!items.length) return null;
 
   return (
-    <div className="venue-highlights-row">
-      {/* ── Left: Stats card (sirf tab dikhega jab data ho) ── */}
-     {hasStats && (
-  <div className="venue-highlights-stats">
-    <div className="vh-stats-grid">
-      {guestCapacity && (
-        <span className="vh-stat-item">
-          <Image src={guestIcon} alt="Guests" width={24} height={24} />
-          <span>{guestCapacity}&nbsp;- Guest</span>
-        </span>
-      )}
+    <div className="vh-container">
+      {/* Header */}
+      <div className="vh-header">
+        <h3 className="vh-title">Venue Highlights</h3>
+        <p className="vh-subtitle">
+          Everything you need to know about this venue
+        </p>
+      </div>
 
-      {isParkingAvailable && (
-        <span className="vh-stat-item">
-          <Image src={parkingIcon} alt="Parking" width={26} height={20} />
-          <span>Parking Available</span>
-        </span>
-      )}
+      <div className="vh-grid-scroll" ref={scrollRef}>
+        <div className="vh-grid">
+          {items.map((item) => (
+            <div key={item.id} className="vh-card">
+              <div
+                className="vh-icon-box"
+                style={{ backgroundColor: item?.bgColor || item.tint }}
+              >
+                {item.isSvgFile && item.icon ? (
+                  <Image
+                    src={item.icon}
+                    alt={item.value}
+                    width={22}
+                    height={22}
+                    className="vh-icon-img"
+                  />
+                ) : item.iconSvg ? (
+                  <div
+                    className="vh-icon-svg"
+                    dangerouslySetInnerHTML={{ __html: item.iconSvg }}
+                  />
+                ) : (
+                  <div className="vh-icon-fallback" />
+                )}
+              </div>
 
-      {halls.length > 0 && (
-        <span className="vh-stat-item">
-          <Image src={hallIcon} alt="Halls" width={22} height={22} />
-          <span>{halls.length} Hall{halls.length > 1 ? "s" : ""} {hallLabel}</span>
-        </span>
-      )}
-
-      {totalRoomsAvailable > 0 && (
-        <span className="vh-stat-item">
-          <Image src={roomIcon} alt="Rooms" width={24} height={20} />
-          <span>{totalRoomsAvailable} Room Available</span>
-        </span>
-      )}
-    </div>
-  </div>
-)}
-
-      {/* ── Right: Enquiry banner (hamesha dikhega) ── */}
-      <div className={`venue-highlights-enquiry ${!hasStats ? "full-width" : ""}`}>
-        <div className="enquiry-banner">
-          {/* Background image (blob gradient) */}
-          <Image
-            src={enquiryBg}
-            alt=""
-            fill
-            className="enquiry-banner-bg"
-            sizes="(max-width: 768px) 100vw, 400px"
-          />
-
-         <div className="enquiry-banner-icon">
-            <Image
-              src={enquiryIcon}
-              alt="Have a question"
-              width={44}
-              height={44}
-            />
-          </div>
-
-          <div className="enquiry-banner-body">
-            <h3 className="enquiry-banner-title">
-              Have a special <br/> <span>request ?</span>
-            </h3>
-            <p className="enquiry-banner-sub">
-              Our team is here to help you plan the perfect event.
-            </p>
-            <button className="enquiry-banner-btn" onClick={onEnquire}>
-              Enquire Now   <Image className="arrowICON"
-                           src={arrowImage}/>
-            </button>
-          </div>
+              <div className="vh-info">
+                <span className="vh-val">{item.value}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
+
+      {showScrollbar && (
+        <div className="vh-indicator-track">
+          <div
+            className="vh-indicator-thumb"
+            style={{
+              transform: `translateX(${scrollProgress * 30}px)`,
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };
