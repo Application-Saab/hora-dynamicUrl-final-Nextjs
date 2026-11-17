@@ -16,7 +16,7 @@ import {
   getRandomNumber,
   getRandomRating,
 } from "@/utils/decorationCatHelpers";
-import { NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
+import { BirthdayCategories, NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
 import "@/pages/balloon-decoration/[catValue]/catvaluedecor.css";
 import ProductGrid from "@/components/productGrid";
 import FilterBar from "@/components/FilterBar";
@@ -103,6 +103,8 @@ const buildCacheKey = (path, sort, priceThemeId, search, designTypes = []) =>
 
 const DecorationCatPage = ({
   city: cityProp = "",
+  serverCity = null,   // SSR-safe city name from getServerSideProps — use for <Head> only
+  serverTheme = null,  // SSR-safe theme slug from getServerSideProps — use for <Head> only
   locality = null,
   catValue: catValueProp = "",
   initialCatalogueData = [],
@@ -777,24 +779,27 @@ const DecorationCatPage = ({
   };
 
   // Real product URL for <a href>
-  const getProductHref = (item) => {
-    if (!item) return "#";
-    const productSlug =
-      item.slug ||
-      item.product_slug ||
-      (item.name ? item.name.toLowerCase().replace(/\s+/g, "-") : "");
+ const getProductHref = (item) => {
+  if (!item) return "#";
+  const productSlug =
+    item.slug ||
+    item.product_slug ||
+    (item.name ? item.name.toLowerCase().replace(/\s+/g, "-") : "");
 
-    if (!productSlug || !catValue) return "#";
+  if (!productSlug || !catValue) return "#";
 
-    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+  const pathCategorySlug = getCategorySlugFromPath(pathname, city, locality);
+  if (!pathCategorySlug) return "#";
 
-    if (!categorySlug) return "#";
-    if (isDirectProductPage) {
-      return `/${categorySlug}/product/${productSlug}`;
-    } else {
-      return `${buildBasePath()}/${categorySlug}/${catValue}/product/${productSlug}`;
-    }
-  };
+  // Wedding hamesha direct product page par: /wedding-decoration/product/slug
+  if (isDirectProductPage || categorySlug === "wedding-decoration") {
+    const directSlug =
+      categorySlug === "wedding-decoration" ? categorySlug : pathCategorySlug;
+    return `/${directSlug}/product/${productSlug}`;
+  }
+
+  return `${buildBasePath()}/${pathCategorySlug}/${catValue}/product/${productSlug}`;
+};
 
   const getCategoryHref = (item) => {
     if (!item?.value || !catValue) return "#";
@@ -948,11 +953,16 @@ const renderChip = (chip) => (
 );
   return (
     <div className="decCatPage">
+      {/* serverCity is the SSR-safe value from getServerSideProps — always
+          populated for Googlebot. cityProp / city state are empty at SSR time.
+          Fallback to cityProp for backward compat when called without serverCity.
+          parentCategory ensures wedding-decoration URLs get the right canonical. */}
       <SeoHead
         catValue={normalizedCat}
-        city={city}
+        city={serverCity || cityProp}
         locality={locality}
-        theme={theme}
+        theme={serverTheme || theme}
+        parentCategory={categorySlug}
       />
 
       {isInitialLoad && loading ? (
@@ -1039,26 +1049,27 @@ const renderChip = (chip) => (
               )}
 
               {catValue?.toLowerCase() === "kids-birthday-decoration" &&
-                !isSearchActive && (
-                  <div className="category-tabs-container">
-                    <CategoryTabs
-                      data={themeFilters.map((item) => ({
-                        id: item.value,
-                        name: item.label,
-                        image: item.image,
-                        value: item.value,
-                        catValue: "kids-birthday-decoration",
-                      }))}
-                      onSelect={(item) => openCatItems(item, themeFilter)}
-                      city={city}
-                      hasCityPageParam={hasCityPageParam}
-                      locality={locality}
-                      variant="grid"
-                      catValue="kids-birthday-decoration"
-                      activeValue={themeFilter}
-                    />
-                  </div>
-                )}
+  !isSearchActive && (
+    <div className="category-tabs-container">
+      <CategoryTabs
+        data={themeFilters.map((item) => ({
+          id: item.value,
+          name: item.label,
+          image: item.image,
+          value: item.value,
+          catValue: "kids-birthday-decoration",
+        }))}
+        onSelect={(item) => openCatItems(item, themeFilter)}
+        city={city}
+        hasCityPageParam={hasCityPageParam}
+        locality={locality}
+        variant="grid"
+        catValue="kids-birthday-decoration"
+        activeValue={themeFilter}
+        rows={isThemeRoute ? 1 : 2}   
+      />
+    </div>
+  )}
 
               {catValue?.toLowerCase() === "naming-ceremony-decoration" &&
                 !isSearchActive && (
@@ -1081,6 +1092,28 @@ const renderChip = (chip) => (
                     />
                   </div>
                 )}
+
+                {/* {catValue?.toLowerCase() === "birthday-decoration" &&
+  !isSearchActive && (
+    <div className="category-tabs-outer">
+      <CategoryTabs
+        data={BirthdayCategories.map((item) => ({
+          id: item.value,
+          name: item.label,
+          image: item.image,
+          value: item.value,
+          catValue: "birthday-decoration",
+        }))}
+        city={city}
+        hasCityPageParam={hasCityPageParam}
+        locality={locality}
+        variant="grid"
+        catValue="birthday-decoration"
+        activeValue={themeFilter}
+      />
+    </div>
+  )} */}
+
               <EventDateBanner userId={userId} visitorId={visitorId} />
 
               {isPriceThemeActive || isSearchActive ? (
@@ -1132,7 +1165,7 @@ const renderChip = (chip) => (
                     onCardClick={handleViewDetails}
                     getHref={getProductHref}
                   />
-                  <MakeItYoursBanner />
+                  <MakeItYoursBanner catValue={catValue} city={city} />
                   <ProductGrid
                     data={sortedCatalogueData.slice(4, 10)}
                     onCardClick={handleViewDetails}
@@ -1150,7 +1183,7 @@ const renderChip = (chip) => (
                     <section className="decorationBanner">
                       <Image
                         src={DidyouKnow}
-                        alt="Decoration-Banner"
+                        alt="Did You Know – balloon decoration tips by HORA"
                         width={1200}
                         height={400}
                         className="decorationBanner-image"
@@ -1175,7 +1208,7 @@ const renderChip = (chip) => (
                     <section className="decorationBanner">
                       <Image
                         src={makeItMemorable}
-                        alt="Decoration-Banner"
+                        alt="Make it memorable – HORA decoration setups at home"
                         width={1200}
                         height={400}
                         className="decorationBanner-image"
@@ -1199,7 +1232,7 @@ const renderChip = (chip) => (
                   <section className="decorationBanner">
                     <Image
                       src={steps}
-                      alt="Decoration-Banner"
+                      alt="How HORA decoration works – 3 easy steps to book"
                       width={1200}
                       height={400}
                       className="decorationBanner-image"
@@ -1223,7 +1256,7 @@ const renderChip = (chip) => (
                     <section className="decorationBanner">
                       <Image
                         src={makeitmemorablebanner}
-                        alt="Decoration-Banner"
+                        alt="Make every celebration unforgettable with HORA decorators"
                         width={1200}
                         height={400}
                         className="decorationBanner-image"
@@ -1252,7 +1285,7 @@ const renderChip = (chip) => (
                       <div className="highlight-card">
                         <Image
                           src={googleRating}
-                          alt="Google Rating"
+                          alt="4.7+ Google Rating – HORA decoration verified by customers"
                           width={60}
                           height={60}
                         />
@@ -1261,7 +1294,7 @@ const renderChip = (chip) => (
                       <div className="highlight-card">
                         <Image
                           src={ontime}
-                          alt="On Time Completion"
+                          alt="On Time Completion – HORA decorators arrive and set up on schedule"
                           width={60}
                           height={60}
                         />
@@ -1270,7 +1303,7 @@ const renderChip = (chip) => (
                       <div className="highlight-card">
                         <Image
                           src={Gurantee}
-                          alt="100% Full Fill Guarantee"
+                          alt="100% Fulfilment Guarantee – HORA ensures every decoration order is completed"
                           width={60}
                           height={60}
                         />

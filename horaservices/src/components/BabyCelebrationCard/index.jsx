@@ -23,12 +23,23 @@ export default function BabyCelebrationCard({
   color = "#9b59c4",
   href = "#",
 }) {
+  const handleCardClick = () => {
+  window.dataLayer = window.dataLayer || [];
+
+  window.dataLayer.push({
+    event: "baby_celebration_landing_page_card_clicked",
+    cardTitle: title || "N/A",
+    cardSubtitle: subtitle || "N/A",
+    href: href || "N/A",
+  });
+};
   return (
     <Link
       href={href}
       className="baby-card"
       style={{ "--baby-color": color }}
       aria-label={title}
+      onClick={handleCardClick}
     >
       <div className="baby-card__photo">
         {image && (

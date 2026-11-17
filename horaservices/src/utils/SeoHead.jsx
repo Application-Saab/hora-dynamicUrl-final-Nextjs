@@ -222,7 +222,8 @@ export const buildDecorationCategoryCanonical = ({
   locality,
   catValue,
   theme,
-  isBooster = false
+  isBooster = false,
+  parentCategory = "balloon-decoration",   // "balloon-decoration" | "wedding-decoration" etc.
 } = {}) => {
   const parts = [];
 
@@ -232,10 +233,10 @@ export const buildDecorationCategoryCanonical = ({
   if (citySlug) parts.push(citySlug);
   if (localitySlug) parts.push(localitySlug);
 
-  if (isBooster) {  
-    parts.push("celebration-booster");
-  }else {
-    parts.push("balloon-decoration");
+  if (isBooster) {
+    parts.push("party-props");
+  } else {
+    parts.push(parentCategory);
   }
 
 
@@ -267,7 +268,17 @@ export const getPageTitle = (catValue, city, locality, theme) => {
       ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${location} – Starting at ₹1199`
       : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
 
-  return theme ? `HORA Decorations - <${theme}> - ${baseTitle}` : baseTitle;
+  // Theme pages that aren't in the SEO sheet fall back to this. The theme name
+  // leads so the title is distinct from the parent category page's title —
+  // identical titles across themes were part of why Google treated the theme
+  // pages as duplicates of their parent.
+  if (!theme) return baseTitle;
+
+  const themeLabel = String(theme)
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+
+  return `${themeLabel} Theme — ${baseTitle}`;
 };
 
 // ─────────────────────────────────────────────
@@ -289,12 +300,15 @@ export const getPageMetaDescription = (catValue, city, locality) => {
 // ─────────────────────────────────────────────
 // MAIN COMPONENT
 // ─────────────────────────────────────────────
-const SeoHead = ({ catValue, city, locality, theme, isBooster = false }) => {
+const SeoHead = ({ catValue, city, locality, theme, isBooster = false, parentCategory = "balloon-decoration" }) => {
   console.log('%c [ theme ]', 'font-size:13px; background:pink; color:#bf2c9f;', theme)
   console.log('%c [ city ]', 'font-size:13px; background:pink; color:#bf2c9f;', city)
   console.log('%c [ catValue ]', 'font-size:13px; background:pink; color:#bf2c9f;', catValue)
-  const schemaOrg = getDecorationCatOrganizationSchema(catValue);
-  const scriptTag = JSON.stringify(schemaOrg);
+  const seoCity = city;
+  const seoCityName = seoCity
+    ? String(seoCity).replace(/\b\w/g, (c) => c.toUpperCase())
+    : null;
+  const seoCitySlug = seoCity ? String(seoCity).toLowerCase().replace(/\s+/g, "-") : null;
 
   // SEO sheet copy (category, kids theme, city × category, city × theme)
   // takes priority; anything not in the sheet keeps the existing copy.
@@ -306,7 +320,7 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false }) => {
     sheetSeo?.title || getPageTitleCategory(catValue, city, locality, theme);
   const description =
     sheetSeo?.description ||
-    getPageMetaDescriptionCategory(catValue, city, locality);
+    getPageMetaDescriptionCategory(catValue, city, locality, theme);
 
   // one source for canonical + og:url
   const canonicalUrl = buildDecorationCategoryCanonical({
@@ -315,13 +329,122 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false }) => {
     catValue,
     theme,
     isBooster,
+    parentCategory,
   });
+
+  // Product schema
+  const schemaOrg = getDecorationCatOrganizationSchema(catValue, seoCity, {
+    url: canonicalUrl,
+    description,
+    parentCategory,
+  });
+  const scriptTag = JSON.stringify(schemaOrg);
+
+  // LocalBusiness schema — city-specific for local SEO
+  const localBusinessSchema = seoCityName
+    ? {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        name: "HORA Services",
+        url: canonicalUrl,
+        telephone: "+917338584828",
+        priceRange: "₹999 - ₹39,999",
+        description: description,
+        areaServed: { "@type": "City", name: seoCityName },
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: seoCityName,
+          addressCountry: "IN",
+        },
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: "4.5",
+          reviewCount: "4566",
+        },
+        logo: "https://horaservices.com/api/uploads/logo-icon.png",
+        image: "https://horaservices.com/api/uploads/attachment-1706520980436.png",
+      }
+    : null;
+
+  // BreadcrumbList schema — derived from parentCategory so it works for
+  // balloon-decoration, wedding-decoration, and any other parent category.
+  const parentCategoryLabel = String(parentCategory || "balloon-decoration")
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase()); // e.g. "Balloon Decoration"
+
+  // Global category hub URL: /balloon-decoration
+  const parentCategoryUrl = `https://horaservices.com/${parentCategory}`;
+
+  // City-specific category hub URL: /gurugram/balloon-decoration
+  const cityCategoryUrl = seoCitySlug
+    ? `https://horaservices.com/${seoCitySlug}/${parentCategory}`
+    : null;
+
+  const breadcrumbItems = [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://horaservices.com" },
+    { "@type": "ListItem", position: 2, name: parentCategoryLabel, item: parentCategoryUrl },
+  ];
+
+  const toLabel = (slug) =>
+    String(slug || "").replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+  // Category page URL — the theme page's real parent. On a theme page the
+  // canonical points at the theme, so the category level must not reuse it.
+  const categoryPageUrl = buildDecorationCategoryCanonical({
+    city,
+    locality,
+    catValue,
+    isBooster,
+    parentCategory,
+  });
+
+  if (seoCityName && cityCategoryUrl) {
+    // /balloon-decoration → /[city]/balloon-decoration → [catValue] → [theme]
+    breadcrumbItems.push({
+      "@type": "ListItem",
+      position: 3,
+      name: seoCityName,
+      item: cityCategoryUrl,
+    });
+    if (catValue) {
+      breadcrumbItems.push({
+        "@type": "ListItem",
+        position: 4,
+        name: toLabel(catValue),
+        item: categoryPageUrl,
+      });
+    }
+  } else if (catValue) {
+    // No city: /balloon-decoration → [catValue] → [theme]
+    breadcrumbItems.push({
+      "@type": "ListItem",
+      position: 3,
+      name: toLabel(catValue),
+      item: categoryPageUrl,
+    });
+  }
+
+  // Theme is its own level. Without it the structured data said the theme
+  // page *was* the category page, reinforcing Google's duplicate verdict.
+  if (theme) {
+    breadcrumbItems.push({
+      "@type": "ListItem",
+      position: breadcrumbItems.length + 1,
+      name: toLabel(theme),
+      item: canonicalUrl,
+    });
+  }
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: breadcrumbItems,
+  };
 
   return (
     <Head>
       <title>{title}</title>
       <meta name="description" content={description} />
-      <meta name="keywords" content="Balloon and Flower Decorations @999" />
 
       {/* one source for canonical + og:url, so they never drift apart */}
       <link rel="canonical" href={canonicalUrl} />
@@ -335,6 +458,15 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false }) => {
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:type" content="website" />
 
+      {/* Twitter Card */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta
+        name="twitter:image"
+        content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
+      />
+
       <meta name="robots" content="index, follow" />
       <meta name="author" content="Hora Services" />
       <link
@@ -343,7 +475,22 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false }) => {
         type="image/x-icon"
       />
 
+      {/* Product schema */}
       <script type="application/ld+json">{scriptTag}</script>
+
+      {/* LocalBusiness schema — city-specific */}
+      {localBusinessSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+        />
+      )}
+
+      {/* BreadcrumbList schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
     </Head>
   );
 };

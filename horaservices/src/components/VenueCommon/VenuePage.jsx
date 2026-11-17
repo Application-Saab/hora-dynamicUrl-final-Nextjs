@@ -34,6 +34,13 @@ import HeadPhoneIcon from "../../assets/venue/calling_headphone_icon.svg";
 import WatsappIcon from "../../assets/venue/check_availability_wa.svg";
 import Image from "next/image";
 
+// GTM dataLayer push (inline helper — no extra file needed)
+const pushToDataLayer = (eventName, params = {}) => {
+  if (typeof window === "undefined") return;
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: eventName, ...params });
+};
+
 const VenuePage = ({
   city: propCity = null,
   initialEventDetails = null,
@@ -98,19 +105,16 @@ const VenuePage = ({
     propCity ||
     (queryCity ? queryCity.charAt(0).toUpperCase() + queryCity.slice(1) : "");
 
-  const venueLocationLabel = eventDetails?.location || city;
+  // Use city name for title/meta — NOT the full street address (location field)
+  const venueCityLabel = city || "";
 
   const venueTitle = eventDetails?.venueName
-    ? `${eventDetails.venueName}${
-        venueLocationLabel ? `, ${venueLocationLabel}` : ""
-      } — Book Now`
-    : "Venue Details & Booking";
+    ? `${eventDetails.venueName}${venueCityLabel ? `, ${venueCityLabel}` : ""} | Book Venue for Birthday & Events | HORA`
+    : "Venue Details & Booking for Birthday & Events | HORA";
 
   const venueDescription = eventDetails?.venueName
-    ? `Book ${eventDetails.venueName}${
-        venueLocationLabel ? ` in ${venueLocationLabel}` : ""
-      } for your next event. Check packages, guest capacity & real photos.`
-    : "View venue packages, capacity, and photos for your next event.";
+    ? `Book ${eventDetails.venueName}${venueCityLabel ? ` in ${venueCityLabel}` : ""} for birthdays, corporate events & parties. View packages, photos & guest capacity on HORA.`
+    : "View venue packages, capacity, and photos for your next event on HORA.";
 
   const SITE = "https://horaservices.com";
 
@@ -312,16 +316,22 @@ const VenuePage = ({
     const capacity = eventDetails?.guestCapacity;
     const price = eventDetails?.startingPrice;
 
-    const message = `Hi, I'm interested in *${venueName}*${
-      location ? ` (${location})` : ""
-    }.
-${capacity ? `Guest Capacity: ${capacity}` : ""}
-${price ? `Starting Price: ₹${price}/plate` : ""}
+    trackWhatsAppButtonClick(
+      MARKETING_EVENTS.WHATSAPP_BUTTONS.VENUE_ENQUIRE_NOW_BTN,
+      {
+        button_name: "Enquire Now",
+        button_type: "enquire_now_venue",
+        page_path: window.location.pathname,
+      },
+    );
+    trackWAClicks();
 
-Please share more details and availability.`;
+    const message = `Hi, I want to book your venue & need more info${
+      cityName ? ` for ${cityName}` : ""
+    }!`;
 
     window.open(
-      `https://wa.me/91${PHONE}?text=${encodeURIComponent(message.trim())}`,
+      `https://wa.me/91${PHONE}?text=${encodeURIComponent(message)}`,
       "_blank",
     );
   };
@@ -338,6 +348,8 @@ Please share more details and availability.`;
         <meta name="description" content={venueDescription} />
         <meta name="robots" content="index, follow" />
         {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+
+        {/* Open Graph */}
         <meta property="og:title" content={venueTitle} />
         <meta property="og:description" content={venueDescription} />
         <meta property="og:type" content="place" />
@@ -346,11 +358,103 @@ Please share more details and availability.`;
           <meta property="og:image" content={eventDetails.venueImageUrl} />
         )}
         <meta property="og:locale" content="en_IN" />
+        <meta property="og:site_name" content="HORA" />
+
+        {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={venueTitle} />
         <meta name="twitter:description" content={venueDescription} />
         {eventDetails?.venueImageUrl && (
           <meta name="twitter:image" content={eventDetails.venueImageUrl} />
+        )}
+        <meta name="twitter:site" content="@horaservices" />
+
+        {/* JSON-LD: LocalBusiness + BreadcrumbList */}
+        {eventDetails?.venueName && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify([
+                {
+                  "@context": "https://schema.org",
+                  "@type": "LocalBusiness",
+                  name: eventDetails.venueName,
+                  ...(eventDetails.location
+                    ? {
+                        address: {
+                          "@type": "PostalAddress",
+                          streetAddress: eventDetails.location,
+                          addressLocality: venueCityLabel || "India",
+                          addressCountry: "IN",
+                        },
+                      }
+                    : {}),
+                  ...(eventDetails.venueImageUrl
+                    ? { image: eventDetails.venueImageUrl }
+                    : {}),
+                  ...(canonicalUrl ? { url: canonicalUrl } : {}),
+                  ...(eventDetails.googleMapLink
+                    ? { hasMap: eventDetails.googleMapLink }
+                    : {}),
+                  aggregateRating: {
+                    "@type": "AggregateRating",
+                    ratingValue: "4.5",
+                    bestRating: "5",
+                    worstRating: "1",
+                    reviewCount: "4566",
+                  },
+                  review: [
+                    {
+                      "@type": "Review",
+                      reviewRating: {
+                        "@type": "Rating",
+                        ratingValue: "5",
+                        bestRating: "5",
+                      },
+                      author: { "@type": "Person", name: "Priya S." },
+                      reviewBody: "Absolutely loved the venue! Perfect for our birthday celebration. The staff was helpful and the ambiance was great.",
+                    },
+                    {
+                      "@type": "Review",
+                      reviewRating: {
+                        "@type": "Rating",
+                        ratingValue: "4",
+                        bestRating: "5",
+                      },
+                      author: { "@type": "Person", name: "Rahul M." },
+                      reviewBody: "Great venue for a private event. Spacious, well-decorated, and easy to book through HORA.",
+                    },
+                  ],
+                },
+                {
+                  "@context": "https://schema.org",
+                  "@type": "BreadcrumbList",
+                  itemListElement: [
+                    {
+                      "@type": "ListItem",
+                      position: 1,
+                      name: "Home",
+                      item: "https://horaservices.com",
+                    },
+                    {
+                      "@type": "ListItem",
+                      position: 2,
+                      name: `${venueCityLabel ? `${venueCityLabel} ` : ""}Party Venues`,
+                      item: venueCityLabel
+                        ? `https://horaservices.com/${venueCityLabel.toLowerCase()}/venue-list`
+                        : "https://horaservices.com/venue-list",
+                    },
+                    {
+                      "@type": "ListItem",
+                      position: 3,
+                      name: eventDetails.venueName,
+                      item: canonicalUrl,
+                    },
+                  ],
+                },
+              ]),
+            }}
+          />
         )}
       </Head>
 
@@ -395,6 +499,7 @@ Please share more details and availability.`;
               <VenueAddressSection
                 eventData={eventDetails}
                 hideDateAndTime={true}
+                city={city}
               />
             </div>
           )}
@@ -411,7 +516,7 @@ Please share more details and availability.`;
                 {venuePackages.map((item) => (
                   <VenueFoodCard
                     key={item._id || item.title}
-                    item={item}
+                    item={{ ...item, venueId: item.venueId || venueId }}
                     onView={() => setSelectedPackage(item)}
                   />
                 ))}

@@ -1,0 +1,153 @@
+import { cityAreasData as c } from "./_cityAreas";
+
+export const corporateShowroomsDecoration = {
+  "corporate-showrooms-decoration": {
+    mumbai: {
+      city: "Mumbai", category: "Corporate Showroom Decoration",
+      title: "Corporate Showroom Decoration in Mumbai, Office & Launch Setups | HORA",
+      metaDescription: "Corporate showroom and office decoration in Mumbai. Product launches, brand events, exhibition setups and office celebrations across Andheri, BKC and Navi Mumbai.",
+      heading: "Corporate Showroom Decoration in Mumbai",
+      intro: "A product launch, a showroom inauguration or a brand event in Mumbai needs decoration that looks polished and on-brand, not like a birthday party. We set up for corporate clients across BKC, Andheri MIDC, Lower Parel and Navi Mumbai — balloon columns at the entrance, branded backdrop panels, welcome arches and table centrepieces that photograph well without upstaging the product. Pricing depends on scale; contact us with the venue and brief and we quote directly.",
+      homeHeading: "Corporate setups in Mumbai",
+      homeParagraphs: [
+        "Office celebrations — a team milestone, a festival decoration, a Diwali party for staff — are a different brief from a showroom launch, and we handle both. For office setups, we work around your team's schedule and are usually done before people arrive in the morning.",
+        "For showroom and venue events, we coordinate with your venue manager on access and setup time. Share the brief and the event date and we plan the decoration to match the brand and the space.",
+      ],
+      ...c.mumbai,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Do you do product launch and showroom inauguration decoration in Mumbai?", answer: "Yes. We set up for product launches, showroom inaugurations, brand events and exhibition stalls across Mumbai. Share the brief and the venue and we quote based on scale." },
+        { question: "Do you handle office decoration for festivals and team events in Mumbai?", answer: "Yes. Office Diwali decoration, team celebration setups and milestone decoration are common bookings. We work around your office schedule and are set up before your team arrives." },
+        { question: "Which areas of Mumbai do you cover for corporate decoration?", answer: "BKC, Andheri MIDC, Lower Parel, Worli, Navi Mumbai business parks and Thane. " + c.mumbai.areasAnswer },
+      ],
+    },
+    bangalore: {
+      city: "Bangalore", category: "Corporate Showroom Decoration",
+      title: "Corporate Showroom Decoration in Bangalore, Office & Launch Setups | HORA",
+      metaDescription: "Corporate showroom and office decoration in Bangalore. Product launches, brand events and office celebrations in Whitefield, HITEC corridor and Koramangala.",
+      heading: "Corporate Showroom Decoration in Bangalore",
+      intro: "Bangalore's startup ecosystem and tech parks run a constant calendar of product launches, office events and showroom openings, and the decoration needs to look professional and purposeful. We set up branded backdrops, entrance arches, balloon columns and table centrepieces that suit the occasion without looking over-the-top. Coverage spans Whitefield, Electronic City, Koramangala, Indiranagar and the Outer Ring Road corridor. Pricing is quoted based on the brief and venue.",
+      homeHeading: "Corporate setups in Bangalore",
+      homeParagraphs: [
+        "Tech park offices are our most common corporate booking in Bangalore — Diwali decoration, year-end party setups, product launch events and milestone celebration decorations inside the campus.",
+        "For showroom events and external venues, we coordinate with the venue manager for access and have the setup done before your guests or clients arrive.",
+      ],
+      ...c.bangalore,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Do you decorate for product launches and office events in Bangalore?", answer: "Yes. We set up for product launches, showroom openings, office festivals, team celebrations and brand events across Bangalore's tech parks and commercial areas." },
+        { question: "Can you set up early morning before office hours in Bangalore?", answer: "Yes. Early morning setup before the team arrives is our standard approach for office events. Share the access details and we coordinate with building security." },
+        { question: "Which areas of Bangalore do you cover for corporate decoration?", answer: "Whitefield, Electronic City, Koramangala, Indiranagar, Outer Ring Road and all major tech parks. " + c.bangalore.areasAnswer },
+      ],
+    },
+    hyderabad: {
+      city: "Hyderabad", category: "Corporate Showroom Decoration",
+      title: "Corporate Showroom Decoration in Hyderabad, Office & Launch Setups | HORA",
+      metaDescription: "Corporate showroom and office decoration in Hyderabad. Product launches, brand events and office celebrations in HITEC City, Gachibowli and Banjara Hills.",
+      heading: "Corporate Showroom Decoration in Hyderabad",
+      intro: "Hyderabad's HITEC City and Gachibowli corridors host a constant stream of office events, product launches and showroom openings. We set up professional decoration — branded backdrops, entrance arches, balloon columns and table styling — that suits corporate environments and photographs cleanly. We also cover Banjara Hills, Jubilee Hills and the older commercial areas. Pricing is quoted based on the brief and the scale.",
+      homeHeading: "Corporate setups in Hyderabad",
+      homeParagraphs: [
+        "Office Diwali and Ugadi decorations, team milestone celebrations and product launch setups are our most common corporate bookings in Hyderabad. We work around office schedules and complete setup before your team or clients arrive.",
+        "For showroom events, we coordinate with the venue on access and timing. Share the event brief and we plan the setup to match the space and the brand.",
+      ],
+      ...c.hyderabad,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Do you set up for corporate events in HITEC City and Gachibowli in Hyderabad?", answer: "Yes. HITEC City, Gachibowli, Madhapur and Kondapur are our most common corporate areas in Hyderabad. We handle everything from office festival decoration to full product launch setups." },
+        { question: "Which areas of Hyderabad do you cover for corporate decoration?", answer: "HITEC City, Gachibowli, Madhapur, Banjara Hills, Jubilee Hills, Begumpet and Secunderabad. " + c.hyderabad.areasAnswer },
+      ],
+    },
+    delhi: {
+      city: "Delhi", category: "Corporate Showroom Decoration",
+      title: "Corporate Showroom Decoration in Delhi, Office & Launch Setups | HORA",
+      metaDescription: "Corporate showroom and office decoration in Delhi. Product launches, brand events and office celebrations across Connaught Place, Nehru Place and Okhla.",
+      heading: "Corporate Showroom Decoration in Delhi",
+      intro: "Delhi's commercial landscape — from the showrooms of Connaught Place and Khan Market to the business parks of Okhla and Nehru Place — needs corporate decoration that looks intentional and on-brand. We set up branded backdrops, entrance arches, balloon columns and event styling that suits launches, inaugurations and office celebrations alike. Pricing is quoted based on the brief and the venue.",
+      homeHeading: "Corporate setups in Delhi",
+      homeParagraphs: [
+        "Office festival decoration — Diwali, Republic Day, team milestone — and team celebration setups are our most common bookings in Delhi corporates. We complete setup before your team arrives.",
+        "For showroom and venue events, we coordinate with your venue manager. Share the brief and event date and we plan the full setup.",
+      ],
+      ...c.delhi,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Do you decorate for office events and showroom launches in Delhi?", answer: "Yes. We set up for product launches, showroom inaugurations, office festivals and team celebrations across Delhi's commercial areas." },
+        { question: "Which areas of Delhi do you cover for corporate decoration?", answer: "Connaught Place, Nehru Place, Okhla, Vasant Kunj commercial and all major commercial areas. " + c.delhi.areasAnswer },
+      ],
+    },
+    noida: {
+      city: "Noida", category: "Corporate Showroom Decoration",
+      title: "Corporate Showroom Decoration in Noida, Office & Launch Setups | HORA",
+      metaDescription: "Corporate showroom and office decoration in Noida. Product launches, brand events and office celebrations across Sectors 62, 132 and Greater Noida.",
+      heading: "Corporate Showroom Decoration in Noida",
+      intro: "Noida's Sector 62, Sector 132 and Greater Noida business parks host a steady calendar of corporate events, and the decoration is often the last thing to be organised. We set up quickly and cleanly — branded backdrops, entrance arches, balloon columns and table centrepieces — and are done before your guests arrive. Pricing is quoted based on the brief and the scale.",
+      homeHeading: "Corporate setups in Noida",
+      homeParagraphs: [
+        "Office Diwali decoration, year-end party setups and team milestone celebrations are our most common bookings in Noida. We work around your building's access timings and society security.",
+        "For showroom or external venue events, share the brief and the access details and we coordinate everything on our end.",
+      ],
+      ...c.noida,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Do you handle office and showroom decoration in Noida's business parks?", answer: "Yes. Sector 62, Sector 132 and Greater Noida's business parks are areas we cover regularly for office events and corporate setups." },
+        { question: "Which areas of Noida do you cover for corporate decoration?", answer: "Sectors 62, 132, 135, Greater Noida and all major business parks. " + c.noida.areasAnswer },
+      ],
+    },
+    gurugram: {
+      city: "Gurugram", category: "Corporate Showroom Decoration",
+      title: "Corporate Showroom Decoration in Gurugram, Office & Launch Setups | HORA",
+      metaDescription: "Corporate showroom and office decoration in Gurugram. Product launches, brand events and office celebrations in Cyber City, DLF and Golf Course Road.",
+      heading: "Corporate Showroom Decoration in Gurugram",
+      intro: "Gurugram is home to some of India's largest corporate offices, and the events that happen in them deserve decoration that looks professional and planned. Cyber City, DLF, MG Road and Golf Course Road office events are our regular territory — branded backdrops, entrance arches, balloon columns and table centrepieces done before your team or clients arrive. Pricing is quoted based on the brief.",
+      homeHeading: "Corporate setups in Gurugram",
+      homeParagraphs: [
+        "Office Diwali decoration, product launch setups and team celebration events are our most common corporate bookings in Gurugram. We coordinate with your building security for early access and complete the setup on time.",
+        "For showroom events on Golf Course Road or MG Road, share the brief and the venue and we plan the full setup to match the brand and the space.",
+      ],
+      ...c.gurugram,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Do you decorate for corporate events in Cyber City and DLF Gurugram?", answer: "Yes. Cyber City, DLF Phases, MG Road and Golf Course Road are our most common corporate areas in Gurugram. We set up for launches, office events and showroom openings." },
+        { question: "Can you handle early morning setup before office hours in Gurugram?", answer: "Yes. Early morning setup is standard for office events. Share the building security contact and access details and we coordinate everything." },
+        { question: "Which areas of Gurugram do you cover for corporate decoration?", answer: "Cyber City, DLF Phases, MG Road, Golf Course Road and Udyog Vihar. " + c.gurugram.areasAnswer },
+      ],
+    },
+    ghaziabad: {
+      city: "Ghaziabad", category: "Corporate Showroom Decoration",
+      title: "Corporate Showroom Decoration in Ghaziabad, Office & Launch Setups | HORA",
+      metaDescription: "Corporate showroom and office decoration in Ghaziabad. Product launches, brand events and office celebrations across Indirapuram, NH-58 and Raj Nagar Extension.",
+      heading: "Corporate Showroom Decoration in Ghaziabad",
+      intro: "Ghaziabad's commercial belt along the NH-58 corridor, Raj Nagar and the Indirapuram business areas runs regular showroom events, office celebrations and product launches. We set up professional decoration — branded backdrops, balloon columns and entrance arches — that suits corporate environments and looks polished on camera. Pricing is quoted based on the brief and the venue.",
+      homeHeading: "Corporate setups in Ghaziabad",
+      homeParagraphs: [
+        "Office festival decoration — Diwali, team milestones — and showroom inauguration setups are our most common corporate bookings in Ghaziabad. We complete setup before your team or clients arrive.",
+        "Share the brief and the event date and we plan the full setup to match your space and brand.",
+      ],
+      ...c.ghaziabad,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Do you do showroom and office event decoration in Ghaziabad?", answer: "Yes. We cover showroom inaugurations, office festival decoration and product launch setups across Ghaziabad's commercial areas." },
+        { question: "Which areas of Ghaziabad do you cover for corporate decoration?", answer: "Indirapuram, Raj Nagar Extension, NH-58 corridor and the main commercial belt. " + c.ghaziabad.areasAnswer },
+      ],
+    },
+    faridabad: {
+      city: "Faridabad", category: "Corporate Showroom Decoration",
+      title: "Corporate Showroom Decoration in Faridabad, Office & Launch Setups | HORA",
+      metaDescription: "Corporate showroom and office decoration in Faridabad. Product launches, brand events and office celebrations across the industrial belt, NIT and Greater Faridabad.",
+      heading: "Corporate Showroom Decoration in Faridabad",
+      intro: "Faridabad's industrial and commercial belt hosts showroom openings, product launches and office events, and the decoration needs to look professional and organised. We set up branded backdrops, entrance arches and balloon columns that suit a corporate environment and are done before your guests or clients arrive. Pricing is quoted based on the brief and the scale.",
+      homeHeading: "Corporate setups in Faridabad",
+      homeParagraphs: [
+        "Office festival decoration and team celebration setups are our most common corporate bookings in Faridabad. We work around office schedules and complete setup in advance.",
+        "For showroom and venue events, share the brief and the event date and we coordinate access and setup timing with the venue.",
+      ],
+      ...c.faridabad,
+      faqHeading: "FAQs",
+      faqs: [
+        { question: "Do you handle showroom and office event decoration in Faridabad?", answer: "Yes. We cover showroom inaugurations, office celebrations and product launch setups across Faridabad's commercial and industrial areas." },
+        { question: "Which areas of Faridabad do you cover for corporate decoration?", answer: "The industrial belt, NIT, the old sectors and Greater Faridabad. " + c.faridabad.areasAnswer },
+      ],
+    },
+  },
+};

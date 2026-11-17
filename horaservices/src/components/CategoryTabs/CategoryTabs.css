@@ -277,3 +277,121 @@ height: clamp(15px, 4.83vw, 19px);
   color: #97538C;
   font-weight: 700;
 }
+
+.ctm-slider {
+  container-type: inline-size;
+}
+
+.ctm-viewport {
+  --u: min(1cqw, 6.5px);
+  --card: calc(var(--u) * 22.4);   /* circle size => 4 circles screen par */
+  --name: calc(var(--u) * 11);     /* naam ka block (2 lines poori aaye) */
+  --rg: calc(var(--u) * 2.5);      /* rows ke beech gap */
+  --cg: calc(var(--u) * 2.4);      /* columns ke beech gap */
+  --pad: var(--u);
+  --arrow: calc(var(--u) * 8);
+
+  position: relative;
+}
+
+.ctm-grid {
+  position: relative; /* offsetLeft ke liye */
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(2, auto);
+  grid-auto-columns: var(--card);
+  gap: var(--rg) var(--cg);
+
+  padding: var(--pad) 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.ctm-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.ctm-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: var(--card);
+  text-decoration: none;
+  scroll-snap-align: start;
+}
+
+.ctm-circle {
+  position: relative;
+  width: var(--card);
+  height: var(--card);
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid #97538c;
+  box-shadow: 0 calc(var(--u) * 1) calc(var(--u) * 1.4) rgba(151, 83, 140, 0.43);
+  box-sizing: border-box;
+}
+
+.ctm-name {
+  margin: calc(var(--u) * 1.5) 0 0;
+  width: 100%;
+ font-family: "Inter", sans-serif;
+font-weight: 600;
+font-size: clamp(8.96px, 2.80vw, 13.44px);  /* 393px par 11px */
+line-height: 100%;
+letter-spacing: 0%;
+text-align: center;
+vertical-align: middle;
+  color: #000;
+  text-align: center;
+
+  /* max 2 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Active */
+.ctm-item.is-active .ctm-circle {
+  border: 3px solid #97538c;
+}
+.ctm-item.is-active .ctm-name {
+  color: #97538c;
+  font-weight: 700;
+}
+
+/* Arrows */
+.ctm-arrow {
+  position: absolute;
+  z-index: 3;
+  width: var(--arrow);
+  height: var(--arrow);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #fff;
+  color: #8b4c84;
+  border: calc(var(--u) * 0.4) solid #8b4c84;
+  box-shadow: 0 calc(var(--u) * 0.4) calc(var(--u) * 1.2) rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.ctm-arrow--next { right: calc(var(--u) * 1.2); }
+.ctm-arrow--prev { left: calc(var(--u) * 3); }
+.ctm-arrow--prev svg { transform: rotate(180deg); }
+
+/* arrow ka centre = circle ka centre */
+.ctm-arrow--row1 {
+  top: calc(var(--pad) + var(--card) / 2 - var(--arrow) / 2);
+}
+.ctm-arrow--row2 {
+  top: calc(
+    var(--pad) + var(--card) + var(--name) + var(--rg) + var(--card) / 2 -
+      var(--arrow) / 2
+  );
+}

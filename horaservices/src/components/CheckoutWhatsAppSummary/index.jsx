@@ -31,7 +31,19 @@ export const contactUsRedirect = ({
       "wedding"  : "wedding photography",
       "haldi-mehndi" : "haldi / mehandi photography",
       "corporate-photography":"Corporate-Photography",
-      "welcome-baby-photography":"Welcome-Baby-Photography"
+      "welcome-baby-photography":"Welcome-Baby-Photography",
+      // ✅ NEW
+      "half-saree-photography": "half saree photography",
+      "retirement-photography": "retirement photography",
+      "cocktail-party-photography": "cocktail party photography",
+      "farewell-party-photography": "farewell party photography",
+      "proposal-photography": "proposal photography",
+      "cradle-ceremony-photography": "cradle ceremony photography",
+      "car-delivery-photography": "car delivery photography",
+      "portfolio-shoot-photography": "portfolio shoot photography",
+      "baptism-and-holy-communion-photography": "baptism and holy communion photography",
+      "family-shoot-photography": "family shoot photography",
+      "annaprashan-ceremony-photography": "annaprashan ceremony photography"
     },
     decoration: {
       "kids-birthday-decoration": "kids birthday decoration",
@@ -54,7 +66,8 @@ export const contactUsRedirect = ({
       "annaprashan-decoration":"Annaprashan Decoration",
       "wedding-car-decoration":"Wedding Car Decoration",
       "baptism-decoration":" Baptism Decoration",
-      "name-reveal-decoration":"Name reveal decoration"
+      "name-reveal-decoration":"Name reveal decoration",
+      "pooja-decoration":"Pooja Decoration"
     },
   };
 
@@ -88,9 +101,13 @@ const cleanBasePath = basePath.split("/product")[0];
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("en-GB")
     : "N/A";
-
+  const cityText = String(city || "")
+   .replace(/-/g, " ")
+   .trim()
+   .replace(/\b\w/g, (l) => l.toUpperCase());
+   
   const message = `
-Hi, I want to place ${categoryText} order urgently.
+Hi, I want to place ${categoryText} order${cityText ? ` for ${cityText}` : ""} urgently.
 *Order Details:*
 Order Date: ${formattedDate}
 Address: ${address || "Not Provided"}
@@ -104,9 +121,9 @@ ${comment || "No Comments"}
 
 *Add-On Items:*
 ${
-selectedAddOnProduct?.length
-  ? selectedAddOnProduct.map(item => item.title).join(", ")
-  : "No Add-ons"
+  selectedAddOnProduct?.length
+    ? selectedAddOnProduct.map((item) => item.title).join(", ")
+    : "No Add-ons"
 }
 
 *Product Name:* ${productName}

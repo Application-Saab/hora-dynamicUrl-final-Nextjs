@@ -69,10 +69,10 @@ export default function HoraBanner() {
         <div className="hb-content">
           <header className="hb-header">
             <Sparkle side="left" className="hb-header__spark hb-header__spark--l" />
-            <h1 id="hora-banner-title" className="hb-title">
+            <div id="hora-banner-title" className="hb-title">
               <span className="hb-title__line1">Your Celebrations,</span>
               <span className="hb-title__line2">Our Commitment</span>
-            </h1>
+            </div>
             <Sparkle side="right" className="hb-header__spark hb-header__spark--r" />
           </header>
 
@@ -83,7 +83,7 @@ export default function HoraBanner() {
               <li className="hb-feature" key={strong}>
                 <span className="hb-feature__icon">
                   <Sparkle side="left" />
-                  <Image src={icon} alt="" width="39" height="39" />
+                  <Image src={icon} alt={strong} width="39" height="39" />
                   <Sparkle side="right" />
                 </span>
                 <p className="hb-feature__label">

@@ -65,7 +65,7 @@ const SmallCardGrid = ({
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
-      event: "decoration_item_clicked",
+      event: "decoration_landing_page_category_clicked",
       event_category: "SmallCardGrid",
       title: item.name,
       categoryName: matchedCat.name || "N/A",

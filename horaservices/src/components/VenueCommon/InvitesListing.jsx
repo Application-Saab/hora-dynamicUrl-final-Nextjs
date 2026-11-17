@@ -15,6 +15,13 @@ import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
 
 const BATCH_SIZE = 10;
 
+// GTM dataLayer push (inline helper — no extra file needed)
+const pushToDataLayer = (eventName, params = {}) => {
+  if (typeof window === "undefined") return;
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: eventName, ...params });
+};
+
 const getCacheKey = (eventType, venueType, guestCapacity, city, locality) =>
   `venue-list-${JSON.stringify({
     eventType,
@@ -77,6 +84,21 @@ const VenueList = ({
     if (halls.length) params.set("halls", JSON.stringify(halls));
 
     return `${base}?${params.toString()}`;
+  };
+
+  const buildWhatsappLink = (venue) => {
+    const rawCity = venue?.city || city || "";
+    const cityName = rawCity
+      ? rawCity.charAt(0).toUpperCase() + rawCity.slice(1).toLowerCase()
+      : "";
+
+    const message = encodeURIComponent(
+      `Hi, give me offline booking support for venue services${
+        cityName ? ` in ${cityName}` : ""
+      }.`
+    );
+
+    return `https://wa.me/91${WHATSAPP_PHONE}?text=${message}`;
   };
 
   const [venues, setVenues] = useState(() => {
@@ -240,6 +262,17 @@ const VenueList = ({
 
           const href = getVenueHref(v, halls);
 
+          // Common GTM payload for this venue card
+          const gtmPayload = {
+            venue_id: v._id,
+            venue_name: v.venueName,
+            venue_city: v.city || city || "",
+            venue_locality: v.locality || "",
+            starting_price: v.startingPrice || null,
+            page_path:
+              typeof window !== "undefined" ? window.location.pathname : "",
+          };
+
           return (
             <div
               key={v._id}
@@ -253,6 +286,7 @@ const VenueList = ({
               <a
                 href={href}
                 aria-label={v.venueName}
+                onClick={() => pushToDataLayer("venue_card_click", gtmPayload)}
                 style={{
                   position: "absolute",
                   top: 0,
@@ -335,7 +369,14 @@ const VenueList = ({
                   </p>
 
                   <div className="venue-card-btn-ctn">
-                    <div>
+                    <div onClick={(e) => {
+                        e.stopPropagation();
+                        pushToDataLayer("view_venue_package_click", {
+                          ...gtmPayload,
+                          button_name: "View Package",
+                        });
+                      }}
+                      >
                       <span className="venue-menu-btn">
                         View Package{" "}
                         <FaArrowRightLong className="menu-button-arrow" />

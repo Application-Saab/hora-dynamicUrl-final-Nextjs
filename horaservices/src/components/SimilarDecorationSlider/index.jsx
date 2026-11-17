@@ -91,13 +91,13 @@ const SimilarDecorationSlider = ({
           {sparkleIcon && (
             <Image
               src={sparkleIcon}
-              alt=""
+              alt="Similar decoration packages by HORA"
               className="similar-slide-decor-icon"
             />
           )}
           <h2>{title}</h2>
           {icon && (
-            <Image src={icon} alt="" className="similar-slide-decor-sparkle" />
+            <Image src={icon} alt="Decoration section icon" className="similar-slide-decor-sparkle" />
           )}
         </div>
       )}

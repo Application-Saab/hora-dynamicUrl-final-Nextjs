@@ -67,6 +67,18 @@ const getMappedCatValue = (slug) => {
     "new-born-baby-photography": "New-Born-Baby-Photography",
     "corporate-photography": "Corporate-Photography",
     "welcome-baby-photography": "Welcome-Baby-Photography",
+    
+     "half-saree-photography": "Half-saree-Photography",
+    "retirement-photography": "Retirement-Photography",
+    "cocktail-party-photography": "Cocktail-Party-Photography",
+    "farewell-party-photography": "Farewell-Party-Photography",
+    "proposal-photography": "Proposal-Photography",
+    "cradle-ceremony-photography": "Cradle-Ceremony-Photography",
+    "car-delivery-photography": "Car-Delivery-Photography",
+    "portfolio-shoot-photography": "Portfolio-Shoot-Photography",
+    "baptism-and-holy-communion-photography": "Baptism-and-Holy-Communion-Photography",
+    "family-shoot-photography": "Family-Shoot-Photography",
+    "annaprashan-ceremony-photography": "Annaprashan-Ceremony-Photography",
   };
   return map[slug] || slug;
 };

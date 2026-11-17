@@ -73,3 +73,22 @@ export const safeSetSessionItem = (key, value) => {
     console.warn(`sessionStorage.setItem("${key}") blocked:`, error);
   }
 };
+
+
+export const safeRemoveSessionItem = (key) => {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.removeItem(key);
+  } catch (error) {
+    reportError(
+      error,
+      {},
+      {
+        type: "frontend",
+        component: "sessionStorage",
+        payload: { operation: "removeItem", key },
+      },
+    );
+    console.warn(`sessionStorage.removeItem("${key}") blocked:`, error);
+  }
+};

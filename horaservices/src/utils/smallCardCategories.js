@@ -15,7 +15,7 @@ import FestivalsImg from "@/assets/Fastivals.webp";
 import AnnaprashanImg from "@/assets/Annaprashna.webp";
 import BaptismImg from "@/assets/baptism_dec.webp";
 import CorporateShowroomImg from "@/assets/showroomdecoration.webp";
-
+import proposalImg from "@/assets/proposal.webp"
 export const smallCardCategories = [
   // ---- Row 1 ----
   { name: "Birthday", image: HappyBirthdayImg, catValue: "birthday-decoration" },
@@ -35,4 +35,5 @@ export const smallCardCategories = [
   { name: "Bachelorette", image: BacheloretteImg, catValue: "bachelorette-decoration" },
   { name: "Annaprashan", image: AnnaprashanImg, catValue: "annaprashan-decoration" },
   { name: "Name Reveal", image: NameRevealImg, catValue: "name-reveal-decoration" },
+  {name: "proposal Decoration",image:proposalImg,catValue:"proposal-decoration"}
 ];

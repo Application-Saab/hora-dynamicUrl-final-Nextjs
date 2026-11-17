@@ -27,7 +27,7 @@ const DATE_SHEET_SHOWN_KEY = "DATE_SHEET_SHOWN";
 
 // [DATE CHANGE] Jin services ke pages par date popup/notification chalega.
 // Naya service add karna ho to bas yahan slug daalo.
-const DATE_SHEET_SERVICES = ["balloon-decoration", "photography", "food", "catering"];
+const DATE_SHEET_SERVICES = ["balloon-decoration", "photography", "wedding-decoration","food", "catering"];
 
 // [DATE CHANGE] Popup din me ek baar: sessionStorage ki jagah localStorage me aaj ki date save hoti hai
 const getTodayKey = () => {

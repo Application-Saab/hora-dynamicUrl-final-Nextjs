@@ -33,7 +33,8 @@ const categoryTitleMap = {
    "annaprashan-decoration":"Annaprashan Decoration",
   "wedding-car-decoration":"Wedding Car Decoration",
   "baptism-decoration":" Baptism Decoration",
-  "name-reveal-decoration":"Name reveal decoration"
+  "name-reveal-decoration":"Name reveal decoration",
+  "pooja-decoration":"Pooja Decoration"
 };
 
 
@@ -43,13 +44,13 @@ export default function DecorationBanner({ category, title }) {
   return (
     <section className="decorationBanner">
       <span className="decorationBanner-star">
-        <Image src={starSparkle} alt="" priority />
+        <Image src={starSparkle} alt="Star sparkle decoration banner icon" priority />
       </span>
 
       <h1 className="decorationBanner-text">{resolvedTitle}</h1>
 
       <span className="decorationBanner-heart">
-        <Image src={heartStarGroup} alt="" priority />
+        <Image src={heartStarGroup} alt="Heart and star decoration banner icon" priority />
       </span>
     </section>
   );

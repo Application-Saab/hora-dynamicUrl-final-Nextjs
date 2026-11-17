@@ -44,4 +44,14 @@ export const decorationCityFAQData = () => [
     answer:
       "Most setups take 60 to 90 minutes to install, and a larger or more detailed design a little longer. The cleanup's always included, so once your event's over the decorator clears the balloons, the props and the tape, and leaves your space exactly as it was.",
   },
+  {
+    question: "Which balloon decoration themes and occasions do you offer?",
+    answer:
+      "We set up for birthdays, kids birthday themes like Cocomelon, Unicorn, Frozen and superhero, first birthdays, anniversary decoration, baby showers, welcome baby, naming ceremony, haldi and mehndi, first night and wedding functions, and general party and celebration setups. Each occasion has its own dedicated page with setups and prices so you can pick exactly what suits the day.",
+  },
+  {
+    question: "Can I customise the colours and add my own name or age?",
+    answer:
+      "Yes on both. Colour swaps are free, so if you want a specific palette instead of the default, just mention it at booking and we'll match it. The name and age in foil balloons are locked in when you book, and we double-check the spelling with you before the decorator arrives. Custom printing or a personalised backdrop needs a few days notice, so book a little early if you want that.",
+  },
 ];

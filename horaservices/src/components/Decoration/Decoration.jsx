@@ -116,56 +116,8 @@ import {
 } from "@/utils/apiconstants";
 import { NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
 import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
-
-const stats = [
-  {
-    icon: whypeople1,
-    number: "20k",
-    label: "Balloon Designs In Stock",
-  },
-  {
-    icon: whypeople2,
-    number: "45+",
-    label: "Decorations Themes",
-  },
-  {
-    icon: whypeople3,
-    number: "15M",
-    label: "Satisfied Customers",
-  },
-  {
-    icon: whypeople4,
-    number: "10k",
-    label: "Completed Decoration",
-  },
-];
-
-const brandItems = [
-  {
-    img: HappyCustomerIMG,
-    alt: "Happy Customers",
-    bold: "1L+ HAPPY",
-    sub: "CUSTOMERS",
-  },
-  {
-    img: GoogleRatingIMG,
-    alt: "Google Rating",
-    bold: "4.8+ GOOGLE",
-    sub: "RATING",
-  },
-  {
-    img: SocialMediaIMG,
-    alt: "Social Media",
-    bold: "OUR",
-    sub: "SOCIAL MEDIA",
-  },
-  {
-    img: TopBrandIMg,
-    alt: "Top Brands",
-    bold: "TOP BRANDS",
-    sub: "PARTNERED",
-  },
-];
+import { stats, brandItems } from "@/utils/whylovebranddata.js"
+import FlowerBanner from "../Flowerlandingpagebanner";
 
 const slugify = (val) =>
   String(val || "")
@@ -486,8 +438,8 @@ const Decoration = ({ city, locality }) => {
     : "";
 
   const waMessage = cityName
-    ? `Hi, how can we help in your balloon decor services for ${cityName}`
-    : "Hi, how can we help in your balloon decor services";
+    ? `Hi, how can we help in your balloon decor services for ${cityName}.`
+    : "Hi, how can we help in your balloon decor services.";
 
   const waLink = `https://wa.me/917338584828?text=${encodeURIComponent(waMessage)}`;
   return (
@@ -519,14 +471,9 @@ const Decoration = ({ city, locality }) => {
           type="image/x-icon"
         />
 
-        <meta
-          property="og:title"
-          content="Balloon and Flower Decorations by Professional Decorators"
-        />
-        <meta
-          property="og:description"
-          content="🎉 Explore a wide range of stunning decoration designs for every event and party. Book your ideal design directly through our website for a seamless experience. Need help? Contact us at 7338584828."
-        />
+        {/* og:title + og:description match the page <title> and <meta description> */}
+        <meta property="og:title" content={pageSeo.title} />
+        <meta property="og:description" content={pageSeo.description} />
         <meta
           property="og:image"
           content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
@@ -536,7 +483,9 @@ const Decoration = ({ city, locality }) => {
           content="balloon decoration, birthday decoration, wedding decoration, baby shower decoration"
         />
 
-        {/* ✅ og:url = same as canonical */}
+        {/* og:url = same as canonical (og:url and og:type are also set in the page
+            file; keeping them here too so the component is self-contained when used
+            outside [city]/balloon-decoration) */}
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
 
@@ -566,7 +515,7 @@ const Decoration = ({ city, locality }) => {
           showSort={false}
         />
       </div>
-      {sheetH1 && <DecorationBanner title={sheetH1} />}
+      {/* {sheetH1 && <DecorationBanner title={sheetH1} />} */}
       {/* CIRCLE TABS */}
       <div ref={smallCardRef}>
         <SmallCardGrid
@@ -586,7 +535,7 @@ const Decoration = ({ city, locality }) => {
         <div className="wed-sec__bg" aria-hidden="true">
           <Image
             src={weddingBg}
-            alt=""
+            alt="Wedding decoration background – elegant floral setup by HORA"
             sizes="(max-width: 768px) 100vw, 600px"
             className="wed-sec__bg-img"
           />
@@ -652,8 +601,7 @@ const Decoration = ({ city, locality }) => {
         <span className="wa-banner__btn">
           <Image
             src={whatsappIcon}
-            alt=""
-            aria-hidden="true"
+            alt="WhatsApp – chat with HORA for decoration booking"
             width={24}
             height={24}
             className="wa-banner__icon"
@@ -727,7 +675,7 @@ const Decoration = ({ city, locality }) => {
           <section className="decorationCollageBanner">
             <Image
               src={decorCollageIMG}
-              alt="Decoration-Banner"
+              alt="HORA balloon decoration collage – real setups at home in 8 cities"
               width={"100%"}
               height={"auto"}
               className="decorationCollageBanner-image"
@@ -735,12 +683,13 @@ const Decoration = ({ city, locality }) => {
           </section>
         </div>
       </div>
+      <FlowerBanner href="/flower-decoration" />
       <section className="couple-sec">
         {/* background image */}
         <div className="couple-sec__bg" aria-hidden="true">
           <Image
             src={coupleBgBanner}
-            alt=""
+            alt="Couple celebration background – romantic anniversary decoration by HORA"
             sizes="(max-width: 768px) 100vw, 600px"
             className="couple-sec__bg-img"
           />
@@ -813,7 +762,7 @@ const Decoration = ({ city, locality }) => {
         <div className="baby-sec__bg" aria-hidden="true">
           <Image
             src={babyBgBanner}
-            alt=""
+            alt="Baby celebration background – baby shower and welcome baby decoration by HORA"
             sizes="(max-width: 768px) 100vw, 600px"
             className="baby-sec__bg-img"
           />
@@ -878,7 +827,7 @@ const Decoration = ({ city, locality }) => {
       <section className="BabyShowerBanner">
         <Image
           src={BrandBannerIMG}
-          alt="Decoration-Banner"
+          alt="HORA – trusted brand for balloon and flower decoration at home"
           width={1200}
           height={400}
           className="decorationBanner-image"

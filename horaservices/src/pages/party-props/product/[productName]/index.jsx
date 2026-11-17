@@ -43,7 +43,7 @@ import "./Celebrationboosterdetails.css";
 const CELEBRATION_BOOSTER_API =
   "https://horaservices.com/api/celebration-booster/celebrationBoostersList";
 const BOOSTER_IMAGE_BASE_URL = "https://horaservices.com/api/uploads/";
-const CATEGORY_SLUG = "celebration-boosters";
+const CATEGORY_SLUG = "party-props";
 const WHATSAPP_PHONE = "917338584828";
 
 const generateSlug = (name) =>
@@ -354,7 +354,7 @@ function CelebrationBoosterDetails({ city, locality }) {
       query: {
         from: window.location.pathname,
         product: JSON.stringify(product),
-        orderType: "celebration-booster",
+        orderType: "party-props",
         catValue: CATEGORY_SLUG,
         selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
         itemQuantities: JSON.stringify(itemQuantities),

@@ -142,8 +142,7 @@ const ProductSliderSection = ({
   </span>
   <Image
     src={arrowIcon}
-    alt=""
-    aria-hidden="true"
+    alt="View all decoration packages"
     width={35}
     height={35}
     className="product-section-footer-arrow"

@@ -6,7 +6,7 @@ import "@/components/DecorSlider/DecorSlider.css";
 import "./Similarboosterslider.css";
 
 const BOOSTER_IMAGE_BASE_URL = "https://horaservices.com/api/uploads/";
-const BOOSTER_CATEGORY_SLUG = "celebration-booster"; // ⚠️ confirm singular/plural matches your route
+const BOOSTER_CATEGORY_SLUG = "party-props"; // ⚠️ confirm singular/plural matches your route
 
 const getDiscountedDifference = (price) => {
   const numericPrice =
@@ -50,7 +50,7 @@ const SimilarBoosterSlider = ({
     const parts = pathname.split("/").filter(Boolean);
 
     const boosterSegment =
-      parts.find((seg) => seg.toLowerCase().includes("celebration-booster")) ||
+      parts.find((seg) => seg.toLowerCase().includes("party-props")) ||
       BOOSTER_CATEGORY_SLUG;
 
     const boosterIndex = parts.indexOf(boosterSegment);

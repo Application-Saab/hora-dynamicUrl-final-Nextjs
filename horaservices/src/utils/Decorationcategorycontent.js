@@ -1,46 +1,7 @@
-import { birthdayDecorationDescription } from "./Birthdaydecorationdescription";
-import {namingCeremonyDecorationDescription} from "./Namingceremonydecorationdescription"
-import { birthdayDecorationFAQData } from "./Birthdaydecorationfaq";
-import {namingCeremonyFAQData} from "./NamingCeremonyFAQData"
-import { welcomeBabyDecorationDescription } from "./Welcomebabydecorationdescription";
-import { welcomeBabyDecorationFAQData } from "./WelcomeBabyDecorationFAQData";
-import { babyShowerDecorationDescription } from "./Babyshowerdecorationdescription";
-import { babyShowerDecorationFAQData } from "./BabyShowerDecorationFAQData";
-import { anniversaryDecorationDescription } from "./Anniversarydecorationdescription";
-import { anniversaryDecorationFAQData } from "./Anniversarydecorationdescription";
-import { weddingDecorationDescription } from "./Weddingdecorationdescription";
-import { weddingDecorationFAQData } from "./WeddingDecorationFAQData";
-import { faqData } from "./photographyProductPageFaqData";
+import { allCategoryContent } from "./AllCategoryDescriptions";
 
 export const decorationCategoryContent = {
-  "birthday-decoration": {
-    description: birthdayDecorationDescription,
-    faqData: birthdayDecorationFAQData,
-  },
-  "naming-ceremony-decoration":{
-    description:namingCeremonyDecorationDescription,
-    faqData:namingCeremonyFAQData,
-  },
-  "welcome-baby-decoration":{
-    description:welcomeBabyDecorationDescription,
-    faqData:welcomeBabyDecorationFAQData,
-  },
-  "baby-shower-decoration":{
-    description:babyShowerDecorationDescription,
-    faqData:babyShowerDecorationFAQData,
-  },
-  "anniversary-decoration":{
-description:anniversaryDecorationDescription,
-faqData:anniversaryDecorationFAQData,
-  },
-  "wedding":{
-    description:weddingDecorationDescription,
-    faqData:weddingDecorationFAQData,
-  },
-  "wedding-decoration":{
-    description:weddingDecorationDescription,
-    faqData:weddingDecorationFAQData,
-  }
+  ...allCategoryContent,
 };
 
 export function getCategoryContent(catValue) {

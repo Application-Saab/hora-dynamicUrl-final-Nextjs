@@ -73,8 +73,7 @@ export const getBookingContext = (searchParams, pathname = "") => {
 export const getWhatsAppBookingLink = (serviceName, cityName) => {
   const service = serviceName ? ` for ${serviceName}` : "";
   const city = cityName ? ` in ${cityName}` : "";
-  const text = `Hi, give me offline booking support${service}${city}.`;
-
+  const text = `Hi, give me offline booking support for ${service} in ${city}.`;
   return `https://wa.me/${WHATSAPP_BOOKING_NUMBER}?text=${encodeURIComponent(text)}`;
 };
 

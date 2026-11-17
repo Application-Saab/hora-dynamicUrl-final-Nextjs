@@ -7,14 +7,40 @@ import Image from "next/image";
 import VenueAvailabilityModal from "../VenueCommon/VenueAvailabilityModal";
 import VenueMapModal from "../VenueCommon/VenueMapModal";
 
-const VenueAddressSection = ({ eventData, userId, visitorId, pincode }) => {
-  const [showAvailabilityModal, setShowAvailabilityModal] = useState(false);
-  const [showMapModal, setShowMapModal] = useState(false); // 👈 Map modal state
+// GTM dataLayer push (inline helper — no extra file needed)
+const pushToDataLayer = (eventName, params = {}) => {
+  if (typeof window === "undefined") return;
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: eventName, ...params });
+};
 
+const VenueAddressSection = ({ eventData, hideDateAndTime, city }) => {
   const venueName = eventData?.venueName;
-  const address = eventData?.location;
+  const address = eventData?.location; // location = full address string in your API
+  const mapLink = eventData?.googleMapLink;
+
+  // Pre-filled WhatsApp message
+  const buildWhatsappLink = () => {
+    const cityName = eventData?.city || city || "";
+    const message = `Hi, I liked your this venue, can you help me in booking process${
+      cityName ? ` in ${cityName}` : ""
+    }.`;
+
+    return `https://wa.me/91${PHONE}?text=${encodeURIComponent(message)}`;
+  };
+
+  const whatsappLink = buildWhatsappLink();
 
   if (!venueName && !address) return null;
+
+  // Common GTM payload
+  const gtmPayload = {
+    venue_id: eventData?._id || "",
+    venue_name: venueName || "",
+    venue_city: eventData?.city || city || "",
+    venue_locality: eventData?.locality || "",
+    page_path: typeof window !== "undefined" ? window.location.pathname : "",
+  };
 
   return (
     <>
@@ -31,8 +57,20 @@ const VenueAddressSection = ({ eventData, userId, visitorId, pincode }) => {
             type="button"
             className="vas-btn vas-btn--whatsapp"
             onClick={(e) => {
-              e.stopPropagation();
-              setShowAvailabilityModal(true);
+              pushToDataLayer("check_availability_click", {
+              ...gtmPayload,
+              button_name: "Check Availability",
+              button_type: "whatsapp",
+              button_location: "venue_detail_address_section",
+            });
+            trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.CHECK_AVAILABILITY_VENUE_INNER, {
+              button_name: "Check Availability",
+              button_type: "check_availibility_venue_address_section",
+              page_path: window.location.pathname,
+            });
+            e.stopPropagation();
+            trackWAClicks();
+            setShowAvailabilityModal(true);
             }}
           >
             <Image src={WatsappIcon} alt="WhatsApp" width={15.79} height={15.87} />
@@ -44,6 +82,11 @@ const VenueAddressSection = ({ eventData, userId, visitorId, pincode }) => {
             type="button"
             className="vas-btn vas-btn--map"
             onClick={(e) => {
+              pushToDataLayer("view_map_click", {
+                ...gtmPayload,
+                button_name: "View on Map",
+                map_link: mapLink,
+              });
               e.stopPropagation();
               setShowMapModal(true);
             }}

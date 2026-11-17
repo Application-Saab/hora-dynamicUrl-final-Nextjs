@@ -7,6 +7,13 @@ import arrowImage from "../../assets/venue/right_arrow_icon.svg";
 import VegIcon from "../../assets/venue/veg_icon.svg";
 import NonVegIcon from "../../assets/venue/non_veg_icon.svg";
 
+// GTM dataLayer push (inline helper — no extra file needed)
+const pushToDataLayer = (eventName, params = {}) => {
+  if (typeof window === "undefined") return;
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: eventName, ...params });
+};
+
 const VenueFoodCard = ({ item, onView }) => {
   const packageItems = item?.packageItems || [];
 
@@ -19,8 +26,26 @@ const VenueFoodCard = ({ item, onView }) => {
       pkgItem?.itemId?.foodType?.toLowerCase() === "non-veg" ||
       pkgItem?.itemId?.foodType?.toLowerCase() === "non veg",
   );
+  const trackViewMenu = (clickSource) => {
+    pushToDataLayer("view_menu_click", {
+      package_id: item?._id || "",
+      package_title: item?.title || "",
+      package_price: item?.actualPrice || null,
+      venue_id: item?.venueId || "",
+      button_name: "View Menu & Full Details",
+      click_source: clickSource, // "card" ya "button"
+      page_path: typeof window !== "undefined" ? window.location.pathname : "",
+    });
+  };
+
   return (
-    <div className="vfc-card" onClick={() => onView(item)}>
+    <div
+      className="vfc-card"
+      onClick={() => {
+        trackViewMenu("card");
+        onView(item);
+      }}
+    >
       <div className="vfc-row">
         <div className="vfc-imgBox">
           <Image
@@ -69,6 +94,7 @@ const VenueFoodCard = ({ item, onView }) => {
               className="vfc-cta"
               onClick={(e) => {
                 e.stopPropagation();
+                trackViewMenu("button");
                 onView(item);
               }}
             >
