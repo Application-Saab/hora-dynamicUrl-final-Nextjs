@@ -94,7 +94,7 @@ text-align: center;
 .baby-card__photo {
   position: relative;
   width: 100%;
-  height: clamp(97.85px, 29.01vw, 114px);
+  height: clamp(92.83px, 29.01vw, 139.25px);
   border-top-left-radius: clamp(25.77px, 7.63vw, 30px);
   border-top-right-radius: clamp(25.77px, 7.63vw, 30px);
   border-bottom-right-radius: clamp(25.77px, 7.63vw, 30px);
