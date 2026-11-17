@@ -33,6 +33,36 @@ import { safeGetItem } from "@/utils/safeStorage";
 // order type 6 Food Delivery
 // order type 7 Live Catering
 
+// ===================== WHATSAPP HELPERS (NEW) =====================
+const SUPPORT_NUMBER = "917338584828"; // country code ke saath, + ya space nahi
+
+// type: "support" (Contact Support button) | "refund" (Initiate Refund button)
+const getWhatsappMessage = (type, status) => {
+  if (type === "refund") {
+    return "I have cancelled my order and would like to request a refund.";
+  }
+
+  switch (status) {
+    case 0: // Booked
+      return "Hi, my order is booked and I need assistance.";
+    case 1: // Accepted
+      return "Hi, my order is accepted and I need some help regarding it.";
+    case 2: // In-progress
+      return "Hi, my order is in progress and I need assistance.";
+    case 4: // Cancelled
+      return "Hi, I cancelled my order and need assistance.";
+    default:
+      return "I need assistance regarding my order.";
+  }
+};
+
+// wa.me mobile, desktop aur WhatsApp Web teeno par kaam karta hai
+const openWhatsapp = (message) => {
+  const url = `https://wa.me/${SUPPORT_NUMBER}?text=${encodeURIComponent(message)}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+};
+// ==================================================================
+
 const OrderDetailTab = ({
   orderDetail,
   orderType,
@@ -150,9 +180,7 @@ const OrderDetailTab = ({
   };
   const contactUsRedirection = async () => {
     try {
-      window.open(
-         "whatsapp://send?phone=+917338584828&text=I%20have%20cancelled%20my%20order%20and%20would%20like%20to%20request%20a%20refund."
-      );
+      openWhatsapp(getWhatsappMessage("refund", orderStatus, orderDetail?.order_id));
     } catch (error) {
       console.log("contactUsRedirection error", error);
     }
@@ -160,9 +188,7 @@ const OrderDetailTab = ({
 
   const cancelcontactUsRedirection = async () => {
     try {
-      window.open(
-     "whatsapp://send?phone=+917338584828&text=I%20need%20assistance%20regarding%20my%20order."
-      );
+      openWhatsapp(getWhatsappMessage("support", orderStatus, orderDetail?.order_id));
     } catch (error) {
       console.log("cancelcontactUsRedirection error", error);
     }
