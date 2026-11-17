@@ -50,6 +50,11 @@ const FoodDelivery = ({
 }) => {
   const router = useRouter();
   const [data, setData] = useState(initialPackages || []);
+  console.log(
+    "%c [ data ]",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    data,
+  );
   const [loading, setLoading] = useState(false); // initial false kyunki server se aa gaya
   const [foodType, setFoodType] = useState(initialFoodType || "veg");
   const [packageType, setPackageType] = useState(initialPackageType);
@@ -113,6 +118,23 @@ const FoodDelivery = ({
     activeType === "liveCatering"
       ? `${SITE}${pathOnly}?type=liveCatering`
       : `${SITE}${pathOnly}`;
+
+  const isMounted = React.useRef(false);
+
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+
+    setLoading(true);
+    getPackages(packageType, foodType)
+      .then((packages) => {
+        setData(packages || []);
+      })
+      .catch((err) => console.error("Error:", err))
+      .finally(() => setLoading(false));
+  }, [packageType, foodType]);
 
   return (
     <div className="catering-page">

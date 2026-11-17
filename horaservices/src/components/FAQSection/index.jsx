@@ -1,8 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import cancellation from "../../assets/Cancellation.svg";
-import Arrow from "../../assets/arrow.png";
+import cancellation from "../../assets/faq-heading-icon.svg";
+import Arrow from "../../assets/faq-arrow-down.svg";
+import "./faq-section.css";
 
 const FAQSection = ({ faqData = [], heading = "FAQ" }) => {
   const [openIndex, setOpenIndex] = useState(null);
@@ -17,31 +18,10 @@ const FAQSection = ({ faqData = [], heading = "FAQ" }) => {
     item?.answer || item?.acceptedAnswer?.text || "No answer available.";
 
   return (
-    <div style={{ margin: "auto", maxWidth: "480px" }}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-          marginTop: "10px",
-          marginBottom: "10px",
-          marginLeft: "10px",
-        }}
-      >
-        <Image src={cancellation} alt="FAQ Icon" width={25} height={25} />
-        <h2
-          style={{
-            color: "#97538c",
-            fontFamily: "Inter, sans-serif",
-            fontWeight: 700,
-            fontSize: "18px",
-            lineHeight: "100%",
-            letterSpacing: "0%",
-            margin: 0,
-          }}
-        >
-          {heading}
-        </h2>
+    <div className="faq-ctn">
+      <div className="faq-head-ctn">
+        <Image src={cancellation} alt="FAQ Icon" width={22} height={28} />
+        <h2 className="faq-head-txt">{heading}</h2>
       </div>
 
       {faqData.map((item, index) => {
@@ -50,68 +30,37 @@ const FAQSection = ({ faqData = [], heading = "FAQ" }) => {
         return (
           <div
             key={index}
+            className="faq-text-box"
             style={{
-              background: "#fff",
-              borderRadius: "10px",
-              padding: "12px 14px",
-              marginBottom: "12px",
-              border: isOpen ? "1.5px solid #97538c" : "2px solid #ddd",
-              transition: "border 0.3s ease",
+              border: isOpen ? "1.16px solid #97538c" : "1.16px solid #EAECF3",
             }}
           >
             {/* Question - always visible */}
             <div
+              className="faq-question-row"
               onClick={() => handleToggle(index)}
-              style={{
-                cursor: "pointer",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                fontWeight: 600,
-                fontSize: "15px",
-                color: "#3b3b3b",
-              }}
             >
               <span>{getQuestion(item)}</span>
 
-              <div
-                style={{
-                  width: "20px",
-                  height: "20px",
-                  minWidth: "20px",
-                  borderRadius: "50%",
-                  backgroundColor: "#97538c",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginLeft: "10px",
-                }}
-              >
+              <div className="faq-icon-circle">
                 <span
+                  className="faq-arrow-icon"
                   style={{
-                    color: "#fff",
-                    fontSize: "10px",
                     transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: "transform 0.3s ease",
-                    display: "inline-block",
                   }}
                 >
-                  <Image src={Arrow} width={10} height={13} alt="toggle" />
+                  <Image src={Arrow} width={16} height={9} alt="toggle" />
                 </span>
               </div>
             </div>
 
             {/* Answer - ALWAYS in DOM for SEO, CSS se hide/show */}
             <div
+              className="faq-answer-box"
               style={{
                 marginTop: isOpen ? "10px" : "0",
-                color: "#555",
-                fontSize: "14px",
-                lineHeight: "1.5",
                 maxHeight: isOpen ? "500px" : "0",
-                overflow: "hidden",
                 opacity: isOpen ? 1 : 0,
-                transition: "max-height 0.3s ease, opacity 0.25s ease, margin-top 0.3s ease",
               }}
             >
               {getAnswer(item)}

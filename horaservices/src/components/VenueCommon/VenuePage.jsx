@@ -26,7 +26,13 @@ import Head from "next/head";
 import FAQSection from "../FAQSection";
 import TermsModal from "./TermsModal";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
-import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
+import {
+  MARKETING_EVENTS,
+  trackWhatsAppButtonClick,
+} from "@/utils/marketingEvents";
+import HeadPhoneIcon from "../../assets/venue/calling_headphone_icon.svg";
+import WatsappIcon from "../../assets/venue/check_availability_wa.svg";
+import Image from "next/image";
 
 // GTM dataLayer push (inline helper — no extra file needed)
 const pushToDataLayer = (eventName, params = {}) => {
@@ -66,10 +72,10 @@ const VenuePage = ({
   const [openTerms, setOpenTerms] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const intro = eventDetails.description || "";
-  const words = intro.split(" ");
-  const firstLine = words.slice(0, 8).join(" ");
-  const restText = words.slice(8).join(" ");
+  const intro = eventDetails?.description || "";
+  const words = intro ? intro.split(" ") : [];
+  const firstLine = words?.slice(0, 8).join(" ");
+  const restText = words?.slice(8).join(" ");
 
   const {} = useRsvpStatus(venueId, skipRsvpCheck);
   const { data } = useApi(`${GET_VENUE_CATEGORIES_LIST}`, "get");
@@ -296,18 +302,19 @@ const VenuePage = ({
   const PHONE = "7338584828";
 
   const handleEnquire = () => {
-    const cityName = eventDetails?.city || city || "";
-
-    // GTM event
-    pushToDataLayer("enquire_now_click", {
-      venue_id: eventDetails?._id || idForCanonical || "",
-      venue_name: eventDetails?.venueName || "",
-      venue_city: cityName,
-      venue_locality: eventDetails?.locality || "",
-      button_name: "Enquire Now",
-      button_type: "whatsapp",
-      page_path: window.location.pathname,
-    });
+    trackWhatsAppButtonClick(
+      MARKETING_EVENTS.WHATSAPP_BUTTONS.VENUE_ENQUIRE_NOW_BTN,
+      {
+        button_name: "Enquire Now",
+        button_type: "enquire_now_venue",
+        page_path: window.location.pathname,
+      },
+    );
+    trackWAClicks();
+    const venueName = eventDetails?.venueName || "this venue";
+    const location = eventDetails?.city || eventDetails?.location || "";
+    const capacity = eventDetails?.guestCapacity;
+    const price = eventDetails?.startingPrice;
 
     trackWhatsAppButtonClick(
       MARKETING_EVENTS.WHATSAPP_BUTTONS.VENUE_ENQUIRE_NOW_BTN,
@@ -452,17 +459,25 @@ const VenuePage = ({
       </Head>
 
       <div className="invite-page">
-        <div className="invite-page-container">
+        <div
+          className="invite-page-container"
+          style={{ paddingInline: "4.5px" }}
+        >
           {/* Template / Banner */}
           <div
             className="invite-template-shell"
-            style={{ position: "relative", marginTop: "12px" }}
+            style={{
+              position: "relative",
+              marginTop: "9px",
+              marginBottom: "0px",
+              paddingBottom: "0px",
+            }}
           >
             {fetchEventLoading && !eventDetails ? (
               <TemplatecardSkeleton
                 width="100%"
                 height="200px"
-                borderRadius="10px"
+                borderRadius="11px"
               />
             ) : (
               <TemplateRenderer
@@ -480,7 +495,7 @@ const VenuePage = ({
 
           {/* Address - SSR se aayega agar data hai */}
           {(eventDetails?.location || eventDetails?.googleMapLink) && (
-            <div className="invite-address-section">
+            <div className="venue-address-section">
               <VenueAddressSection
                 eventData={eventDetails}
                 hideDateAndTime={true}
@@ -489,6 +504,46 @@ const VenuePage = ({
             </div>
           )}
 
+          {venuePackages.length > 0 && (
+            <div className="packages-container">
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                }}
+              >
+                {venuePackages.map((item) => (
+                  <VenueFoodCard
+                    key={item._id || item.title}
+                    item={{ ...item, venueId: item.venueId || venueId }}
+                    onView={() => setSelectedPackage(item)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {eventDetails?.termsAndConditionsHtml && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+                marginTop: "10px",
+                marginBottom: "4px",
+              }}
+            >
+              <button
+                className="view-terms-btn"
+                type="button"
+                onClick={() => setOpenTerms(true)}
+              >
+                Terms & Condition
+              </button>
+            </div>
+          )}
+          <VenueHighlights venueDetails={eventDetails} />
           {eventDetails?.description && (
             <div className="cc-accordion">
               <button
@@ -511,74 +566,40 @@ const VenuePage = ({
             </div>
           )}
 
-          {/* PACKAGES - yeh ab page source mein full HTML ke saath aayega */}
-          {venuePackages.length > 0 && (
-            <div
-              className="whos-joining-container"
-              style={{
-                marginTop: "clamp(3px, 1.27vw, 5px)",
-                marginBottom: "10px",
-              }}
-            >
-              <div
-                style={{
-                  marginTop: "10px",
-                  padding: "0 4px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
-                }}
-              >
-                {venuePackages.map((item) => (
-                  <VenueFoodCard
-                    key={item._id || item.title}
-                    item={{ ...item, venueId: item.venueId || venueId }}
-                    onView={() => setSelectedPackage(item)}
-                  />
-                ))}
+          <div className="chat-banner-ctn-venue">
+            {/* Left: Icon + Text Group */}
+            <div className="venue-chat-left">
+              <div className="calling-wrapper">
+                <Image
+                  src={HeadPhoneIcon}
+                  alt="Support"
+                  height={18}
+                  width={18}
+                  className="calling-icon-img"
+                />
+              </div>
+              <div className="venue-chat-text-wrap">
+                <h3 className="venue-chat-banner-title">
+                  Have a special request ?
+                </h3>
+                <p className="venue-chat-banner-subtitle">
+                  Our team is here to help you plan the perfect event.
+                </p>
               </div>
             </div>
-          )}
 
-          {eventDetails?.termsAndConditionsHtml && (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: "16px",
-                marginBottom: "10px",
-              }}
-            >
-              <button
-                className="view-terms-btn"
-                type="button"
-                onClick={() => setOpenTerms(true)}
-              >
-                Terms & Condition
-              </button>
-            </div>
-          )}
-
-          <div className="venue-tax-note">
-            <span className="venue-tax-line" />
-            <span className="venue-tax-text">* Included All Plus Taxes *</span>
-            <span className="venue-tax-line" />
+            {/* Right: WhatsApp Button */}
+            <button type="button" className="venue-chat-banner-wa-btn">
+              <Image
+                src={WatsappIcon}
+                alt="WA"
+                className="wa-img-venue-chat-banner"
+              />
+              <span>Check Availability</span>
+            </button>
           </div>
 
-          {/* Highlights + Categories */}
-          <div className="enquire-card">
-            <VenueHighlights
-              venue={venueForHighlights}
-              onEnquire={handleEnquire}
-            />
-            <VenueCategoryPills categories={eventDetails?.venueType} />
-          </div>
-
-          <div className="event-wall-container">
-            <h2 className="wall-heading mt-2 p-0" style={{ textAlign: "left" }}>
-              Explore Spaces
-            </h2>
+          <div className="venue-wall-container">
             <VenueWallSection
               userData={userData}
               setPushRsvpClick={setPushRsvpClick}

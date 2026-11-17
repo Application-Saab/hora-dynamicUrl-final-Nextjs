@@ -8,7 +8,7 @@ const CateringCard = ({item, image, title, price, oldPrice, dish,onView }) => {
 
 
   return (
-    <div className="catering-card">
+    <div className="catering-card" onClick={() => onView(item)}>
       <img src={image} alt={title} className="catering-img" />
 
       <div className="catering-content">
@@ -33,7 +33,7 @@ const CateringCard = ({item, image, title, price, oldPrice, dish,onView }) => {
 
         <p className="custom-text">Customization Available</p>
 
-       <button className="view-btn" onClick={() => onView(item)}>
+       <button className="view-btn">
           View More
         </button>
       </div>

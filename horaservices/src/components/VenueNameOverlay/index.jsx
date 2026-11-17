@@ -2,7 +2,7 @@
 import { useLayoutEffect, useRef } from "react";
 import "./VenueNameOverlay.css";
 
-const MIN_FONT_SIZE = 10; // isse chota font kabhi nahi hoga, chahe text kitna bhi bada ho
+const MIN_FONT_SIZE = 10;
 const FONT_STEP = 1;
 
 const VenueNameOverlay = ({ venueName }) => {
