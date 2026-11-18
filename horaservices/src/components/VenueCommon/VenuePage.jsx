@@ -302,32 +302,15 @@ const VenuePage = ({
   const PHONE = "7338584828";
 
   const handleEnquire = () => {
-    trackWhatsAppButtonClick(
-      MARKETING_EVENTS.WHATSAPP_BUTTONS.VENUE_ENQUIRE_NOW_BTN,
-      {
-        button_name: "Enquire Now",
-        button_type: "enquire_now_venue",
-        page_path: window.location.pathname,
-      },
-    );
-    trackWAClicks();
-    const venueName = eventDetails?.venueName || "this venue";
-    const location = eventDetails?.city || eventDetails?.location || "";
-    const capacity = eventDetails?.guestCapacity;
-    const price = eventDetails?.startingPrice;
-
-    trackWhatsAppButtonClick(
-      MARKETING_EVENTS.WHATSAPP_BUTTONS.VENUE_ENQUIRE_NOW_BTN,
-      {
-        button_name: "Enquire Now",
-        button_type: "enquire_now_venue",
-        page_path: window.location.pathname,
-      },
-    );
+    trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.CHECK_AVAILABILITY_VENUE_INNER, {
+      button_name: "Check Availability",
+      button_type: "check_availibility_venue_address_section",
+      page_path: window.location.pathname,
+    });
     trackWAClicks();
 
     const message = `Hi, I want to book your venue & need more info${
-      cityName ? ` for ${cityName}` : ""
+      propCity ? ` for ${propCity}` : ""
     }!`;
 
     window.open(
@@ -589,7 +572,7 @@ const VenuePage = ({
             </div>
 
             {/* Right: WhatsApp Button */}
-            <button type="button" className="venue-chat-banner-wa-btn">
+            <button type="button" className="venue-chat-banner-wa-btn" onClick={handleEnquire}>
               <Image
                 src={WatsappIcon}
                 alt="WA"

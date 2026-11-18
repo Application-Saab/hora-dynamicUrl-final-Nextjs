@@ -6,7 +6,9 @@ import WatsappIcon from "../../assets/venue/check_availability_wa.svg";
 import Image from "next/image";
 import VenueAvailabilityModal from "../VenueCommon/VenueAvailabilityModal";
 import VenueMapModal from "../VenueCommon/VenueMapModal";
-
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+const PHONE = "7338584828";
 // GTM dataLayer push (inline helper — no extra file needed)
 const pushToDataLayer = (eventName, params = {}) => {
   if (typeof window === "undefined") return;
@@ -14,9 +16,12 @@ const pushToDataLayer = (eventName, params = {}) => {
   window.dataLayer.push({ event: eventName, ...params });
 };
 
-const VenueAddressSection = ({ eventData, hideDateAndTime, city }) => {
+const VenueAddressSection = ({ eventData, userId, visitorId, pincode, hideDateAndTime, city }) => {
+  const [showAvailabilityModal, setShowAvailabilityModal] = useState(false);
+  const [showMapModal, setShowMapModal] = useState(false);
+
   const venueName = eventData?.venueName;
-  const address = eventData?.location; // location = full address string in your API
+  const address = eventData?.location;
   const mapLink = eventData?.googleMapLink;
 
   // Pre-filled WhatsApp message
