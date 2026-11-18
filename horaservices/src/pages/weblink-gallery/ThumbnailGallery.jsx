@@ -858,6 +858,12 @@ useEffect(() => {
           inclusionType: video.inclusionType || "",
           folderIds: video.folderIds || [],
           orderByName: video.orderByName || "",
+
+          customerId,
+          localPhoneNumber,
+          resolvedFolderName,
+          isPrivateFolder,
+          subFolders,
         }),
       );
 

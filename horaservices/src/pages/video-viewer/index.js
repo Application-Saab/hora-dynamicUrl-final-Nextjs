@@ -4,7 +4,7 @@ import Image from "next/image";
 import Router, { useRouter } from "next/router";
 import CommonImagePopup from "@/components/CommonImagePopup";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
-import { trackActivity } from "@/services/weblinkServices";
+import { trackActivity, createSubfolder } from "@/services/weblinkServices";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { downloadVideoFile } from "@/utils/downloadFile";
 import {BASE_URL,CAPSULE_LIKE_TOGGLE,MEDIA_WORKER_URL} from "@/utils/apiconstants";
@@ -19,6 +19,8 @@ import downloadVector from "../../assets/downloadVector.svg";
 import shareVector from "../../assets/shareVector.svg";
 import deleteVector from "../../assets/deleteVector.svg";
 import { IoIosCloudDone } from "react-icons/io";
+import Lock from "../../assets/Lock.svg";
+import LockerPopup from "@/components/image-galleries/LockerPopup";
 
 const sessionKey = (id) => `video_item_${id}`;
 
@@ -39,6 +41,15 @@ export default function VideoViewerPage() {
 
     const [snackbar, setSnackbar] = useState({ show: false, message: "" });
     const snackbarTimeout = useRef(null);
+
+
+    const [customerId, setCustomerId] = useState("");
+    const [resolvedFolderName, setResolvedFolderName] = useState("");
+    const [isPrivateFolder, setIsPrivateFolder] = useState(false);
+
+    const [isAddingToLocker, setIsAddingToLocker] = useState(false);
+    const [showLockerPopup, setShowLockerPopup] = useState(false);
+    const [pendingLockerVideo, setPendingLockerVideo] = useState(null);
 
     const isLiked = !!video?.liked;
 
@@ -76,7 +87,14 @@ export default function VideoViewerPage() {
         const cached = safeGetSessionItem(sessionKey(id));
         if (cached) {
             try {
-                setVideo(JSON.parse(cached));
+                const parsedVideo = JSON.parse(cached);
+
+                setVideo(parsedVideo);
+                setCustomerId(parsedVideo.customerId || "");
+                setLocalPhoneNumber(parsedVideo.localPhoneNumber || "");
+                setResolvedFolderName(parsedVideo.resolvedFolderName || "");
+                setIsPrivateFolder(!!parsedVideo.isPrivateFolder);
+                setSubFolders(parsedVideo.subFolders || []);
             } catch (e) {
                 console.error("Cache parse error:", e);
             }
@@ -153,6 +171,93 @@ export default function VideoViewerPage() {
         } catch (e) {
             console.error(e);
             setVideo((prev) => ({ ...prev, liked: wasLiked }));
+        }
+    };
+
+    const privateLocker = subFolders.find(
+        (sf) => sf.type === "others" && sf.isLocker === true
+    );
+
+    const handleSubFolderCreated = (newSubFolder) => {
+        setSubFolders((prev) => [...prev, newSubFolder]);
+    };
+
+    const ensurePrivateLocker = async () => {
+        if (privateLocker) return privateLocker;
+
+        const fd = new FormData();
+        fd.append("folderName", resolvedFolderName);
+        fd.append("subFolderName", "My Locker");
+        fd.append("type", "others");
+        fd.append("userId", localUserId);
+        fd.append("customerId", customerId);
+        fd.append("phoneNo", localPhoneNumber);
+        fd.append("isLocker", "true");
+
+        const data = await createSubfolder(fd);
+        const created = data.subFolder;
+
+        handleSubFolderCreated(created);
+
+        return created;
+    };
+
+    const handleAddToLocker = async (currentVideo) => {
+        if (!currentVideo?._id || !localUserId || isAddingToLocker) return;
+
+        const previousFolderIds = currentVideo.folderIds || [];
+
+        if (
+            privateLocker &&
+            previousFolderIds.length === 1 &&
+            previousFolderIds[0] === privateLocker._id
+        ) {
+            return;
+        }
+
+        setIsAddingToLocker(true);
+
+        try {
+            const locker = await ensurePrivateLocker();
+
+            const newFolderIds = [locker._id];
+
+            const toAdd = newFolderIds.filter(
+                (id) => !previousFolderIds.includes(id)
+            );
+
+            const toRemove = previousFolderIds.filter(
+                (id) => !newFolderIds.includes(id)
+            );
+
+            await fetchWithError(
+                `${BASE_URL}/api/internal/assign-to-subfolder`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        subFolderId: newFolderIds,
+                        addImageIds: toAdd.length ? [currentVideo._id] : [],
+                        removeImageIds: toRemove.length ? [currentVideo._id] : [],
+                    }),
+                }
+            );
+
+            setVideo((prev) => ({
+                ...prev,
+                folderIds: newFolderIds,
+            }));
+
+            setShowActionMenu(false);
+            handleClose();
+
+        } catch (err) {
+            console.error("Add video to locker failed:", err);
+            alert("Failed to add video to locker");
+        } finally {
+            setIsAddingToLocker(false);
         }
     };
 
@@ -362,6 +467,32 @@ export default function VideoViewerPage() {
                                 {currentVideo.inclusionType}
                             </div>
                         )}
+
+                        {localUserId === customerId && !isPrivateFolder && (
+                            <div>
+                                <button
+                                    className="add-locker-btn"
+                                    onClick={() => {
+                                        if (!privateLocker) {
+                                            setPendingLockerVideo(currentVideo);
+                                            setShowLockerPopup(true);
+                                            return;
+                                        }
+
+                                        handleAddToLocker(currentVideo);
+                                    }}
+                                    disabled={isAddingToLocker}
+                                >
+                                    <span className="add-locker-icon">
+                                        <img src={Lock.src} alt="" />
+                                    </span>
+
+                                    <span>
+                                        {isAddingToLocker ? "Adding..." : "Add To Locker"}
+                                    </span>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
             />
@@ -385,6 +516,28 @@ export default function VideoViewerPage() {
                     </span>
                     {snackbar.message}
                 </div>
+            )}
+
+            {showLockerPopup && (
+                <LockerPopup
+                    onClose={() => {
+                        setShowLockerPopup(false);
+                        setPendingLockerVideo(null);
+                    }}
+                    onMoveToLocker={async () => {
+                        try {
+                            setShowLockerPopup(false);
+
+                            if (pendingLockerVideo) {
+                                await handleAddToLocker(pendingLockerVideo);
+                            }
+
+                            setPendingLockerVideo(null);
+                        } catch (err) {
+                            console.error(err);
+                        }
+                    }}
+                />
             )}
         </div>
     );
