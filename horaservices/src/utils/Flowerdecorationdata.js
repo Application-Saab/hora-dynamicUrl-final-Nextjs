@@ -3,12 +3,12 @@ import mehndi from "@/assets/flower/mehndi.webp";
 import sangeet from "@/assets/flower/sangeet.webp";
 import engagement from "@/assets/flower/engagement.webp";
 import wedding from "@/assets/flower/wedding.webp";
-import housewarming from "@/assets/flower/housewarming.webp";
+import housewarming from "../assets/flower/Housewarming.webp";
 import reception from "@/assets/flower/reception.webp";
 import firstnight from "@/assets/flower/firstnight.webp";
 import naming from "@/assets/flower/naming.webp";
 import weddingcar from "@/assets/flower/weddingcar.webp";
-import pooja from "@/assets/flower/pojja.webp"
+import pooja from "../assets/flower/Pojja.webp"
 import Mandapdecoration from "@/assets/flower/Mandapdecoration.webp"
 
 import haldiIcon from "@/assets/flower/icons/haldi.webp";
@@ -16,7 +16,8 @@ import mehndiIcon from "@/assets/flower/icons/mehndi.webp";
 import sangeetIcon from "@/assets/flower/icons/sangeet.webp";
 import engagementIcon from "@/assets/flower/icons/engagement.webp";
 import weddingIcon from "@/assets/flower/icons/wedding.webp";
-import housewarmingIcon from "@/assets/flower/icons/housewarming.webp";
+// import housewarmingIcon from "@/assets/flower/icons/housewarming.webp";
+import housewarmingIcon from "../assets/flower/icons/housewarming.webp";
 import receptionIcon from "@/assets/flower/icons/reception.webp";
 import firstnightIcon from "@/assets/flower/icons/firstnight.webp";
 import namingIcon from "@/assets/flower/icons/naming.webp";
