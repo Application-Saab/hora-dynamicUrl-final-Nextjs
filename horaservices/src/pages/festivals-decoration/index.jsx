@@ -1,97 +1,161 @@
-import { useState, useMemo } from "react";
 import Head from "next/head";
-import { getPageTitleCategory, getPageMetaDescriptionCategory } from "@/utils/Decorationcatseo";
-import { festivalsDecorationFAQData } from "@/utils/FestivalsDecorationFAQData";
-import { festivalsDecorationDescription } from "@/utils/Festivalsdecorationdescription";
-import { decorateCatalogueItem, getSubCategory } from "@/utils/decorationCatHelpers";
-import FAQSection from "@/components/FAQSection";
-import SectionDescription from "@/components/Description";
-import SmallCardGrid from "@/components/SmallCardGrid";
-import { festivalCat } from "@/utils/FestivalCat";
+import Image from "next/image";
+import FlowerGrid from "@/components/FlowerlandingpageGrid";
+import Banner from "@/components/Banner";
+import { flowerThemes, FLOWER_CATEGORY_SLUG } from "@/utils/Flowerdecorationdata";
+import FlowerBannerImg from "@/assets/festivals-banner.png";
+import whatsappbanner from "@/assets/Whatsaap_banner.webp";
+import whatsappIcon from "@/assets/whatsapp-icon.png";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
+import festivalCollageImg from "@/assets/festivals/festivalsCollageImg.webp";
+import "@/pages/flower-decoration/flowerdecoration.css";
+import BrandBanner from "@/components/BrandBanner";
+import BrandBannerIMG from "../../assets/BrandBannerIMG.webp";
+import { balloonreviewsproduct } from "@/utils/balloonReviews";
+import GoogleReviewsCard from "@/components/PhotoGalleryPose/GoogleReviewsCard";
+import WhyPeopleLoveUs from "@/components/WhyPeopleLoveUs";
+import { stats, brandItems } from "@/utils/whylovebranddata";
+import { festivalCat, festivalThemes } from "@/utils/FestivalCat";
 
 const SITE = "https://horaservices.com";
-const CAT = "festivals-decoration";
-const API = `${SITE}/api`;
+const slugify = (v) => String(v || "").trim().toLowerCase().replace(/\s+/g, "-");
 
-// har card ko categorySlug do, taaki link bane: /festivals-decoration/ganpati-decoration
-const FESTIVAL_CARDS = festivalCat.map((c) => ({ ...c, categorySlug: CAT }));
+const FestivalsDecorationLanding = ({ city = "", locality = "" }) => {
+  const citySlug = city ? slugify(city) : "";
+  const localitySlug = locality ? slugify(locality) : "";
 
-export async function getServerSideProps() {
-  try {
-  
-    // TODO: yahan wahi endpoint lagao jo baaki category pages me products laata hai.
-    // subCategory = "Festivals" (getSubCategory(CAT) se aata hai)
-    const res = await fetch(`${API}/catalogue?subCategory=${getSubCategory(CAT)}`);
-    const data = await res.json();
-    const list = Array.isArray(data) ? data : data.items || [];
+  const canonicalUrl =
+    citySlug && localitySlug
+      ? `${SITE}/${citySlug}/${localitySlug}/${FLOWER_CATEGORY_SLUG}`
+      : citySlug
+        ? `${SITE}/${citySlug}/${FLOWER_CATEGORY_SLUG}`
+        : `${SITE}/${FLOWER_CATEGORY_SLUG}`;
 
-    // rating / discount server par hi bante hain, isliye hydration mismatch nahi hoga
-    const products = list.map(decorateCatalogueItem).map((item) => ({
-      id: String(item._id || item.id),
-      slug: item.slug || String(item._id || item.id), // TODO: apna product url field
-      name: item.name || item.title,                  // TODO: apna name field
-      image: item.image,                              // TODO: apna image field
-      badge: item.badge || "",                        // e.g. "On Square Stand"
-      price: item.price,
-      mrp: Math.round(item.discountedPrice),          // cut price (jo upar dikhta hai)
-      customizable: true,
-    }));
+  const cityName = city ? city.charAt(0).toUpperCase() + city.slice(1).toLowerCase() : "";
 
-    return { props: { products } };
-  } catch (e) {
-    return { props: { products: [] } };
-  }
-}
+  const title = cityName
+    ? `Festival Decoration in ${cityName} for Diwali, Ganesh Chaturthi & More | HORA`
+    : "Festival Decoration for Diwali, Ganesh Chaturthi, Navratri & More | HORA";
 
-export default function FestivalsDecorationPage({ products }) {
-  const title = getPageTitleCategory(CAT);
-  const description = getPageMetaDescriptionCategory(CAT);
-  const canonical = `${SITE}/${CAT}`;
-  const faqs = festivalsDecorationFAQData();
+  const description =
+    "Book beautiful festival decoration for Diwali, Ganesh Chaturthi, Navratri, Karwa Chauth, Holi, Eid, Christmas and more.";
 
-  const [query, setQuery] = useState(""); // apne search bar se setQuery(...) call karo
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return products.filter((p) => !q || p.name.toLowerCase().includes(q));
-  }, [products, query]);
+  const waMessage = cityName
+    ? `Hi, how can we help in your festival decoration services for ${cityName}`
+    : "Hi, how can we help in your festival decoration services";
+  const waLink = `https://wa.me/917338584828?text=${encodeURIComponent(waMessage)}`;
 
   return (
-    <>
+    <div
+      style={{
+        maxWidth: "480px",
+        margin: "auto",
+        padding:
+          "clamp(12.22px, 3.82vw, 18.32px) clamp(7.33px, 2.29vw, 10.99px) clamp(19.08px, 6.11vw, 29.31px)",
+      }}
+    >
       <Head>
         <title>{title}</title>
         <meta name="description" content={description} />
-        <link rel="canonical" href={canonical} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta name="robots" content="index, follow" />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
-        <meta property="og:url" content={canonical} />
+        <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
-        <meta
-          property="og:image"
-          content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
-        />
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Hora Services" />
-        <link
-          rel="icon"
-          href="https://horaservices.com/api/uploads/logo-icon.png"
-          type="image/x-icon"
-        />
       </Head>
 
-      {/* Yahan aapka existing search bar / sort aayega */}
+      <div className="fd-banner">
+        <Image
+          src={FlowerBannerImg}
+          alt="Festival decoration for Diwali, Ganesh Chaturthi, Navratri and more"
+          priority
+          quality={100}
+        />
+      </div>
 
-      <SmallCardGrid
-        categories={FESTIVAL_CARDS}
-        decCat={FESTIVAL_CARDS}
-        firstRowCount={Math.ceil(FESTIVAL_CARDS.length / 2)}
+      <FlowerGrid
+        title="Popular Festival Decoration"
+        subtitle="Choose from our stunning festival decoration themes"
+        themes={festivalThemes}
+        city={city}
+        locality={locality}
+        categorySlug={FLOWER_CATEGORY_SLUG}
       />
 
-      <SectionDescription sections={festivalsDecorationDescription} />
+      <a
+        className="wa-banner"
+        href={waLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat now on WhatsApp"
+        onClick={() => {
+          trackWhatsAppButtonClick(
+            MARKETING_EVENTS.WHATSAPP_BUTTONS.WE_ARE_HERE_BANNER_DECORATION,
+            {
+              button_name: "Chat Now on Whatsapp",
+              button_type: "happy_to_help_banner_btn",
+              page_path: window.location.pathname,
+            },
+          );
+          trackWAClicks();
+        }}
+      >
+        <Banner
+          image={whatsappbanner}
+          alt="Your Celebrations, Our Commitment"
+          border="1px solid #599911"
+        />
+        <span className="wa-banner__btn">
+          <Image
+            src={whatsappIcon}
+            alt="WhatsApp – chat with HORA for festival decoration booking"
+            width={24}
+            height={24}
+            className="wa-banner__icon"
+          />
+          <span>Chat Now on WhatsApp</span>
+        </span>
+      </a>
 
-      <div className="tab-section-details-productpage">
-        <FAQSection faqData={faqs} />
+      {/* ===== Real Festival Decoration collage ===== */}
+      <section className="fc-section">
+        <h2 className="fc-title">Real Festival Decoration</h2>
+        <p className="fc-sub">
+          Make every festival unforgettable with stunning festive decorations
+        </p>
+
+        <Image
+          src={festivalCollageImg}
+          alt="Real festival decoration setups for Diwali, Ganesh Chaturthi, Navratri, Holi and Christmas"
+          className="fc-image"
+          sizes="(max-width: 480px) 100vw, 480px"
+        />
+      </section>
+
+      <WhyPeopleLoveUs stats={stats} />
+
+      <section className="BabyShowerBanner">
+        <Image
+          src={BrandBannerIMG}
+          alt="HORA – trusted brand for festival decoration at home"
+          width={1200}
+          height={400}
+          className="decorationBanner-image"
+        />
+      </section>
+
+      <BrandBanner
+        title="Excellence Backed by Happy Customers"
+        items={brandItems}
+      />
+
+      <div style={{ margin: "10px 0px" }}>
+        <GoogleReviewsCard reviews={balloonreviewsproduct} />
       </div>
-    </>
+    </div>
   );
-}
+};
+
+export default FestivalsDecorationLanding;

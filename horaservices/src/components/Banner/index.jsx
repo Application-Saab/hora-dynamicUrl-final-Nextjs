@@ -27,7 +27,7 @@ const Banner = ({
 
   return (
     <div className="hora-banner-outer">
-      <div className="page-width">
+      <div>
         {href ? (
           <a href={href} className="hora-banner">
             {img}

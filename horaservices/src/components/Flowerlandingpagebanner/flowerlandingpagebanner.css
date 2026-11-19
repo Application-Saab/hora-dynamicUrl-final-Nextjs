@@ -2,61 +2,132 @@
   margin-bottom: 10px;
 }
 
-/* Wrapper relative hai, taaki button image ke upar absolute ho sake */
-.flower-banner__wrap {
+/* ---------- Card ----------
+   Target design 465 x 447 par bana hai. Har cheez ki jagah card ki
+   width ke % (cqw) me fix hai, to flow/padding ka koi chakkar nahi:
+   320px se 480px tak sab kuch same proportion me scale hota hai. */
+.flower-banner__card {
   position: relative;
-  width: 100%;
-  border-radius: 11px;
   overflow: hidden;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  aspect-ratio: 465 / 447;
+  background: #fdf6fd; /* image aane tak */
+  container-type: inline-size;
 }
 
-.flower-banner__img {
+.flower-banner__bg {
+  object-fit: cover;
+  z-index: 0;
+}
+
+/* content card ke upar poora failta hai; andar sab absolute */
+.flower-banner__content {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  text-align: center;
+}
+
+/* head ke teen text seedhe content ke hisaab se position honge */
+.flower-banner__head {
+  display: contents;
+}
+
+/* ---------- Text (top = text ka center, cqw me) ---------- */
+.flower-banner__eyebrow,
+.flower-banner__title,
+.flower-banner__subtitle {
+  position: absolute;
+  left: 50%;
+  margin: 0;
+  width: 100%;
+  transform: translate(-50%, -50%);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* 320px -> 480px */
+.flower-banner__eyebrow {
+  top: 6.7cqw;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: clamp(10.4px, 3.25cqw, 15.6px);
+  color: #2d2433;
+}
+
+.flower-banner__title {
+  top: 12cqw;
+  font-family: "Playfair Display", "Times New Roman", serif;
+  font-weight: 600;
+  font-size: clamp(18.7px, 5.83cqw, 28px);
+  color: #8b4f85;
+}
+
+.flower-banner__subtitle {
+  top: 17.6cqw;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: clamp(9px, 2.4cqw, 11.5px);
+  color: #2d2433;
+}
+
+/* ---------- Collage ----------
+   Image file ke andar white border barabar nahi hai:
+   left 6px, right 17px (945px wide image me). Isliye image ko
+   0.58% (= 5.5px / 945px) right shift kiya, ab photos ke dono
+   side ka gap barabar (~1.2%) dikhta hai. */
+.flower-banner__collage {
+  position: absolute;
+  left: 0;
+  top: 24.9cqw;
   display: block;
   width: 100%;
   height: auto;
+  transform: translateX(0.58%);
 }
 
-/* Button: image ke bottom-left mein */
+/* ---------- Button ---------- */
 .flower-banner__btn {
   position: absolute;
-  left: 2.4%;
-  bottom: 8%;
+  left: 50%;
+  top: 78.5cqw;
+  transform: translateX(-50%);
 
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
+  gap: clamp(6px, 2cqw, 9.6px);
   box-sizing: border-box;
 
-  width: clamp(105.98px, 33.08vw, 129.92px);
-  height: clamp(22.79px, 7.12vw, 27.97px);
-  padding: clamp(7.82px, 2.44vw, 9.59px);
-  gap: clamp(7.82px, 2.44vw, 9.59px);
-  border-radius: clamp(4.89px, 1.53vw, 6px);
+  width: clamp(201px, 63cqw, 302px);
+  height: clamp(33px, 10.3cqw, 49.5px);
+  border-radius: clamp(4.5px, 1.4cqw, 6.7px);
 
   background: #8b4f85;
   color: #fff;
   font-family: "Inter", sans-serif;
   font-weight: 600;
-  font-size: clamp(9.38px, 2.93vw, 14.07px);
+  font-size: clamp(16.3px, 5.1cqw, 24.5px);
   line-height: 1;
   white-space: nowrap;
   text-decoration: none;
 
-  box-shadow: 0 6px 16px rgba(97, 40, 90, 0.3);
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition: background 0.2s ease;
 }
 
 .flower-banner__btn:hover {
   background: #97538c;
-  transform: translateY(-2px);
 }
 
 .flower-banner__btn:focus-visible {
-  outline: 2px solid #fff;
+  outline: 2px solid #8b4f85;
   outline-offset: 3px;
 }
+
 .flower-banner__arrow {
-  width: clamp(9.38px, 2.93vw, 14.07px);
-  height: auto;
+  width: 1.1em;
+  height: 1.1em;
   flex-shrink: 0;
 }
