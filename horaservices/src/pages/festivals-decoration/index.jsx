@@ -2,7 +2,6 @@ import Head from "next/head";
 import Image from "next/image";
 import FlowerGrid from "@/components/FlowerlandingpageGrid";
 import Banner from "@/components/Banner";
-import { flowerThemes, FLOWER_CATEGORY_SLUG } from "@/utils/Flowerdecorationdata";
 import FlowerBannerImg from "@/assets/festivals-banner.png";
 import whatsappbanner from "@/assets/Whatsaap_banner.webp";
 import whatsappIcon from "@/assets/whatsapp-icon.png";
@@ -16,7 +15,7 @@ import { balloonreviewsproduct } from "@/utils/balloonReviews";
 import GoogleReviewsCard from "@/components/PhotoGalleryPose/GoogleReviewsCard";
 import WhyPeopleLoveUs from "@/components/WhyPeopleLoveUs";
 import { stats, brandItems } from "@/utils/whylovebranddata";
-import { festivalCat, festivalThemes } from "@/utils/FestivalCat";
+import { festivalCat, festivalThemes,FESTIVAL_CATEGORY_SLUG } from "@/utils/FestivalCat";
 
 const SITE = "https://horaservices.com";
 const slugify = (v) => String(v || "").trim().toLowerCase().replace(/\s+/g, "-");
@@ -27,10 +26,10 @@ const FestivalsDecorationLanding = ({ city = "", locality = "" }) => {
 
   const canonicalUrl =
     citySlug && localitySlug
-      ? `${SITE}/${citySlug}/${localitySlug}/${FLOWER_CATEGORY_SLUG}`
+      ? `${SITE}/${citySlug}/${localitySlug}/${FESTIVAL_CATEGORY_SLUG}`
       : citySlug
-        ? `${SITE}/${citySlug}/${FLOWER_CATEGORY_SLUG}`
-        : `${SITE}/${FLOWER_CATEGORY_SLUG}`;
+        ? `${SITE}/${citySlug}/${FESTIVAL_CATEGORY_SLUG}`
+        : `${SITE}/${FESTIVAL_CATEGORY_SLUG}`;
 
   const cityName = city ? city.charAt(0).toUpperCase() + city.slice(1).toLowerCase() : "";
 
@@ -81,7 +80,7 @@ const FestivalsDecorationLanding = ({ city = "", locality = "" }) => {
         themes={festivalThemes}
         city={city}
         locality={locality}
-        categorySlug={FLOWER_CATEGORY_SLUG}
+        categorySlug={FESTIVAL_CATEGORY_SLUG}
       />
 
       <a

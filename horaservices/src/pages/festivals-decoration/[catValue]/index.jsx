@@ -27,7 +27,6 @@ export default function festivalsCatPage({
         initialCatalogueData={initialCatalogueData}
         initialCatId={initialCatId}
         initialHasMore={initialHasMore}
-        categorySlug="festivals-decoration"
       />
 
       {categoryContent && (

@@ -36,6 +36,6 @@ export const decCat = [
   { id: "35", image: "", name: "New Year",    subCategory: "NewYearDecoration",   catValue: "new-year-decoration",   imgAlt: "New Year decoration" },
   { id: "36", image: "", name: "Halloween",   subCategory: "HalloweanDecoration", catValue: "hallowean-decoration",  imgAlt: "Halloween decoration" },
   { id: "37", image: "", name: "Card Party",  subCategory: "CardPartyDecoration", catValue: "card-party-decoration", imgAlt: "Card party decoration" },
-   { id: "30", image: "", name: "Pooja Decoration", subCategory: "PoojaDecoration", catValue: "pooja-decoration", imgAlt: "Elegant baptism decoration with white and gold theme, cross motifs, candles, and floral arrangements for a christening ceremony" },
+   { id: "38", image: "", name: "Pooja Decoration", subCategory: "PoojaDecoration", catValue: "pooja-decoration", imgAlt: "Elegant baptism decoration with white and gold theme, cross motifs, candles, and floral arrangements for a christening ceremony" },
   
 ];
