@@ -482,18 +482,12 @@
     min-width: 0;
 }
 
-.highlight-content h2 {
-    margin: 0;
-    font-size: 10px;
-    font-weight: 700;
-    line-height: 1.1;
+.profile-info-text {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
     color: #1a1a1a;
-}
-
-@media (min-width: 400px) {
-    .highlight-content h2 {
-        font-size: 14.7px;
-    }
+    margin: 0;
 }
 
 .highlight-content h3 {

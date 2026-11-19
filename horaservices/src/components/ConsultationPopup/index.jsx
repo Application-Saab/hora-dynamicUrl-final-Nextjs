@@ -47,7 +47,7 @@ export default function PhotographyConsultationSheet({
     <>
       <div className="pcs-overlay" onClick={onClose} />
       <div className="pcs-sheet">
-        <button className="customModal-close" onClick={onClose}>
+        <button className="pcs-close" onClick={onClose}>
           ✕
         </button>
         <div className="pcs-dragger" />

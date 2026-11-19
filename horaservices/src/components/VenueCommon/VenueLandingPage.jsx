@@ -14,6 +14,7 @@ import VenueSearchBar from "@/components/Venue/Venuesearchbar";
 import Head from "next/head";
 import { venueData } from "@/utils/venueCircleData.js";
 import EventDateBanner from "../Eventdatebanner";
+// import VenueReviews from "../Venue/VenueReviews/VenueReviews";
 import FAQSection from "@/components/FAQSection";
 
 function getCitySlugFromPath(pathname) {
@@ -49,6 +50,7 @@ const VenuelandMainPage = ({
   const [activeVenueType, setActiveVenueType] = useState(initialVenueType);
   const [guestCapacity, setGuestCapacity] = useState("");
   const [searchText, setSearchText] = useState("");
+  const [selectedLocality, setSelectedLocality] = useState(null);
   const [introOpen, setIntroOpen] = useState(false);
   const hasRedirectedRef = useRef(false);
 
@@ -332,11 +334,15 @@ const VenuelandMainPage = ({
           <VenueSearchBar
             searchValue={searchText}
             onSearchChange={setSearchText}
-            eventType={activeEvent}
-            onEventTypeChange={setActiveEvent}
-            guestCapacity={guestCapacity}
-            onGuestCapacityChange={setGuestCapacity}
-            onMoreFilterClick={() => {}}
+            selectedLocality={selectedLocality}
+            onSelectLocality={setSelectedLocality}
+            city={cityForSEO}
+            onSelectVenueType={(item) => {
+              // Venue type select hone par filter lagao
+              if (item?.id) {
+                setActiveVenueType(item.id);
+              }
+            }}
           />
         </div>
 
@@ -376,11 +382,12 @@ const VenuelandMainPage = ({
           guestCapacity={guestCapacity}
           city={cityForSEO}
           search={searchText}
+          locality={selectedLocality}
           initialVenues={
-            // Sirf tab use karo jab filters abhi default SSR wale hain
             activeEvent === initialEventType &&
             activeVenueType === initialVenueType &&
-            !guestCapacity
+            !guestCapacity &&
+            !selectedLocality
               ? initialVenues
               : null
           }
@@ -394,6 +401,7 @@ const VenuelandMainPage = ({
         </h2>
 
         <VenueFeatures />
+        {/* <VenueReviews /> */}
 
         {/* FAQ Section */}
         <FAQSection

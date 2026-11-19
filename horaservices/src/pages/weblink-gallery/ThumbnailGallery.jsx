@@ -164,6 +164,22 @@ const [pendingLockerImage, setPendingLockerImage] = useState(null);
   const handleImageLoad = () => {
     setIsBannerLoading(false);
   };
+
+
+  useEffect(() => {
+    try {
+      const keysToRemove = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key && key.startsWith("video_item_")) keysToRemove.push(key);
+      }
+      keysToRemove.forEach((k) => sessionStorage.removeItem(k));
+      sessionStorage.removeItem("video_subfolders");
+    } catch (e) {
+      console.error("Video session cleanup failed:", e);
+    }
+  }, []);
+
   
   const [snackbar, setSnackbar] = useState({
     show: false,
@@ -603,7 +619,7 @@ useEffect(() => {
   ]);
 
   const popupImages = useMemo(() => {
-  return visibleThumbnails;
+    return visibleThumbnails.filter((img) => img.type !== "video");
 }, [visibleThumbnails]); 
 
   const currentImage =
@@ -828,9 +844,55 @@ useEffect(() => {
     setInitialSubfolderImages([]);
   };
 
-  const handleImageClick = useCallback((indexInDisplayedList) => {
-    setSelectedIndex(indexInDisplayedList);
-  }, []);
+  const openVideoPage = useCallback(
+    (video) => {
+      if (video.isTemp && video.uploading) return;
+
+      safeSetSessionItem(
+        `video_item_${video._id}`,
+        JSON.stringify({
+          _id: video._id,
+          type: video.type,
+          originalUrl: video.originalUrl,
+          liked: !!likedImages[video._id],
+          inclusionType: video.inclusionType || "",
+          folderIds: video.folderIds || [],
+          orderByName: video.orderByName || "",
+
+          customerId,
+          localPhoneNumber,
+          resolvedFolderName,
+          isPrivateFolder,
+          subFolders,
+        }),
+      );
+
+      safeSetSessionItem("video_subfolders", JSON.stringify(usableFolders));
+
+      Router.push(`/video-viewer?id=${video._id}`);
+    },
+    [likedImages, usableFolders],
+  );
+
+  const handleImageClick = useCallback(
+    (indexInVisibleList) => {
+      const item = visibleThumbnails[indexInVisibleList];
+      if (!item) return;
+
+      // video => alag page
+      if (item.type === "video") {
+        openVideoPage(item);
+        return;
+      }
+
+      // image => popup (sirf images ki list me sahi index nikalo)
+      const idx = popupImages.findIndex(
+        (img) => String(img._id) === String(item._id),
+      );
+      if (idx !== -1) setSelectedIndex(idx);
+    },
+    [visibleThumbnails, popupImages, openVideoPage],
+  );
 
   const closePopup = useCallback(() => {
     setSelectedIndex(null);
@@ -1924,19 +1986,15 @@ const handleAddToLocker = async (imgData) => {
                               throw new Error(err);
                             }
 
-                            setAllThumbnails((prev) => {
-                              const newList = prev.filter(
-                                (img) => img._id !== currentImage._id,
-                              );
-                              if (newList.length === 0) {
-                                setSelectedIndex(null);
-                              } else if (selectedIndex >= newList.length) {
-                                setSelectedIndex(newList.length - 1);
-                              } else {
-                                setSelectedIndex(selectedIndex);
-                              }
-                              return newList;
-                            });
+                            const remaining = popupImages.length - 1;
+
+                            setAllThumbnails((prev) => prev.filter((img) => img._id !== currentImage._id));
+
+                            if (remaining <= 0) {
+                              setSelectedIndex(null);
+                            } else if (selectedIndex >= remaining) {
+                              setSelectedIndex(remaining - 1);
+                            }
 
                             setShowActionMenu(false);
                           } catch (err) {
@@ -1987,6 +2045,12 @@ const handleAddToLocker = async (imgData) => {
                 />
               </div>
               </div>
+
+              {currentImage?.inclusionType && (
+                <div style={{color:"#fff"}} className="image-inclusion-type">
+                  {currentImage.inclusionType}
+                </div>
+              )}
 
                {(localUserId === customerId && !isPrivateFolder ) && (
                 <div>

@@ -88,6 +88,7 @@ export const GET_VENUE_PACKAGES_BY_VENUE_ID = '/api/party-venue/package/packages
 export const GET_VENUE_CATEGORIES_LIST = '/api/party-venue/package-category/categories-dropdown'
 export const GET_ALL_VENUE_IMAGES = '/api/party-venue/venue-images';
 export const VENUE_PUBLIC_LISTING = "/api/party-venue/venues-public-list";
+export const VENUE_LOCALITIES_LIST = "/api/party-venue/venue-localities-list"
 
 export const GENERATE_CAPSULE_LINK = "/api/internal/generate-gallery-code";
 export const CAPSULE_LIKE_TOGGLE = "/api/internal/toggle-like";

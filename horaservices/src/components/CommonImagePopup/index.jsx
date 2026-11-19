@@ -35,10 +35,14 @@ const CommonImagePopup = ({
   onClose,
   renderFooter,
   isEventWall = false,
+  singleMode = false,
 }) => {
   const sliderSettings = {
     dots: false,
-    infinite: images.length > 1,
+    arrows: !singleMode,                       
+    swipe: !singleMode,                        
+    draggable: !singleMode,                   
+    infinite: !singleMode && images.length > 1, 
     speed: 300,
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -134,7 +138,7 @@ const CommonImagePopup = ({
   return (
     <div
       className="popupOverlay"
-      onClick={() => setSelectedIndex(null)}
+      onClick={() => (singleMode ? onClose?.() : setSelectedIndex(null))}  
       role="dialog"
       aria-modal="true"
       style={{ zIndex: 999 }}
@@ -145,9 +149,11 @@ const CommonImagePopup = ({
             <button className="closeButton" onClick={onClose}>
               <Image src={Crossicon} alt="Close" width={18} height={18} />
             </button>
-            <div className="image-index">
-              {`${imageNumber} / ${images.length}`}
-            </div>
+            {!singleMode && (                                   
+              <div className="image-index">
+                {`${imageNumber} / ${images.length}`}
+              </div>
+            )}
           </div>
 
           {renderActions && renderActions(images[selectedIndex], selectedIndex)}

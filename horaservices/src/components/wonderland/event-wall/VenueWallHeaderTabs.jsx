@@ -10,7 +10,11 @@ import userIcon from "@/assets/userIcon.svg";
 import imagePicker from "@/assets/imagePicker.svg";
 import captureIcon from "@/assets/captureIcon.svg";
 import selfieCapture from "@/assets/selfieCapture.png";
-import { BASE_URL, CREATE_EVENT_SUBFOLDER, FACE_FINDER_URL } from "@/utils/apiconstants";
+import {
+  BASE_URL,
+  CREATE_EVENT_SUBFOLDER,
+  FACE_FINDER_URL,
+} from "@/utils/apiconstants";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { safeGetItem } from "@/utils/safeStorage";
 
@@ -58,7 +62,11 @@ export default function VenueWallHeaderTabs({
   const [cameraReady, setCameraReady] = useState(false);
 
   const myPhotosFolder = useMemo(
-    () => subFolders.find((sf) => sf.type === "my_photos" && String(sf.userId) === String(localUserId)),
+    () =>
+      subFolders.find(
+        (sf) =>
+          sf.type === "my_photos" && String(sf.userId) === String(localUserId),
+      ),
     [subFolders, localUserId],
   );
 
@@ -98,10 +106,13 @@ export default function VenueWallHeaderTabs({
   const startSearchStream = async (formData) => {
     setIsStreamSearching(true);
     try {
-      const response = await fetchWithError(`${FACE_FINDER_URL}/event-face-search`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetchWithError(
+        `${FACE_FINDER_URL}/event-face-search`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
 
       if (!response.ok) throw new Error(`API Error: ${response.status}`);
 
@@ -145,10 +156,13 @@ export default function VenueWallHeaderTabs({
     fd.append("userId", localUserId);
     if (subFolderName) fd.append("subFolderName", subFolderName);
 
-    const res = await fetchWithError(`${BASE_URL}${CREATE_EVENT_SUBFOLDER}/${eventId}`, {
-      method: "POST",
-      body: fd,
-    });
+    const res = await fetchWithError(
+      `${BASE_URL}${CREATE_EVENT_SUBFOLDER}/${eventId}`,
+      {
+        method: "POST",
+        body: fd,
+      },
+    );
     const data = await res.json();
     if (!res.ok) throw new Error(data?.message || "Failed to create subfolder");
     return data?.data || data;
@@ -156,7 +170,11 @@ export default function VenueWallHeaderTabs({
 
   const ensureMyPhotosFolder = async (file) => {
     if (myPhotosFolder) return myPhotosFolder;
-    const created = await createSubFolder({ type: "my_photos", subFolderName: "My Photos", file });
+    const created = await createSubFolder({
+      type: "my_photos",
+      subFolderName: "My Photos",
+      file,
+    });
     setSubFolders((prev) => [...prev, created]);
     return created;
   };
@@ -246,10 +264,8 @@ export default function VenueWallHeaderTabs({
       setIsLoading(false);
     }
   };
-const coverImage =
-  venueImageUrl ||
-  albums?.[0]?.folderDp?.thumbnailUrl ||
-  allPhotos.src;
+  const coverImage =
+    venueImageUrl || albums?.[0]?.folderDp?.thumbnailUrl || allPhotos.src;
   return (
     <>
       <div className="gallery-headerCard">
@@ -266,17 +282,17 @@ const coverImage =
               setIsActualMyPhotos(false);
             }}
           >
-           <div className="circle-img-folder_wonderland circle-img-both">
-    <div className="circle-img-inner circle-img-innner-wonderland">
-     <img
-    src={coverImage}
-    alt="All"
-    onError={(e) => {
-      e.target.src = allPhotos.src;
-    }}
-  />
-    </div>
-  </div>
+            <div className="circle-img-folder_wonderland circle-img-both">
+              <div className="circle-img-inner circle-img-innner-wonderland">
+                <img
+                  src={coverImage}
+                  alt="All"
+                  onError={(e) => {
+                    e.target.src = allPhotos.src;
+                  }}
+                />
+              </div>
+            </div>
             <span>All</span>
           </div>
         )}
@@ -338,8 +354,13 @@ const coverImage =
             }}
           >
             <div className="circle-img-folder_wonderland circle-img-both">
-              <div className={`${sf.folderDp.thumbnailUrl ? "circle-img-inner circle-img-innner-wonderland" : ""}`}>
-                <img src={sf.folderDp.thumbnailUrl || user2.src} alt={sf.name || "Album"} />
+              <div
+                className={`${sf.folderDp.thumbnailUrl ? "circle-img-inner circle-img-innner-wonderland" : ""}`}
+              >
+                <img
+                  src={sf.folderDp.thumbnailUrl || user2.src}
+                  alt={sf.name || "Album"}
+                />
               </div>
             </div>
             <span>{sf.name}</span>
@@ -364,9 +385,18 @@ const coverImage =
         <div className="captureContainer">
           <div className="bgContainer">
             {capturedImage ? (
-              <img src={capturedImage} className="camera-video captured-circle" alt="Captured" />
+              <img
+                src={capturedImage}
+                className="camera-video captured-circle"
+                alt="Captured"
+              />
             ) : (
-              <video ref={videoRef} autoPlay playsInline className="camera-video" />
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                className="camera-video"
+              />
             )}
             <img src={selfieCapture.src} className="face-overlay" />
           </div>
@@ -389,17 +419,34 @@ const coverImage =
         style={{ zIndex: 100001 }}
       >
         <div className="picker-container">
-          <div className="image-picker" onClick={() => fileInputRef.current?.click()}>
+          <div
+            className="image-picker"
+            onClick={() => fileInputRef.current?.click()}
+          >
             {preview ? (
-              <div className="preview-bg" style={{ backgroundImage: `url(${preview})` }} />
+              <div
+                className="preview-bg"
+                style={{ backgroundImage: `url(${preview})` }}
+              />
             ) : (
-              <Image src={userIcon} width={60} height={60} className="user-icon-img" alt="user" />
+              <Image
+                src={userIcon}
+                width={60}
+                height={60}
+                className="user-icon-img"
+                alt="user"
+              />
             )}
             <div className="upload-icon">
               <Image src={imagePicker} width={24} height={24} alt="pick" />
             </div>
           </div>
-          <input type="file" hidden ref={fileInputRef} onChange={handleFileChange} />
+          <input
+            type="file"
+            hidden
+            ref={fileInputRef}
+            onChange={handleFileChange}
+          />
         </div>
 
         <div className="input-container">
