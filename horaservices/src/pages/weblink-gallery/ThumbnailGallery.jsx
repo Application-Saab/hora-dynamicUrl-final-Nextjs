@@ -164,6 +164,22 @@ const [pendingLockerImage, setPendingLockerImage] = useState(null);
   const handleImageLoad = () => {
     setIsBannerLoading(false);
   };
+
+
+  useEffect(() => {
+    try {
+      const keysToRemove = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key && key.startsWith("video_item_")) keysToRemove.push(key);
+      }
+      keysToRemove.forEach((k) => sessionStorage.removeItem(k));
+      sessionStorage.removeItem("video_subfolders");
+    } catch (e) {
+      console.error("Video session cleanup failed:", e);
+    }
+  }, []);
+
   
   const [snackbar, setSnackbar] = useState({
     show: false,
@@ -830,7 +846,7 @@ useEffect(() => {
 
   const openVideoPage = useCallback(
     (video) => {
-      if (video.isTemp && video.uploading) return; // upload complete hone tak block
+      if (video.isTemp && video.uploading) return;
 
       safeSetSessionItem(
         `video_item_${video._id}`,
@@ -840,12 +856,22 @@ useEffect(() => {
           originalUrl: video.originalUrl,
           liked: !!likedImages[video._id],
           inclusionType: video.inclusionType || "",
+          folderIds: video.folderIds || [],
+          orderByName: video.orderByName || "",
+
+          customerId,
+          localPhoneNumber,
+          resolvedFolderName,
+          isPrivateFolder,
+          subFolders,
         }),
       );
 
+      safeSetSessionItem("video_subfolders", JSON.stringify(usableFolders));
+
       Router.push(`/video-viewer?id=${video._id}`);
     },
-    [likedImages],
+    [likedImages, usableFolders],
   );
 
   const handleImageClick = useCallback(
