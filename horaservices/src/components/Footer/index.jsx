@@ -18,7 +18,7 @@ import {
 import { useCity } from "@/utils/cityContext";
 import "./footer.css";
 import Image from "next/image";
-
+import arrowIcon from "@/assets/arrow-right.svg"
 const PHONE = "+917338584828";
 const EMAIL = "dev@horaservices.com";
 
@@ -65,7 +65,7 @@ const footerColumns = [
       { text: "First Night", href: "/wedding-decoration/first-night-decoration" },
       { text: "Festivals", href: "/festivals-decoration" },
       { text: "House Warming", href: "/balloon-decoration/house-warming-decoration" },
-      
+
     ],
   },
   {
@@ -93,17 +93,19 @@ const socials = [
   {
     icon: faInstagram,
     label: "Instagram",
+    cls: "hf-social-instagram",
     href: "https://www.instagram.com/horaservices/",
   },
   {
     icon: faFacebookF,
     label: "Facebook",
+    cls: "hf-social-facebook",
     href: "https://www.facebook.com/profile.php?id=61550111701616",
   },
-  { icon: faLinkedinIn, label: "LinkedIn", href: "https://www.linkedin.com/" },
   {
     icon: faYoutube,
     label: "YouTube",
+    cls: "hf-social-youtube",
     href: "https://www.youtube.com/channel/UCj5gMUjptHut0aGYHxCbE5g",
   },
 ];
@@ -128,18 +130,25 @@ function Footer() {
           </div>
           <div className="hf-cta-actions">
             <Link href="/balloon-decoration" className="hf-btn hf-btn-solid">
-              Book a service →
+              <span>Book a service</span>
+              <Image
+                src={arrowIcon}
+                alt=""
+                width={12}
+                height={12}
+                className="hf-svg-icon"
+              />
             </Link>
             <a href={`tel:${PHONE}`} className="hf-btn hf-btn-outline">
-  <Image
-    src={phoneIcon}
-    alt=""
-    width={11}
-    height={11}
-    className="hf-svg-icon"
-  />
-  <span>{PHONE}</span>
-</a>
+              <Image
+                src={phoneIcon}
+                alt=""
+                width={11}
+                height={11}
+                className="hf-svg-icon"
+              />
+              <span>{PHONE}</span>
+            </a>
           </div>
         </div>
 
@@ -149,17 +158,17 @@ function Footer() {
         <div className="hf-grid">
           <div className="hf-brand">
             <h3 className="hf-brand-name">HORA SERVICES</h3>
-           <a href={`mailto:${EMAIL}`} className="hf-contact">
-  <Image
-    src={emailIcon}
-    alt=""
-    width={17}
-    height={13}
-    className="hf-svg-icon"
-  />
-  <span>{EMAIL}</span>
-</a>
-           
+            <a href={`mailto:${EMAIL}`} className="hf-contact">
+              <Image
+                src={emailIcon}
+                alt=""
+                width={17}
+                height={13}
+                className="hf-svg-icon"
+              />
+              <span>{EMAIL}</span>
+            </a>
+
           </div>
 
           {footerColumns.map((col) => (
@@ -206,9 +215,9 @@ function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={s.label}
-                className="hf-social-link"
+                className={`hf-social-link ${s.cls}`}
               >
-                <FontAwesomeIcon icon={s.icon} />
+                <FontAwesomeIcon icon={s.icon} className="hf-social-icon" />
               </a>
             ))}
           </div>

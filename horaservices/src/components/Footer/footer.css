@@ -1,8 +1,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400&display=swap');
 
-/* ---------- Base (Desktop) ---------- */
-
 .hf {
   background: #96528d;
   color: #fff;
@@ -142,7 +140,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  row-gap: clamp(6.5px, 2.04vw, 9.8px);
+  row-gap: clamp(2.44px, 0.763vw, 3.66px);
 }
 
 .hf-link {
@@ -200,7 +198,11 @@
   display: inline-block;
   vertical-align: middle;
 }
-
+.hf-social-link .hf-social-icon {
+  width: auto;
+  margin:0px;
+  color: white;
+}
 /* ---------- Tablet ---------- */
 
 @media (max-width: 991px) {
@@ -272,13 +274,11 @@
     grid-column: auto;
   }
 
-  /* Three-column links */
-
   .hf-list {
     display: grid;
-    grid-template-columns: minmax(0, 31fr) minmax(0, 41fr) minmax(0, 28fr);
-    column-gap: 0;
-    row-gap: clamp(6.5px, 2.04vw, 9.8px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(14px, 4.58vw, 22px);
+    row-gap: clamp(2.44px, 0.763vw, 3.66px);
   }
 
   /* Bottom centered */
@@ -315,10 +315,18 @@
   .hf .svg-inline--fa {
     height: clamp(18px, 2.87vw, 23px);
   }
+   .hf-social-instagram .hf-social-icon { height: clamp(18px, 2.87vw, 23px); }
+  .hf-social-facebook  .hf-social-icon { height: clamp(18px, 2.87vw, 23px); }
+  .hf-social-youtube   .hf-social-icon { height: clamp(18px, 2.87vw, 23px); }
 }
 
 @media (max-width: 800px) {
   .hf .svg-inline--fa {
     height: clamp(10px, 3.05vw, 12px);
   }
+    .hf-social-instagram .hf-social-icon { height: clamp(12px, 3.05vw, 14px); }
+  .hf-social-facebook  .hf-social-icon { height: clamp(12px, 3.05vw, 14px); }
+  .hf-social-youtube   .hf-social-icon { height: clamp(12px, 3.05vw, 14px); }
 }
+
+
