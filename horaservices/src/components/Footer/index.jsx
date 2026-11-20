@@ -46,11 +46,11 @@ const footerColumns = [
       { text: "Chef For Party", href: "/chef-near-me" },
       {
         text: "Live Catering",
-        href: "/party-food-delivery-live-catering-buffet/party-live-buffet-catering",
+        href: "/party-food-delivery-live-catering-buffet?type=liveCatering",
       },
       {
         text: "Bulk Food Delivery",
-        href: "/party-food-delivery-live-catering-buffet/party-food-delivery",
+        href: "/party-food-delivery-live-catering-buffet?type=bulkFood",
       },
     ],
   },
@@ -82,9 +82,10 @@ const footerColumns = [
       { text: "My Account", to: "/orderlist" },
       { text: "About us", to: "/aboutus" },
       { text: "Contact Us", to: "/contactus" },
-      { text: "Blogs", to: "/blog" },
       { text: "Terms & Conditions", to: "/termCondition" },
       { text: "Sitemap", href: "https://horaservices.com/sitemap.xml" },
+      { text: "Photography Blogs", to: "/blog/photography" },
+      { text: "Balloon Decor Blogs", to: "/blog/balloon-decoration" },
     ],
   },
 ];
@@ -112,7 +113,11 @@ const socials = [
 
 function Footer() {
   const { syncSelectedCity } = useCity();
-
+  const WHATSAPP_NUMBER = "917338584828";
+  const WHATSAPP_MSG = "Hi, I saw your services. Please share details.";
+  const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    WHATSAPP_MSG
+  )}`;
   return (
     <footer className="hf">
       <div className="hf-inner">
@@ -129,7 +134,12 @@ function Footer() {
             </p>
           </div>
           <div className="hf-cta-actions">
-            <Link href="/balloon-decoration" className="hf-btn hf-btn-solid">
+            <a
+              href={WHATSAPP_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hf-btn hf-btn-solid"
+            >
               <span>Book a service</span>
               <Image
                 src={arrowIcon}
@@ -138,7 +148,7 @@ function Footer() {
                 height={12}
                 className="hf-svg-icon"
               />
-            </Link>
+            </a>
             <a href={`tel:${PHONE}`} className="hf-btn hf-btn-outline">
               <Image
                 src={phoneIcon}
