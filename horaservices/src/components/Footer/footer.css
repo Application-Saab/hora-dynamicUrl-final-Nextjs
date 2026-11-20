@@ -1,78 +1,332 @@
-ul.list-unstyled-0,
-ul.list-unstyled-1,
-ul.list-unstyled-2,
-ul.list-unstyled-3,
-ul.list-unstyled-4,
-ul.list-unstyled-5,
-ul.list-unstyled-6
-{
-    list-style: none;
-    margin: 0;
-    padding: 0;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400&display=swap');
+
+.hf {
+  background: #96528d;
+  color: #fff;
+  padding: clamp(28px, 9.16vw, 44px) 0 clamp(22px, 7.12vw, 34px);
 }
 
-.page-width {
-    width: 1200px;
-    margin: auto;
-    max-width: 100%;
-}
-.footerheading {
-    font-size: 17px;
-    font-weight: 600;
-  }
-  .page-width.footerlist li {
-    font-size: 13px;
-  }
-  .page-width.copy-right {
-    font-size: 13px;
-    display: flex;
-    justify-content: space-around;
-}
-  .page-width.footerlist {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    flex-direction: row;
-    padding-top: 23px;
-  }
-
-@media (max-width:800px) {
-    .page-width.footerlist {
-        flex-direction: column;
-      }
-      .footerlist-sec {
-        margin: 0 0 22px 0;
-    }
-    h2.footerheading {
-      margin: 0 0 4px 0;
-    }
-    .page-width.copy-right {
-        flex-direction: column;
-        text-align: center;
-    }
-}
-@media (max-width: 790px) {
-    .page-width {
-        width: 90% !important;
-        margin: 0 auto;
-    }
-    }
-@media (max-width: 641px) {
-    ul.list-unstyled-3 ,
-    ul.list-unstyled-2 , 
-    ul.list-unstyled-4,
-    ul.list-unstyled-5,
-    ul.list-unstyled-6
-    {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-        li{
-            margin-right: 14px;
-        }
-    }
+.hf-inner {
+  width: 1200px;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 5.09vw, 24px);
+  box-sizing: border-box;
 }
 
+.hf a {
+  text-decoration: none;
+}
+
+.hf-divider {
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.28);
+  margin: clamp(18px, 5.6vw, 27px) 0;
+  opacity: 1;
+}
+
+/* ---------- CTA strip ---------- */
+
+.hf-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(18px, 6.11vw, 29px);
+}
+
+.hf-cta-title {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: clamp(16px, 4.58vw, 22px);
+  line-height: clamp(24px, 6.87vw, 33px);
+  letter-spacing: 0;
+  text-align: center;
+  margin: 0 0 clamp(6.5px, 2.04vw, 9.8px);
+}
+
+.hf-cta-sub {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: clamp(9px, 2.54vw, 12.2px);
+  line-height: 121%;
+  text-align: center;
+  margin: 0;
+}
+
+.hf-cta-actions {
+  display: flex;
+  gap: clamp(10px, 3.05vw, 14.6px);
+  flex-shrink: 0;
+}
+
+.hf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(6px, 2.04vw, 9.8px);
+  height: clamp(32px, 9.67vw, 46px);
+  padding: 0 clamp(12px, 4.58vw, 22px);
+  border-radius: clamp(4px, 1.53vw, 7px);
+  color: #97538C;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: clamp(11px, 3.05vw, 14.6px);
+  white-space: nowrap;
+  border: 1px solid #fff;
+  box-sizing: border-box;
+}
+
+.hf-btn-solid {
+  background: #fff;
+  color: #96528d !important;
+}
+
+.hf-btn-outline {
+  background: transparent;
+  color: #fff;
+}
+
+/* ---------- Main grid ---------- */
+
+.hf-grid {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr 1fr 0.9fr 1.2fr;
+  column-gap: clamp(18px, 6.11vw, 29px);
+  align-items: start;
+}
+
+.hf-brand-name {
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: clamp(16px, 4.58vw, 22px);
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.hf-brand-desc {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-size: clamp(11px, 3.31vw, 15.9px);
+  line-height: 100%;
+  margin: 0 0 clamp(8px, 2.54vw, 12.2px);
+}
+
+.hf-contact {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 2.04vw, 9.8px);
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-size: clamp(9.5px, 2.97vw, 14.2px);
+  line-height: 121%;
+  color: #FFFFFF;
+  margin: clamp(8px, 2.54vw, 12.2px) 0 0;
+}
+
+.hf-heading {
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: clamp(16px, 4.58vw, 22px);
+  line-height: 100%;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.hf-list {
+  list-style: none;
+  margin: clamp(8px, 2.54vw, 12.2px) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(2.44px, 0.763vw, 3.66px);
+}
+
+.hf-link {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-size: clamp(11px, 3.31vw, 15.9px);
+  color: #FFFFFF;
+  line-height: calc(1em + clamp(4.3px, 1.34vw, 6.4px));
+}
+
+.hf-link:hover {
+  text-decoration: underline !important;
+}
+
+/* ---------- Bottom bar ---------- */
+
+.hf-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(12px, 4.07vw, 19.5px);
+}
+
+.hf-social {
+  display: flex;
+  gap: clamp(11px, 3.56vw, 17px);
+}
+
+.hf-social-link {
+  width: clamp(28px, 8.14vw, 38.4px);
+  height: clamp(28px, 8.14vw, 38.4px);
+  border: 1px solid #fff;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(12px, 3.56vw, 17px);
+}
+
+.hf-copy {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: clamp(11.4px, 3.56vw, 17.1px);
+  line-height: 100%;
+  margin: 0;
+  text-align: center;
+}
+
+.hf-br {
+  display: none;
+}
+
+.hf-svg-icon {
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+.hf-social-link .hf-social-icon {
+  width: auto;
+  margin:0px;
+  color: white;
+}
+/* ---------- Tablet ---------- */
+
+@media (max-width: 991px) {
+  .hf-cta-title {
+    font-size: clamp(16px, 4.32vw, 17px);
+  }
+
+  .hf-grid {
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    row-gap: clamp(22px, 7.12vw, 34px);
+  }
+
+  .hf-brand {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---------- Mobile (320px - 640px) ---------- */
+
+@media (max-width: 640px) {
+
+  .hf {
+    padding: clamp(18px, 5.6vw, 27px) 0;
+  }
+
+  .hf-divider {
+    margin: clamp(15px, 4.58vw, 22px) 0;
+  }
+
+  /* CTA centered */
+
+  .hf-cta {
+    flex-direction: column;
+    text-align: center;
+    gap: clamp(11px, 3.56vw, 17px);
+  }
+
+  .hf-cta-title {
+    font-size: clamp(16px, 4.58vw, 22px);
+    line-height: clamp(24px, 6.87vw, 33px);
+  }
+
+  .hf-br {
+    display: block;
+  }
+
+  .hf-cta-actions {
+    gap: clamp(8px, 2.54vw, 12px);
+    justify-content: center;
+    width: 100%;
+  }
+
+  .hf-btn {
+    height: clamp(28px, 8.14vw, 39px);
+    padding: 0 clamp(10px, 3.05vw, 14.6px);
+    font-size: clamp(10px, 3.05vw, 12px);
+    gap: clamp(5px, 1.53vw, 7px);
+    border-radius: clamp(3px, 1.02vw, 5px);
+  }
+
+  /* Single column stack */
+
+  .hf-grid {
+    grid-template-columns: 1fr;
+    row-gap: clamp(18px, 5.6vw, 27px);
+  }
+
+  .hf-brand {
+    grid-column: auto;
+  }
+
+  .hf-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(14px, 4.58vw, 22px);
+    row-gap: clamp(2.44px, 0.763vw, 3.66px);
+  }
+
+  /* Bottom centered */
+
+  .hf-bottom {
+    flex-direction: column;
+    gap: clamp(13px, 4.07vw, 19.5px);
+  }
+
+  .hf-divider:last-of-type {
+    margin-top: clamp(21px, 6.62vw, 31px);
+  }
+
+  .hf-social {
+    gap: clamp(11px, 3.56vw, 17px);
+  }
+
+  .hf-social-link {
+    width: clamp(28px, 8.14vw, 38.4px);
+    height: clamp(28px, 8.14vw, 38.4px);
+    font-size: clamp(12px, 3.81vw, 18px);
+  }
+
+  .hf-copy {
+    font-size: clamp(11px, 3.3vw, 13px);
+    font-weight: 500;
+    text-align: center;
+  }
+}
+
+/* ---------- Font Awesome icons ---------- */
+
+@media (min-width: 801px) {
+  .hf .svg-inline--fa {
+    height: clamp(18px, 2.87vw, 23px);
+  }
+   .hf-social-instagram .hf-social-icon { height: clamp(18px, 2.87vw, 23px); }
+  .hf-social-facebook  .hf-social-icon { height: clamp(18px, 2.87vw, 23px); }
+  .hf-social-youtube   .hf-social-icon { height: clamp(18px, 2.87vw, 23px); }
+}
+
+@media (max-width: 800px) {
+  .hf .svg-inline--fa {
+    height: clamp(10px, 3.05vw, 12px);
+  }
+    .hf-social-instagram .hf-social-icon { height: clamp(12px, 3.05vw, 14px); }
+  .hf-social-facebook  .hf-social-icon { height: clamp(12px, 3.05vw, 14px); }
+  .hf-social-youtube   .hf-social-icon { height: clamp(12px, 3.05vw, 14px); }
+}
 
 
