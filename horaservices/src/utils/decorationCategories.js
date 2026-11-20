@@ -28,6 +28,14 @@ export const decCat = [
   { id: "27", image: "", name: "Annaprashan Decoration", subCategory: "AnnaprashanDecoration", catValue: "annaprashan-decoration", imgAlt: "Sweet annaprashan decoration for a baby's first rice-eating ceremony with pastel balloons and traditional Indian decor" },
   { id: "28", image: "", name: "Name Reveal Decoration", subCategory: "NameRevealDecoration", catValue: "name-reveal-decoration", imgAlt: "Creative name reveal decoration setup with personalised letter balloons, floral arrangements, and surprise reveal props" },
   { id: "29", image: "", name: "Baptism Decoration", subCategory: "BaptismDecoration", catValue: "baptism-decoration", imgAlt: "Elegant baptism decoration with white and gold theme, cross motifs, candles, and floral arrangements for a christening ceremony" },
-   { id: "30", image: "", name: "Pooja Decoration", subCategory: "PoojaDecoration", catValue: "pooja-decoration", imgAlt: "Elegant baptism decoration with white and gold theme, cross motifs, candles, and floral arrangements for a christening ceremony" },
+  { id: "30", image: "", name: "Ganpati",     subCategory: "GanpatiDecoration",   catValue: "ganpati-decoration",    imgAlt: "Ganpati decoration" },
+  { id: "31", image: "", name: "Janmashtami", subCategory: "JanmastmiDecoration", catValue: "janmastmi-decoration",  imgAlt: "Janmashtami decoration" },
+  { id: "32", image: "", name: "Diwali",      subCategory: "DiwaliDecoration",    catValue: "diwali-decoration",     imgAlt: "Diwali decoration" },
+  { id: "33", image: "", name: "Navratri",    subCategory: "NavratriDecoration",  catValue: "navratri-decoration",   imgAlt: "Navratri decoration" },
+  { id: "34", image: "", name: "Christmas",   subCategory: "ChristmasDecoration", catValue: "christmas-decoration",  imgAlt: "Christmas decoration" },
+  { id: "35", image: "", name: "New Year",    subCategory: "NewYearDecoration",   catValue: "new-year-decoration",   imgAlt: "New Year decoration" },
+  { id: "36", image: "", name: "Halloween",   subCategory: "HalloweanDecoration", catValue: "hallowean-decoration",  imgAlt: "Halloween decoration" },
+  { id: "37", image: "", name: "Card Party",  subCategory: "CardPartyDecoration", catValue: "card-party-decoration", imgAlt: "Card party decoration" },
+   { id: "38", image: "", name: "Pooja Decoration", subCategory: "PoojaDecoration", catValue: "pooja-decoration", imgAlt: "Elegant baptism decoration with white and gold theme, cross motifs, candles, and floral arrangements for a christening ceremony" },
   
 ];

@@ -2,39 +2,61 @@ import Image from "next/image";
 import Link from "next/link";
 import "./flowerlandingpagebanner.css";
 
-// Apne project ke hisaab se path badal lena
-import bannerImg from "@/assets/flowerlandingbannerImg.webp";
-import arrowIcon from "@/assets/arrowicon.svg";
+import bgImg from "@/assets/flowerbanner/flowerbannerbg.webp";
+import collageImg from "@/assets/flowerbanner/flowerbannercollage.webp";
 
 export default function FlowerBanner({
-  image = bannerImg,
-  href = "/",
+  href = "/flower-decoration",
+  eyebrow = "Made for beautiful Moments",
+  title = "Flower Decoration",
+  subtitle = "Decorations that make your bond even more special",
   buttonText = "Explore Now",
+  background = bgImg,
+  collage = collageImg,
 }) {
   return (
     <section className="flower-banner">
-      <div className="page-width">
-        <div className="flower-banner__wrap">
+        <div className="flower-banner__card">
           <Image
-            src={image}
-            alt="Beautiful flower decoration for every celebration"
-            className="flower-banner__img"
+            src={background}
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="(max-width: 768px) 100vw, 600px"
+            className="flower-banner__bg"
             priority
           />
 
-          <Link href={href} className="flower-banner__btn">
-            {buttonText}
+          <div className="flower-banner__content">
+            <div className="flower-banner__head">
+              <p className="flower-banner__eyebrow">{eyebrow}</p>
+              <h2 className="flower-banner__title">{title}</h2>
+              <p className="flower-banner__subtitle">{subtitle}</p>
+            </div>
+
             <Image
-              src={arrowIcon}
-              alt=""
-              aria-hidden="true"
-              className="flower-banner__arrow"
-              width={16}
-              height={16}
-              unoptimized
+              src={collage}
+              alt="Flower decoration collage – floral arch, haldi stage, mehendi and backdrop setups"
+              sizes="(max-width: 768px) 92vw, 560px"
+              className="flower-banner__collage"
             />
-          </Link>
-        </div>
+
+            <Link href={href} className="flower-banner__btn">
+              <span>{buttonText}</span>
+              <svg
+                className="flower-banner__arrow"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </Link>
+          </div>
       </div>
     </section>
   );
