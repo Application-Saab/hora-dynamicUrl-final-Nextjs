@@ -849,6 +849,7 @@ const REVIEWS_BY_CATEGORY = {
 };
 
 // ---------- helpers ----------
+
 const getDiscountedPrice = (price) => {
   let discount;
   if (price < 3000) discount = 20;
@@ -906,13 +907,49 @@ const buildCustomiseMessage = (catValue, city, theme = "") => {
   if (themeText) {
     categoryText = `${themeText} Decoration`;
   } else {
-    const category = toTitleCase(catValue).replace(/\s*Decoration$/i, "").trim();
+    const category = toTitleCase(catValue)
+      .replace(/\s*Decoration$/i, "")
+      .trim();
     categoryText = category ? `${category} Decoration` : "Decoration";
   }
 
-  return `Looking for a Customisation ${categoryText}${cityText ? ` in ${cityText}` : ""
-    }!`;
+  return `Looking for a Customisation ${categoryText}${
+    cityText ? ` in ${cityText}` : ""
+  }!`;
 };
+
+// 2) Helpers section me (buildCustomiseMessage ke neeche) ye add karein:
+const isVideoMedia = (media) => {
+  if (!media) return false;
+  if (typeof media === "object" && media.mediaType === "video") return true;
+  const name =
+    typeof media === "string" ? media : media.fileName || media.url || "";
+  return /\.(mp4|webm|ogg|mov|mkv|avi)$/i.test(name);
+};
+
+const resolveDetailMediaUrl = (media) => {
+  if (!media) return null;
+  const fileName =
+    typeof media === "string"
+      ? media
+      : media.fileName || media.url || media.src;
+
+  if (!fileName) return null;
+  if (/^https?:\/\//i.test(fileName)) return fileName;
+
+  if (isVideoMedia(media)) {
+    const baseVideoUrl =
+      COMPRESSED_WEBP_IMG_URL ||
+      COMPRESSED_WEBP_IMG_URL.replace(
+        /compressed_webp\/?$/,
+        "compressed_webp/",
+      );
+    return `${baseVideoUrl}${fileName}`;
+  }
+
+  return `${COMPRESSED_WEBP_IMG_URL}${fileName.split(".")[0]}.webp`;
+};
+
 // ---------- Component (NO getServerSideProps here) ----------
 function DecorationsCatDetails({
   initialProduct = null,
@@ -937,6 +974,7 @@ function DecorationsCatDetails({
     CATEGORY_CONFIG[categorySlug] || CATEGORY_CONFIG["balloon-decoration"];
 
   const [product, setProduct] = useState(initialProduct || null);
+  console.log('%c [ product ]', 'font-size:13px; background:pink; color:#bf2c9f;', product)
   const [loading, setLoading] = useState(!initialProduct);
   const [catValue, setCatValue] = useState(initialCatValue || "");
   const [subCategory, setSubCategory] = useState(initialSubCategory || "");
@@ -993,6 +1031,180 @@ function DecorationsCatDetails({
     }
     return [];
   });
+// --- Top Media Gallery (Videos First -> Images After, Contain + X-Axis Mirror) ---
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const detailSliderRef = useRef(null);
+  const detailMediaBoxRef = useRef(null);
+  const videoRefs = useRef({});
+  const mirrorRefs = useRef({});
+
+  // Ordered Media List: Always Videos first (1st, 2nd...), then Images
+  const detailMediaList = React.useMemo(() => {
+    const vids = [];
+    const imgs = [];
+
+    if (product?.video) {
+      const vUrl = resolveDetailMediaUrl(product.video);
+      if (vUrl) vids.push({ type: "video", url: vUrl });
+    }
+
+    const rawList =
+      Array.isArray(product?.featured_images) &&
+      product.featured_images.length > 0
+        ? product.featured_images
+        : product?.featured_image
+          ? [product.featured_image]
+          : [];
+
+    rawList.forEach((entry) => {
+      const url = resolveDetailMediaUrl(entry);
+      if (!url) return;
+      if (isVideoMedia(entry)) {
+        if (!vids.some((v) => v.url === url)) {
+          vids.push({ type: "video", url });
+        }
+      } else {
+        imgs.push({ type: "image", url });
+      }
+    });
+
+    const combined = [...vids, ...imgs];
+    return combined.length > 0
+      ? combined
+      : [{ type: "image", url: fallbackImg }];
+  }, [product]);
+
+  const isMultiMedia = detailMediaList.length > 1;
+  const activeMediaItem = detailMediaList[activeSlide] || detailMediaList[0];
+  const isCurrentSlideVideo = activeMediaItem?.type === "video";
+
+  // Helper to scroll smoothly to a specific slide index
+  const goToDetailSlide = React.useCallback((index) => {
+    setActiveSlide(index);
+    if (detailSliderRef.current) {
+      detailSliderRef.current.scrollTo({
+        left: index * detailSliderRef.current.clientWidth,
+        behavior: "smooth",
+      });
+    }
+  }, []);
+
+  // Product change hone par slide 0 par reset karo
+  useEffect(() => {
+    setActiveSlide(0);
+    if (detailSliderRef.current) {
+      detailSliderRef.current.scrollTo({ left: 0, behavior: "auto" });
+    }
+  }, [product?._id]);
+
+  // Active slide change hone par sirf active video play karo, baaki sab pause + reset
+  useEffect(() => {
+    detailMediaList.forEach((item, idx) => {
+      if (item.type !== "video") return;
+      const mainVid = videoRefs.current[idx];
+      const mirrorVid = mirrorRefs.current[idx];
+
+      if (idx === activeSlide) {
+        if (mainVid) {
+          mainVid.currentTime = 0;
+          mainVid.play().catch(() => {});
+        }
+        if (mirrorVid) {
+          mirrorVid.currentTime = 0;
+          mirrorVid.play().catch(() => {});
+        }
+      } else {
+        if (mainVid) {
+          mainVid.pause();
+          mainVid.currentTime = 0;
+        }
+        if (mirrorVid) {
+          mirrorVid.pause();
+          mirrorVid.currentTime = 0;
+        }
+      }
+    });
+  }, [activeSlide, detailMediaList]);
+
+  // Auto-Scroll Timer ONLY when current active slide is an IMAGE
+  useEffect(() => {
+    if (!isMultiMedia || isPaused || isCurrentSlideVideo) return;
+
+    const interval = setInterval(() => {
+      const next = (activeSlide + 1) % detailMediaList.length;
+      goToDetailSlide(next);
+    }, 2800);
+
+    return () => clearInterval(interval);
+  }, [
+    isMultiMedia,
+    isPaused,
+    isCurrentSlideVideo,
+    activeSlide,
+    detailMediaList.length,
+    goToDetailSlide,
+  ]);
+
+  // Jab video poora complete ho jaye tab next slide par jao (ya single slide ho to replay)
+  const handleDetailSlideVideoEnded = (idx) => {
+    if (idx !== activeSlide) return;
+
+    if (detailMediaList.length > 1) {
+      const next = (idx + 1) % detailMediaList.length;
+      goToDetailSlide(next);
+    } else {
+      const mainVid = videoRefs.current[idx];
+      const mirrorVid = mirrorRefs.current[idx];
+      if (mainVid) {
+        mainVid.currentTime = 0;
+        mainVid.play().catch(() => {});
+      }
+      if (mirrorVid) {
+        mirrorVid.currentTime = 0;
+        mirrorVid.play().catch(() => {});
+      }
+    }
+  };
+
+  // Manual Swipe Scroll Sync
+  const handleDetailManualScroll = () => {
+    if (!detailSliderRef.current) return;
+    const { scrollLeft, clientWidth } = detailSliderRef.current;
+    if (clientWidth > 0) {
+      const index = Math.round(scrollLeft / clientWidth);
+      if (index !== activeSlide && index < detailMediaList.length) {
+        setActiveSlide(index);
+      }
+    }
+  };
+
+  const handleDetailDotClick = (index) => {
+    goToDetailSlide(index);
+  };
+
+// All active designType badges for Details Page (separate pill box for each)
+  const activeDesignBadges = React.useMemo(() => {
+    if (!product?.designType) return [];
+
+    const rawKeys = Array.isArray(product.designType)
+      ? product.designType.map((k) => String(k).trim()).filter(Boolean)
+      : Object.keys(product.designType)
+          .filter((k) => product.designType[k] === true)
+          .map((k) => k.trim());
+
+    const seen = new Set();
+    return rawKeys.reduce((acc, key) => {
+      const normalized = key.toLowerCase();
+      if (seen.has(normalized)) return acc;
+      seen.add(normalized);
+
+      // Agar pehle se "On " laga hai to duplicate "On On ..." na bane
+      const formattedLabel = /^on\s+/i.test(key) ? key : `On ${key}`;
+      acc.push(formattedLabel);
+      return acc;
+    }, []);
+  }, [product]);
 
   const customizationRef = useRef(null);
   const similarRef = useRef(null);
@@ -1160,7 +1372,7 @@ function DecorationsCatDetails({
         setSelectedAddOnProduct(parsed.selectedAddOnProduct || []);
         setItemQuantities(parsed.itemQuantities || {});
       }
-    } catch (e) { }
+    } catch (e) {}
   }, [product?._id]);
 
   useEffect(() => {
@@ -1170,7 +1382,7 @@ function DecorationsCatDetails({
         `addons_${product._id}`,
         JSON.stringify({ selectedAddOnProduct, itemQuantities }),
       );
-    } catch (e) { }
+    } catch (e) {}
   }, [selectedAddOnProduct, itemQuantities, product?._id]);
 
   // Fetch addon details — SSR data ho to skip
@@ -1218,7 +1430,7 @@ function DecorationsCatDetails({
     const message = buildCustomiseMessage(
       type || catValue,
       cityArg || selectedCityName || city,
-      themeNameForWA
+      themeNameForWA,
     );
 
     window.dataLayer = window.dataLayer || [];
@@ -1231,29 +1443,34 @@ function DecorationsCatDetails({
 
     window.open(
       `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
-      "_blank"
+      "_blank",
     );
   };
   // Sirf "Customize Design" button (ActionButtons) ke liye
   const handleActionCustomise = (type, cityArg) => {
     const phoneNumber = "917338584828";
 
-    const cityText = toTitleCase(cityArg || selectedCityName || city || "").trim();
+    const cityText = toTitleCase(
+      cityArg || selectedCityName || city || "",
+    ).trim();
 
     // Theme mili to wahi ("car decoration"), warna category ("naming ceremony decoration")
     let label;
     if (themeNameForWA) {
       label = `${themeNameForWA.toLowerCase()} decoration`;
     } else {
-      label = toTitleCase(type || catValue || "").toLowerCase().trim();
+      label = toTitleCase(type || catValue || "")
+        .toLowerCase()
+        .trim();
       if (!label) label = "decoration";
       else if (!/decoration$/.test(label)) label += " decoration";
     }
 
     const article = /^[aeiou]/i.test(label) ? "an" : "a";
 
-    const message = `Hi, I want to customize ${article} ${label} design, can you help me${cityText ? ` for ${cityText}` : ""
-      }!`;
+    const message = `Hi, I want to customize ${article} ${label} design, can you help me${
+      cityText ? ` for ${cityText}` : ""
+    }!`;
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
@@ -1265,7 +1482,7 @@ function DecorationsCatDetails({
 
     window.open(
       `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
-      "_blank"
+      "_blank",
     );
   };
   const showAddOnmodal = () => {
@@ -1380,16 +1597,19 @@ function DecorationsCatDetails({
     });
 
     if (navigator.share) {
-      navigator.share({
-        title: product?.name || "Hora Services",
-        url: cleanUrl,
-      }).catch((error) => {
-        if (error.name !== "AbortError") {
-          console.error("Share failed:", error);
-        }
-      });
+      navigator
+        .share({
+          title: product?.name || "Hora Services",
+          url: cleanUrl,
+        })
+        .catch((error) => {
+          if (error.name !== "AbortError") {
+            console.error("Share failed:", error);
+          }
+        });
     } else {
-      navigator.clipboard.writeText(cleanUrl)
+      navigator.clipboard
+        .writeText(cleanUrl)
         .then(() => alert("Link copied!"))
         .catch(() => alert("Unable to copy link"));
     }
@@ -1454,10 +1674,7 @@ function DecorationsCatDetails({
   // productNameFromUrl from context.params is SSR-safe.
   // router.query?.productName is empty at SSR time → broken canonical for Googlebot.
   const productSlug =
-    productNameFromUrl ||
-    product?.slug ||
-    generateSlug(product?.name) ||
-    "";
+    productNameFromUrl || product?.slug || generateSlug(product?.name) || "";
 
   const buildProductCanonical = () => {
     const parts = [];
@@ -1479,7 +1696,7 @@ function DecorationsCatDetails({
         .trim()
         .toLowerCase()
         .split("-")
-        .every((tok) => themeTokens.includes(tok))
+        .every((tok) => themeTokens.includes(tok)),
     )
     .sort((a, b) => String(b.value).length - String(a.value).length)[0];
 
@@ -1491,7 +1708,7 @@ function DecorationsCatDetails({
   // Wedding product par sub-category (haldi, mandap...) naam se pakdo
   const detectedSubCat =
     WEDDING_SUBCATEGORIES.find((s) =>
-      s.words.some((w) => themeTokens.includes(w))
+      s.words.some((w) => themeTokens.includes(w)),
     )?.slug || "";
 
   const specificCat =
@@ -1500,25 +1717,27 @@ function DecorationsCatDetails({
       : "";
 
   // WhatsApp ko jaane wali category
- const normalizedCatValue = catValue === "wedding" ? "wedding-decoration" : catValue;
+  const normalizedCatValue =
+    catValue === "wedding" ? "wedding-decoration" : catValue;
 
-const waCategory = isWedding
-  ? specificCat ||
-    detectedSubCat ||
-    normalizedCatValue ||
-    getCategoryNameToSlug(passCategoryId?.name) ||
-    "wedding-decoration"
-  : catValue || getCategoryNameToSlug(passCategoryId?.name) || "";
+  const waCategory = isWedding
+    ? specificCat ||
+      detectedSubCat ||
+      normalizedCatValue ||
+      getCategoryNameToSlug(passCategoryId?.name) ||
+      "wedding-decoration"
+    : catValue || getCategoryNameToSlug(passCategoryId?.name) || "";
   const canonicalUrl = buildProductCanonical();
 
   // Breadcrumb: catValue ho to /<categorySlug>/<catValue>, warna sirf /<categorySlug>
   const breadcrumbHref = `/${categorySlug}${catValue ? `/${catValue}` : ""}`;
   const breadcrumbText = toTitleCase(catValue || categorySlug);
 
-  const metaDescription = `${product?.name || "Decoration"} from Hora Services – Beautiful ${catLabelShort} decoration${categoryConfig.startingPrice
-    ? ` starting at just ₹${categoryConfig.startingPrice}`
-    : ""
-    }. Book for birthdays, anniversaries, weddings & more!`;
+  const metaDescription = `${product?.name || "Decoration"} from Hora Services – Beautiful ${catLabelShort} decoration${
+    categoryConfig.startingPrice
+      ? ` starting at just ₹${categoryConfig.startingPrice}`
+      : ""
+  }. Book for birthdays, anniversaries, weddings & more!`;
 
   const reviewsForCategory =
     REVIEWS_BY_CATEGORY[categorySlug] || balloonreviewsproduct;
@@ -1527,12 +1746,13 @@ const waCategory = isWedding
 
   const toAbsolute = (u) => (u.startsWith("http") ? u : `${SITE}${u}`);
 
-  const featuredFileName = product?.featured_images?.[0]?.fileName;
+  const firstImageObj = product?.featured_images?.find((m) => !isVideoMedia(m));
+  const featuredFileName = firstImageObj?.fileName;
 
   const ogImage = featuredFileName
     ? toAbsolute(
-      `${COMPRESSED_WEBP_IMG_URL}${featuredFileName.split(".")[0]}.webp`,
-    )
+        `${COMPRESSED_WEBP_IMG_URL}${featuredFileName.split(".")[0]}.webp`,
+      )
     : DEFAULT_OG_IMAGE;
 
   const seoTitle = `${product?.name || ""} | ${catLabel}`;
@@ -1564,7 +1784,10 @@ const waCategory = isWedding
           <meta property="og:url" content={canonicalUrl} />
           <meta property="og:type" content="website" />
           <meta property="og:image" content={ogImage} />
-          <meta property="og:image:alt" content={product?.name || "Hora Services"} />
+          <meta
+            property="og:image:alt"
+            content={product?.name || "Hora Services"}
+          />
 
           {/* Twitter */}
           <meta name="twitter:card" content="summary_large_image" />
@@ -1585,32 +1808,98 @@ const waCategory = isWedding
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           <div className="decDetails">
             <div className="decDetailsLeft">
-              <div style={{ position: "relative" }}>
-                <Image
-                  src={
-                    product?.featured_images?.[0]?.fileName
-                      ? `${COMPRESSED_WEBP_IMG_URL}${product.featured_images[0].fileName.split(".")[0]}.webp`
-                      : fallbackImg
-                  }
-                  alt={`${categoryLabel} ${altTagCatValue} ${product?.name || ""} ${product?.price || ""}`}
-                  style={{ width: "100%", height: "auto" }}
-                  width={300}
-                  height={300}
-                  priority
-                />
+              <div
+                className="detail-media-box"
+                ref={detailMediaBoxRef}
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+                onTouchStart={() => setIsPaused(true)}
+                onTouchEnd={() => setIsPaused(false)}
+              >
                 <div
-                  style={{
-                    position: "absolute",
-                    bottom: 3,
-                    right: 3,
-                    borderRadius: "50%",
-                    padding: 10,
-                  }}
+                  className="detail-carousel-track"
+                  ref={detailSliderRef}
+                  onScroll={handleDetailManualScroll}
                 >
+                  {detailMediaList.map((media, idx) => (
+                    <div className="detail-carousel-slide" key={idx}>
+                      {media.type === "video" ? (
+                        <div className="detail-video-slide-inner">
+                          {/* Blurred X-Axis Mirror Background */}
+                          <video
+                            ref={(el) => {
+                              mirrorRefs.current[idx] = el;
+                            }}
+                            src={media.url}
+                            className="detail-video-mirror-bg"
+                            muted
+                            playsInline
+                            preload="metadata"
+                            aria-hidden="true"
+                          />
+
+                          {/* Full Uncropped Video (Contain) */}
+                          <video
+                            ref={(el) => {
+                              videoRefs.current[idx] = el;
+                            }}
+                            src={media.url}
+                            className="detail-video-contain"
+                            muted
+                            playsInline
+                            preload="metadata"
+                            onEnded={() => handleDetailSlideVideoEnded(idx)}
+                          />
+                        </div>
+                      ) : (
+                        <Image
+                          src={media.url}
+                          alt={`${categoryLabel} ${altTagCatValue} ${
+                            product?.name || ""
+                          } - ${idx + 1}`}
+                          className="detail-main-img"
+                          width={480}
+                          height={470}
+                          priority={idx === 0}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Swiper Indicators (When > 1 video/image slides exist) */}
+                {isMultiMedia && (
+                  <div className="detail-swiper-indicators">
+                    {detailMediaList.map((media, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        aria-label={`Slide ${idx + 1}`}
+                        className={`detail-swiper-dot ${
+                          activeSlide === idx ? "active" : ""
+                        }`}
+                        onClick={() => handleDetailDotClick(idx)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Image ke neeche All Design Badges (Left, Multi-line wrap) + Share Button (Right) */}
+              <div className="detail-badge-share-row">
+                <div className="detail-badges-list">
+                  {activeDesignBadges.map((badgeText, index) => (
+                    <div key={index} className="detail-design-badge">
+                      <span>{badgeText}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="share-btn" onClick={handleShare}>
                   <Image
-                    src={logo}
-                    alt="Hora Services"
-                    className="hora-watermark-image"
+                    src={ShareIcon}
+                    alt="share"
+                    className="share-icon-img"
                   />
                 </div>
               </div>
@@ -1619,7 +1908,7 @@ const waCategory = isWedding
             <div className="decDetailsRight">
               <div
                 style={{
-                  padding: "clamp(8px, 2.5vw, 10px) clamp(8px, 2.5vw, 10px) 0",
+                  padding: "clamp(4px, 1.5vw, 8px) clamp(8px, 2.5vw, 10px) 0",
                 }}
               >
                 <div className="breadcrumb-row">
@@ -1646,13 +1935,6 @@ const waCategory = isWedding
                     <div className="product-discount">
                       ₹ {Math.floor(discountInfo?.discountDifference || 0)} off
                     </div>
-                  </div>
-                  <div className="share-btn" onClick={handleShare}>
-                    <Image
-                      src={ShareIcon}
-                      alt="share"
-                      className="share-icon-img"
-                    />
                   </div>
                 </div>
 
@@ -1684,7 +1966,11 @@ const waCategory = isWedding
               </div>
 
               <MakeItYoursBanner
-                message={buildCustomiseMessage(catValue, selectedCityName || city, themeNameForWA)}
+                message={buildCustomiseMessage(
+                  catValue,
+                  selectedCityName || city,
+                  themeNameForWA,
+                )}
               />
 
               <div ref={addonRef}>

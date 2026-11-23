@@ -1,196 +1,334 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
 .highdecContainer {
-  padding: 12px;
+  padding: 7px;
 }
+
 .highPriceCard {
-  border-radius: 20px;
+  background: #ffffff;
   overflow: hidden;
-  background: #fff;
-  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.06);
+  position: relative;
   width: 100%;
   max-width: 100%;
 }
 
-/* IMAGE */
+.highPriceCard:hover {
+  transform: translateY(-2px);
+}
+
 .highPriceImageWrapper {
   position: relative;
+  width: 100%;
+  height: clamp(263px, 82.188vw, 394.5px);
+  overflow: hidden;
+  background-color: #ffffff;
+  border: 0.7px solid #97538c;
+  border-top-left-radius: clamp(8px, 2.5vw, 12px);
+  border-top-right-radius: clamp(8px, 2.5vw, 12px);
+  box-shadow: 0px 4px 4px 0px #0000000d;
 }
 
 .highPriceImage {
   width: 100%;
-  height: clamp(220px, 55vw, 320px);
+  height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-/* DESIGN TYPE BADGE */
+.highCarouselTrack {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.highCarouselTrack::-webkit-scrollbar {
+  display: none;
+}
+
+.highCarouselSlide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  scroll-snap-align: start;
+}
+
+.highSwiperIndicators {
+  position: absolute;
+  bottom: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  z-index: 4;
+  padding: 2px 6px;
+}
+
+.highSwiperDot {
+  width: 10.35px;
+  height: 10.35px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.highSwiperDot.active {
+  width: 26.09px;
+  height: 10.14px;
+  border-radius: 5.8px;
+  background: #97538c;
+}
+
 .highDesignBadge {
   position: absolute;
-  top: 14px;
+  top: 12px;
   left: 0px;
-  background: #97538C;
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 0px 10px 10px 0px;
-  font-size: 15px;
+  padding: clamp(5px, 1.56vw, 7.5px) clamp(9px, 2.81vw, 13.5px);
+  background: linear-gradient(
+    rgba(250, 244, 252, 0.8) 0%,
+    rgba(236, 203, 250, 0.8) 100%
+  );
+  width: max-content;
+  color: #33043d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Rubik", sans-serif;
   font-weight: 600;
+  font-size: clamp(12px, 3.75vw, 18px);
+  line-height: 1;
+  text-transform: capitalize;
+  border-radius: 0px 33px 33px 0px;
+  z-index: 5;
 }
 
-/* CONTENT */
+.highCardContentWrapper {
+  margin-top: -6px;
+  background: #ffffff;
+  border-top-left-radius: clamp(4.5px, 1.4vw, 6.75px);
+  border-top-right-radius: clamp(4.5px, 1.4vw, 6.75px);
+  border-bottom-left-radius: clamp(8px, 2.5vw, 12px);
+  border-bottom-right-radius: clamp(8px, 2.5vw, 12px);
+  z-index: 1;
+  border-width: 0px 0.6px 0.6px 0.6px;
+  border-style: solid;
+  border-color: #97538c;
+}
+
 .highPriceContent {
-  padding: 16px;
+  padding: clamp(7.15px, 2.234vw, 10.72px) clamp(8.39px, 2.621vw, 12.58px);
   display: flex;
   flex-direction: column;
-  border-radius: 0px 0px 10px 10px;
-  box-shadow: 0px 4px 4px 0px #00000040;
-  overflow: hidden;
+  justify-content: space-between;
+  flex: 1;
 }
 
-/* PRODUCT NAME */
 .highproductName {
-  font-family: 'Rubik', sans-serif;
+  font-family: "Rubik", sans-serif;
   font-weight: 600;
-  font-size: clamp(18px, 5.5vw, 22px);
-  line-height: 1.4;
-  color: #97538C;
-  text-align: left;
-  margin-bottom: 10px;
+  font-size: clamp(16.28px, 5.089vw, 24.43px);
+  line-height: clamp(26.84px, 8.387vw, 40.26px);
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #221f1f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* PRICE ROW SINGLE LINE */
 .highpriceRow {
   display: flex;
   align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
-  margin-bottom: clamp(6px, 1.5vw, 10px);
+  flex-wrap: nowrap;
+  margin-bottom: clamp(6.51px, 2.036vw, 9.77px);
 }
 
-/* FINAL PRICE */
 .highdiscountedPrice {
-  font-family: 'Rubik', sans-serif;
+  font-family: "Rubik", sans-serif;
   font-weight: 500;
-  font-size: clamp(16px, 5vw, 20px);
-  line-height: 1.1;
-  letter-spacing: 0;
-  color: #97538C;
+  font-size: clamp(17px, 5.31vw, 25.5px);
+  color: #97538c;
+  margin: 0;
+  padding: 0;
 }
 
-/* ORIGINAL PRICE */
 .highoriginalPrice {
-  font-family: 'Rubik', sans-serif;
-  font-weight: 500;
-  font-size: clamp(17px, 5vw, 22px);
-  line-height: 1.1;
-  letter-spacing: 0;
-  color: #343a40;
+  color: #474444cc;
   text-decoration: line-through;
+  margin: 0;
+  font-family: "Rubik", sans-serif;
+  font-weight: 500;
+  font-size: clamp(14.66px, 4.58vw, 21.98px);
+  margin-left: clamp(6.22px, 1.944vw, 9.33px);
 }
 
-/* DISCOUNT BADGE INLINE */
 .highdiscountBadge {
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  font-size: clamp(17px, 5vw, 22px);
-  line-height: 1;
-  letter-spacing: 0;
-  text-align: center;
-  background: orange;
-  color: #fff;
-  padding: clamp(5px, 1vw, 10px) clamp(8px, 2vw, 16px);
-  border-radius: clamp(6px, 2vw, 10px);
-  display: inline-flex;
-  align-items: center;
+  background: #f99e1f;
+  padding: clamp(2.64px, 0.824vw, 3.96px) clamp(5.29px, 1.654vw, 7.94px);
+  border-radius: clamp(5.59px, 1.746vw, 8.38px);
+  white-space: nowrap;
+  display: flex;
   justify-content: center;
-}
-
-/* ================= CUSTOMIZATION BOX ================= */
-.highcustomizationBox {
-  display: flex;
   align-items: center;
-  gap: 6px;
-  background: #EAF7EE;
-  border-radius: 8px;
-  padding: 8px 12px;
-  margin-bottom: 10px;
-  border: 0.3px solid #26765C;
+  margin-left: clamp(12px, 3.75vw, 18px);
 }
 
-.highcustomizationIcon {
-  font-size: clamp(14px, 3.6vw, 16px);
-  flex-shrink: 0;
-}
-
-.highcustomizationTextWrap {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-}
-
-.highcustomizationTitle {
-  color: #26765C;
+.highdiscountBadge p {
   font-family: "Inter", sans-serif;
-  font-weight: 600;
-  font-style: normal;
-  font-size: clamp(11px, 3vw, 13px);
+  font-weight: 700;
+  font-size: clamp(15.55px, 4.86vw, 23.33px);
+  color: #ffffff;
   margin: 0;
+  padding: 0;
 }
-
-.highcustomizationSub {
-  font-family: "Inter", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  font-size: clamp(9px, 2.5vw, 11px);
-  margin: 0;
-  color: #000000;
-}
-
-.highcustomizationChevron {
-  color: #1E8E4E;
-  font-size: clamp(14px, 3.6vw, 16px);
-  flex-shrink: 0;
-}
-
-/* ================= DIVIDER ================= */
-.highcardDivider {
-  border: none;
-  border-top: 0.5px solid #B2AFAF;
-  margin: 0 0 10px;
-}
-
-/* ================= VIEW MORE ROW ================= */
 
 .highviewMoreRow {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding-top: clamp(6px, 1.5vw, 8px);
+  background-color: #97538c36;
+  padding: clamp(7px, 2.18vw, 10.5px) clamp(8px, 2.5vw, 12px);
+  border-radius: 30px;
+  margin-top: auto;
+  box-shadow: 0px 4px 4px 0px #0000000d;
 }
 
 .highviewMore {
   font-family: "Inter", sans-serif;
   font-weight: 700;
- font-size: clamp(16px, 4.5vw, 19px);
+  font-size: clamp(13px, 4.06vw, 19.5px);
   text-align: center;
-  vertical-align: middle;
-  color: #97538C;
+  color: #97538c;
   margin: 0;
   grid-column: 2;
 }
 
 .highviewMoreArrow {
-   width: clamp(28px, 7vw, 34px);
-  height: clamp(28px, 7vw, 34px);
+  width: clamp(20px, 6.25vw, 30px);
+  height: clamp(20px, 6.25vw, 30px);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(5px, calc((5.81 / 393) * 100vw), 5.81px);
-  background: #97538C;
-  border-radius: clamp(24px, calc((29.07 / 393) * 100vw), 29.07px);
+  background: #97538c;
+  border-radius: 50%;
   grid-column: 3;
   justify-self: end;
+  box-shadow: 0px 4px 4px 0px #00000036;
 }
 
-.highviewMoreArrow svg {
-  width: 55%;
-  height: 55%;
+.highviewMoreArrow .view-img {
+  width: clamp(7px, 2.18vw, 10.5px) !important;
+  height: clamp(9px, 2.81vw, 13.5px) !important;
+}
+
+.highVideoCardMode {
+  background: #141414;
+  height: clamp(360px, 112.5vw, 540px);
+  border-radius: clamp(8px, 2.5vw, 12px);
+  border: 0.7px solid #97538c;
+}
+
+.highVideoFullWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #1c1c1e;
+}
+
+.highVideoMirrorBg {
+  position: absolute;
+  inset: -15%;
+  width: 130%;
+  height: 130%;
+  object-fit: cover;
+  filter: blur(20px) brightness(0.75) saturate(1.2);
+  transform: scale(1.1);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.highVideoContainMain {
+  position: relative;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+  z-index: 2;
+}
+
+.highVideoCoverMain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 2;
+}
+
+.highVideoOverlayContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 48px 12px 14px;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.92) 0%,
+    rgba(0, 0, 0, 0.65) 55%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+}
+
+.highVideoTitle {
+  color: #ffffff;
+}
+
+.highVideoFinalPrice {
+  color: #97538c;
+}
+
+.highVideoOldPrice {
+  color: #ffffffcc;
+}
+
+.highVideoViewMoreWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.highVideoViewMoreText {
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: clamp(14.66px, 4.58vw, 21.98px);
+  color: #ffffff;
+  border-bottom: 1.5px solid #ffffff;
+  padding-bottom: 1px;
+  letter-spacing: 0.2px;
 }
