@@ -236,6 +236,7 @@ const ProductDetails = ({
   const [isArrowDown, setIsArrowDown] = useState(false);
   const [itemQuantities, setItemQuantities] = useState({});
   const [selectedAddOnProduct, setSelectedAddOnProduct] = useState([]);
+  const [shareFile, setShareFile] = useState(null);
 
   const hasCityPageParam = Boolean(city);
   const addonRef = useRef(null);
@@ -440,7 +441,36 @@ const ProductDetails = ({
     }
   }, [selectedAddOnProduct, itemQuantities, productId]);
 
-  // ---------- handlers (same as tumhara) ----------
+  useEffect(() => {
+  if (!work?.featured_image) return;
+  let cancelled = false;
+
+  (async () => {
+    try {
+      const base = work.featured_image.split(".")[0];
+      const url = `https://horaservices.com/api/uploads/compressed_webp/${encodeURIComponent(base)}.webp`;
+      const res = await fetch(url, { mode: "cors" });
+      if (!res.ok) throw new Error(`Image fetch ${res.status}`);
+      const blob = await res.blob();
+
+      if (!cancelled) {
+        setShareFile(
+          new File([blob], "photography-package.webp", {
+            type: "image/webp",
+          }),
+        );
+      }
+    } catch (e) {
+      console.warn("Share image prefetch failed", e);
+    }
+  })();
+
+  return () => {
+    cancelled = true;
+  };
+}, [work?.featured_image]);
+
+  // ---------- handlers ----------
   const calculateTotalPrice = (productPrice) => {
     let totalPrice = Number(work?.price || productPrice || 0);
     selectedAddOnProduct.forEach((item) => {
@@ -556,18 +586,27 @@ const ProductDetails = ({
     if (!work?._id || typeof window === "undefined") return;
     const cleanPath = router.asPath.split("?")[0];
     const shareUrl = `${window.location.origin}${cleanPath}`;
+    const title = work?.name || "Product";
+
     try {
       if (navigator.share) {
-        await navigator.share({
-          title: work?.name || "Product",
-          url: shareUrl,
-        });
+        // Koi await share() se pehle nahi — iOS user activation bacha rahe
+        if (shareFile && navigator.canShare?.({ files: [shareFile] })) {
+          // iOS files ke saath `url` field drop kar deta hai, isliye link text mein
+          await navigator.share({
+            title,
+            text: `${title}\n${shareUrl}`,
+            files: [shareFile],
+          });
+        } else {
+          await navigator.share({ title, text: title, url: shareUrl });
+        }
       } else {
         await navigator.clipboard.writeText(shareUrl);
         alert("Link copied!");
       }
     } catch (err) {
-      console.log("Share cancelled");
+      if (err?.name !== "AbortError") console.error("Share failed:", err);
     }
   };
 
@@ -604,7 +643,11 @@ const ProductDetails = ({
                         }.webp`
                       : fallbackImg
                   }
-                  alt={work?.name ? `${work.name} — photography package by HORA${city ? ` in ${city}` : ""}` : "Professional photography package by HORA"}
+                  alt={
+                    work?.name
+                      ? `${work.name} — photography package by HORA${city ? ` in ${city}` : ""}`
+                      : "Professional photography package by HORA"
+                  }
                   style={{ width: "100%", height: "auto" }}
                   className="photoImage"
                   width={400}
@@ -752,7 +795,7 @@ const ProductDetails = ({
               />
             </div>
 
-             <PhotographyProductDescription
+            <PhotographyProductDescription
               work={work}
               city={city}
               catValue={catValue}
@@ -762,17 +805,26 @@ const ProductDetails = ({
               <h2 className="whyHoraHeading">Why Hora Photography</h2>
               <div className="whyHoraSecInner">
                 <div className="whyHoraSecBox">
-                  <Image src={PROFESSIONALPHOTOGRAPHERS} alt="Professional photographers verified by Hora" />
+                  <Image
+                    src={PROFESSIONALPHOTOGRAPHERS}
+                    alt="Professional photographers verified by Hora"
+                  />
                   <p className="whyHoraSubheading">
                     PROFESSIONAL PHOTOGRAPHERS
                   </p>
                 </div>
                 <div className="whyHoraSecBox">
-                  <Image src={SECURESTORAGE} alt="Secure lifetime photo storage on Hora" />
+                  <Image
+                    src={SECURESTORAGE}
+                    alt="Secure lifetime photo storage on Hora"
+                  />
                   <p className="whyHoraSubheading">SECURE STORAGE</p>
                 </div>
                 <div className="whyHoraSecBox">
-                  <Image src={SUPPORT} alt="24/7 customer support for photography bookings" />
+                  <Image
+                    src={SUPPORT}
+                    alt="24/7 customer support for photography bookings"
+                  />
                   <p className="whyHoraSubheading">27/7 SUPPORT</p>
                 </div>
               </div>
@@ -819,7 +871,7 @@ const ProductDetails = ({
             {/* ── Related blog posts ── */}
             {(() => {
               const related = PHOTOGRAPHY_BLOG_ARTICLES.filter(
-                (a) => a.categorySlug === catValue
+                (a) => a.categorySlug === catValue,
               ).slice(0, 3);
               if (!related.length) return null;
               return (
@@ -828,14 +880,23 @@ const ProductDetails = ({
                   <ul className="cc-blog-links-list">
                     {related.map((article) => (
                       <li key={article.slug} className="cc-blog-links-item">
-                        <a href={`/blog/photography/${article.slug}`} className="cc-blog-links-anchor">
-                          <span className="cc-blog-links-title">{article.title}</span>
-                          <span className="cc-blog-links-meta">{article.readingTime} min read</span>
+                        <a
+                          href={`/blog/photography/${article.slug}`}
+                          className="cc-blog-links-anchor"
+                        >
+                          <span className="cc-blog-links-title">
+                            {article.title}
+                          </span>
+                          <span className="cc-blog-links-meta">
+                            {article.readingTime} min read
+                          </span>
                         </a>
                       </li>
                     ))}
                   </ul>
-                  <a href="/blog/photography" className="cc-blog-links-all">See all photography articles →</a>
+                  <a href="/blog/photography" className="cc-blog-links-all">
+                    See all photography articles →
+                  </a>
                 </div>
               );
             })()}
