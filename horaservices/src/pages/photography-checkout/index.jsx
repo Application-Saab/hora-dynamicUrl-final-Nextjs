@@ -225,7 +225,7 @@ const Checkout = () => {
   }, [router.isReady, selectedProduct]);
 
   useEffect(() => {
-    const loggedInStatus = safeGetItem("isLoggedIn") === "true";
+    const loggedInStatus = safeGetItem("isLoggedIn") == "true";
     setIsLoggedIn(loggedInStatus);
     if (!loggedInStatus) {
       setIsModalOpen(true);

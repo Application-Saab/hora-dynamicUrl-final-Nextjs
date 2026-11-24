@@ -36,7 +36,7 @@ const Orderlist = () => {
 
   // ---- Auth check (client-only) ----
   useEffect(() => {
-    const loggedIn = safeGetItem("isLoggedIn") === "true";
+    const loggedIn = safeGetItem("isLoggedIn") == "true";
     setIsLoggedIn(loggedIn);
     setAuthChecked(true);
 
