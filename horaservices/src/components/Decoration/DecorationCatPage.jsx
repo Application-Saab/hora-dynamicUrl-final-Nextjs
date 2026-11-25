@@ -34,8 +34,7 @@ import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 import SeoHead from "@/utils/SeoHead";
 // `themes` bhi import karo (URL ke priceTheme=budget se theme object nikalne ke liye)
 import ThemeSelector, { themes as priceThemes } from "@/components/Themeselector";
-// ✅ sortOptions bhi import kiya (chip ka label dikhane ke liye)
-import SearchSortBar, {
+import {
   designTypeOptions,
   sortOptions,
 } from "@/components/SearchSortBar";
@@ -49,7 +48,9 @@ import EventDateBanner from "@/components/Eventdatebanner";
 import axiosApi from "@/utils/axiosApi";
 import MakeItYoursBanner from "@/components/MakeItYoursBanner";
 import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
+import { parseSearchQuery } from "@/utils/searchRelated";
 import { X } from "lucide-react";
+import GlobalSearchBar from "../GlobalSearchBar";
 
 const PRICE_SORTS = ["newArrival", "lowToHigh", "highToLow"];
 const VALID_SORTS = [...PRICE_SORTS];
@@ -59,6 +60,18 @@ const VALID_SORTS = [...PRICE_SORTS];
 // to DESIGN_TYPE_MODE = "repeat" kar do.
 const DESIGN_TYPE_PARAM_NAME = "designType";
 const DESIGN_TYPE_MODE = "comma"; // "comma" | "repeat"
+
+const fmtPrice = (n) => `₹${Number(n).toLocaleString("en-IN")}`;
+
+// Search text se ek (ya zyada) tukde hatao, case-insensitive
+const stripText = (base, ...texts) => {
+  let next = base;
+  texts.forEach((t) => {
+    const i = next.toLowerCase().indexOf(String(t).toLowerCase());
+    if (i > -1) next = next.slice(0, i) + " " + next.slice(i + t.length);
+  });
+  return next.replace(/\s+/g, " ").trim();
+};
 
 const getQueryValue = (query, lowerKey, legacyKey) => {
   const v = query?.[lowerKey] ?? query?.[legacyKey];
@@ -103,15 +116,15 @@ const buildCacheKey = (path, sort, priceThemeId, search, designTypes = []) =>
 
 const DecorationCatPage = ({
   city: cityProp = "",
-  serverCity = null,   // SSR-safe city name from getServerSideProps — use for <Head> only
-  serverTheme = null,  // SSR-safe theme slug from getServerSideProps — use for <Head> only
+  serverCity = null, // SSR-safe city name from getServerSideProps — use for <Head> only
+  serverTheme = null, // SSR-safe theme slug from getServerSideProps — use for <Head> only
   locality = null,
   catValue: catValueProp = "",
   initialCatalogueData = [],
   initialCatId = "",
   initialHasMore = false,
   isDirectProductPage = false,
-    categorySlug = "balloon-decoration",
+  categorySlug = "balloon-decoration",
 }) => {
   const router = useRouter();
   const pathname = router.asPath.split("?")[0];
@@ -188,18 +201,19 @@ const DecorationCatPage = ({
     hasInitialData ? initialHasMore : true,
   );
   const [themeFilter, setThemeFilter] = useState("all");
-  // ✅ CHANGE 5: initial value URL se aayegi (pehle "" thi)
   const [searchQuery, setSearchQuery] = useState(urlFilters.search);
   const selectedTheme = router.query.themes;
   const isThemePage = !!selectedTheme;
 
-  // ✅ NEW: [theme] route (jaise /kids-birthday-decoration/hero) par search/sort bar
+  // [theme] route (jaise /kids-birthday-decoration/hero) par search/sort bar
   // aur price selector nahi dikhana. isThemePage ko nahi badla kyunki wo neeche
   // products ki slicing/layout bhi control karta hai.
   const isThemeRoute = !!theme || isThemePage;
 
+  // Design type sirf category page par (theme route par nahi)
+  const isDesignTypeEnabled = !isThemeRoute;
+
   // ---- Price-range theme selector state (Budget / Value / Photogenic / Stage) ----
-  // ✅ CHANGE 6: initial value URL se aayegi (pehle null thi)
   const [selectedPriceTheme, setSelectedPriceTheme] = useState(
     urlFilters.priceTheme,
   );
@@ -307,39 +321,98 @@ const DecorationCatPage = ({
 
   const isPriceThemeActive = !!selectedPriceTheme;
 
-  // ---- Sort state ----
+  // ---- Sort state (manual: sheet se) ----
   const [sortOption, setSortOption] = useState(urlFilters.sortOption);
 
-  // ---- Design Type filter (multi-select: wall, ring, ...) ----
+  // ---- Design Type filter (manual: sheet se, multi-select) ----
   const [designTypes, setDesignTypes] = useState(urlFilters.designTypes);
   const designTypesKey = designTypes.join(",");
 
-  // Sort & Filter sheet ka "Apply" — sort + design type EK saath, EK hi URL update
+  // ================= SEARCH TEXT => FILTERS =================
+  // User "ring under 2000 low to high" likhe to design, price aur sort text se
+  // nikalte hain. Text hatate hi filters bhi hat jaate hain (text = source of truth).
+  const parsedSearch = useMemo(
+    () =>
+      parseSearchQuery(
+        searchQuery,
+        isDesignTypeEnabled ? designTypeOptions : [], // off ho to "ring" normal search word rahega
+      ),
+    [searchQuery, isDesignTypeEnabled],
+  );
+
+  // Manual (sheet) + text se nikle design types ka merge
+  const effDesignTypes = useMemo(
+    () =>
+      isDesignTypeEnabled
+        ? [...new Set([...designTypes, ...parsedSearch.designTypes])]
+        : [],
+    [designTypes, parsedSearch, isDesignTypeEnabled],
+  );
+  const effDesignKey = effDesignTypes.join(",");
+  const effSort = parsedSearch.sort || sortOption;
+  const effSearchText = parsedSearch.rest;
+  const hasSearchPrice =
+    parsedSearch.minPrice != null || parsedSearch.maxPrice != null;
+  const effPriceRange = hasSearchPrice
+    ? { min: parsedSearch.minPrice, max: parsedSearch.maxPrice }
+    : selectedPriceTheme?.priceRange || null;
+
+  // Sort & Filter sheet ka "Apply": sheet mein text wale filters bhi selected dikhte hain,
+  // isliye Apply par unhe manual state mein shift karte hain aur text se sort/design hatate hain
+  // (price wala part text mein hi rehta hai).
   const handleSortFilterApply = ({
     sortOption: nextSort,
     designTypes: nextDesigns,
   }) => {
     hasHydratedFromCache.current = false;
+    const safeDesigns = isDesignTypeEnabled ? nextDesigns : [];
+    const keepText = [
+      parsedSearch.rest,
+      ...parsedSearch.parts.filter((p) => p.type === "price").map((p) => p.text),
+    ]
+      .filter(Boolean)
+      .join(" ");
+
     setSortOption(nextSort);
-    setDesignTypes(nextDesigns);
+    setDesignTypes(safeDesigns);
+    setSearchQuery(keepText);
     updateQueryParams({
       sortBy: nextSort === "popularity" ? null : nextSort,
-      designType: nextDesigns,
+      designType: safeDesigns,
+      search: keepText || null,
     });
   };
 
-  // ✅ Chips ke handlers: sirf wahi filter hatta hai jis par × dabaya
-  const removeSortFilter = () => {
+  // ---- Chips ke handlers: sirf wahi filter hatta hai jis par × dabaya ----
+  const removeSortChip = () => {
     hasHydratedFromCache.current = false;
+    const sortPart = parsedSearch.parts.find((p) => p.type === "sort");
+    const nextText = sortPart ? stripText(searchQuery, sortPart.text) : searchQuery;
     setSortOption("popularity");
-    updateQueryParams({ sortBy: null });
+    setSearchQuery(nextText);
+    updateQueryParams({ sortBy: null, search: nextText || null });
   };
 
-  const removeDesignFilter = (id) => {
+  const removeDesignChip = (id) => {
     hasHydratedFromCache.current = false;
-    const next = designTypes.filter((d) => d !== id);
-    setDesignTypes(next);
-    updateQueryParams({ designType: next });
+    const part = parsedSearch.parts.find(
+      (p) => p.type === "design" && p.id === id,
+    );
+    const nextDesigns = designTypes.filter((d) => d !== id);
+    const nextText = part ? stripText(searchQuery, part.text) : searchQuery;
+    setDesignTypes(nextDesigns);
+    setSearchQuery(nextText);
+    updateQueryParams({ designType: nextDesigns, search: nextText || null });
+  };
+
+  const removeSearchPriceChip = () => {
+    hasHydratedFromCache.current = false;
+    const texts = parsedSearch.parts
+      .filter((p) => p.type === "price")
+      .map((p) => p.text);
+    const nextText = stripText(searchQuery, ...texts);
+    setSearchQuery(nextText);
+    updateQueryParams({ search: nextText || null });
   };
 
   const clearAllFilters = () => {
@@ -347,7 +420,13 @@ const DecorationCatPage = ({
     setSortOption("popularity");
     setDesignTypes([]);
     setSelectedPriceTheme(null);
-    updateQueryParams({ sortBy: null, designType: null, priceTheme: null });
+    setSearchQuery("");
+    updateQueryParams({
+      sortBy: null,
+      designType: null,
+      priceTheme: null,
+      search: null,
+    });
   };
 
   // ---- Search: whether a free-text search is currently active ----
@@ -363,7 +442,8 @@ const DecorationCatPage = ({
       setSortOption("popularity");
       setSelectedPriceTheme(null);
       setDesignTypes([]);
-      // search URL mein, baaki filters URL se clear
+      // pura raw text URL mein (refresh/share par filters wapas aate hain),
+      // baaki manual filters URL se clear
       updateQueryParams({
         search: trimmed,
         sortBy: null,
@@ -553,7 +633,15 @@ const DecorationCatPage = ({
     setCurrentPage(1);
     getSubCatItems(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [catId, themeFilter, sortOption, selectedPriceTheme, searchQuery, designTypesKey]);
+  }, [
+    catId,
+    themeFilter,
+    sortOption,
+    selectedPriceTheme,
+    searchQuery,
+    designTypesKey,
+    effDesignKey,
+  ]);
 
   // ================= currentPage change => fetch that page =================
   useEffect(() => {
@@ -649,13 +737,13 @@ const DecorationCatPage = ({
       params.set("limit", "30");
       params.set("page", String(page));
 
-      if (PRICE_SORTS.includes(sortOption)) {
-        params.set("sortBy", sortOption);
+      if (PRICE_SORTS.includes(effSort)) {
+        params.set("sortBy", effSort);
       }
 
       // Design Type: designType=Wall  (multiple => "Wall,Ring")
-      if (designTypes.length > 0) {
-        const apiValues = designTypes
+      if (effDesignTypes.length > 0) {
+        const apiValues = effDesignTypes
           .map((id) => designTypeOptions.find((o) => o.id === id)?.apiValue)
           .filter(Boolean);
 
@@ -670,16 +758,17 @@ const DecorationCatPage = ({
         params.set("theme", themeFilter);
       }
 
-      if (selectedPriceTheme?.priceRange) {
-        const { min, max } = selectedPriceTheme.priceRange;
+      // Price: search text ("under 2000") ko priority, warna price theme
+      if (effPriceRange) {
+        const { min, max } = effPriceRange;
         if (min !== undefined && min !== null)
           params.set("minPrice", String(min));
         if (max !== undefined && max !== null)
           params.set("maxPrice", String(max));
       }
 
-      if (searchQuery) {
-        params.set("search", searchQuery);
+      if (effSearchText) {
+        params.set("search", effSearchText);
       }
 
       const apiUrl = `${BASE_URL + GET_DECORATION_CAT_ITEM}v3/${catId}?${params.toString()}`;
@@ -705,6 +794,7 @@ const DecorationCatPage = ({
           const updated =
             page === 1 ? decoratedData : [...prevData, ...decoratedData];
 
+          // Cache key raw searchQuery + manual filters se (URL se match karti hai)
           setPageCache(
             buildCacheKey(
               pathname,
@@ -779,27 +869,27 @@ const DecorationCatPage = ({
   };
 
   // Real product URL for <a href>
- const getProductHref = (item) => {
-  if (!item) return "#";
-  const productSlug =
-    item.slug ||
-    item.product_slug ||
-    (item.name ? item.name.toLowerCase().replace(/\s+/g, "-") : "");
+  const getProductHref = (item) => {
+    if (!item) return "#";
+    const productSlug =
+      item.slug ||
+      item.product_slug ||
+      (item.name ? item.name.toLowerCase().replace(/\s+/g, "-") : "");
 
-  if (!productSlug || !catValue) return "#";
+    if (!productSlug || !catValue) return "#";
 
-  const pathCategorySlug = getCategorySlugFromPath(pathname, city, locality);
-  if (!pathCategorySlug) return "#";
+    const pathCategorySlug = getCategorySlugFromPath(pathname, city, locality);
+    if (!pathCategorySlug) return "#";
 
-  // Wedding hamesha direct product page par: /wedding-decoration/product/slug
-  if (isDirectProductPage || categorySlug === "wedding-decoration") {
-    const directSlug =
-      categorySlug === "wedding-decoration" ? categorySlug : pathCategorySlug;
-    return `/${directSlug}/product/${productSlug}`;
-  }
+    // Wedding hamesha direct product page par: /wedding-decoration/product/slug
+    if (isDirectProductPage || categorySlug === "wedding-decoration") {
+      const directSlug =
+        categorySlug === "wedding-decoration" ? categorySlug : pathCategorySlug;
+      return `/${directSlug}/product/${productSlug}`;
+    }
 
-  return `${buildBasePath()}/${pathCategorySlug}/${catValue}/product/${productSlug}`;
-};
+    return `${buildBasePath()}/${pathCategorySlug}/${catValue}/product/${productSlug}`;
+  };
 
   const getCategoryHref = (item) => {
     if (!item?.value || !catValue) return "#";
@@ -865,92 +955,106 @@ const DecorationCatPage = ({
     );
   };
 
-  // ✅ Active filter chips: price + sort + har design type
- // ✅ Active filter chips: price + sort + har design type
-const activeChips = [];
+  // ✅ Active filter chips: price theme + search price + sort + har design type
+  const activeChips = [];
 
-if (selectedPriceTheme) {
-  activeChips.push({
-    key: "price",
-    label:
-      selectedPriceTheme.label ||
-      selectedPriceTheme.name ||
-      selectedPriceTheme.title,
-    onRemove: () => handleSelectPriceTheme(null),
+  if (selectedPriceTheme) {
+    activeChips.push({
+      key: "price-theme",
+      label:
+        selectedPriceTheme.label ||
+        selectedPriceTheme.name ||
+        selectedPriceTheme.title,
+      onRemove: () => handleSelectPriceTheme(null),
+    });
+  }
+
+  if (hasSearchPrice) {
+    const { minPrice, maxPrice } = parsedSearch;
+    activeChips.push({
+      key: "price-search",
+      label:
+        minPrice != null && maxPrice != null
+          ? `${fmtPrice(minPrice)} – ${fmtPrice(maxPrice)}`
+          : maxPrice != null
+            ? `Under ${fmtPrice(maxPrice)}`
+            : `Above ${fmtPrice(minPrice)}`,
+      onRemove: removeSearchPriceChip,
+    });
+  }
+
+  if (effSort !== "popularity") {
+    activeChips.push({
+      key: "sort",
+      label: sortOptions.find((o) => o.id === effSort)?.label || effSort,
+      onRemove: removeSortChip,
+    });
+  }
+
+  effDesignTypes.forEach((id) => {
+    activeChips.push({
+      key: `design-${id}`,
+      label: designTypeOptions.find((o) => o.id === id)?.label || id,
+      onRemove: () => removeDesignChip(id),
+    });
   });
-}
 
-if (sortOption !== "popularity") {
-  activeChips.push({
-    key: "sort",
-    label: sortOptions.find((o) => o.id === sortOption)?.label || sortOption,
-    onRemove: removeSortFilter,
-  });
-}
+  // ✅ Upar ki row mein kitne chips fit honge (width naap kar)
+  const wrapRef = useRef(null);
+  const clearRef = useRef(null);
+  const measureRef = useRef(null);
+  const [topCount, setTopCount] = useState(1);
 
-designTypes.forEach((id) => {
-  activeChips.push({
-    key: `design-${id}`,
-    label: designTypeOptions.find((o) => o.id === id)?.label || id,
-    onRemove: () => removeDesignFilter(id),
-  });
-});
+  const chipsKey = activeChips.map((c) => `${c.key}:${c.label}`).join("|");
 
-// ✅ Upar ki row mein kitne chips fit honge (width naap kar)
-const wrapRef = useRef(null);
-const clearRef = useRef(null);
-const measureRef = useRef(null);
-const [topCount, setTopCount] = useState(1);
+  useEffect(() => {
+    const compute = () => {
+      const wrap = wrapRef.current;
+      const measure = measureRef.current;
+      if (!wrap || !measure) return;
 
-const chipsKey = activeChips.map((c) => `${c.key}:${c.label}`).join("|");
+      const GAP = 8;
+      const clearW =
+        activeChips.length > 1 ? (clearRef.current?.offsetWidth || 90) + 12 : 0;
+      const cs = getComputedStyle(wrap);
+      const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      const available = wrap.clientWidth - padX - clearW;
+      const widths = Array.from(measure.children).map((el) => el.offsetWidth);
 
-useEffect(() => {
-  const compute = () => {
-    const wrap = wrapRef.current;
-    const measure = measureRef.current;
-    if (!wrap || !measure) return;
+      let used = 0;
+      let count = 0;
+      for (const w of widths) {
+        const next = used + (count ? GAP : 0) + w;
+        if (next > available) break;
+        used = next;
+        count++;
+      }
+      setTopCount(Math.max(1, count)); // kam se kam 1 chip upar
+    };
 
-    const GAP = 8;
-    const clearW =
-      activeChips.length > 1 ? (clearRef.current?.offsetWidth || 90) + 12 : 0;
-    const cs = getComputedStyle(wrap);
-    const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
-    const available = wrap.clientWidth - padX - clearW;
-    const widths = Array.from(measure.children).map((el) => el.offsetWidth);
+    compute();
+    window.addEventListener("resize", compute);
+    return () => window.removeEventListener("resize", compute);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chipsKey, loading, isInitialLoad, isSearchActive, isThemeRoute]);
 
-    let used = 0;
-    let count = 0;
-    for (const w of widths) {
-      const next = used + (count ? GAP : 0) + w;
-      if (next > available) break;
-      used = next;
-      count++;
-    }
-    setTopCount(Math.max(1, count)); // kam se kam 1 chip upar
-  };
+  const topChips = activeChips.slice(0, topCount);
+  const bottomChips = activeChips.slice(topCount);
 
-  compute();
-  window.addEventListener("resize", compute);
-  return () => window.removeEventListener("resize", compute);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [chipsKey, loading, isInitialLoad, isSearchActive, isThemeRoute]);
+  const renderChip = (chip) => (
+    <span key={chip.key} className="active-filter-chip">
+      {chip.label}
+      <button
+        type="button"
+        className="active-filter-chip__close"
+        aria-label={`Remove ${chip.label}`}
+        onClick={chip.onRemove}
+      >
+        <X size={16} strokeWidth={2.5} />
+      </button>
+    </span>
+  );
 
-const topChips = activeChips.slice(0, topCount);      // ✅ topCount use karo
-const bottomChips = activeChips.slice(topCount);      // ✅
-
-const renderChip = (chip) => (
-  <span key={chip.key} className="active-filter-chip">
-    {chip.label}
-    <button
-      type="button"
-      className="active-filter-chip__close"
-      aria-label={`Remove ${chip.label}`}
-      onClick={chip.onRemove}
-    >
-      <X size={16} strokeWidth={2.5} />
-    </button>
-  </span>
-);
   return (
     <div className="decCatPage">
       {/* serverCity is the SSR-safe value from getServerSideProps — always
@@ -985,61 +1089,65 @@ const renderChip = (chip) => (
               {/* Theme route (/hero etc.) par search/sort bar aur price selector nahi */}
               {!isThemeRoute && (
                 <>
-                  <SearchSortBar
-                    sortOption={sortOption}
-                    designTypes={designTypes}
+                  <GlobalSearchBar
+                    city={city}
+                    locality={locality}
+                    submitMode="filter"
+                    smartFilters
+                    showDesignType={isDesignTypeEnabled}
+                    sortOption={effSort}
+                    designTypes={effDesignTypes}
                     onApplyFilters={handleSortFilterApply}
-                    searchCategoryList={searchCategoryList}
-                    products={sortedCatalogueData}
-                    onCategorySelect={openSearchCategory}
-                    onProductSelect={handleViewDetails}
                     onSearchChange={handleSearchChange}
-                    getProductHref={getProductHref}
-                    getCategoryHref={getCategoryHref}
                     userId={userId}
                     initialQuery={searchQuery}
                   />
 
                   {/* ✅ Active filter chips (price + sort + design types) */}
-             {activeChips.length > 0 && !isSearchActive && (
-  <div className="active-filter-wrap" ref={wrapRef}>
-    {/* Sirf naapne ke liye, user ko dikhta nahi */}
-    <div className="active-filter-measure" ref={measureRef} aria-hidden="true">
-      {activeChips.map((chip) => (
-        <span key={chip.key} className="active-filter-chip">
-          {chip.label}
-          <span className="active-filter-chip__close">
-            <X size={16} strokeWidth={2.5} />
-          </span>
-        </span>
-      ))}
-    </div>
+                  {activeChips.length > 0 && (
+                    <div className="active-filter-wrap" ref={wrapRef}>
+                      {/* Sirf naapne ke liye, user ko dikhta nahi */}
+                      <div
+                        className="active-filter-measure"
+                        ref={measureRef}
+                        aria-hidden="true"
+                      >
+                        {activeChips.map((chip) => (
+                          <span key={chip.key} className="active-filter-chip">
+                            {chip.label}
+                            <span className="active-filter-chip__close">
+                              <X size={16} strokeWidth={2.5} />
+                            </span>
+                          </span>
+                        ))}
+                      </div>
 
-    <div className="active-filter-top">
-      <div className="active-filter-top-chips">
-        {topChips.map(renderChip)}
-      </div>
+                      <div className="active-filter-top">
+                        <div className="active-filter-top-chips">
+                          {topChips.map(renderChip)}
+                        </div>
 
-      {activeChips.length > 1 && (
-        <button
-          type="button"
-          className="active-filter-clear"
-          onClick={clearAllFilters}
-          ref={clearRef}
-        >
-          Clear All
-        </button>
-      )}
-    </div>
+                        {activeChips.length > 1 && (
+                          <button
+                            type="button"
+                            className="active-filter-clear"
+                            onClick={clearAllFilters}
+                            ref={clearRef}
+                          >
+                            Clear All
+                          </button>
+                        )}
+                      </div>
 
-    {bottomChips.length > 0 && (
-      <div className="active-filter-scroll">
-        {bottomChips.map(renderChip)}
-      </div>
-    )}
-  </div>
-)}               
-   {isPriceThemeSelectorPage && !isSearchActive && (
+                      {bottomChips.length > 0 && (
+                        <div className="active-filter-scroll">
+                          {bottomChips.map(renderChip)}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {isPriceThemeSelectorPage && !isSearchActive && (
                     <ThemeSelector
                       onSelectTheme={handleSelectPriceTheme}
                       selectedThemeId={selectedPriceTheme?.id || null}
@@ -1049,27 +1157,27 @@ const renderChip = (chip) => (
               )}
 
               {catValue?.toLowerCase() === "kids-birthday-decoration" &&
-  !isSearchActive && (
-    <div className="category-tabs-container">
-      <CategoryTabs
-        data={themeFilters.map((item) => ({
-          id: item.value,
-          name: item.label,
-          image: item.image,
-          value: item.value,
-          catValue: "kids-birthday-decoration",
-        }))}
-        onSelect={(item) => openCatItems(item, themeFilter)}
-        city={city}
-        hasCityPageParam={hasCityPageParam}
-        locality={locality}
-        variant="grid"
-        catValue="kids-birthday-decoration"
-        activeValue={themeFilter}
-        rows={isThemeRoute ? 1 : 2}   
-      />
-    </div>
-  )}
+                !isSearchActive && (
+                  <div className="category-tabs-container">
+                    <CategoryTabs
+                      data={themeFilters.map((item) => ({
+                        id: item.value,
+                        name: item.label,
+                        image: item.image,
+                        value: item.value,
+                        catValue: "kids-birthday-decoration",
+                      }))}
+                      onSelect={(item) => openCatItems(item, themeFilter)}
+                      city={city}
+                      hasCityPageParam={hasCityPageParam}
+                      locality={locality}
+                      variant="grid"
+                      catValue="kids-birthday-decoration"
+                      activeValue={themeFilter}
+                      rows={isThemeRoute ? 1 : 2}
+                    />
+                  </div>
+                )}
 
               {catValue?.toLowerCase() === "naming-ceremony-decoration" &&
                 !isSearchActive && (
@@ -1093,7 +1201,7 @@ const renderChip = (chip) => (
                   </div>
                 )}
 
-                {/* {catValue?.toLowerCase() === "birthday-decoration" &&
+              {/* {catValue?.toLowerCase() === "birthday-decoration" &&
   !isSearchActive && (
     <div className="category-tabs-outer">
       <CategoryTabs
@@ -1128,7 +1236,8 @@ const renderChip = (chip) => (
                       catValue={catValue}
                       isDirectProductPage={isDirectProductPage}
                     />
-                  ) : isSearchActive ? (
+                  ) : isSearchActive && effSearchText ? (
+                    // Text search miss: default products suggestions ke roop mein
                     defaultCatalogueData.length > 0 ? (
                       <ProductGrid
                         data={defaultCatalogueData}
@@ -1140,7 +1249,11 @@ const renderChip = (chip) => (
                     ) : null
                   ) : (
                     <div className="noProductsWrapper">
-                      <h2>No products found in this price range</h2>
+                      <h2>
+                        {isSearchActive
+                          ? "No products found"
+                          : "No products found in this price range"}
+                      </h2>
                     </div>
                   )}
                 </>
@@ -1369,8 +1482,9 @@ const renderChip = (chip) => (
                   {currentCategoryContent.map((item, index) => (
                     <div
                       key={index}
-                      className={`category-item ${!showAll && index >= 2 ? "category-item--hidden" : ""
-                        }`}
+                      className={`category-item ${
+                        !showAll && index >= 2 ? "category-item--hidden" : ""
+                      }`}
                     >
                       {/* h2: the page's single H1 is the banner above */}
                       <h2>{item.title}</h2>

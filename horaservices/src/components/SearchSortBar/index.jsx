@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Search, SlidersHorizontal, ChevronRight, X, Check } from "lucide-react";
+import { ChevronRight, X, Check } from "lucide-react";
 import Image from "next/image";
 import "./SearchSortBar.css";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
@@ -11,6 +11,7 @@ import { trackSearch } from "@/utils/track";
 import { useRouter } from "next/router";
 import searchIcon from "@/assets/searchbar.svg";
 import closeIcon from "@/assets/sortbar.svg";
+import { rankItems, parseSearchQuery } from "@/utils/searchRelated";
 
 const sortOptions = [
   { id: "popularity", label: "Popularity" },
@@ -43,7 +44,7 @@ const designTypeOptions = [
   { id: "multiPanelBackdrop", label: "Multi - Panel Backdrop", apiValue: "Multi - Panel Backdrop" },
   { id: "onSquareStand", label: "On Square Stand", apiValue: "On Square Stand" },
   { id: "carDecor", label: "Car Decor", apiValue: "Car Decor" },
-  { id: "entryArch", label: "Entry Arch", apiValue: "Entry Arch" }
+  { id: "entryArch", label: "Entry Arch", apiValue: "Entry Arch" },
 ];
 
 // ---- Typewriter placeholder ke liye tuning values ----
@@ -144,30 +145,35 @@ function SortSheet({
               );
             })}
 
-            <hr className="sort-divider sort-section-divider" />
+            {/* Design Type: sirf tab jab options diye gaye (category page) */}
+            {designOptions.length > 0 && (
+              <>
+                <hr className="sort-divider sort-section-divider" />
 
-            <div className="sort-section-title">Design Type</div>
-            <div className="sort-section-sub">Select one or more designs</div>
-            {designOptions.map((opt) => {
-              const isSelected = draftDesigns.includes(opt.id);
-              return (
-                <div
-                  key={opt.id}
-                  className="sort-option-row"
-                  onClick={() => toggleDesign(opt.id)}
-                  role="checkbox"
-                  aria-checked={isSelected}
-                  tabIndex={0}
-                >
-                  <span
-                    className={`sort-checkbox ${isSelected ? "sort-checkbox-selected" : ""}`}
-                  >
-                    {isSelected && <Check size={13} strokeWidth={3.5} />}
-                  </span>
-                  <span className="sort-option-label">{opt.label}</span>
-                </div>
-              );
-            })}
+                <div className="sort-section-title">Design Type</div>
+                <div className="sort-section-sub">Select one or more designs</div>
+                {designOptions.map((opt) => {
+                  const isSelected = draftDesigns.includes(opt.id);
+                  return (
+                    <div
+                      key={opt.id}
+                      className="sort-option-row"
+                      onClick={() => toggleDesign(opt.id)}
+                      role="checkbox"
+                      aria-checked={isSelected}
+                      tabIndex={0}
+                    >
+                      <span
+                        className={`sort-checkbox ${isSelected ? "sort-checkbox-selected" : ""}`}
+                      >
+                        {isSelected && <Check size={13} strokeWidth={3.5} />}
+                      </span>
+                      <span className="sort-option-label">{opt.label}</span>
+                    </div>
+                  );
+                })}
+              </>
+            )}
           </div>
 
           <div className="sort-footer">
@@ -199,57 +205,45 @@ function SearchDropdown({
   query,
   searchCategoryList,
   products,
+  loading,
   categoryType,
   onSelectCategory,
   onSelectProduct,
+  onViewMore, // View More dabane par category page par le jaata hai
+  designPicker, // { labels, items } -> landing par design/price filter ke liye category chuno
   getProductHref,
   getCategoryHref,
 }) {
   const [showAllCategories, setShowAllCategories] = useState(false);
-  const [showAllProducts, setShowAllProducts] = useState(false);
 
-  const normalizedQuery = query.trim().toLowerCase();
+  const hasQuery = query.trim().length > 0;
 
+  // Categories + themes: har term match hoke ek ranked list (zyada match = upar).
+  // "under 2000" / "low to high" jaise filter words ranking se hata dete hain.
   const matchingCategories = useMemo(() => {
-    if (!normalizedQuery) return [];
-    const matched = (searchCategoryList || []).filter((c) =>
-      c.label?.toLowerCase().includes(normalizedQuery),
+    if (!hasQuery) return [];
+    const rankQuery = parseSearchQuery(query, []).rest;
+    if (!rankQuery) return [];
+    const list = searchCategoryList || [];
+    return rankItems(
+      rankQuery,
+      list.filter((c) => c.kind !== "theme"),
+      list.filter((c) => c.kind === "theme"),
     );
-    const starts = (c) =>
-      c.label.toLowerCase().startsWith(normalizedQuery) ? 0 : 1;
-    const byStart = (a, b) => starts(a) - starts(b);
+  }, [searchCategoryList, query, hasQuery]);
 
-    const themes = matched.filter((c) => c.kind === "theme").sort(byStart);
-    const others = matched.filter((c) => c.kind !== "theme").sort(byStart);
+  // Products backend se already search + rank hoke aate hain (name filter nahi lagate)
+  const matchingProducts = hasQuery ? products || [] : [];
 
-    const out = [];
-    while (themes.length || others.length) {
-      if (others.length) out.push(others.shift());
-      if (themes.length) out.push(themes.shift());
-    }
-    return out;
-  }, [searchCategoryList, normalizedQuery]);
-
-  const matchingProducts = useMemo(() => {
-    if (!normalizedQuery) return [];
-    return (products || []).filter((p) =>
-      (p.name || p.product_name || "").toLowerCase().includes(normalizedQuery),
-    );
-  }, [products, normalizedQuery]);
-
-  const CATEGORY_LIMIT = 3;
+  const CATEGORY_LIMIT = 5;
   const PRODUCT_LIMIT = 5;
 
   const visibleCategories = showAllCategories
     ? matchingCategories
     : matchingCategories.slice(0, CATEGORY_LIMIT);
 
-  const visibleProducts = showAllProducts
-    ? matchingProducts
-    : matchingProducts.slice(0, PRODUCT_LIMIT);
-
-  const hasNoResults =
-    matchingCategories.length === 0 && matchingProducts.length === 0;
+  // Dropdown mein hamesha sirf top PRODUCT_LIMIT; baaki View More se page par
+  const visibleProducts = matchingProducts.slice(0, PRODUCT_LIMIT);
 
   const getProductThumb = (item) => {
     if (categoryType === "photography") {
@@ -269,10 +263,57 @@ function SearchDropdown({
     return `₹${price.toLocaleString("en-IN")}`;
   };
 
-  if (hasNoResults) {
+  // Landing page par design type / price / sort likha hai:
+  // pehle user se category puchho, phir usi category page par filter ke saath bhejo.
+  if (designPicker?.items?.length) {
     return (
       <div className="search-dropdown">
-        <div className="search-no-results">No results found for "{query}"</div>
+        <div className="search-section">
+          <div className="search-section-header">
+            <span>Select category for “{designPicker.labels.join(", ")}”</span>
+          </div>
+          <div style={{ padding: "0 16px 8px", fontSize: 12, opacity: 0.7 }}>
+            Kis category mein ye design chahiye?
+          </div>
+
+          {designPicker.items.map((cat) => (
+            <a
+              key={cat.id}
+              href={cat.href}
+              className="search-category-row"
+              onClick={(e) => {
+                e.preventDefault(); // router.push se jayega (filters ke saath)
+                onSelectCategory?.(cat);
+              }}
+            >
+              <div className="search-category-thumb">
+                {cat.image && (
+                  <Image
+                    src={cat.image}
+                    alt={cat.label}
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                )}
+              </div>
+              <div className="search-category-info">
+                <div className="search-category-name">{cat.label}</div>
+              </div>
+              <ChevronRight size={18} className="search-row-chevron" />
+            </a>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Products abhi load ho rahe hain aur categories mein bhi kuch nahi
+  if (!matchingCategories.length && !matchingProducts.length) {
+    return (
+      <div className="search-dropdown">
+        <div className="search-no-results">
+          {loading ? "Searching..." : `No results found for "${query}"`}
+        </div>
       </div>
     );
   }
@@ -298,13 +339,9 @@ function SearchDropdown({
           {visibleCategories.map((cat) => (
             <a
               key={cat.id}
-              type="button"
               href={getCategoryHref?.(cat) || "#"}
               className="search-category-row"
-              onClick={() => {
-                // tracking + close dropdown + filter reset parent handle karega
-                onSelectCategory?.(cat);
-              }}
+              onClick={() => onSelectCategory?.(cat)}
             >
               <div className="search-category-thumb">
                 {cat.image && (
@@ -325,18 +362,21 @@ function SearchDropdown({
         </div>
       )}
 
-      {matchingProducts.length > 0 && (
+      {(matchingProducts.length > 0 || loading) && (
         <div className="search-section">
           <div className="search-section-header">
             <span>Matching Products</span>
           </div>
+
+          {loading && matchingProducts.length === 0 && (
+            <div className="search-no-results">Searching products...</div>
+          )}
 
           {visibleProducts.map((product, idx) => {
             const thumb = getProductThumb(product);
             return (
               <a
                 key={product._id || product.id || idx}
-                type="button"
                 href={getProductHref?.(product) || "#"}
                 className="search-product-row"
                 onClick={() => onSelectProduct?.(product)}
@@ -362,11 +402,12 @@ function SearchDropdown({
             );
           })}
 
-          {matchingProducts.length > PRODUCT_LIMIT && !showAllProducts && (
+          {/* View More: dropdown mein expand nahi, category page par le jaata hai */}
+          {matchingProducts.length > PRODUCT_LIMIT && (
             <button
               type="button"
               className="search-view-more-btn"
-              onClick={() => setShowAllProducts(true)}
+              onClick={() => onViewMore?.(query)}
             >
               View More <ChevronRight size={16} />
             </button>
@@ -382,6 +423,7 @@ export default function SearchSortBar({
   onSortChange,
   searchCategoryList = [],
   products = [],
+  loading = false,
   categoryType,
   onCategorySelect,
   onProductSelect,
@@ -390,11 +432,13 @@ export default function SearchSortBar({
   getCategoryHref,
   userId = null,
   showSort = true, // false => "Sort by" button aur Sort sheet dono nahi dikhenge
+  showDesignType = false, // true => sheet mein Design Type section (sirf category page)
   initialQuery = "",
   designTypes = [],
   onApplyFilters, // ({ sortOption, designTypes }) => void  (ek saath apply)
   onQueryChange, // (value) => void  -- har keystroke par (global search ke liye)
-  onSubmitSearch, 
+  onViewMore, // (query) => void  -- View More dabane par category page par navigate
+  designPicker = null, // { labels, items } -- landing par category chuna ke liye
 }) {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [query, setQuery] = useState(initialQuery);
@@ -412,11 +456,6 @@ export default function SearchSortBar({
   useEffect(() => {
     setQuery(initialQuery || "");
   }, [initialQuery]);
-
-  const queryRef = useRef(query);
-  useEffect(() => {
-    queryRef.current = query;
-  }, [query]);
 
   // ---- Typewriter placeholder words (searchCategoryList ke labels se) ----
   const typewriterWords = useMemo(() => {
@@ -493,29 +532,16 @@ export default function SearchSortBar({
     };
   }, []);
 
-  const commitSearch = useCallback(() => {
-    const trimmed = queryRef.current.trim();
-    onSearchChange?.(trimmed);
-    trackSearch({ searchTerm: trimmed, userId, pageName: pathname });
-  }, [onSearchChange, userId, pathname]);
-
-  // Close dropdown on outside click / Escape
+  // Outside click / Escape: SIRF dropdown band hoga.
+  // Peeche ke page par koi search/filter apply nahi hota.
   useEffect(() => {
     function handleClickOutside(e) {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-        setIsDropdownOpen((prev) => {
-          if (prev) commitSearch();
-          return false;
-        });
+        setIsDropdownOpen(false);
       }
     }
     function handleEscape(e) {
-      if (e.key === "Escape") {
-        setIsDropdownOpen((prev) => {
-          if (prev) commitSearch();
-          return false;
-        });
-      }
+      if (e.key === "Escape") setIsDropdownOpen(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
@@ -523,11 +549,12 @@ export default function SearchSortBar({
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [commitSearch]);
+  }, []);
 
   const handleApply = ({ sortOption: nextSort, designTypes: nextDesigns }) => {
     const sortChanged = nextSort !== sortOption;
-    const designChanged = nextDesigns.join(",") !== designTypes.join(",");
+    const designChanged =
+      showDesignType && nextDesigns.join(",") !== designTypes.join(",");
 
     if (typeof window !== "undefined") {
       window.dataLayer = window.dataLayer || [];
@@ -566,16 +593,21 @@ export default function SearchSortBar({
     const value = e.target.value;
     setQuery(value);
     setIsDropdownOpen(value.trim().length > 0);
-    onQueryChange?.(value); // NEW: parent ko har keystroke par batao
+    onQueryChange?.(value); // parent ko har keystroke par batao
+    // Text poora hata diya to search/filters bhi hatao (category page par
+    // ?search= se aaya text mita do to filter hat jaye)
+    if (!value.trim()) onSearchChange?.("");
   };
 
+  // Enter: kuch apply nahi hota, page nahi badalta. Dropdown khula rehta hai.
   const handleInputKeyDown = (e) => {
     if (e.key === "Enter") {
-      const typed = e.currentTarget.value.trim(); // NEW: blur se pehle value le lo
-      commitSearch();
-      setIsDropdownOpen(false);
-      e.currentTarget.blur();
-      onSubmitSearch?.(typed); // NEW
+      e.preventDefault();
+      const typed = e.currentTarget.value.trim();
+      if (typed) {
+        setIsDropdownOpen(true);
+        trackSearch({ searchTerm: typed, userId, pageName: pathname });
+      }
     }
   };
 
@@ -583,14 +615,7 @@ export default function SearchSortBar({
   const closeAndResetAfterSelect = () => {
     setIsDropdownOpen(false);
     setQuery("");
-    onSearchChange?.("");
-    onQueryChange?.(""); // NEW: parent ka query bhi clear
-
-    // NOTE: Filters yahan reset nahi karte. Category/product ke href mein
-    // filters ka query nahi jaata, to naye URL par parent ka URL->state sync
-    // filters ko apne aap default kar deta hai (extra router.replace / race nahi).
-
-    // Sort sheet khuli ho to band
+    onQueryChange?.(""); // parent ka query bhi clear
     setIsSortOpen(false);
   };
 
@@ -618,6 +643,18 @@ export default function SearchSortBar({
     });
     closeAndResetAfterSelect();
     onProductSelect?.(product);
+  };
+
+  // View More: category page par navigate (wahan products + chips dikhte hain)
+  const handleViewMore = (q) => {
+    trackSearch({
+      searchTerm: q,
+      clickedType: "view_more",
+      userId,
+      pageName: pathname,
+    });
+    setIsDropdownOpen(false);
+    onViewMore?.(q);
   };
 
   return (
@@ -656,9 +693,12 @@ export default function SearchSortBar({
             query={query}
             searchCategoryList={searchCategoryList}
             products={products}
+            loading={loading}
             categoryType={categoryType}
             onSelectCategory={handleCategoryClick}
             onSelectProduct={handleProductClick}
+            onViewMore={handleViewMore}
+            designPicker={designPicker}
             getProductHref={getProductHref}
             getCategoryHref={getCategoryHref}
           />
@@ -687,7 +727,8 @@ export default function SearchSortBar({
           isOpen={isSortOpen}
           onClose={() => setIsSortOpen(false)}
           sortOption={sortOption}
-          designTypes={designTypes}
+          designTypes={showDesignType ? designTypes : []}
+          designOptions={showDesignType ? designTypeOptions : []}
           onApply={handleApply}
         />
       )}
