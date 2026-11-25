@@ -59,10 +59,6 @@ function PhotograpgyProdDetails() {
       catValue
     };
 
-    // const destination = localStorage.getItem("isLoggedIn") === "true"
-    //   ? '/photography-checkout'
-    //   : '/login';
-
     router.push({
       pathname: '/photography-checkout',
       query: stateData

@@ -22,6 +22,10 @@ const CITY_LIST = Object.values(cityNameToSlug);
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const fromVenue = pathname?.startsWith("/venue-list");
+  const fromWonderland =
+    pathname?.startsWith("/wonderland") ||
+    pathname?.startsWith("/wonderlandinternational");
 
   const [showDrawer, setShowDrawer] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -58,7 +62,7 @@ const Header = () => {
    * AUTH
    ------------------------ */
   const isLoggedIn =
-    typeof window !== "undefined" && safeGetItem("isLoggedIn") === "true";
+    typeof window !== "undefined" && safeGetItem("isLoggedIn") == "true";
 
   const handleLogout = () => {
     localStorage.clear();
@@ -224,7 +228,13 @@ const Header = () => {
       </header>
 
       {/* LOGIN MODAL */}
-      {isLoginOpen && <OtploginPopup setIsModalOpen={setIsLoginOpen} />}
+      {isLoginOpen && (
+        <OtploginPopup
+          setIsModalOpen={setIsLoginOpen}
+          fromVenue={fromVenue}
+          fromWonderland={fromWonderland}
+        />
+      )}
 
       {/* LOGOUT MODAL */}
       <LogoutModal

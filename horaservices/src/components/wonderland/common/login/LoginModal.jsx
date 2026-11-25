@@ -29,6 +29,8 @@ const LoginModal = ({
   link = null,
   bgColor = "login-modal-content",
   frompanel = "false",
+  fromVenue = false,
+  fromWonderland = false
 }) => {
   const modalRef = useRef(null);
   const pathname = usePathname();
@@ -77,7 +79,8 @@ const LoginModal = ({
           phone: storedPhone,
           name: userDetails?.name || "",
           role: "customer",
-          fromWonderland: true,
+          fromWonderland: fromWonderland,
+          fromVenue : fromVenue,
           fromCapsule: fromCapsule,
           fromWonderlandInternational: isWonderlandInternational,
         });
@@ -357,7 +360,8 @@ const LoginModal = ({
         phone,
         name,
         role: "customer",
-        fromWonderland: true,
+        fromWonderland: fromWonderland,
+        fromVenue : fromVenue,
         fromCapsule: fromCapsule,
         fromWonderlandInternational: isWonderlandInternational,
       });

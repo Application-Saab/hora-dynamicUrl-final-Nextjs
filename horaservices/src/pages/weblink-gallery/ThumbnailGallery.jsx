@@ -18,7 +18,10 @@ import downloadVector from "../../assets/downloadVector.svg";
 import shareVector from "../../assets/shareVector.svg";
 import deleteVector from "../../assets/deleteVector.svg";
 import HeaderCardsFlashLoader from "@/components/Gallery/HeaderCardsFlashLoader";
-import { MEDIA_WORKER_URL, GENERATE_CAPSULE_LINK } from "../../utils/apiconstants";
+import {
+  MEDIA_WORKER_URL,
+  GENERATE_CAPSULE_LINK,
+} from "../../utils/apiconstants";
 import CommonImagePopup from "@/components/CommonImagePopup";
 import refreshIcon from "../../assets/refreshIcon.svg";
 import unLike from "../../assets/unLike.svg";
@@ -27,13 +30,21 @@ import like from "../../assets/like.svg";
 import { createPendingUploadsDb } from "@/utils/pendingUploadsDb";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
-import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick, trackDevice, createSubfolder } from "@/services/weblinkServices";
+import {
+  assignToSubfolder,
+  getImagesbyFolderName,
+  trackActivity,
+  trackGalleryView,
+  trackFolderClick,
+  trackDevice,
+  createSubfolder,
+} from "@/services/weblinkServices";
 import { downloadFile } from "@/utils/downloadFile";
-import emptyFolder from '../../assets/emptyFolder.svg';
+import emptyFolder from "../../assets/emptyFolder.svg";
 import PaginationControls from "./capsulePagination";
 import { IoIosCloudDone } from "react-icons/io";
-import Lock from '../../assets/Lock.svg'
-import lockerBannerimage from '../../assets/lockerBanner.svg'
+import Lock from "../../assets/Lock.svg";
+import lockerBannerimage from "../../assets/lockerBanner.svg";
 import LockerPopup from "@/components/image-galleries/LockerPopup";
 import Router from "next/router";
 
@@ -48,13 +59,17 @@ import guest from "../../assets/Guest.svg";
 import GuestBanner from "../../assets/GuestBanner.svg";
 import FolderBanner from "../../assets/FolderBanner.svg";
 import FaceRecognitionBanner from "../../assets/FaceRecognitionBanner.svg";
-import MyPhotos2 from '../../assets/MyPhotos2.svg';
+import MyPhotos2 from "../../assets/MyPhotos2.svg";
 import imageBox from "../../assets/imageBox.png";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import ArrowImg from "../../assets/backarrow.svg";
 import { fetchWithError } from "@/utils/fetchWithError";
 import axiosApi from "@/utils/axiosApi";
-import { safeGetItem, safeGetSessionItem, safeSetSessionItem } from "@/utils/safeStorage";
+import {
+  safeGetItem,
+  safeGetSessionItem,
+  safeSetSessionItem,
+} from "@/utils/safeStorage";
 
 const WEBLINK_OPFS_ROOT_DIR = "weblink-temp-uploads";
 const weblinkUploadsDb = createPendingUploadsDb({
@@ -140,7 +155,7 @@ const ThumbnailGallery = ({
   const [deviceTracking, setDeviceTracking] = useState(null);
   const [isAddingToLocker, setIsAddingToLocker] = useState(false);
   const [showLockerPopup, setShowLockerPopup] = useState(false);
-const [pendingLockerImage, setPendingLockerImage] = useState(null);
+  const [pendingLockerImage, setPendingLockerImage] = useState(null);
   const [capsuleBannerImageurl, setCapsulebannerImageurl] = useState("");
   const [isBannerLoading, setIsBannerLoading] = useState(true);
   const bannerRef = useRef(null);
@@ -165,7 +180,6 @@ const [pendingLockerImage, setPendingLockerImage] = useState(null);
     setIsBannerLoading(false);
   };
 
-
   useEffect(() => {
     try {
       const keysToRemove = [];
@@ -180,37 +194,35 @@ const [pendingLockerImage, setPendingLockerImage] = useState(null);
     }
   }, []);
 
-  
   const [snackbar, setSnackbar] = useState({
     show: false,
     message: "Image downloaded successfully",
   });
 
+  const snackbarTimeout = useRef(null);
 
- const snackbarTimeout = useRef(null);
-
-const showSnackbar = (message) => {
-  setSnackbar({
-    show: true,
-    message,
-  });
-
-  if (snackbarTimeout.current) {
-    clearTimeout(snackbarTimeout.current);
-  }
-
-  snackbarTimeout.current = setTimeout(() => {
+  const showSnackbar = (message) => {
     setSnackbar({
-      show: false,
-      message: "",
+      show: true,
+      message,
     });
-  }, 5000);
-};
+
+    if (snackbarTimeout.current) {
+      clearTimeout(snackbarTimeout.current);
+    }
+
+    snackbarTimeout.current = setTimeout(() => {
+      setSnackbar({
+        show: false,
+        message: "",
+      });
+    }, 5000);
+  };
 
   // iOS Mobile Detection
   useEffect(() => {
     const detectIOSMobile = () => {
-      if (typeof navigator !== 'undefined') {
+      if (typeof navigator !== "undefined") {
         // Basic check for iPhone, iPad, iPod.
         // iPadOS 13+ might report as 'MacIntel' but will have touch capabilities.
         // For "iOS mobile", we primarily care about iPhone/iPod. iPads might be considered tablets.
@@ -224,13 +236,12 @@ const showSnackbar = (message) => {
 
   // Dynamic ITEMS_PER_PAGE (primarily for mobile/tablets due to pagination)
   const getItemsPerPage = useCallback(() => {
-    if (typeof window === 'undefined') return 12; // Default for SSR or if window is not available
+    if (typeof window === "undefined") return 12; // Default for SSR or if window is not available
     if (isMobileOrTablet) {
       return 24;
     }
     return 24; // Fallback
   }, [isMobileOrTablet]); // Re-evaluate if isMobileOrTablet changes
-
 
   const [ITEMS_PER_PAGE, setItemsPerPage] = useState(getItemsPerPage());
 
@@ -238,18 +249,15 @@ const showSnackbar = (message) => {
     const handleResize = () => {
       setItemsPerPage(getItemsPerPage());
     };
-    if (isMobileOrTablet) { // Only listen to resize for ITEMS_PER_PAGE if on iOS mobile
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
+    if (isMobileOrTablet) {
+      // Only listen to resize for ITEMS_PER_PAGE if on iOS mobile
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
     }
   }, [isMobileOrTablet, getItemsPerPage]);
 
   const getInitial = (guest) => {
-    const name =
-      guest.name ||
-      guest.firstName ||
-      guest.phone ||
-      "";
+    const name = guest.name || guest.firstName || guest.phone || "";
 
     return name.trim().charAt(0).toUpperCase();
   };
@@ -296,7 +304,6 @@ const showSnackbar = (message) => {
     }
   }, [matchedKeys, myPhotosFolder]);
 
-
   const handleCreateGalleryShortCode = async (retryCount = 0) => {
     if (!mainFolderId) return;
     if (generatingRef.current) return;
@@ -305,7 +312,7 @@ const showSnackbar = (message) => {
       generatingRef.current = true;
 
       const response = await axiosApi.post(
-        `${BASE_URL}${GENERATE_CAPSULE_LINK}/${mainFolderId}`
+        `${BASE_URL}${GENERATE_CAPSULE_LINK}/${mainFolderId}`,
       );
 
       if (response?.data?.success) {
@@ -314,7 +321,6 @@ const showSnackbar = (message) => {
       } else {
         throw new Error("Backend success status is false");
       }
-
     } catch (err) {
       console.error("Generate gallery short code error:", err);
 
@@ -336,7 +342,6 @@ const showSnackbar = (message) => {
 
     handleCreateGalleryShortCode();
   }, [mainFolderId]);
-
 
   const handleImageShare = async (imageUrl, id) => {
     if (!imageUrl) return;
@@ -384,32 +389,31 @@ const showSnackbar = (message) => {
         addImageIds: toAdd.length ? [currentImage._id] : [],
         removeImageIds: toRemove.length ? [currentImage._id] : [],
       }),
-    }).then(() => {
-      setAllThumbnails((prev) =>
-        prev.map((img) =>
-          img._id === currentImage._id
-            ? { ...img, folderIds: folderSelection }
-            : img,
-        ),
-      );
+    })
+      .then(() => {
+        setAllThumbnails((prev) =>
+          prev.map((img) =>
+            img._id === currentImage._id
+              ? { ...img, folderIds: folderSelection }
+              : img,
+          ),
+        );
 
-      setShowAddToFolderPopup(false);
-      setIsEditing(false);
-
-    }).catch((error) => {
-      console.error(error);
-    });
-
+        setShowAddToFolderPopup(false);
+        setIsEditing(false);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
-useEffect(() => {
-  setMounted(true);
-  // phir auth / localStorage
-  const loggedIn = safeGetItem("isLoggedIn") === "true";
-  setIsLogin(loggedIn);
-  setIsLoginOpen(!loggedIn);
-  setAuthChecked(true);
-}, []);
+  useEffect(() => {
+    setMounted(true);
+    const loggedIn = safeGetItem("isLoggedIn") == "true";
+    setIsLogin(loggedIn);
+    setIsLoginOpen(!loggedIn);
+    setAuthChecked(true);
+  }, []);
 
   useEffect(() => {
     const mobileNumber = safeGetItem("mobileNumber");
@@ -438,7 +442,6 @@ useEffect(() => {
     };
   }, [selectedIndex]);
 
-
   const exitStageRef = useRef(0);
   const trapInstalledRef = useRef(false);
 
@@ -457,7 +460,7 @@ useEffect(() => {
       window.history.pushState(
         { ...(window.history.state || {}), exitTrap: true },
         "",
-        window.location.href
+        window.location.href,
       );
 
     if (!trapInstalledRef.current) {
@@ -474,7 +477,7 @@ useEffect(() => {
       if (exitStageRef.current === 0) pushTrap();
     };
     gestureEvents.forEach((e) =>
-      window.addEventListener(e, onGesture, { passive: true })
+      window.addEventListener(e, onGesture, { passive: true }),
     );
 
     Router.beforePopState(() => false);
@@ -482,11 +485,31 @@ useEffect(() => {
     const onPopState = () => {
       const ui = uiRef.current;
 
-      if (ui.selectedIndex !== null) { setSelectedIndex(null); pushTrap(); return; }
-      if (ui.showCameraPopup) { setShowCameraPopup(false); pushTrap(); return; }
-      if (ui.showCreateFolderPopup) { setShowCreateFolderPopup(false); pushTrap(); return; }
-      if (ui.showGuestModal) { setShowGuestModal(false); pushTrap(); return; }
-      if (ui.showAddToFolderPopup) { setShowAddToFolderPopup(false); pushTrap(); return; }
+      if (ui.selectedIndex !== null) {
+        setSelectedIndex(null);
+        pushTrap();
+        return;
+      }
+      if (ui.showCameraPopup) {
+        setShowCameraPopup(false);
+        pushTrap();
+        return;
+      }
+      if (ui.showCreateFolderPopup) {
+        setShowCreateFolderPopup(false);
+        pushTrap();
+        return;
+      }
+      if (ui.showGuestModal) {
+        setShowGuestModal(false);
+        pushTrap();
+        return;
+      }
+      if (ui.showAddToFolderPopup) {
+        setShowAddToFolderPopup(false);
+        pushTrap();
+        return;
+      }
       if (ui.showLockerPopup) {
         setShowLockerPopup(false);
         setPendingLockerImage(null);
@@ -509,20 +532,19 @@ useEffect(() => {
     return () => {
       window.removeEventListener("popstate", onPopState);
       gestureEvents.forEach((e) => window.removeEventListener(e, onGesture));
-      Router.beforePopState(() => true); 
+      Router.beforePopState(() => true);
     };
-  }, []); 
+  }, []);
 
   const closeExitPopup = () => {
-    setShowExitPopup(false); 
+    setShowExitPopup(false);
   };
-
 
   useEffect(() => {
     if (!localUserId) return;
 
     const alreadyExists = guestData.some(
-      (guest) => String(guest._id) === String(localUserId)
+      (guest) => String(guest._id) === String(localUserId),
     );
 
     if (alreadyExists) return;
@@ -544,13 +566,15 @@ useEffect(() => {
 
   const visibleThumbnails = useMemo(() => {
     const normalize = (val) => {
-  return String(val ?? "").trim().toLowerCase();
-};
+      return String(val ?? "")
+        .trim()
+        .toLowerCase();
+    };
 
     const lockerId = privateLocker?._id;
 
     const isLockerImage = (img) =>
-  lockerId && img.folderIds?.includes(lockerId);
+      lockerId && img.folderIds?.includes(lockerId);
 
     if (!isActualMyPhotos) {
       if (isEditing) {
@@ -572,37 +596,35 @@ useEffect(() => {
     }
 
     if (activeSubFolderId && activeSubFolderId !== lockerId) {
-  return allThumbnails.filter(
-    (img) =>
-      img.folderIds?.includes(activeSubFolderId) &&
-      !isLockerImage(img)
-  );
-}
+      return allThumbnails.filter(
+        (img) =>
+          img.folderIds?.includes(activeSubFolderId) && !isLockerImage(img),
+      );
+    }
 
     if (activeTab === "all" && lockerId) {
       return allThumbnails.filter((img) => !img.folderIds?.includes(lockerId));
     }
 
-
-    if (matchedKeys.length > 0 && ((isMyPhotosTabActive || isSearchActive))) {
-      return allThumbnails.filter(img => matchedKeys.includes(img.thumbnailKey));
+    if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {
+      return allThumbnails.filter((img) =>
+        matchedKeys.includes(img.thumbnailKey),
+      );
     }
 
     if (isMyPhotosTabActive && myPhotosFolder) {
-  return allThumbnails.filter(
-    (img) =>
-      img.folderIds?.includes(myPhotosFolder._id) &&
-      !isLockerImage(img)
-  );
-}
+      return allThumbnails.filter(
+        (img) =>
+          img.folderIds?.includes(myPhotosFolder._id) && !isLockerImage(img),
+      );
+    }
 
     if (activeSubFolderId) {
-  return allThumbnails.filter(
-    (img) =>
-      img.folderIds?.includes(activeSubFolderId) &&
-      !isLockerImage(img)
-  );
-}
+      return allThumbnails.filter(
+        (img) =>
+          img.folderIds?.includes(activeSubFolderId) && !isLockerImage(img),
+      );
+    }
 
     return allThumbnails;
   }, [
@@ -620,7 +642,7 @@ useEffect(() => {
 
   const popupImages = useMemo(() => {
     return visibleThumbnails.filter((img) => img.type !== "video");
-}, [visibleThumbnails]); 
+  }, [visibleThumbnails]);
 
   const currentImage =
     selectedIndex !== null ? popupImages[selectedIndex] : null;
@@ -642,16 +664,20 @@ useEffect(() => {
   useEffect(() => {
     const fetchThumbnails = async () => {
       if (!folderName && !galleryId) {
-        setAllThumbnails([]); setLoading(false); setError("Folder name or galleryId is missing."); return;
+        setAllThumbnails([]);
+        setLoading(false);
+        setError("Folder name or galleryId is missing.");
+        return;
       }
-      setLoading(true); setError(null);
+      setLoading(true);
+      setError(null);
       try {
         const data = await getImagesbyFolderName({
           folderName,
           galleryId,
         });
         setSubFolders(data?.folders[0]?.subFolders || []);
-        setMainFolderId(data?.folders[0]?._id || null)
+        setMainFolderId(data?.folders[0]?._id || null);
         setViewedBy(data?.folders[0]?.viewedBy || []);
         setGuestData(data?.folders[0]?.guestDetails || []);
         setDeviceTracking(data?.folders[0]?.deviceTracking || []);
@@ -659,13 +685,16 @@ useEffect(() => {
         setCapsulebannerImageurl(data?.folders[0]?.capsuleBannerImageUrl);
         setCustomerId(data?.folders[0]?.customerId || "");
         setResolvedFolderName(data?.folders[0]?.folderName || "");
-        const fetchedThumbnails = (data.thumbnails || [])
-
-          .map((thumb, index) => ({ ...thumb, stableKey: thumb._id || index }));
+        const fetchedThumbnails = (data.thumbnails || []).map(
+          (thumb, index) => ({ ...thumb, stableKey: thumb._id || index }),
+        );
         setAllThumbnails(fetchedThumbnails);
       } catch (fetchError) {
-        console.error("Fetch thumbnails error:", fetchError); setError(fetchError.message);
-      } finally { setLoading(false); }
+        console.error("Fetch thumbnails error:", fetchError);
+        setError(fetchError.message);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchThumbnails();
   }, [folderName, galleryId]);
@@ -688,11 +717,11 @@ useEffect(() => {
     setCurrentPage(pageNumber);
     // Scroll to top of gallery header after a short delay to allow UI to update
     setTimeout(() => {
-      const galleryHeader = document.querySelector('.gallery-header');
+      const galleryHeader = document.querySelector(".gallery-header");
       if (galleryHeader) {
-        galleryHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        galleryHeader.scrollIntoView({ behavior: "smooth", block: "start" });
       } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     }, 100);
   }, []);
@@ -725,14 +754,13 @@ useEffect(() => {
       {
         root: null,
         threshold: 0.1,
-      }
+      },
     );
 
     observer.observe(buttonsRef.current);
 
     return () => observer.disconnect();
   }, [loading]);
-
 
   useEffect(() => {
     if (!mainFolderId || !localUserId) return;
@@ -749,14 +777,12 @@ useEffect(() => {
 
       if (item && typeof item === "object") {
         return (
-          String(item?.userId) === String(localUserId) &&
-          item?.viewedAt != null
+          String(item?.userId) === String(localUserId) && item?.viewedAt != null
         );
       }
 
       return false;
     });
-
 
     if (!isAlreadyViewed) {
       trackGalleryView(localUserId, mainFolderId);
@@ -764,40 +790,40 @@ useEffect(() => {
   }, [mainFolderId, localUserId, viewedBy, customerId]);
 
   useEffect(() => {
-  if (!mainFolderId || !localUserId || deviceTracking.length >= 2) return;
+    if (!mainFolderId || !localUserId || deviceTracking.length >= 2) return;
 
-  const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(window.location.search);
     const fromPanel = params.get("fromPanel");
 
     if (fromPanel === "true") return;
 
-  const sessionKey = `tracked_device_${mainFolderId}_${localUserId}`;
+    const sessionKey = `tracked_device_${mainFolderId}_${localUserId}`;
 
-  if (safeGetSessionItem(sessionKey)) return;
+    if (safeGetSessionItem(sessionKey)) return;
 
     const getDeviceType = () => {
-    if (typeof navigator !== 'undefined') {
-      const ua = navigator.userAgent;
-    if (/iPhone|iPad|iPod/i.test(ua)) {
-      return "ios";
-    }
-    }
-    
-    return "android";
-  };
+      if (typeof navigator !== "undefined") {
+        const ua = navigator.userAgent;
+        if (/iPhone|iPad|iPod/i.test(ua)) {
+          return "ios";
+        }
+      }
 
-  trackDevice({
-    mainFolderId,
-    userId: localUserId,
-    deviceType: getDeviceType(),
-  })
-    .then(() => {
-      safeSetSessionItem(sessionKey, "true");
+      return "android";
+    };
+
+    trackDevice({
+      mainFolderId,
+      userId: localUserId,
+      deviceType: getDeviceType(),
     })
-    .catch((err) => {
-      console.error("Device tracking failed:", err);
-    });
-}, [mainFolderId, localUserId]);
+      .then(() => {
+        safeSetSessionItem(sessionKey, "true");
+      })
+      .catch((err) => {
+        console.error("Device tracking failed:", err);
+      });
+  }, [mainFolderId, localUserId]);
 
   useEffect(() => {
     const logClick = async () => {
@@ -816,7 +842,6 @@ useEffect(() => {
 
     logClick();
   }, [mainFolderId]);
-
 
   useEffect(() => {
     if (!localUserId || allThumbnails.length === 0) return;
@@ -960,7 +985,6 @@ useEffect(() => {
 
       setInitialSubfolderImages(selectedImages);
       setIsEditing(false);
-
     } catch (error) {
       console.error(error);
     }
@@ -1114,21 +1138,25 @@ useEffect(() => {
           formData.append("isWeblink", "true");
           formData.append("fileId", item.id);
 
-          const res = await axiosApi.post(`${MEDIA_WORKER_URL}/upload`, formData, {
-            onUploadProgress: (p) => {
-              const percent = p.total
-                ? Math.round((p.loaded * 100) / p.total)
-                : 0;
-              setAllThumbnails((prev) =>
-                prev.map((t) =>
-                  String(t._id) === String(item.id)
-                    ? { ...t, progress: percent }
-                    : t,
-                ),
-              );
-              weblinkUploadsDb.update(item.id, { progress: percent });
+          const res = await axiosApi.post(
+            `${MEDIA_WORKER_URL}/upload`,
+            formData,
+            {
+              onUploadProgress: (p) => {
+                const percent = p.total
+                  ? Math.round((p.loaded * 100) / p.total)
+                  : 0;
+                setAllThumbnails((prev) =>
+                  prev.map((t) =>
+                    String(t._id) === String(item.id)
+                      ? { ...t, progress: percent }
+                      : t,
+                  ),
+                );
+                weblinkUploadsDb.update(item.id, { progress: percent });
+              },
             },
-          });
+          );
 
           const uploadedDoc = Array.isArray(res?.data?.files)
             ? res.data.files[0]
@@ -1209,7 +1237,6 @@ useEffect(() => {
   }
 
   const currentUrl = `https://horaservices.com`;
-
 
   const handleSubFolderSelect = (id) => {
     setCurrentPage(1);
@@ -1299,14 +1326,11 @@ useEffect(() => {
     }
   };
 
-  const pageOffset = isMobileOrTablet
-    ? (currentPage - 1) * ITEMS_PER_PAGE
-    : 0;
+  const pageOffset = isMobileOrTablet ? (currentPage - 1) * ITEMS_PER_PAGE : 0;
 
   const thumbnailsToRender = isMobileOrTablet
     ? currentThumbnailsOnPage
     : visibleThumbnails;
-
 
   const first18Images = thumbnailsToRender.slice(0, 18);
   const remainingImages = thumbnailsToRender.slice(18);
@@ -1328,7 +1352,6 @@ useEffect(() => {
     setIsActualMyPhotos(false);
     setIsRefreshShow(false);
   };
-
 
   const assignImageToLockerExclusive = async (
     imageId,
@@ -1376,60 +1399,59 @@ useEffect(() => {
     return created;
   };
 
-const handleAddToLocker = async (imgData) => {
-  if (!imgData?._id || !localUserId || isAddingToLocker) return;
+  const handleAddToLocker = async (imgData) => {
+    if (!imgData?._id || !localUserId || isAddingToLocker) return;
 
-  const previousFolderIds = imgData.folderIds || [];
-  const existingLockerId = privateLocker?._id;
+    const previousFolderIds = imgData.folderIds || [];
+    const existingLockerId = privateLocker?._id;
 
-  if (
-    existingLockerId &&
-    previousFolderIds.length === 1 &&
-    previousFolderIds[0] === existingLockerId
-  ) {
-    return;
-  }
-
-  const lockerAlreadyExists = !!privateLocker;
-
-  setIsAddingToLocker(true);
-
-  try {
-    const locker = await ensurePrivateLocker();
-
-    await assignImageToLockerExclusive(
-      imgData._id,
-      locker._id,
-      previousFolderIds
-    );
-
-    // FIRST TIME locker create hua
-    if (!lockerAlreadyExists) {
-      setSelectedIndex(null);
-      setShowActionMenu(false);
+    if (
+      existingLockerId &&
+      previousFolderIds.length === 1 &&
+      previousFolderIds[0] === existingLockerId
+    ) {
       return;
     }
 
-    // Locker pehle se tha
-    const isLastImage =
-      selectedIndex >= popupImages.length - 1;
+    const lockerAlreadyExists = !!privateLocker;
 
-    if (popupImages.length <= 1) {
-      setSelectedIndex(null);
-    } else if (isLastImage) {
-      setSelectedIndex(selectedIndex - 1);
-    } else {
-      setSelectedIndex(selectedIndex);
+    setIsAddingToLocker(true);
+
+    try {
+      const locker = await ensurePrivateLocker();
+
+      await assignImageToLockerExclusive(
+        imgData._id,
+        locker._id,
+        previousFolderIds,
+      );
+
+      // FIRST TIME locker create hua
+      if (!lockerAlreadyExists) {
+        setSelectedIndex(null);
+        setShowActionMenu(false);
+        return;
+      }
+
+      // Locker pehle se tha
+      const isLastImage = selectedIndex >= popupImages.length - 1;
+
+      if (popupImages.length <= 1) {
+        setSelectedIndex(null);
+      } else if (isLastImage) {
+        setSelectedIndex(selectedIndex - 1);
+      } else {
+        setSelectedIndex(selectedIndex);
+      }
+
+      setShowActionMenu(false);
+    } catch (err) {
+      console.error("Add to locker failed:", err);
+      alert("Failed to add image to locker");
+    } finally {
+      setIsAddingToLocker(false);
     }
-
-    setShowActionMenu(false);
-  } catch (err) {
-    console.error("Add to locker failed:", err);
-    alert("Failed to add image to locker");
-  } finally {
-    setIsAddingToLocker(false);
-  }
-};
+  };
 
   const handleDownloadImage = async (currentImage) => {
     try {
@@ -1442,20 +1464,19 @@ const handleAddToLocker = async (imgData) => {
     }
   };
 
-
   const lockerBanner = (
-  <div className="locker-banner" key="locker-banner">
-    <div className="">
-      <Image
-        src={lockerBannerimage.src} // apni new image
-        alt="LockerBanner"
-        width={150}
-        height={58}
-        className="banner-side-image"
-      />
+    <div className="locker-banner" key="locker-banner">
+      <div className="">
+        <Image
+          src={lockerBannerimage.src} // apni new image
+          alt="LockerBanner"
+          width={150}
+          height={58}
+          className="banner-side-image"
+        />
+      </div>
     </div>
-  </div>
-);
+  );
 
   const banners = [
     <div className="custom-banner" key="banner-2">
@@ -1472,8 +1493,11 @@ const handleAddToLocker = async (imgData) => {
       <div className="banner-right">
         <button
           onClick={() => handleShareicon(mainFolderId, shortCode)}
-          className="banner-btn">
-          <span><Image src={share} alt="share" height={10} width={11} /></span>
+          className="banner-btn"
+        >
+          <span>
+            <Image src={share} alt="share" height={10} width={11} />
+          </span>
           <span>Share Event</span>
         </button>
       </div>
@@ -1493,12 +1517,15 @@ const handleAddToLocker = async (imgData) => {
       <div className="banner-right">
         <button
           onClick={() => {
-            setIsActualMyPhotos(true)
-            setShowCameraPopup(true)
-            setIsRefreshShow(false)
+            setIsActualMyPhotos(true);
+            setShowCameraPopup(true);
+            setIsRefreshShow(false);
           }}
-          className="banner-btn">
-          <span><Image src={MyPhotos2} alt="share" height={13} width={13} /></span>
+          className="banner-btn"
+        >
+          <span>
+            <Image src={MyPhotos2} alt="share" height={13} width={13} />
+          </span>
           <span>My Photos</span>
         </button>
       </div>
@@ -1516,9 +1543,7 @@ const handleAddToLocker = async (imgData) => {
       </div>
 
       <div className="banner-right">
-        <button
-          onClick={handleCreateFolderBannerClick}
-          className="banner-btn">
+        <button onClick={handleCreateFolderBannerClick} className="banner-btn">
           Create Folder
         </button>
       </div>
@@ -1526,12 +1551,12 @@ const handleAddToLocker = async (imgData) => {
   ];
 
   if (!mounted || !authChecked) {
-  return (
-    <div className="thumbnail-gallery">
-      <HeaderCardsFlashLoader />
-    </div>
-  );
-}
+    return (
+      <div className="thumbnail-gallery">
+        <HeaderCardsFlashLoader />
+      </div>
+    );
+  }
 
   return (
     <div className="thumbnail-gallery">
@@ -1539,19 +1564,21 @@ const handleAddToLocker = async (imgData) => {
         <div>
           {(loading || isBannerLoading) && <HeaderCardsFlashLoader />}
 
-          <div style={{ display: loading || isBannerLoading ? "none" : "block" }}>
+          <div
+            style={{ display: loading || isBannerLoading ? "none" : "block" }}
+          >
             <div>
               <Image
                 ref={bannerRef}
                 src={bannerSrc}
                 alt="banner"
                 className="top-banner-image"
-                width={800} 
+                width={800}
                 height={200}
                 onLoad={handleImageLoad}
                 onLoadingComplete={handleImageLoad}
-                onError={handleImageLoad} 
-                priority 
+                onError={handleImageLoad}
+                priority
               />
 
               <div className="thumbnail-gallery-content">
@@ -1593,23 +1620,23 @@ const handleAddToLocker = async (imgData) => {
 
         <div className="thumbnail-gallery-content">
           <div>
-            <div>
-            </div>
+            <div></div>
             {(!loading || !isBannerLoading) && (
               <div ref={buttonsRef} className="buttons-container">
                 <button
                   className="add-photo-btn"
-                  disabled={isEditing && !hasChanges} 
+                  disabled={isEditing && !hasChanges}
                   style={{
-                    opacity: isEditing && !hasChanges ? 0.6 : 1, 
-                    cursor: isEditing && !hasChanges ? "not-allowed" : "pointer",
+                    opacity: isEditing && !hasChanges ? 0.6 : 1,
+                    cursor:
+                      isEditing && !hasChanges ? "not-allowed" : "pointer",
                   }}
                   onClick={() => {
                     if (activeTab === "all") {
                       addMoreImagesRef.current?.click();
                     } else {
                       if (isEditing) {
-                        if (hasChanges) handleSave(); 
+                        if (hasChanges) handleSave();
                       } else {
                         setSelectedImages(initialSubfolderImages);
                         setIsEditing(true);
@@ -1617,21 +1644,21 @@ const handleAddToLocker = async (imgData) => {
                     }
                   }}
                 >
-                  {
-                    isEditing ?
-                     <>
-                        <span>Save Photos</span>
+                  {isEditing ? (
+                    <>
+                      <span>Save Photos</span>
                     </>
-                    :
-                      <>
-                        <span className="add-photo-icon">+</span>
-                        <span>Add Photos</span>
-                      </>
-                   
-                  }
-                  
+                  ) : (
+                    <>
+                      <span className="add-photo-icon">+</span>
+                      <span>Add Photos</span>
+                    </>
+                  )}
                 </button>
-                <button className="share-capsule-btn" onClick={() => handleShareicon(mainFolderId, shortCode)}>
+                <button
+                  className="share-capsule-btn"
+                  onClick={() => handleShareicon(mainFolderId, shortCode)}
+                >
                   <span className="">
                     {typeof handleShareicon === "function" && (
                       <Image src={share} alt="share" height={13} width={14} />
@@ -1641,11 +1668,16 @@ const handleAddToLocker = async (imgData) => {
                 </button>
                 <button
                   onClick={() => setShowGuestModal(true)}
-                  className="guest-btn">
+                  className="guest-btn"
+                >
                   <span className="">
                     <Image src={guest} alt="guest" height={13} width={17} />
                   </span>
-                  <span className="guest-text"> <span className="guest-count">{viewedBy.length}</span> <span>Guests Joined</span></span>
+                  <span className="guest-text">
+                    {" "}
+                    <span className="guest-count">{viewedBy.length}</span>{" "}
+                    <span>Guests Joined</span>
+                  </span>
                 </button>
               </div>
             )}
@@ -1779,7 +1811,7 @@ const handleAddToLocker = async (imgData) => {
 
             {/* ================= SEARCHING STATE ================= */}
             {!loading &&
-             !isBannerLoading &&
+              !isBannerLoading &&
               isStreamSearching &&
               isSearching &&
               isActualMyPhotos &&
@@ -1988,7 +2020,11 @@ const handleAddToLocker = async (imgData) => {
 
                             const remaining = popupImages.length - 1;
 
-                            setAllThumbnails((prev) => prev.filter((img) => img._id !== currentImage._id));
+                            setAllThumbnails((prev) =>
+                              prev.filter(
+                                (img) => img._id !== currentImage._id,
+                              ),
+                            );
 
                             if (remaining <= 0) {
                               setSelectedIndex(null);
@@ -2016,76 +2052,78 @@ const handleAddToLocker = async (imgData) => {
         renderFooter={(currentImage, index) => {
           const imageId = currentImage?._id;
           const isLiked = likedImages[imageId];
-// && currentImage?.orderById === customerId
+          // && currentImage?.orderById === customerId
           return (
             <div className="imagepopup-footer">
               <div className="imagepopup-footer-left">
-              <div>
-                <Image
-                  src={isLiked ? like : unLike}
-                  alt="Like"
-                  width={30}
-                  height={32}
-                  style={{ filter: "none", cursor: "pointer" }}
-                  onClick={() => handleLikeToggle(imageId)}
-                />
-              </div>
+                <div>
+                  <Image
+                    src={isLiked ? like : unLike}
+                    alt="Like"
+                    width={30}
+                    height={32}
+                    style={{ filter: "none", cursor: "pointer" }}
+                    onClick={() => handleLikeToggle(imageId)}
+                  />
+                </div>
 
-              <div>
-                <Image
-                  src={whiteShareIcon}
-                  alt="Share"
-                  width={30}
-                  height={32}
-                  style={{ filter: "none", cursor: "pointer" }}
-                  onClick={() => {
-                    if (!currentImage) return;
-                    handleImageShare(currentImage?.originalUrl, currentImage?._id);
-                  }}
-                />
-              </div>
+                <div>
+                  <Image
+                    src={whiteShareIcon}
+                    alt="Share"
+                    width={30}
+                    height={32}
+                    style={{ filter: "none", cursor: "pointer" }}
+                    onClick={() => {
+                      if (!currentImage) return;
+                      handleImageShare(
+                        currentImage?.originalUrl,
+                        currentImage?._id,
+                      );
+                    }}
+                  />
+                </div>
               </div>
 
               {currentImage?.inclusionType && (
-                <div style={{color:"#fff"}} className="image-inclusion-type">
+                <div style={{ color: "#fff" }} className="image-inclusion-type">
                   {currentImage.inclusionType}
                 </div>
               )}
 
-               {(localUserId === customerId && !isPrivateFolder ) && (
+              {localUserId === customerId && !isPrivateFolder && (
                 <div>
                   <button
                     className="add-locker-btn"
                     onClick={() => {
-  if (!privateLocker) {
-    setPendingLockerImage(currentImage);
-    setShowLockerPopup(true);
-    return;
-  }
+                      if (!privateLocker) {
+                        setPendingLockerImage(currentImage);
+                        setShowLockerPopup(true);
+                        return;
+                      }
 
-  handleAddToLocker(currentImage);
-}}
+                      handleAddToLocker(currentImage);
+                    }}
                     disabled={isAddingToLocker}
-                >
-                  <span className="add-locker-icon">
-                    <img src={Lock.src} alt="" />
-                  </span>
-                  <span>{isAddingToLocker ? "Adding..." : "Add To Locker"}</span>
-                </button>
-              </div>)}
+                  >
+                    <span className="add-locker-icon">
+                      <img src={Lock.src} alt="" />
+                    </span>
+                    <span>
+                      {isAddingToLocker ? "Adding..." : "Add To Locker"}
+                    </span>
+                  </button>
+                </div>
+              )}
             </div>
           );
         }}
       />
 
-
       {showExitPopup && (
         <div className="popup-overlay">
           <div className="popup-card">
-            <span
-              className="close-btn"
-              onClick={closeExitPopup}
-            >
+            <span className="close-btn" onClick={closeExitPopup}>
               &times;
             </span>
 
@@ -2098,13 +2136,11 @@ const handleAddToLocker = async (imgData) => {
             </div>
 
             <div className="content">
-              <h2 className="title">
-                Don't let any guest miss out!
-              </h2>
+              <h2 className="title">Don't let any guest miss out!</h2>
 
               <p className="description">
-                Forget manual sharing! Give every guest instant access
-                to relive all the event's best moments.
+                Forget manual sharing! Give every guest instant access to relive
+                all the event's best moments.
               </p>
             </div>
 
@@ -2113,7 +2149,9 @@ const handleAddToLocker = async (imgData) => {
                 className="share-btn"
                 onClick={() => handleShareicon(mainFolderId, shortCode)}
               >
-                <span><Image src={share} alt="share" height={15} width={16} /></span>
+                <span>
+                  <Image src={share} alt="share" height={15} width={16} />
+                </span>
                 <span> Share Event Capsule</span>
               </button>
             </div>
@@ -2130,7 +2168,8 @@ const handleAddToLocker = async (imgData) => {
                 <div>
                   <button
                     onClick={() => setShowGuestModal(false)}
-                    className="back-button">
+                    className="back-button"
+                  >
                     <Image
                       src={ArrowImg}
                       alt="Back"
@@ -2147,11 +2186,11 @@ const handleAddToLocker = async (imgData) => {
               <div className="list-container">
                 <div className="list-content">
                   {guestData.map((guest) => {
-                    const hasAvatar = guest?.avatar && guest?.avatar?.trim() !== "";
+                    const hasAvatar =
+                      guest?.avatar && guest?.avatar?.trim() !== "";
 
                     return (
                       <div key={guest._id} className="guest-row">
-
                         {/* Avatar Section */}
                         {hasAvatar ? (
                           <img
@@ -2182,44 +2221,53 @@ const handleAddToLocker = async (imgData) => {
                   })}
                 </div>
               </div>
-
             </div>
 
             {/* Footer Section */}
             <div className="footer-container">
               <div className="modal-footer">
-                <div className="total-badge">{guestData?.length} Total Joined</div>
+                <div className="total-badge">
+                  {guestData?.length} Total Joined
+                </div>
               </div>
             </div>
           </div>
         </div>
       )}
 
-
-      {(showFloatingBtn && !showGuestModal && !showExitPopup && selectedIndex == null && !showAddToFolderPopup && !showCameraPopup && !showCreateFolderPopup && !isLoginOpen && isLogin && !showLockerPopup)  && (
-        <div
-          style={{
-            position: "fixed",
-            left: "50%",
-            bottom: "45px",
-            transform: "translateX(-50%)",
-            zIndex: 11111111,
-          }}
-        >
-          <button
-            className="share-capsule-btn2"
-            onClick={() => handleShareicon(mainFolderId, shortCode)}
+      {showFloatingBtn &&
+        !showGuestModal &&
+        !showExitPopup &&
+        selectedIndex == null &&
+        !showAddToFolderPopup &&
+        !showCameraPopup &&
+        !showCreateFolderPopup &&
+        !isLoginOpen &&
+        isLogin &&
+        !showLockerPopup && (
+          <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
+              position: "fixed",
+              left: "50%",
+              bottom: "45px",
+              transform: "translateX(-50%)",
+              zIndex: 11111111,
             }}
           >
-            <Image src={whiteShareIcon} alt="share" height={13} width={14} />
-            <span>Share Event Capsule</span>
-          </button>
-        </div>
-      )}
+            <button
+              className="share-capsule-btn2"
+              onClick={() => handleShareicon(mainFolderId, shortCode)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              <Image src={whiteShareIcon} alt="share" height={13} width={14} />
+              <span>Share Event Capsule</span>
+            </button>
+          </div>
+        )}
 
       {snackbar.show && (
         <div className="custom-snackbar">
@@ -2231,26 +2279,26 @@ const handleAddToLocker = async (imgData) => {
       )}
 
       {showLockerPopup && (
-  <LockerPopup
-    onClose={() => {
-      setShowLockerPopup(false);
-      setPendingLockerImage(null);
-    }}
-    onMoveToLocker={async () => {
-      try {
-        setShowLockerPopup(false);
+        <LockerPopup
+          onClose={() => {
+            setShowLockerPopup(false);
+            setPendingLockerImage(null);
+          }}
+          onMoveToLocker={async () => {
+            try {
+              setShowLockerPopup(false);
 
-        if (pendingLockerImage) {
-          await handleAddToLocker(pendingLockerImage);
-        }
+              if (pendingLockerImage) {
+                await handleAddToLocker(pendingLockerImage);
+              }
 
-        setPendingLockerImage(null);
-      } catch (err) {
-        console.error(err);
-      }
-    }}
-  />
-)}
+              setPendingLockerImage(null);
+            } catch (err) {
+              console.error(err);
+            }
+          }}
+        />
+      )}
 
       <LoginModal
         isOpen={isLoginOpen && !isLogin}
@@ -2259,8 +2307,6 @@ const handleAddToLocker = async (imgData) => {
         template="guest_login_2"
         link={currentUrl}
       />
-
-
     </div>
   );
 };
