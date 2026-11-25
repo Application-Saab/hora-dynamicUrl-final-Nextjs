@@ -51,15 +51,16 @@ const PhotoGraphyCard = ({
   };
 
   return (
-    <a
-      type="button"
-      href={getHref()}
-      className="photo-card"
-      onClick={handleClick}
-      style={{ cursor: "pointer" }}
-    >
+    <a href={getHref()} className="photo-card" onClick={handleClick}>
       <div className="photo-imageWrapper">
-        <Image src={src} alt={title} fill className="photo-image" priority />
+        <Image
+          src={src}
+          alt={title}
+          fill
+          sizes="(max-width: 992px) 33vw, 240px"
+          quality={75}
+          className="photo-image"
+        />
         <div className="photo-imageOverlay"></div>
         <div className="photo-titleWrapper">
           <h2 className="photo-title">{title}</h2>

@@ -80,6 +80,30 @@ export function getSubCategory(catValue) {
        if (catValue === "proposal-decoration") {
     return "Proposal-Decoration";
   }
+       if (catValue === "ganpati-decoration") {
+    return "GanpatiDecoration";
+  }
+       if (catValue === "janmastmi-decoration") {
+    return "JanmastmiDecoration";
+  }
+       if (catValue === "diwali-decoration") {
+    return "DiwaliDecoration";
+  }
+       if (catValue === "christmas-decoration") {
+    return "ChristmasDecoration";
+  }
+       if (catValue === "new-year-decoration") {
+    return "NewYearDecoration";
+  }
+       if (catValue === "hallowean-decoration") {
+    return "HalloweanDecoration";
+  }
+       if (catValue === "card-party-decoration") {
+    return "CardPartyDecoration";
+  }
+       if (catValue === "navratri-decoration") {
+    return "NavratriDecoration";
+  }
   const parts = catValue.split("-");
   return parts
     .slice(0, 2)

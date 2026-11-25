@@ -56,7 +56,7 @@ const VenuelandMainPage = ({
 
   // Login state — client only (hydration safe)
   useEffect(() => {
-    setIsUserLoggedIn(safeGetItem("isLoggedIn") === "true");
+    setIsUserLoggedIn(safeGetItem("isLoggedIn") == "true");
     setLoggedinUserId(safeGetItem("userID") || "");
   }, []);
 
@@ -268,7 +268,7 @@ const VenuelandMainPage = ({
 
   useEffect(() => {
     const syncLoginState = () => {
-      setIsUserLoggedIn(safeGetItem("isLoggedIn") === "true");
+      setIsUserLoggedIn(safeGetItem("isLoggedIn") == "true");
       setLoggedinUserId(safeGetItem("userID") || "");
     };
     window.addEventListener("storage", syncLoginState);

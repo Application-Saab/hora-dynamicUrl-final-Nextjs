@@ -1,4 +1,3 @@
-import OtpLogin from "@/components/OtpLoginPopup";
 import { useRouter } from "next/router";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
@@ -34,7 +33,7 @@ const WonderlandMainPage = () => {
   // ---- Client-only: read login state + sync across tabs ----
   useEffect(() => {
     const syncLoginState = () => {
-      const loggedIn = safeGetItem("isLoggedIn") === "true";
+      const loggedIn = safeGetItem("isLoggedIn") == "true";
       const userId = safeGetItem("userID") || "";
       setIsUserLoggedIn(loggedIn);
       setLoggedinUserId(userId);
@@ -177,6 +176,7 @@ const WonderlandMainPage = () => {
       </div>
 
       <LoginModal
+        fromWonderland={true}
         isOpen={showHostLoginModal}
         onClose={() => {
           setShowHostLoginModal(false);

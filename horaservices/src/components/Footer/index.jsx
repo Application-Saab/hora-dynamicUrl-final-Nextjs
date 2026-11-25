@@ -1,202 +1,241 @@
 "use client";
 import React from "react";
-import frame_footer from "../../assets/frame_footer.png";
-import horaFooterImage from '../../assets/hora-footer-bg.png';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebook, faInstagram, faYoutube } from '@fortawesome/free-brands-svg-icons';
-import { Container, Row, Col } from 'react-bootstrap';
-import './footer.css';
+import phoneIcon from "@/assets/phoneicon.svg"
+import emailIcon from "@/assets/emailicon.svg"
 import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faInstagram,
+  faFacebookF,
+  faLinkedinIn,
+  faYoutube,
+} from "@fortawesome/free-brands-svg-icons";
+import {
+  faPhone,
+  faEnvelope,
+  faClock,
+} from "@fortawesome/free-solid-svg-icons";
 import { useCity } from "@/utils/cityContext";
+import "./footer.css";
+import Image from "next/image";
+import arrowIcon from "@/assets/arrow-right.svg"
+const PHONE = "+917338584828";
+const EMAIL = "dev@horaservices.com";
 
+const cities = [
+  "Delhi",
+  "Gurugram",
+  "Ghaziabad",
+  "Faridabad",
+  "Noida",
+  "Bangalore",
+  "Hyderabad",
+  "Mumbai",
+];
+
+// NOTE: Celebrate ke links ko apne real routes se replace kar lena
 const footerColumns = [
   {
-    title: 'About Hora',
+    title: "Services",
     links: [
-      { text: 'My Order', to: '/orderlist' },
+      { text: "Balloon Decor", href: "/balloon-decoration" },
+      { text: "Flower Decoration", href: "/flower-decoration" },
+      { text: "Photography", href: "/photography" },
+      { text: "Venue Booking", href: "/venue-list" },
+      { text: "Party Props", href: "/party-props" },
+      { text: "Chef For Party", href: "/chef-near-me" },
+      {
+        text: "Live Catering",
+        href: "/party-food-delivery-live-catering-buffet?type=liveCatering",
+      },
+      {
+        text: "Bulk Food Delivery",
+        href: "/party-food-delivery-live-catering-buffet?type=bulkFood",
+      },
+    ],
+  },
+  {
+    title: "Celebrate",
+    links: [
+      { text: "Kids Birthday", href: "/balloon-decoration/kids-birthday-decoration" },
+      { text: "Welcome Baby", href: "/balloon-decoration/welcome-baby-decoration" },
+      { text: "Anniversary", href: "/balloon-decoration/anniversary-decoration" },
+      { text: "Baby shower", href: "/balloon-decoration" },
+      { text: "Haldi & Mehndi", href: "/wedding-decoration/haldi-decoration" },
+      { text: "First Night", href: "/wedding-decoration/first-night-decoration" },
+      { text: "Festivals", href: "/festivals-decoration" },
+      { text: "House Warming", href: "/balloon-decoration/house-warming-decoration" },
 
-      { text: 'About Us', href: '/aboutus' },
-      { text: 'Private Policy', href: '/termCondition' },
-      { text: 'Terms & Condition', href: '/termCondition' },
-      { text: 'Sitemap', href: 'https://horaservices.com/sitemap.xml' },
     ],
   },
+  {
+    title: "Cities",
+    links: cities.map((c) => ({
+      text: c,
+      to: `/${c.toLowerCase()}`,
+      city: c,
+    })),
+  },
+  {
+    title: "Company",
+    links: [
+      { text: "My Account", to: "/orderlist" },
+      { text: "About us", to: "/aboutus" },
+      { text: "Contact Us", to: "/contactus" },
+      { text: "Terms & Conditions", to: "/termCondition" },
+      { text: "Sitemap", href: "https://horaservices.com/sitemap.xml" },
+      { text: "Photography Blogs", to: "/blog/photography" },
+      { text: "Balloon Decor Blogs", to: "/blog/balloon-decoration" },
+    ],
+  },
+];
 
+const socials = [
   {
-    title: 'Services',
-    links: [
-      { text: 'Chef for Party and Occasions', href: '/chef-near-me' },
-      { text: 'Decorations for Party and Occasions', href: '/balloon-decoration' },
-      { text: 'Photography for Party and Occasions', href: '/photography' },
-      { text: 'Food Delivery for Party and Occasions', href: '/party-food-delivery-live-catering-buffet/party-food-delivery' },
-      { text: 'Catering Service for Party and Occasions', href: '/party-food-delivery-live-catering-buffet/party-live-buffet-catering' },
-    ],
+    icon: faInstagram,
+    label: "Instagram",
+    cls: "hf-social-instagram",
+    href: "https://www.instagram.com/horaservices/",
   },
   {
-    title: "Services in your city",
-    links: [
-      { text: 'Delhi', to: '/delhi', city: 'Delhi' },
-      { text: 'Gurugram', to: '/gurugram', city: 'Gurugram' },
-      { text: 'Ghaziabad', to: '/ghaziabad', city: 'Ghaziabad' },
-      { text: 'Faridabad', to: '/faridabad', city: 'Faridabad' },
-      { text: 'Noida', to: '/noida', city: 'Noida' },
-      { text: 'Bangalore', to: '/bangalore', city: 'Bangalore' },
-      { text: 'Hyderabad', to: '/hyderabad', city: 'Hyderabad' },
-      { text: 'Mumbai', to: '/mumbai', city: 'Mumbai' },
-    ]
+    icon: faFacebookF,
+    label: "Facebook",
+    cls: "hf-social-facebook",
+    href: "https://www.facebook.com/profile.php?id=61550111701616",
   },
   {
-    title: 'Chef',
-    links: [
-      { text: 'Delhi', to: '/delhi/chef-near-me', city: 'Delhi' },
-      { text: 'Gurugram', to: '/gurugram/chef-near-me', city: 'Gurugram' },
-      { text: 'Ghaziabad', to: '/ghaziabad/chef-near-me', city: 'Ghaziabad' },
-      { text: 'Faridabad', to: '/faridabad/chef-near-me', city: 'Faridabad' },
-      { text: 'Noida', to: '/noida/chef-near-me', city: 'Noida' },
-      { text: 'Bangalore', to: '/bangalore/chef-near-me', city: 'Bangalore' },
-      { text: 'Hyderabad', to: '/hyderabad/chef-near-me', city: 'Hyderabad' },
-      { text: 'Mumbai', to: '/mumbai/chef-near-me', city: 'Mumbai' },
-    ],
-  },
-  {
-    title: 'Decorations',
-    links: [
-      { text: 'Delhi', to: '/delhi/balloon-decoration', city: 'Delhi' },
-      { text: 'Gurugram', to: '/gurugram/balloon-decoration', city: 'Gurugram' },
-      { text: 'Ghaziabad', to: '/ghaziabad/balloon-decoration', city: 'Ghaziabad' },
-      { text: 'Faridabad', to: '/faridabad/balloon-decoration', city: 'Faridabad' },
-      { text: 'Noida', to: '/noida/balloon-decoration', city: 'Noida' },
-      { text: 'Bangalore', to: '/bangalore/balloon-decoration', city: 'Bangalore' },
-      { text: 'Hyderabad', to: '/hyderabad/balloon-decoration', city: 'Hyderabad' },
-      { text: 'Mumbai', to: '/mumbai/balloon-decoration', city: 'Mumbai' },
-    ],
-  },
-  {
-    title: 'Photographer',
-    links: [
-      { text: 'Delhi', to: '/delhi/photography', city: 'Delhi' },
-      { text: 'Gurugram', to: '/gurugram/photography', city: 'Gurugram' },
-      { text: 'Ghaziabad', to: '/ghaziabad/photography', city: 'Ghaziabad' },
-      { text: 'Faridabad', to: '/faridabad/photography', city: 'Faridabad' },
-      { text: 'Noida', to: '/noida/photography', city: 'Noida' },
-      { text: 'Bangalore', to: '/bangalore/photography', city: 'Bangalore' },
-      { text: 'Hyderabad', to: '/hyderabad/photography', city: 'Hyderabad' },
-      { text: 'Mumbai', to: '/mumbai/photography', city: 'Mumbai' },
-    ],
-  },
-  {
-    title: 'Party Venues',
-    links: [
-      { text: 'Delhi', to: '/delhi/venue-list', city: 'Delhi' },
-      { text: 'Gurugram', to: '/gurugram/venue-list', city: 'Gurugram' },
-      { text: 'Ghaziabad', to: '/ghaziabad/venue-list', city: 'Ghaziabad' },
-      { text: 'Faridabad', to: '/faridabad/venue-list', city: 'Faridabad' },
-      { text: 'Noida', to: '/noida/venue-list', city: 'Noida' },
-      { text: 'Bangalore', to: '/bangalore/venue-list', city: 'Bangalore' },
-      { text: 'Hyderabad', to: '/hyderabad/venue-list', city: 'Hyderabad' },
-      { text: 'Mumbai', to: '/mumbai/venue-list', city: 'Mumbai' },
-    ],
-  },
-  {
-    title: 'Contact',
-    links: [
-      { text: '+917338584828', href: 'tel:+917338584828' },
-      { text: 'dev@horaservices.com', href: 'mailto:dev@horaservices.com', style: { textTransform: 'lowercase' } },
-      { text: 'Contact Us', href: '/contactus' },
-    ],
+    icon: faYoutube,
+    label: "YouTube",
+    cls: "hf-social-youtube",
+    href: "https://www.youtube.com/channel/UCj5gMUjptHut0aGYHxCbE5g",
   },
 ];
 
 function Footer() {
   const { syncSelectedCity } = useCity();
+  const WHATSAPP_NUMBER = "917338584828";
+  const WHATSAPP_MSG = "Hi, I saw your services. Please share details.";
+  const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    WHATSAPP_MSG
+  )}`;
+  return (
+    <footer className="hf">
+      <div className="hf-inner">
+        {/* CTA strip */}
+        <div className="hf-cta">
+          <div className="hf-cta-text">
+            <h2 className="hf-cta-title">
+              Planning Something?{" "}
+              <br className="hf-br" />
+              Let’s Make it effortless.
+            </h2>
+            <p className="hf-cta-sub">
+              Tell us the occasion–we’ll send a verified pro to your door.
+            </p>
+          </div>
+          <div className="hf-cta-actions">
+            <a
+              href={WHATSAPP_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hf-btn hf-btn-solid"
+            >
+              <span>Book a service</span>
+              <Image
+                src={arrowIcon}
+                alt=""
+                width={12}
+                height={12}
+                className="hf-svg-icon"
+              />
+            </a>
+            <a href={`tel:${PHONE}`} className="hf-btn hf-btn-outline">
+              <Image
+                src={phoneIcon}
+                alt=""
+                width={11}
+                height={11}
+                className="hf-svg-icon"
+              />
+              <span>{PHONE}</span>
+            </a>
+          </div>
+        </div>
 
-  const handleCityLinkClick = (city) => {
-    if (city) {
-      syncSelectedCity(city);
-    }
-  };
+        <hr className="hf-divider" />
 
-return (
-    <footer style={style.footer}>
-      <div className="page-width footerlist">
-          {footerColumns.map((column, index) => (
-            <div key={index} className="footerlist-sec">
-              <h2 className="footerheading">{column.title}</h2>
-              <ul
-                className={`list-unstyled-${index}`}
-                style={{ listStyle: "none", padding: 0, margin: 0 }}
-              >
-                {column.links.map((link, idx) => (
-                  <li key={idx} style={{ listStyle: "none" }}>
+        {/* Main grid */}
+        <div className="hf-grid">
+          <div className="hf-brand">
+            <h3 className="hf-brand-name">HORA SERVICES</h3>
+            <a href={`mailto:${EMAIL}`} className="hf-contact">
+              <Image
+                src={emailIcon}
+                alt=""
+                width={17}
+                height={13}
+                className="hf-svg-icon"
+              />
+              <span>{EMAIL}</span>
+            </a>
+
+          </div>
+
+          {footerColumns.map((col) => (
+            <nav
+              key={col.title}
+              className={`hf-col hf-col-${col.title.toLowerCase()}`}
+              aria-label={col.title}
+            >
+              <h3 className="hf-heading">{col.title}</h3>
+              <ul className="hf-list">
+                {col.links.map((link) => (
+                  <li key={link.text}>
                     {link.to ? (
                       <Link
                         href={link.to}
-                        style={style.link}
-                        onClick={() => handleCityLinkClick(link.city)}
+                        className="hf-link"
+                        onClick={() =>
+                          link.city && syncSelectedCity(link.city)
+                        }
                       >
                         {link.text}
                       </Link>
                     ) : (
-                      <a
-                        href={link.href}
-                        style={style.link}
-                      >
+                      <a href={link.href} className="hf-link">
                         {link.text}
                       </a>
                     )}
                   </li>
                 ))}
               </ul>
-            </div>
+            </nav>
           ))}
-       
-      </div>
-      <div className="page-width copy-right">
-        <Row>
-        <Col>
-            <p className="copy p-0 m-0">© HORA - All rights reserved</p>
-          </Col>
-        </Row>
-        <Row className="text-center align-items-center justify-content-center">
-          <Col>
-            <div className="social-icons">
-              <Link href="https://www.facebook.com/profile.php?id=61550111701616" target="_blank" rel="noopener noreferrer" className="mx-2" style={{ color: "inherit" }}>
-                <FontAwesomeIcon icon={faFacebook} />
-              </Link>
-              <Link href="https://www.instagram.com/horaservices/?fbclid=IwAR0PktJ-rl5rKC6YGSZ8BSw3m8o9qMfLpJchO17FCEZuCXKxvASZWRymifA" target="_blank" rel="noopener noreferrer" className="mx-2" style={{ color: "inherit" }}>
-                <FontAwesomeIcon icon={faInstagram} />
-              </Link>
-              <Link href="https://www.youtube.com/channel/UCj5gMUjptHut0aGYHxCbE5g" target="_blank" rel="noopener noreferrer" className="mx-2" style={{ color: "inherit" }}>
-                <FontAwesomeIcon icon={faYoutube} />
-              </Link>
-            </div>
-          </Col>
-        
-        </Row>
+        </div>
+
+        <hr className="hf-divider" />
+
+        {/* Bottom bar */}
+        <div className="hf-bottom">
+          <div className="hf-social">
+            {socials.map((s) => (
+              <a
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={s.label}
+                className={`hf-social-link ${s.cls}`}
+              >
+                <FontAwesomeIcon icon={s.icon} className="hf-social-icon" />
+              </a>
+            ))}
+          </div>
+          <p className="hf-copy">©2026 Hora Services. All rights reserved.</p>
+        </div>
       </div>
     </footer>
-  )
-}
-
-const style = {
-  footer: {
-    backgroundColor: "#96528D",
-    padding: '10px 0',
-    color: '#fff',
-  },
-  frameBlack: {
-    background: `url(${frame_footer.src}) 0 0 repeat-x`,
-    backgroundSize: '10px 3px',
-    height: '3px',
-    width: '100%',
-    position: 'absolute',
-    top: '-3px',
-  },
-  link: {
-    color: 'inherit',
-    textDecoration: 'none',
-  },
-  
+  );
 }
 
 export default Footer;

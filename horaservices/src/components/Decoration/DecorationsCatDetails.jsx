@@ -182,6 +182,8 @@ function DecorationsCatDetails({
   const [addonData, setAddonData] = useState(initialAddonData || []);
   const [selCat, setSelCat] = useState("");
 
+  const [shareFile, setShareFile] = useState(null);
+
   const [similarByTheme, setSimilarByTheme] = useState(() => {
     if (initialProduct && initialAllProducts?.length) {
       return filterSimilarProducts(
@@ -601,6 +603,35 @@ function DecorationsCatDetails({
     setSelCat(result);
   }, [subCategory]);
 
+ useEffect(() => {
+  const fileName = product?.featured_images?.[0]?.fileName;
+  if (!fileName) return;
+  let cancelled = false;
+
+  (async () => {
+    try {
+      const base = fileName.split(".")[0];
+      const url = `${COMPRESSED_WEBP_IMG_URL}${encodeURIComponent(base)}.webp`;
+      const res = await fetch(url, { mode: "cors" });
+      if (!res.ok) throw new Error(`Image fetch ${res.status}`);
+      const blob = await res.blob();
+
+      if (!cancelled) {
+        setShareFile(
+          new File([blob], `${generateSlug(product?.name) || "design"}.webp`, {
+            type: "image/webp",
+          }),
+        );
+      }
+    } catch (e) {
+      console.warn("Share image prefetch failed", e);
+    }
+  })();
+
+  return () => {
+    cancelled = true;
+  };
+}, [product?.featured_images, product?.name]);
   // ---------- handlers ----------
   const openCatItems = (item) => {
     const catSlug = item.catSlug || item.catValue || "kids-birthday-decoration";
@@ -670,6 +701,7 @@ function DecorationsCatDetails({
       "_blank",
     );
   };
+
   const showAddOnmodal = () => {
     setIsModalOpen((p) => !p);
     setIsArrowDown((p) => !p);
@@ -768,35 +800,42 @@ function DecorationsCatDetails({
     });
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const cleanUrl = window.location.origin + window.location.pathname;
+    const title = product?.name || "Hora Services";
 
-    // GTM Event
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "product-details_page_share_clicked",
-      product_name: product?.name || "Hora Services",
+      product_name: title,
       share_url: cleanUrl,
       share_method: navigator.share ? "native_share" : "copy_link",
       page_path: window.location.pathname,
     });
 
     if (navigator.share) {
-      navigator
-        .share({
-          title: product?.name || "Hora Services",
-          url: cleanUrl,
-        })
-        .catch((error) => {
-          if (error.name !== "AbortError") {
-            console.error("Share failed:", error);
-          }
-        });
+      try {
+        // Koi await share() se pehle nahi — iOS user activation bacha rahe
+        if (shareFile && navigator.canShare?.({ files: [shareFile] })) {
+          // iOS files ke saath `url` field drop kar deta hai, isliye link text mein
+          await navigator.share({
+            title,
+            text: `${title}\n${cleanUrl}`,
+            files: [shareFile],
+          });
+        } else {
+          await navigator.share({ title, text: title, url: cleanUrl });
+        }
+      } catch (error) {
+        if (error?.name !== "AbortError") console.error("Share failed:", error);
+      }
     } else {
-      navigator.clipboard
-        .writeText(cleanUrl)
-        .then(() => alert("Link copied!"))
-        .catch(() => alert("Unable to copy link"));
+      try {
+        await navigator.clipboard.writeText(cleanUrl);
+        alert("Link copied!");
+      } catch {
+        alert("Unable to copy link");
+      }
     }
   };
 
@@ -934,9 +973,10 @@ function DecorationsCatDetails({
   const firstImageObj = product?.featured_images?.find((m) => !isVideoEntry(m));
   const featuredFileName = firstImageObj?.fileName;
 
+  // File name mein spaces hote hain (e.g. "Multi Golden Ring-123") — encode karna zaroori hai
   const ogImage = featuredFileName
     ? toAbsolute(
-        `${COMPRESSED_WEBP_IMG_URL}${featuredFileName.split(".")[0]}.webp`,
+        `${COMPRESSED_WEBP_IMG_URL}${encodeURIComponent(featuredFileName.split(".")[0])}.webp`,
       )
     : DEFAULT_OG_IMAGE;
 
@@ -969,6 +1009,7 @@ function DecorationsCatDetails({
           <meta property="og:url" content={canonicalUrl} />
           <meta property="og:type" content="website" />
           <meta property="og:image" content={ogImage} />
+          <meta property="og:image:secure_url" content={ogImage} />
           <meta
             property="og:image:alt"
             content={product?.name || "Hora Services"}

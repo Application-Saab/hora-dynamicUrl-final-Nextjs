@@ -229,6 +229,7 @@ const InvitesPage = () => {
         onClose={() => setOpenCreateInviteModal(false)}
       />
       <LoginModal
+        fromWonderland={true}
         isOpen={showGuestLoginModal}
         onClose={() => setShowGuestLoginModal(false)}
         frompanel={frompanel}

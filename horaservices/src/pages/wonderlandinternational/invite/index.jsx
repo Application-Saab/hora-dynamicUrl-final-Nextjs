@@ -232,6 +232,7 @@ const InvitesPage = () => {
         isOpen={showGuestLoginModal}
         onClose={() => setShowGuestLoginModal(false)}
         frompanel={frompanel}
+        fromWonderland={true}
       />
     </>
   );
