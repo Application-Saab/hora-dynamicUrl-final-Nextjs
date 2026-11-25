@@ -1,6 +1,11 @@
 import { fetchDecorationCatPageData } from "./fetchDecorationCatData";
 import { isValidDecorationCategorySlug } from "./routeConfig";
 import { isValidCitySlug, validateCityLocality } from "./validCities";
+import {
+  isCategoryInService,
+  getCorrectServiceForCategory,
+  getServiceFromPath,
+} from "@/utils/decorationCategories";
 
 function formatCityName(citySlug) {
   if (!citySlug) return "";
@@ -15,31 +20,61 @@ export async function getDecorationCatServerSideProps(context, options = {}) {
   const rawCity = includeCity ? context.params.city : null;
   const citySlug = rawCity ? rawCity.toLowerCase() : "";
   const localitySlug = locality ? locality.toLowerCase() : "";
+
   if (includeCity && citySlug && !localitySlug) {
     if (!isValidCitySlug(citySlug)) {
-      return {
-        notFound: true,
-      };
+      return { notFound: true };
     }
   }
 
   if (includeCity && citySlug && localitySlug) {
     const validation = validateCityLocality(citySlug, localitySlug);
     if (!validation.valid) {
-      return {
-        notFound: true,
-      };
+      return { notFound: true };
     }
-  }
-
-  if (!isValidDecorationCategorySlug(catValue)) {
-    return {
-      notFound: true,
-    };
   }
 
   if (!catValue) {
     return { notFound: true };
+  }
+
+  if (!isValidDecorationCategorySlug(catValue)) {
+    return { notFound: true };
+  }
+
+  const cleanTheme = theme && theme !== "all" ? theme : null;
+
+  // Is route ki service: option > URL se detect > null (guard skip)
+  const currentPath = String(context.resolvedUrl || context.req?.url || "");
+  const service = options.service || getServiceFromPath(currentPath);
+
+  // ✅ SERVICE GUARD
+  if (service && !isCategoryInService(catValue, service)) {
+    const correctService = getCorrectServiceForCategory(catValue);
+
+    // Kisi bhi service mein nahi -> 404
+    if (!correctService) {
+      return { notFound: true };
+    }
+
+    const base =
+      (citySlug ? `/${citySlug}` : "") +
+      (localitySlug ? `/${localitySlug}` : "");
+    const themePart = cleanTheme ? `/${cleanTheme}` : "";
+    const destination = `${base}/${correctService}/${catValue}${themePart}`;
+
+    // Redirect loop se bachao: destination wahi hai jahan abhi ho -> 404
+    const currentPathname = currentPath.split("?")[0].replace(/\/$/, "").toLowerCase();
+    if (destination.toLowerCase() === currentPathname) {
+      return { notFound: true };
+    }
+
+    return {
+      redirect: {
+        destination,
+        permanent: false, // pehle test karo, mapping final hone par true kar dena
+      },
+    };
   }
 
   const cityName = formatCityName(citySlug);
@@ -49,17 +84,18 @@ export async function getDecorationCatServerSideProps(context, options = {}) {
     city: cityName,
     citySlug,
     locality: locality || null,
-    // SSR-safe theme — router.query is empty during the server render, so the
-    // theme has to travel as a prop for theme-specific copy to reach Googlebot.
-    theme: theme && theme !== "all" ? theme : null,
+    // SSR-safe theme — router.query is empty during the server render
+    theme: cleanTheme,
     initialCatalogueData: [],
     initialCatId: "",
     initialHasMore: false,
+    // undefined props Next.js mein error dete hain, isliye sirf tab jab service pata ho
+    ...(service ? { categorySlug: service } : {}),
   };
 
   try {
     const data = await fetchDecorationCatPageData(catValue, {
-      theme: theme && theme !== "all" ? theme : undefined,
+      theme: cleanTheme || undefined,
     });
 
     return {
