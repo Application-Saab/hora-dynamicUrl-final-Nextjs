@@ -32,7 +32,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: clamp(18px, 6.11vw, 29px);
+  gap: clamp(16px, 6.11vw, 29px);
 }
 
 .hf-cta-title {
@@ -127,7 +127,7 @@
 .hf-heading {
   font-family: "Inter", sans-serif;
   font-weight: 700;
-  font-size: clamp(16px, 4.58vw, 22px);
+  font-size: clamp(14px, 4.32vw, 21px);
   line-height: 100%;
   text-transform: uppercase;
   color: #FFFFFF;
@@ -170,8 +170,8 @@
 }
 
 .hf-social-link {
-  width: clamp(28px, 8.14vw, 38.4px);
-  height: clamp(28px, 8.14vw, 38.4px);
+  width: clamp(26px, 8.14vw, 38.4px);
+  height: clamp(26px, 8.14vw, 38.4px);
   border: 1px solid #fff;
   border-radius: 50%;
   display: inline-flex;
@@ -210,6 +210,7 @@
     font-size: clamp(16px, 4.32vw, 17px);
   }
 
+  .hf-cta-sub {text-align: left}
   .hf-grid {
     grid-template-columns: 1.4fr 1fr 1fr 1fr;
     row-gap: clamp(22px, 7.12vw, 34px);
@@ -297,8 +298,8 @@
   }
 
   .hf-social-link {
-    width: clamp(28px, 8.14vw, 38.4px);
-    height: clamp(28px, 8.14vw, 38.4px);
+ width: clamp(26px, 8.14vw, 38.4px);
+height: clamp(26px, 8.14vw, 38.4px);
     font-size: clamp(12px, 3.81vw, 18px);
   }
 
@@ -318,6 +319,7 @@
    .hf-social-instagram .hf-social-icon { height: clamp(18px, 2.87vw, 23px); }
   .hf-social-facebook  .hf-social-icon { height: clamp(18px, 2.87vw, 23px); }
   .hf-social-youtube   .hf-social-icon { height: clamp(18px, 2.87vw, 23px); }
+  .hf-cta-sub {text-align: left}
 }
 
 @media (max-width: 800px) {
@@ -327,6 +329,7 @@
     .hf-social-instagram .hf-social-icon { height: clamp(12px, 3.05vw, 14px); }
   .hf-social-facebook  .hf-social-icon { height: clamp(12px, 3.05vw, 14px); }
   .hf-social-youtube   .hf-social-icon { height: clamp(12px, 3.05vw, 14px); }
+  .hf-cta-sub { text-align: left}
 }
 
 
