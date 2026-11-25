@@ -210,7 +210,8 @@ function SearchDropdown({
   onSelectCategory,
   onSelectProduct,
   onViewMore, // View More dabane par category page par le jaata hai
-  designPicker, // { labels, items } -> landing par design/price filter ke liye category chuno
+  designPicker, // { labels, items } -> landing par design type ke liye category chuno
+  filterLabels = [], // ["Under ₹2,000"] -> Products header mein dikhte hain
   getProductHref,
   getCategoryHref,
 }) {
@@ -273,7 +274,7 @@ function SearchDropdown({
             <span>Select category for “{designPicker.labels.join(", ")}”</span>
           </div>
           <div style={{ padding: "0 16px 8px", fontSize: 12, opacity: 0.7 }}>
-            Kis category mein ye design chahiye?
+            {designPicker.hint || "Choose the category."}
           </div>
 
           {designPicker.items.map((cat) => (
@@ -365,7 +366,10 @@ function SearchDropdown({
       {(matchingProducts.length > 0 || loading) && (
         <div className="search-section">
           <div className="search-section-header">
-            <span>Matching Products</span>
+            <span>
+              Matching Products
+              {filterLabels.length > 0 ? ` · ${filterLabels.join(" · ")}` : ""}
+            </span>
           </div>
 
           {loading && matchingProducts.length === 0 && (
@@ -439,6 +443,7 @@ export default function SearchSortBar({
   onQueryChange, // (value) => void  -- har keystroke par (global search ke liye)
   onViewMore, // (query) => void  -- View More dabane par category page par navigate
   designPicker = null, // { labels, items } -- landing par category chuna ke liye
+  filterLabels = [],
 }) {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [query, setQuery] = useState(initialQuery);
@@ -699,6 +704,7 @@ export default function SearchSortBar({
             onSelectProduct={handleProductClick}
             onViewMore={handleViewMore}
             designPicker={designPicker}
+            filterLabels={filterLabels}
             getProductHref={getProductHref}
             getCategoryHref={getCategoryHref}
           />

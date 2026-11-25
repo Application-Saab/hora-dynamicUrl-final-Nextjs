@@ -204,6 +204,16 @@ const termInHay = (hay, hayC, term) =>
 const hayOf = (item) =>
   normalize(`${item.label || item.name || ""} ${item.value || ""} ${item.catValue || ""}`);
 
+export const catCovers = (c, term) => {
+  const aliases = CATEGORY_ALIASES[c.catValue] || [];
+  if (aliases.includes(term)) return true;
+  if (isNum(term)) return false;
+  const hay = hayOf(c);
+  const words = hay.split(" ");
+  if (words.some((w) => w === term || (term.length >= 3 && w.startsWith(term)))) return true;
+  return term.length >= 5 && hay.replace(/ /g, "").includes(term);
+};
+
 // Enter par kaunsi category kholni hai. rest = category se bacha hua words
 export const findCategoryForQuery = (q, categories) => {
   const tokens = tokensOf(q);
@@ -211,13 +221,19 @@ export const findCategoryForQuery = (q, categories) => {
 
   let best = null;
   for (const c of categories) {
-    const hay = hayOf(c);
-    const aliases = CATEGORY_ALIASES[c.catValue] || [];
-    const covered = tokens.filter((t) => hay.includes(t) || aliases.includes(t));
-    if (covered.length && (!best || covered.length > best.covered)) {
+    const covered = tokens.filter((t) => catCovers(c, t));
+    if (!covered.length) continue;
+    const hayWords = hayOf(c).split(" ");
+    const exactWords = covered.filter((t) => hayWords.includes(t)).length;
+    if (
+      !best ||
+      covered.length > best.covered ||
+      (covered.length === best.covered && exactWords > best.exactWords)
+    ) {
       best = {
         catValue: c.catValue,
         covered: covered.length,
+        exactWords,
         rest: tokens.filter((t) => !covered.includes(t)),
       };
     }

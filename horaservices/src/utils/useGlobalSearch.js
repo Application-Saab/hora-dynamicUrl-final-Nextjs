@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
-import { decCat } from "@/utils/decorationCategories";
+import { decCat, getServiceForCategory } from "@/utils/decorationCategories";
 import { smallCardCategories } from "@/utils/smallCardCategories";
 import { NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
@@ -10,12 +10,13 @@ import {
   GET_DECORATION_CAT_ID,
   GET_DECORATION_CAT_ITEM,
 } from "@/utils/apiconstants";
-import { designTypeOptions } from "@/components/SearchSortBar";
+import { designTypeOptions, sortOptions } from "@/components/SearchSortBar";
 import {
   cleanQuery,
   splitWords,
   findCategoryForQuery,
   parseSearchQuery,
+  catCovers,
 } from "@/utils/searchRelated";
 
 /* ------------------------------------------------------------------ *
@@ -66,6 +67,55 @@ const toTitle = (s) =>
 
 const labelOfDesign = (id) =>
   designTypeOptions.find((o) => o.id === id)?.label || id;
+
+const fmtPrice = (n) => `₹${Number(n).toLocaleString("en-IN")}`;
+const priceLabel = (min, max) =>
+  min != null && max != null
+    ? `${fmtPrice(min)} – ${fmtPrice(max)}`
+    : max != null
+      ? `Under ${fmtPrice(max)}`
+      : `Above ${fmtPrice(min)}`;
+
+// Query se nikle filters ke readable labels: ["Ring", "Under ₹2,000", "Price: Low To High"]
+const filterLabelsOf = (parsed) => {
+  const out = parsed.designTypes.map(labelOfDesign);
+  if (parsed.minPrice != null || parsed.maxPrice != null) {
+    out.push(priceLabel(parsed.minPrice, parsed.maxPrice));
+  }
+  if (parsed.sort) {
+    out.push(sortOptions.find((o) => o.id === parsed.sort)?.label || parsed.sort);
+  }
+  return out;
+};
+
+// Filters ko standard text mein badlo: category page ka parser ise hamesha samajhta hai,
+// user ne chahe "3000 tak", "price 3000" ya "3k" kuch bhi likha ho.
+const SORT_TEXT = {
+  lowToHigh: "low to high",
+  highToLow: "high to low",
+  newArrival: "new arrival",
+};
+const canonicalFilterText = (parsed) => {
+  const { minPrice: min, maxPrice: max } = parsed;
+  let price = "";
+  if (min != null && max != null) price = `between ${min} and ${max}`;
+  else if (max != null) price = `under ${max}`;
+  else if (min != null) price = `above ${min}`;
+  return [
+    ...parsed.designTypes.map(labelOfDesign),
+    price,
+    SORT_TEXT[parsed.sort] || "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+};
+
+// Category kis service ke andar khulti hai: wedding wali fixed, baaki decCat ke `services` se
+// (festival categories /festivals-decoration par, current service mein ho to wahi).
+const parentFor = (cv, currentService) =>
+  WEDDING_PARENT_CATS.has(cv)
+    ? WEDDING_PARENT
+    : getServiceForCategory(cv, currentService || DEFAULT_PARENT);
 
 // decCat me duplicate, trailing space, capital `Image` aur uppercase catValue
 // ho sakte hain -- sab yahan saaf ho jaate hain.
@@ -125,6 +175,11 @@ const pickSearchCategories = (term, limit = MAX_SEARCH_CATS) => {
     .slice(0, limit);
 };
 
+// Sirf price/sort likha ho (text nahi): in popular categories mein products dhundho
+const PRICE_SEARCH_CATS = SEARCH_PRIORITY.slice(0, 4)
+  .map((cv) => SEARCH_CATEGORIES.find((c) => c.catValue === cv))
+  .filter(Boolean);
+
 // Search results ka cache (pages ke beech bhi bacha rehta hai)
 const resultCache = new Map();
 
@@ -151,10 +206,7 @@ export default function useGlobalSearch({
     locality ? "/" + String(locality).toLowerCase() : ""
   }`;
 
-  const parentOf = useCallback(
-    (cv) => (WEDDING_PARENT_CATS.has(cv) ? WEDDING_PARENT : baseSlug),
-    [baseSlug],
-  );
+  const parentOf = useCallback((cv) => parentFor(cv, baseSlug), [baseSlug]);
 
   // Category page par current category (SEARCH_CATEGORIES se); nahi mili => landing jaisa behave
   // Pehle prop se, nahi to URL se (/balloon-decoration/kids-birthday-decoration).
@@ -190,9 +242,7 @@ export default function useGlobalSearch({
       catValue: c.catValue,
       label: c.name,
       image: c.image || localImages[c.catValue] || undefined,
-      href: `${prefix}/${
-        WEDDING_PARENT_CATS.has(c.catValue) ? WEDDING_PARENT : baseSlug
-      }/${c.catValue}`,
+      href: `${prefix}/${parentFor(c.catValue, baseSlug)}/${c.catValue}`,
     }));
 
     const themes = SEARCH_THEMES.map((t) => {
@@ -214,6 +264,8 @@ export default function useGlobalSearch({
   // Landing par design/price/sort likha ho to yahan aata hai (products nahi)
   // { search: "ring under 2000", labels: ["Ring", "under 2000"], hitCat }
   const [pendingFilter, setPendingFilter] = useState(null);
+  // Dropdown ke Products header mein dikhane ke liye: ["Under ₹2,000"]
+  const [filterLabels, setFilterLabels] = useState([]);
 
   // Products: backend se live
   const [searchProducts, setSearchProducts] = useState([]);
@@ -230,6 +282,16 @@ export default function useGlobalSearch({
     [],
   );
 
+  // Query se category pehchano: category page par current category, landing par query ke naam se.
+  const resolveTarget = useCallback(
+    (rest) => {
+      if (scoped) return currentCat;
+      const hit = rest ? findCategoryForQuery(rest, SEARCH_CATEGORIES) : null;
+      return hit ? SEARCH_CATEGORIES.find((c) => c.catValue === hit.catValue) || null : null;
+    },
+    [scoped, currentCat],
+  );
+
   const handleQueryChange = useCallback(
     (value) => {
       const parsed = parseSearchQuery(value, designTypeOptions);
@@ -243,58 +305,77 @@ export default function useGlobalSearch({
         parsed.maxPrice != null ||
         !!parsed.sort;
 
-      /* ---------- LANDING + filter words => category puchho ---------- */
-      if (!scoped && hasFilter) {
-        const hit = parsed.rest
-          ? findCategoryForQuery(parsed.rest, SEARCH_CATEGORIES)
-          : null;
-        const restWords = hit
-          ? hit.rest.join(" ")
-          : cleanQuery(parsed.rest) || parsed.rest;
-        const search = [...parsed.parts.map((x) => x.text), restWords]
+      const target = resolveTarget(parsed.rest); // category jisme products dhundhne hain
+      const words = splitWords(parsed.rest);
+      // Category ke naam wale words ("kids", "birthday") product search term nahi bante
+      const remaining = target ? words.filter((w) => !catCovers(target, w.term)) : words;
+      const real = remaining.filter((w) => !w.generic);
+
+      const labels = filterLabelsOf(parsed);
+
+      /* ---------- LANDING + design / price / sort + category nahi bataya => category puchho ---------- */
+      if (!scoped && hasFilter && !target) {
+        const search = [
+          canonicalFilterText(parsed),
+          cleanQuery(parsed.rest) || parsed.rest,
+        ]
           .filter(Boolean)
           .join(" ");
 
         setPendingFilter({
           search,
-          labels: parsed.parts.map((p) =>
-            p.type === "design" ? labelOfDesign(p.id) : p.text,
-          ),
-          hitCat: hit?.catValue || null,
+          labels,
+          hint:
+            parsed.designTypes.length > 0
+              ? "Choose the category where you want this design."
+              : "Choose the category where you want to see these products.",
         });
+        setFilterLabels([]);
         setSearchProducts([]);
         setSearchLoading(false);
         return;
       }
       setPendingFilter(null);
+      setFilterLabels(hasFilter ? labels : []);
 
-      const words = splitWords(parsed.rest);
+      // Search karna hai ya nahi
+      //  - category page: text ya filter ho
+      //  - landing + query mein category ka naam: hamesha (us category ke products)
+      //  - landing, category nahi: koi word bacha ho
+      const shouldSearch = scoped
+        ? real.length > 0 || hasFilter
+        : target
+          ? true
+          : remaining.length > 0 || hasFilter; // landing: price/sort akela bhi chalega
 
-      // Kuch bhi nahi: na text, na (category page par) filter
-      if (!words.length && !(scoped && hasFilter)) {
+      if (!shouldSearch) {
         setSearchProducts([]);
         setSearchLoading(false);
         return;
       }
 
-      // Filters sirf category page par API params banke jaate hain
-      const designApi = scoped
+      // Filters API params bante hain jab category pata ho, ya landing par price/sort likha ho
+      const filtersOn = !!target || (!scoped && hasFilter);
+      const designApi = filtersOn
         ? parsed.designTypes
             .map((d) => designTypeOptions.find((o) => o.id === d)?.apiValue)
             .filter(Boolean)
         : [];
-      const minPrice = scoped ? parsed.minPrice : null;
-      const maxPrice = scoped ? parsed.maxPrice : null;
-      const sortBy = scoped && PRICE_SORTS.includes(parsed.sort) ? parsed.sort : null;
+      const minPrice = filtersOn ? parsed.minPrice : null;
+      const maxPrice = filtersOn ? parsed.maxPrice : null;
+      const sortBy = filtersOn && PRICE_SORTS.includes(parsed.sort) ? parsed.sort : null;
 
-      // "decoration" jaise generic words ka product search nahi (sab match ho jaata hai)
-      const real = words.filter((w) => !w.generic);
-      const textTerms = (real.length ? real : words).slice(0, 3).map((w) => w.term);
-      // Category page par sirf filter ho (text nahi) to ek hi request, bina search term
+      // "decoration" jaise generic words ka product search nahi (sab match ho jaata hai).
+      // Category pata ho to bacha hua real word hi term; nahi to purana behaviour.
+      const textTerms = (target ? real : real.length ? real : remaining)
+        .slice(0, 3)
+        .map((w) => w.term);
+      // Sirf category/filter ho (text nahi) to ek hi request, bina search term
       const terms = textTerms.length ? textTerms : [null];
 
       const key = [
-        scoped ? currentCat.catValue : "*",
+        target ? target.catValue : "*",
+        scoped ? "s" : "l",
         terms.join("|"),
         `${minPrice ?? ""}-${maxPrice ?? ""}`,
         sortBy || "",
@@ -315,9 +396,24 @@ export default function useGlobalSearch({
 
         const perTerm = await Promise.all(
           terms.map(async (term) => {
-            const cats = scoped
-              ? [currentCat]
-              : pickSearchCategories(term, MAX_SEARCH_CATS);
+            let cats;
+            if (scoped) {
+              cats = [currentCat]; // category page: sirf isi category ke products
+            } else if (target) {
+              // Landing: query wali category pehle, phir term ke hisaab se baaki
+              cats = term
+                ? [
+                    target,
+                    ...pickSearchCategories(term, MAX_SEARCH_CATS).filter(
+                      (c) => c.catValue !== target.catValue,
+                    ),
+                  ].slice(0, MAX_SEARCH_CATS)
+                : [target];
+            } else if (term) {
+              cats = pickSearchCategories(term, MAX_SEARCH_CATS);
+            } else {
+              cats = PRICE_SEARCH_CATS; // price/sort only
+            }
 
             const results = await Promise.allSettled(
               cats.map(async (c) => {
@@ -325,14 +421,17 @@ export default function useGlobalSearch({
                 if (!catId || controller.signal.aborted) return [];
 
                 const params = {
-                  limit: scoped ? SCOPED_LIMIT : LANDING_LIMIT,
+                  limit: target ? SCOPED_LIMIT : LANDING_LIMIT,
                   page: 1,
                 };
                 if (term) params.search = term;
-                if (minPrice != null) params.minPrice = minPrice;
-                if (maxPrice != null) params.maxPrice = maxPrice;
-                if (sortBy) params.sortBy = sortBy;
-                if (designApi.length) params.designType = designApi.join(",");
+                // Filters sirf target category par lagte hain
+                if (filtersOn && (!target || c.catValue === target.catValue)) {
+                  if (minPrice != null) params.minPrice = minPrice;
+                  if (maxPrice != null) params.maxPrice = maxPrice;
+                  if (sortBy) params.sortBy = sortBy;
+                  if (designApi.length) params.designType = designApi.join(",");
+                }
 
                 const res = await axiosApi.get(
                   `${BASE_URL + GET_DECORATION_CAT_ITEM}v3/${catId}`,
@@ -371,7 +470,7 @@ export default function useGlobalSearch({
         setSearchLoading(false);
       }, SEARCH_DEBOUNCE);
     },
-    [scoped, currentCat],
+    [scoped, currentCat, resolveTarget],
   );
 
   // Landing par category chunne ke liye list (href mein filters ?search= ke saath)
@@ -383,15 +482,7 @@ export default function useGlobalSearch({
     const items = searchCategoryList
       .filter((c) => c.kind === "category")
       .map((c) => ({ ...c, href: `${c.href}${q}` }));
-    if (pendingFilter.hitCat) {
-      // Query mein jo category ka naam tha wo sabse upar
-      items.sort(
-        (a, b) =>
-          Number(b.catValue === pendingFilter.hitCat) -
-          Number(a.catValue === pendingFilter.hitCat),
-      );
-    }
-    return { labels: pendingFilter.labels, items };
+    return { labels: pendingFilter.labels, hint: pendingFilter.hint, items };
   }, [pendingFilter, searchCategoryList]);
 
   const getCategoryHref = useCallback((item) => item?.href || "#", []);
@@ -416,27 +507,31 @@ export default function useGlobalSearch({
 
   // View More: category page par filters ke saath.
   //  - Category page: isi page par (shallow) filters lag jaate hain.
-  //  - Landing: best category page par plain text search.
+  //  - Landing + query mein category ka naam: us category page par.
+  //  - Landing, category nahi: best category page par plain text search.
   const handleSearchSubmit = useCallback(
     (q) => {
       const text = String(q || "").trim();
       if (!text) return;
 
-      /* ---------- CATEGORY PAGE ---------- */
-      if (scoped) {
-        const p = parseSearchQuery(text, designTypeOptions);
-        const restWords = cleanQuery(p.rest) || p.rest;
-        const search = [...p.parts.map((x) => x.text), restWords]
+      const p = parseSearchQuery(text, designTypeOptions);
+      const target = resolveTarget(p.rest);
+
+      if (target) {
+        // Category ke naam wale words text se hata do; baaki + filters ?search= mein
+        const restWords = splitWords(p.rest)
+          .filter((w) => !w.generic && !catCovers(target, w.term))
+          .map((w) => w.term)
+          .join(" ");
+        const search = [canonicalFilterText(p), restWords]
           .filter(Boolean)
           .join(" ");
 
-        const target = `${prefix}/${parentOf(currentCat.catValue)}/${currentCat.catValue}`;
-        const url = `${target}${
-          search ? `?search=${encodeURIComponent(search)}` : ""
-        }`;
+        const path = `${prefix}/${parentOf(target.catValue)}/${target.catValue}`;
+        const url = `${path}${search ? `?search=${encodeURIComponent(search)}` : ""}`;
 
         const samePage =
-          router.asPath.split("?")[0].toLowerCase() === target.toLowerCase();
+          router.asPath.split("?")[0].toLowerCase() === path.toLowerCase();
         if (samePage) {
           router.push(url, undefined, { shallow: true, scroll: false });
         } else {
@@ -445,22 +540,28 @@ export default function useGlobalSearch({
         return;
       }
 
-      /* ---------- LANDING ---------- */
-      const p = parseSearchQuery(text, []);
-      if (!p.rest) return;
-
-      const hit = findCategoryForQuery(p.rest, SEARCH_CATEGORIES);
+      /* ---------- LANDING, category nahi mili (price / sort / plain text) ---------- */
+      // Dropdown ke products jis category mein sabse zyada hain, wahi page kholo
+      const counts = {};
+      searchProducts.forEach((pr) => {
+        if (pr._catValue) counts[pr._catValue] = (counts[pr._catValue] || 0) + 1;
+      });
       const catV =
-        hit?.catValue || searchProducts[0]?._catValue || "birthday-decoration";
-      const restWords = hit ? hit.rest.join(" ") : cleanQuery(p.rest) || p.rest;
+        Object.keys(counts).sort((x, y) => counts[y] - counts[x])[0] ||
+        "birthday-decoration";
+
+      const restWords = cleanQuery(p.rest) || p.rest;
+      const search = [canonicalFilterText(p), restWords]
+        .filter(Boolean)
+        .join(" ");
 
       router.push(
         `${prefix}/${parentOf(catV)}/${catV}${
-          restWords ? `?search=${encodeURIComponent(restWords)}` : ""
+          search ? `?search=${encodeURIComponent(search)}` : ""
         }`,
       );
     },
-    [router, prefix, parentOf, searchProducts, scoped, currentCat],
+    [router, prefix, parentOf, searchProducts, resolveTarget],
   );
 
   return {
@@ -468,6 +569,7 @@ export default function useGlobalSearch({
     searchProducts,
     searchLoading,
     designPicker,
+    filterLabels,
     handleQueryChange,
     handleSearchSubmit,
     getCategoryHref,
