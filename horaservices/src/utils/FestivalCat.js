@@ -20,12 +20,12 @@ import cardPartyIcon from "@/assets/festivals/icons/card-party.webp";
 export const FESTIVAL_CATEGORY_SLUG = "festivals-decoration";
 
 export const festivalThemes = [
-  { id: 1, title: "Ganpati", catValue: "ganpati-decoration", subCategory: "GanpatiDecoration", image: ganpati, icon: ganpatiIcon, imgAlt: "Ganpati decoration" },
-  { id: 2, title: "Janmashtami", catValue: "janmastmi-decoration", subCategory: "JanmastmiDecoration", image: janmashtami, icon: janmashtamiIcon, imgAlt: "Janmashtami decoration" },
-  { id: 3, title: "Diwali", catValue: "diwali-decoration", subCategory: "DiwaliDecoration", image: diwali, icon: diwaliIcon, imgAlt: "Diwali decoration" },
-  { id: 4, title: "Navratri", catValue: "navratri-decoration", subCategory: "NavratriDecoration", image: navratri, icon: navratriIcon, imgAlt: "Navratri decoration" },
-  { id: 5, title: "Christmas", catValue: "christmas-decoration", subCategory: "ChristmasDecoration", image: christmas, icon: christmasIcon, imgAlt: "Christmas decoration" },
-  { id: 6, title: "New Year", catValue: "new-year-decoration", subCategory: "NewYearDecoration", image: newYear, icon: newYearIcon, imgAlt: "New Year decoration" },
+  { id: 1, title: "Christmas", catValue: "christmas-decoration", subCategory: "ChristmasDecoration", image: christmas, icon: christmasIcon, imgAlt: "Christmas decoration" },
+  { id: 2, title: "New Year", catValue: "new-year-decoration", subCategory: "NewYearDecoration", image: newYear, icon: newYearIcon, imgAlt: "New Year decoration" },
+  { id: 3, title: "Ganpati", catValue: "ganpati-decoration", subCategory: "GanpatiDecoration", image: ganpati, icon: ganpatiIcon, imgAlt: "Ganpati decoration" },
+  { id: 4, title: "Janmashtami", catValue: "janmastmi-decoration", subCategory: "JanmastmiDecoration", image: janmashtami, icon: janmashtamiIcon, imgAlt: "Janmashtami decoration" },
+  { id: 5, title: "Diwali", catValue: "diwali-decoration", subCategory: "DiwaliDecoration", image: diwali, icon: diwaliIcon, imgAlt: "Diwali decoration" },
+  { id: 6, title: "Navratri", catValue: "navratri-decoration", subCategory: "NavratriDecoration", image: navratri, icon: navratriIcon, imgAlt: "Navratri decoration" },
   { id: 7, title: "Halloween", catValue: "hallowean-decoration", subCategory: "HalloweanDecoration", image: halloween, icon: halloweenIcon, imgAlt: "Halloween decoration" },
   { id: 8, title: "Card Party", catValue: "card-party-decoration", subCategory: "CardPartyDecoration", image: cardParty, icon: cardPartyIcon, imgAlt: "Card party decoration" },
 ];
