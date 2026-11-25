@@ -4,44 +4,10 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import fallbackImg from "@/assets/fallback-image.png";
 import "./highpriceproduct.css";
-import {
-  COMPRESSED_WEBP_IMG_URL,
-  COMPRESSED_VIDEO_URL,
-} from "@/utils/apiconstants";
 import CustomizationModal from "../CustomizationModal";
 import ArrowIcon from "../../assets/decor_grid_arrow_icon.svg";
 import { videoPlaybackManager } from "@/utils/videoPlaybackManager";
-
-const isVideoMedia = (media) => {
-  if (!media) return false;
-  if (typeof media === "object" && media.mediaType === "video") return true;
-  const name =
-    typeof media === "string" ? media : media.fileName || media.url || "";
-  return /\.(mp4|webm|ogg|mov|mkv|avi)$/i.test(name);
-};
-
-const resolveMediaUrl = (media) => {
-  if (!media) return null;
-  const fileName =
-    typeof media === "string"
-      ? media
-      : media.fileName || media.url || media.src;
-
-  if (!fileName) return null;
-  if (/^https?:\/\//i.test(fileName)) return fileName;
-
-  if (isVideoMedia(media)) {
-    const baseVideoUrl =
-      COMPRESSED_VIDEO_URL ||
-      COMPRESSED_WEBP_IMG_URL.replace(
-        /compressed_webp\/?$/,
-        "compressed_webp/",
-      );
-    return `${baseVideoUrl}${fileName}`;
-  }
-
-  return `${COMPRESSED_WEBP_IMG_URL}${fileName.split(".")[0]}.webp`;
-};
+import { isVideoEntry, PRIORITY_DESIGN_TYPES, resolveMediaUrl } from "@/utils/DecorationGridHelpers";
 
 const HighPriceProduct = ({ data, onCardClick, getHref, catValue }) => {
   const [selectedItem, setSelectedItem] = useState(null);
@@ -91,7 +57,7 @@ const HighPriceProduct = ({ data, onCardClick, getHref, catValue }) => {
     rawList.forEach((entry) => {
       const url = resolveMediaUrl(entry);
       if (!url) return;
-      if (isVideoMedia(entry)) {
+      if (isVideoEntry(entry)) {
         if (!vids.includes(url)) vids.push(url);
       } else {
         imgs.push(url);
@@ -219,18 +185,6 @@ const HighPriceProduct = ({ data, onCardClick, getHref, catValue }) => {
       });
     }
   };
-
-  const PRIORITY_DESIGN_TYPES = [
-    { label: "Wall", aliases: ["wall", "on wall"] },
-    { label: "Ring", aliases: ["ring", "on ring"] },
-    { label: "Sequel", aliases: ["sequel", "sequined", "sequins design"] },
-    { label: "U Shape", aliases: ["u shape", "u shape stand", "u stand"] },
-    {
-      label: "Square Stand",
-      aliases: ["square stand", "squre stand", "on square stand"],
-    },
-    { label: "Room Decor", aliases: ["room decor"] },
-  ];
 
   const renderBadges = () => {
     if (!highest?.designType) return null;

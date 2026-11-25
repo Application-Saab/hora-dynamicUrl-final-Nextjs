@@ -5,13 +5,13 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 
 import axiosApi from "@/utils/axiosApi";
-import ProductGrid from "@/components/productGrid";
 import CardSkeleton from "@/components/CardSkeleton";
 import SearchSortBar from "@/components/SearchSortBar";
 import SeoHead from "@/utils/SeoHead";
 import boosterBanner from "@/assets/partyprops.webp";
 import "./celebrationbooster.css";
 import Head from "next/head";
+import BoostersProductGrid from "@/components/productGrid/BoostersProductGrid";
 
 // Ideally move this to utils/apiconstants.js alongside your other endpoints
 // (BASE_URL, GET_DECORATION_CAT_ITEM, etc.) instead of hardcoding it here.
@@ -218,7 +218,7 @@ const CelebrationBoosterPage = () => {
             </h2>
           </div>
         ) : (
-          <ProductGrid
+          <BoostersProductGrid
             data={displayData}
             onCardClick={handleViewDetails}
             getHref={getProductHref}
