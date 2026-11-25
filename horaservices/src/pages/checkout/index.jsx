@@ -38,7 +38,10 @@ import { fetchWithError } from "@/utils/fetchWithError";
 import { getCategoryNameToSlug } from "@/utils/similarProductUtils";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 import { trackMetaCustomEvent } from "@/utils/fpixel";
-import { MARKETING_EVENTS, trackWhatsAppButtonClick } from "@/utils/marketingEvents";
+import {
+  MARKETING_EVENTS,
+  trackWhatsAppButtonClick,
+} from "@/utils/marketingEvents";
 
 // Safe parse helpers
 const safeJsonParse = (value, fallback) => {
@@ -69,11 +72,15 @@ const Checkout = () => {
   const [selectedAddonsData, setSelectedAddonsData] = useState([]);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && window.location.pathname && selectedProduct?._id) {
+    if (
+      typeof window !== "undefined" &&
+      window.location.pathname &&
+      selectedProduct?._id
+    ) {
       const params = {
         popup_name: "decoration_checkout_page",
-        product_name : selectedProduct?.name,
-        product_id : selectedProduct?._id,
+        product_name: selectedProduct?.name,
+        product_id: selectedProduct?._id,
         page_path:
           typeof window !== "undefined" ? window.location.pathname : "",
       };
@@ -176,7 +183,7 @@ const Checkout = () => {
     setIsClosed(false);
   }, [combinedDateTimeError]);
   useEffect(() => {
-    const loggedInStatus = safeGetItem("isLoggedIn") === "true";
+    const loggedInStatus = safeGetItem("isLoggedIn") == "true";
     setIsLoggedIn(loggedInStatus);
     if (!loggedInStatus) {
       setIsModalOpen(true);
@@ -189,6 +196,25 @@ const Checkout = () => {
       setIsModalOpen(false);
     }
   }, [isLoggedIn]);
+
+  useEffect(() => {
+    const syncLoginState = () => {
+      const loggedIn = safeGetItem("isLoggedIn") == "true";
+      const userId = safeGetItem("userID") || "";
+      setIsLoggedIn(loggedIn && userId);
+    };
+
+    // Initial read
+    syncLoginState();
+
+    window.addEventListener("storage", syncLoginState);
+    window.addEventListener("loginStateChange", syncLoginState);
+
+    return () => {
+      window.removeEventListener("storage", syncLoginState);
+      window.removeEventListener("loginStateChange", syncLoginState);
+    };
+  }, []);
 
   useEffect(() => {
     setIsClient(true);
@@ -358,13 +384,13 @@ const Checkout = () => {
   const onContinueClick = async () => {
     const storedUserID = await safeGetItem("userID");
     trackMetaCustomEvent("confirm_order_click", {
-      order_type : "decoration",
-      user_id : storedUserID || "",
-      product_name : selectedProduct?.name || "",
-      product_id : selectedProduct?._id || "",
-      phone : phoneNumber || "",
-      order_booked : "online"
-    })
+      order_type: "decoration",
+      user_id: storedUserID || "",
+      product_name: selectedProduct?.name || "",
+      product_id: selectedProduct?._id || "",
+      phone: phoneNumber || "",
+      order_booked: "online",
+    });
     setIsClosed(false);
 
     if (!selectedTimeSlot) {
@@ -389,7 +415,7 @@ const Checkout = () => {
       setCombinedDateTimeError(false);
     }
     const apiUrl = BASE_URL + PAYMENT;
-    
+
     // const phoneNumber = await safeGetItem('mobileNumber')
     let merchantTransactionId;
     try {
@@ -517,11 +543,14 @@ const Checkout = () => {
   };
 
   const contactUsRedirection = (category, cityName) => {
-    trackWhatsAppButtonClick(MARKETING_EVENTS.WHATSAPP_BUTTONS.DECORATION_CHECKOUT_CONTACT_US, {
-      button_name: "Contact Us",
-      button_type: "decoration_contact_us",
-      page_path: window.location.pathname,
-    });
+    trackWhatsAppButtonClick(
+      MARKETING_EVENTS.WHATSAPP_BUTTONS.DECORATION_CHECKOUT_CONTACT_US,
+      {
+        button_name: "Contact Us",
+        button_type: "decoration_contact_us",
+        page_path: window.location.pathname,
+      },
+    );
     trackWAClicks();
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({

@@ -63,7 +63,7 @@ const FoodDeliveryCheckout = () => {
 
   useEffect(() => {
     // Check localStorage or a cookie for login status, or call an API
-    const loggedInStatus = safeGetItem("isLoggedIn") === "true"; // Check login status
+    const loggedInStatus = safeGetItem("isLoggedIn") == "true"; // Check login status
     setIsLoggedIn(loggedInStatus); // Update state based on login status
     if (!loggedInStatus) {
       setIsModalOpen(true); // Open modal if not logged in

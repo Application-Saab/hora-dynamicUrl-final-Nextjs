@@ -906,13 +906,17 @@ const buildCustomiseMessage = (catValue, city, theme = "") => {
   if (themeText) {
     categoryText = `${themeText} Decoration`;
   } else {
-    const category = toTitleCase(catValue).replace(/\s*Decoration$/i, "").trim();
+    const category = toTitleCase(catValue)
+      .replace(/\s*Decoration$/i, "")
+      .trim();
     categoryText = category ? `${category} Decoration` : "Decoration";
   }
 
-  return `Looking for a Customisation ${categoryText}${cityText ? ` in ${cityText}` : ""
-    }!`;
+  return `Looking for a Customisation ${categoryText}${
+    cityText ? ` in ${cityText}` : ""
+  }!`;
 };
+
 // ---------- Component (NO getServerSideProps here) ----------
 function DecorationsCatDetails({
   initialProduct = null,
@@ -958,6 +962,8 @@ function DecorationsCatDetails({
   const [addonIds, setAddonIds] = useState(initialProduct?.addons || []);
   const [addonData, setAddonData] = useState(initialAddonData || []);
   const [selCat, setSelCat] = useState("");
+
+  const [shareFile, setShareFile] = useState(null);
 
   const [similarByTheme, setSimilarByTheme] = useState(() => {
     if (initialProduct && initialAllProducts?.length) {
@@ -1160,7 +1166,7 @@ function DecorationsCatDetails({
         setSelectedAddOnProduct(parsed.selectedAddOnProduct || []);
         setItemQuantities(parsed.itemQuantities || {});
       }
-    } catch (e) { }
+    } catch (e) {}
   }, [product?._id]);
 
   useEffect(() => {
@@ -1170,7 +1176,7 @@ function DecorationsCatDetails({
         `addons_${product._id}`,
         JSON.stringify({ selectedAddOnProduct, itemQuantities }),
       );
-    } catch (e) { }
+    } catch (e) {}
   }, [selectedAddOnProduct, itemQuantities, product?._id]);
 
   // Fetch addon details — SSR data ho to skip
@@ -1204,6 +1210,35 @@ function DecorationsCatDetails({
     setSelCat(result);
   }, [subCategory]);
 
+ useEffect(() => {
+  const fileName = product?.featured_images?.[0]?.fileName;
+  if (!fileName) return;
+  let cancelled = false;
+
+  (async () => {
+    try {
+      const base = fileName.split(".")[0];
+      const url = `${COMPRESSED_WEBP_IMG_URL}${encodeURIComponent(base)}.webp`;
+      const res = await fetch(url, { mode: "cors" });
+      if (!res.ok) throw new Error(`Image fetch ${res.status}`);
+      const blob = await res.blob();
+
+      if (!cancelled) {
+        setShareFile(
+          new File([blob], `${generateSlug(product?.name) || "design"}.webp`, {
+            type: "image/webp",
+          }),
+        );
+      }
+    } catch (e) {
+      console.warn("Share image prefetch failed", e);
+    }
+  })();
+
+  return () => {
+    cancelled = true;
+  };
+}, [product?.featured_images, product?.name]);
   // ---------- handlers ----------
   const openCatItems = (item) => {
     const catSlug = item.catSlug || item.catValue || "kids-birthday-decoration";
@@ -1218,7 +1253,7 @@ function DecorationsCatDetails({
     const message = buildCustomiseMessage(
       type || catValue,
       cityArg || selectedCityName || city,
-      themeNameForWA
+      themeNameForWA,
     );
 
     window.dataLayer = window.dataLayer || [];
@@ -1231,29 +1266,34 @@ function DecorationsCatDetails({
 
     window.open(
       `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
-      "_blank"
+      "_blank",
     );
   };
   // Sirf "Customize Design" button (ActionButtons) ke liye
   const handleActionCustomise = (type, cityArg) => {
     const phoneNumber = "917338584828";
 
-    const cityText = toTitleCase(cityArg || selectedCityName || city || "").trim();
+    const cityText = toTitleCase(
+      cityArg || selectedCityName || city || "",
+    ).trim();
 
     // Theme mili to wahi ("car decoration"), warna category ("naming ceremony decoration")
     let label;
     if (themeNameForWA) {
       label = `${themeNameForWA.toLowerCase()} decoration`;
     } else {
-      label = toTitleCase(type || catValue || "").toLowerCase().trim();
+      label = toTitleCase(type || catValue || "")
+        .toLowerCase()
+        .trim();
       if (!label) label = "decoration";
       else if (!/decoration$/.test(label)) label += " decoration";
     }
 
     const article = /^[aeiou]/i.test(label) ? "an" : "a";
 
-    const message = `Hi, I want to customize ${article} ${label} design, can you help me${cityText ? ` for ${cityText}` : ""
-      }!`;
+    const message = `Hi, I want to customize ${article} ${label} design, can you help me${
+      cityText ? ` for ${cityText}` : ""
+    }!`;
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
@@ -1265,9 +1305,10 @@ function DecorationsCatDetails({
 
     window.open(
       `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
-      "_blank"
+      "_blank",
     );
   };
+
   const showAddOnmodal = () => {
     setIsModalOpen((p) => !p);
     setIsArrowDown((p) => !p);
@@ -1366,32 +1407,42 @@ function DecorationsCatDetails({
     });
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const cleanUrl = window.location.origin + window.location.pathname;
+    const title = product?.name || "Hora Services";
 
-    // GTM Event
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "product-details_page_share_clicked",
-      product_name: product?.name || "Hora Services",
+      product_name: title,
       share_url: cleanUrl,
       share_method: navigator.share ? "native_share" : "copy_link",
       page_path: window.location.pathname,
     });
 
     if (navigator.share) {
-      navigator.share({
-        title: product?.name || "Hora Services",
-        url: cleanUrl,
-      }).catch((error) => {
-        if (error.name !== "AbortError") {
-          console.error("Share failed:", error);
+      try {
+        // Koi await share() se pehle nahi — iOS user activation bacha rahe
+        if (shareFile && navigator.canShare?.({ files: [shareFile] })) {
+          // iOS files ke saath `url` field drop kar deta hai, isliye link text mein
+          await navigator.share({
+            title,
+            text: `${title}\n${cleanUrl}`,
+            files: [shareFile],
+          });
+        } else {
+          await navigator.share({ title, text: title, url: cleanUrl });
         }
-      });
+      } catch (error) {
+        if (error?.name !== "AbortError") console.error("Share failed:", error);
+      }
     } else {
-      navigator.clipboard.writeText(cleanUrl)
-        .then(() => alert("Link copied!"))
-        .catch(() => alert("Unable to copy link"));
+      try {
+        await navigator.clipboard.writeText(cleanUrl);
+        alert("Link copied!");
+      } catch {
+        alert("Unable to copy link");
+      }
     }
   };
 
@@ -1454,10 +1505,7 @@ function DecorationsCatDetails({
   // productNameFromUrl from context.params is SSR-safe.
   // router.query?.productName is empty at SSR time → broken canonical for Googlebot.
   const productSlug =
-    productNameFromUrl ||
-    product?.slug ||
-    generateSlug(product?.name) ||
-    "";
+    productNameFromUrl || product?.slug || generateSlug(product?.name) || "";
 
   const buildProductCanonical = () => {
     const parts = [];
@@ -1479,7 +1527,7 @@ function DecorationsCatDetails({
         .trim()
         .toLowerCase()
         .split("-")
-        .every((tok) => themeTokens.includes(tok))
+        .every((tok) => themeTokens.includes(tok)),
     )
     .sort((a, b) => String(b.value).length - String(a.value).length)[0];
 
@@ -1491,7 +1539,7 @@ function DecorationsCatDetails({
   // Wedding product par sub-category (haldi, mandap...) naam se pakdo
   const detectedSubCat =
     WEDDING_SUBCATEGORIES.find((s) =>
-      s.words.some((w) => themeTokens.includes(w))
+      s.words.some((w) => themeTokens.includes(w)),
     )?.slug || "";
 
   const specificCat =
@@ -1500,25 +1548,27 @@ function DecorationsCatDetails({
       : "";
 
   // WhatsApp ko jaane wali category
- const normalizedCatValue = catValue === "wedding" ? "wedding-decoration" : catValue;
+  const normalizedCatValue =
+    catValue === "wedding" ? "wedding-decoration" : catValue;
 
-const waCategory = isWedding
-  ? specificCat ||
-    detectedSubCat ||
-    normalizedCatValue ||
-    getCategoryNameToSlug(passCategoryId?.name) ||
-    "wedding-decoration"
-  : catValue || getCategoryNameToSlug(passCategoryId?.name) || "";
+  const waCategory = isWedding
+    ? specificCat ||
+      detectedSubCat ||
+      normalizedCatValue ||
+      getCategoryNameToSlug(passCategoryId?.name) ||
+      "wedding-decoration"
+    : catValue || getCategoryNameToSlug(passCategoryId?.name) || "";
   const canonicalUrl = buildProductCanonical();
 
   // Breadcrumb: catValue ho to /<categorySlug>/<catValue>, warna sirf /<categorySlug>
   const breadcrumbHref = `/${categorySlug}${catValue ? `/${catValue}` : ""}`;
   const breadcrumbText = toTitleCase(catValue || categorySlug);
 
-  const metaDescription = `${product?.name || "Decoration"} from Hora Services – Beautiful ${catLabelShort} decoration${categoryConfig.startingPrice
-    ? ` starting at just ₹${categoryConfig.startingPrice}`
-    : ""
-    }. Book for birthdays, anniversaries, weddings & more!`;
+  const metaDescription = `${product?.name || "Decoration"} from Hora Services – Beautiful ${catLabelShort} decoration${
+    categoryConfig.startingPrice
+      ? ` starting at just ₹${categoryConfig.startingPrice}`
+      : ""
+  }. Book for birthdays, anniversaries, weddings & more!`;
 
   const reviewsForCategory =
     REVIEWS_BY_CATEGORY[categorySlug] || balloonreviewsproduct;
@@ -1529,10 +1579,11 @@ const waCategory = isWedding
 
   const featuredFileName = product?.featured_images?.[0]?.fileName;
 
+  // File name mein spaces hote hain (e.g. "Multi Golden Ring-123") — encode karna zaroori hai
   const ogImage = featuredFileName
     ? toAbsolute(
-      `${COMPRESSED_WEBP_IMG_URL}${featuredFileName.split(".")[0]}.webp`,
-    )
+        `${COMPRESSED_WEBP_IMG_URL}${encodeURIComponent(featuredFileName.split(".")[0])}.webp`,
+      )
     : DEFAULT_OG_IMAGE;
 
   const seoTitle = `${product?.name || ""} | ${catLabel}`;
@@ -1564,7 +1615,11 @@ const waCategory = isWedding
           <meta property="og:url" content={canonicalUrl} />
           <meta property="og:type" content="website" />
           <meta property="og:image" content={ogImage} />
-          <meta property="og:image:alt" content={product?.name || "Hora Services"} />
+          <meta property="og:image:secure_url" content={ogImage} />
+          <meta
+            property="og:image:alt"
+            content={product?.name || "Hora Services"}
+          />
 
           {/* Twitter */}
           <meta name="twitter:card" content="summary_large_image" />
@@ -1684,7 +1739,11 @@ const waCategory = isWedding
               </div>
 
               <MakeItYoursBanner
-                message={buildCustomiseMessage(catValue, selectedCityName || city, themeNameForWA)}
+                message={buildCustomiseMessage(
+                  catValue,
+                  selectedCityName || city,
+                  themeNameForWA,
+                )}
               />
 
               <div ref={addonRef}>

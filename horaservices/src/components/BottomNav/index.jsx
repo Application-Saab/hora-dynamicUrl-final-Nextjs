@@ -220,6 +220,7 @@ export default function BottomNav() {
       <LoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
+        fromWonderland={true}
       />
     </>
   );

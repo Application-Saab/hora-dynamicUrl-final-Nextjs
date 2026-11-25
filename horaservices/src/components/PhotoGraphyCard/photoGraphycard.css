@@ -1,23 +1,21 @@
 .photo-card {
+  display: block;
   overflow: hidden;
   position: relative;
   border: none;
-  transition: transform 0.3s ease;
   border-radius: 15px;
   background: #fff;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  transition: transform 0.3s ease;
+  text-decoration: none;
+  cursor: pointer;
 }
 
-.photo-card:hover {
-  transform: scale(1.03) translateZ(0);
+/* Hover only on devices that really support it (iOS keeps hover "stuck" after tap) */
+@media (hover: hover) {
+  .photo-card:hover {
+    transform: scale(1.03);
+  }
 }
-.photo-card:hover {
-  transform: scale(1.03);
-}
-
 
 .photo-imageWrapper {
   border-radius: 15px;
@@ -25,20 +23,15 @@
   width: 100%;
   height: 180px;
   overflow: hidden;
+  isolation: isolate; /* fixes iOS border-radius + overflow clipping bug */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  background: #f2f2f2; /* placeholder until the image loads */
 }
 
-
+/* next/image `fill` already handles width/height/position */
 .photo-image {
   object-fit: cover;
-  width: 100%;
-  height: 100%;
-  border-radius: 15px;
-  /* filter: blur(0.2px); */
 }
-
 
 .photo-titleWrapper {
   position: absolute;
@@ -58,7 +51,6 @@
   text-align: center;
   margin: 0;
 }
-
 
 .photo-footer {
   text-align: center;
@@ -88,7 +80,6 @@
   text-decoration: none;
 }
 
-
 @media (max-width: 992px) {
   .photo-imageWrapper {
     height: 340px;
@@ -99,19 +90,15 @@
   }
 }
 
-
 @media (max-width: 768px) {
-  .photo-card {
-    transform: none;
-  }
   .photo-imageWrapper {
     height: 270px;
   }
+
   .photo-viewMore {
     font-size: 16px;
   }
 }
-
 
 @media (max-width: 480px) {
   .photo-imageWrapper {
@@ -121,6 +108,7 @@
   .photo-viewMore {
     font-size: 13px;
   }
+
   .photo-footer {
     margin-bottom: 6px;
   }

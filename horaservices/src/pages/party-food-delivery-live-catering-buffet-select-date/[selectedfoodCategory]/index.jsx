@@ -325,30 +325,6 @@ const FoodDeliveryselectDate = () => {
       return; // Stop further execution if totalOrderAmount is less than 3000
     }
 
-    const navigateState = {
-      from: window.location.pathname,
-      peopleCount: peopleCount,
-      selectedDeliveryOption: selectedOption,
-      selectedDishesFoodDelivery: JSON.stringify(data),
-      totalOrderAmount: totalOrderAmount,
-      selectedDishQuantities: JSON.stringify(selectedDishQuantities),
-      selectedOption: selectedOption,
-    };
-
-    // if (localStorage.getItem("isLoggedIn") !== "true") {
-    //   router.push({
-    //     pathname: "/login",
-    //     query: {
-    //       from: window.location.pathname,
-    //       peopleCount: peopleCount,
-    //       selectedDeliveryOption: selectedOption,
-    //       selectedDishesFoodDelivery: JSON.stringify(data),
-    //       totalOrderAmount: totalOrderAmount,
-    //       selectedDishQuantities: JSON.stringify(selectedDishQuantities),
-    //       selectedOption: selectedOption,
-    //     }
-    //     });
-    // } else {
     router.push({
       pathname: "/party-food-delivery-live-catering-buffet-checkout",
       query: {

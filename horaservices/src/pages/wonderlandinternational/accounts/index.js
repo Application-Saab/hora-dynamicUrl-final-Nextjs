@@ -243,6 +243,7 @@ const AccountPage = () => {
       </div>
 
       <LoginModal
+        fromWonderland={true}
         isOpen={showOtpLogin}
         onClose={() => setShowOtpLogin(false)}
       />

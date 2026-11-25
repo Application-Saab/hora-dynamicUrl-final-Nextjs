@@ -613,6 +613,7 @@ const VenuePage = ({
       />
 
       <LoginModal
+        fromVenue={true}
         isOpen={showGuestLoginModal}
         onClose={() => setShowGuestLoginModal(false)}
       />
