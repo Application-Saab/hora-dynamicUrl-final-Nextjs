@@ -9,34 +9,67 @@ import "./PhotoPackageGrid.css";
 import arrowicon from "@/assets/arrowicon.svg";
 import { TAG_RULES } from "@/utils/photoPackageTags";
 
+
+const replaceExtensionWithWebp = (fileNameOrUrl) => {
+  if (!fileNameOrUrl || typeof fileNameOrUrl !== "string") return null;
+
+  const trimmed = fileNameOrUrl.trim();
+  const [cleanPath, ...rest] = trimmed.split(/([?#].*)/);
+  if (!/\.[a-z0-9]+$/i.test(cleanPath)) return null;
+
+  const webpPath = cleanPath.replace(/\.[a-z0-9]+$/i, ".webp");
+  if (webpPath === cleanPath) return null;
+
+  return `${webpPath}${rest.join("")}`;
+};
+
 const getImageSources = (item) => {
   let fileName = null;
 
-  if (item.featured_image && typeof item.featured_image === "string") {
-    fileName = item.featured_image;
+  if (item?.featured_image && typeof item.featured_image === "string") {
+    fileName = item.featured_image.trim();
   } else if (
-    Array.isArray(item.featured_image) &&
+    Array.isArray(item?.featured_image) &&
     item.featured_image.length > 0
   ) {
-    fileName = item.featured_image[0]?.fileName || item.featured_image[0];
-  } else if (item.featured_images?.[0]?.fileName) {
-    fileName = item.featured_images[0].fileName;
+    const first = item.featured_image[0];
+    fileName = (typeof first === "string" ? first : first?.fileName)?.trim();
+  } else if (item?.featured_images?.[0]?.fileName) {
+    fileName = String(item.featured_images[0].fileName).trim();
   }
 
-  if (!fileName) {
-    return { primary: fallbackImg, secondary: fallbackImg };
+  // Guard against empty strings, "null", "undefined"
+  if (!fileName || fileName === "null" || fileName === "undefined") {
+    return fallbackImg ? [fallbackImg] : [];
   }
+
+  const webpFileName = replaceExtensionWithWebp(fileName);
+  const candidates = [];
 
   if (/^https?:\/\//i.test(fileName)) {
-    return { primary: fileName, secondary: fallbackImg };
+    candidates.push(fileName);
+    if (webpFileName) candidates.push(webpFileName);
+  } else {
+    if (COMPRESSED_WEBP_IMG_URL) {
+      candidates.push(`${COMPRESSED_WEBP_IMG_URL}${fileName}`);
+      if (webpFileName) {
+        candidates.push(`${COMPRESSED_WEBP_IMG_URL}${webpFileName}`);
+      }
+    }
+    if (IMAGE_BASE_URL) {
+      candidates.push(`${IMAGE_BASE_URL}/${fileName}`);
+      if (webpFileName) {
+        candidates.push(`${IMAGE_BASE_URL}/${webpFileName}`);
+      }
+    }
   }
 
-  return {
-    primary: `${COMPRESSED_WEBP_IMG_URL}${fileName}`,
-    secondary: `${IMAGE_BASE_URL}/${fileName}`,
-  };
-};
+  if (fallbackImg) {
+    candidates.push(fallbackImg);
+  }
 
+  return [...new Set(candidates.filter(Boolean))];
+};
 // Returns ALL tags that match a given line (a line can contain multiple
 // keywords, e.g. "Unlimited Posed & Candid Photos" matches 3 tags at once).
 const getTagsForText = (text) => {
@@ -211,22 +244,27 @@ const VideoIcon = () => (
 );
 
 const PhotoPackageCard = ({ item, onClick, href }) => {
-  const { primary, secondary } = getImageSources(item);
-  const [imgSrc, setImgSrc] = useState(primary);
-  const [attempt, setAttempt] = useState(0);
+  const sources = React.useMemo(() => getImageSources(item), [
+    item?._id,
+    item?.featured_image,
+    item?.featured_images,
+  ]);
+
+  const [sourceIndex, setSourceIndex] = useState(0);
 
   useEffect(() => {
-    setImgSrc(primary);
-    setAttempt(0);
-  }, [primary]);
+    setSourceIndex(0);
+  }, [sources]);
+
+  const imgSrc = sources[sourceIndex] || fallbackImg;
 
   const handleImageError = () => {
-    if (attempt === 0 && secondary && secondary !== imgSrc) {
-      setAttempt(1);
-      setImgSrc(secondary);
-    } else if (imgSrc !== fallbackImg) {
-      setImgSrc(fallbackImg);
-    }
+    setSourceIndex((prev) => {
+      if (prev < sources.length - 1) {
+        return prev + 1;
+      }
+      return prev; // Hard stop at last fallback — prevents infinite loop
+    });
   };
 
   const inclusionItems = parseInclusions(item.inclusion);
@@ -246,26 +284,29 @@ const PhotoPackageCard = ({ item, onClick, href }) => {
 
   return (
     <a
-      type="button"
       href={href || "#"}
       className="photoPkgCard"
       onClick={() => onClick?.(item)}
     >
       <div className="photoPkgCardLeft">
-        <Image
-          src={imgSrc}
-          alt=""
-          fill
-          aria-hidden="true"
-          className="photoPkgCardImgBlur"
-        />
-        <Image
-          src={imgSrc}
-          alt={item.name}
-          fill
-          className="photoPkgCardImg"
-          onError={handleImageError}
-        />
+        {imgSrc && (
+          <>
+            <Image
+              src={imgSrc}
+              alt=""
+              fill
+              aria-hidden="true"
+              className="photoPkgCardImgBlur"
+            />
+            <Image
+              src={imgSrc}
+              alt={item.name || "Photography Package"}
+              fill
+              className="photoPkgCardImg"
+              onError={handleImageError}
+            />
+          </>
+        )}
       </div>
 
       <div className="photoPkgCardRight">
@@ -279,14 +320,16 @@ const PhotoPackageCard = ({ item, onClick, href }) => {
                 key={idx}
                 data-last-row={idx >= lastRowStartIndex ? "true" : undefined}
               >
-                <div className="photoPkgIconWrap">
-                  <Image
-                    src={inc.icon}
-                    alt={inc.title}
-                    fill
-                    className="photoPkgIconImg"
-                  />
-                </div>
+                {inc.icon && (
+                  <div className="photoPkgIconWrap">
+                    <Image
+                      src={inc.icon}
+                      alt={inc.title || "Inclusion icon"}
+                      fill
+                      className="photoPkgIconImg"
+                    />
+                  </div>
+                )}
                 <p className="photoPkgText">
                   <span className="photoPkgItemTitle">{inc.title}</span>
                   {inc.subtitle && (
@@ -338,10 +381,11 @@ const PhotoPackageCard = ({ item, onClick, href }) => {
           </span>
         </div>
 
-        {/* nested button mat rakho — span / div with same class */}
         <span className="photoPkgViewBtn">
           View Full Package
-          <Image className="photoPkgArrow" src={arrowicon} alt="Arrow" />
+          {arrowicon && (
+            <Image className="photoPkgArrow" src={arrowicon} alt="Arrow" />
+          )}
         </span>
       </div>
     </a>
