@@ -21,7 +21,7 @@ const defaultCategorySeo = {
   },
   "baby-shower-decoration":{
     title:"Baby Shower Decoration at Home from Rs 1,499 | HORA",
-    description:" Book baby shower decoration at home from Rs 1,499. Godh bharai and seemantham setups, a decorated mum-to-be seat, themes and flowers, by verified decorators across 8 cities."
+    description:"Book baby shower decoration at home from Rs 1,499. Godh bharai and seemantham setups, a decorated mum-to-be seat, themes and flowers, by verified decorators across 8 cities."
   },
   "anniversary-decoration":{
     title:"Anniversary Decoration at Home from Rs 1,499 | HORA",

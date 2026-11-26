@@ -476,7 +476,10 @@ const SeoHead = ({ catValue, city, locality, theme, isBooster = false, parentCat
       />
 
       {/* Product schema */}
-      <script type="application/ld+json">{scriptTag}</script>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: scriptTag }}
+      />
 
       {/* LocalBusiness schema — city-specific */}
       {localBusinessSchema && (
