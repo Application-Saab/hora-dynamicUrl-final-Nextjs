@@ -7,8 +7,9 @@ export const OTP_GENERATE_END_POINT = "/api/user/otp_generate";
 export const CHECK_TOKEN_HEALTH = "/api/check-token-health";
 export const REFRESH_ACCESS_TOKEN = "/api/user/refresh-token"
 export const API_SUCCESS_CODE = 200;
+export const IMAGE_BASE_URL = "https://horaservices.com/api/uploads"
 export const COMPRESSED_WEBP_IMG_URL =
-  "https://horaservices.com/api/uploads/compressed_webp/";
+  `${IMAGE_BASE_URL}/compressed_webp/`;
 export const GET_USER_DETAIL_ENDPOINT = "/api/users/user_details";
 export const UPDATE_USER_DETAIL_ENDPOINT = "/api/users/user_update";
 export const UPDATE_ORDER_STATUS = "/api/order/update_order_status";

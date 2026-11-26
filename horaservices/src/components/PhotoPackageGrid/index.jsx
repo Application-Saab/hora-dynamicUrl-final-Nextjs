@@ -1,12 +1,15 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import fallbackImg from "@/assets/fallback-image.png";
-import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
+import { COMPRESSED_WEBP_IMG_URL, IMAGE_BASE_URL } from "@/utils/apiconstants";
 import "./PhotoPackageGrid.css";
 
 import arrowicon from "@/assets/arrowicon.svg";
 import { TAG_RULES } from "@/utils/photoPackageTags";
 
-const getImageUrl = (item) => {
+const getImageSources = (item) => {
   let fileName = null;
 
   if (item.featured_image && typeof item.featured_image === "string") {
@@ -20,10 +23,18 @@ const getImageUrl = (item) => {
     fileName = item.featured_images[0].fileName;
   }
 
-  if (!fileName) return fallbackImg;
-  if (/^https?:\/\//i.test(fileName)) return fileName;
+  if (!fileName) {
+    return { primary: fallbackImg, secondary: fallbackImg };
+  }
 
-  return `${COMPRESSED_WEBP_IMG_URL}${fileName.split(".")[0]}.webp`;
+  if (/^https?:\/\//i.test(fileName)) {
+    return { primary: fileName, secondary: fallbackImg };
+  }
+
+  return {
+    primary: `${COMPRESSED_WEBP_IMG_URL}${fileName}`,
+    secondary: `${IMAGE_BASE_URL}/${fileName}`,
+  };
 };
 
 // Returns ALL tags that match a given line (a line can contain multiple
@@ -200,6 +211,24 @@ const VideoIcon = () => (
 );
 
 const PhotoPackageCard = ({ item, onClick, href }) => {
+  const { primary, secondary } = getImageSources(item);
+  const [imgSrc, setImgSrc] = useState(primary);
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    setImgSrc(primary);
+    setAttempt(0);
+  }, [primary]);
+
+  const handleImageError = () => {
+    if (attempt === 0 && secondary && secondary !== imgSrc) {
+      setAttempt(1);
+      setImgSrc(secondary);
+    } else if (imgSrc !== fallbackImg) {
+      setImgSrc(fallbackImg);
+    }
+  };
+
   const inclusionItems = parseInclusions(item.inclusion);
 
   const totalItems = inclusionItems.length;
@@ -224,17 +253,18 @@ const PhotoPackageCard = ({ item, onClick, href }) => {
     >
       <div className="photoPkgCardLeft">
         <Image
-          src={getImageUrl(item)}
+          src={imgSrc}
           alt=""
           fill
           aria-hidden="true"
           className="photoPkgCardImgBlur"
         />
         <Image
-          src={getImageUrl(item)}
+          src={imgSrc}
           alt={item.name}
           fill
           className="photoPkgCardImg"
+          onError={handleImageError}
         />
       </div>
 
