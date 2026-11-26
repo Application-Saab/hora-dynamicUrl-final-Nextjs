@@ -44,6 +44,16 @@ const STOPWORDS = new Set([
 export const normalize = (s) =>
   String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
+const PHOTO_TEST_RE = /\b(?:photo(?:graph(?:y|er|ers)|shoot|shoots|s)?|candid|cinematic|portraits?|poses?)\b/i;
+const DECO_TEST_RE = /\b(?:decoration|decorations|decor|balloon)\b/i;
+
+export const queryGroup = (text, fallback) => {
+  const s = String(text || "");
+  const p = PHOTO_TEST_RE.test(s);
+  const d = DECO_TEST_RE.test(s);
+  return p && !d ? "photography" : d && !p ? "decoration" : fallback;
+};
+
 // kids -> kid, decorations -> decoration ("ss" wale nahi katte: boss, glass)
 const stem = (t) =>
   t.length > 3 && t.endsWith("s") && !t.endsWith("ss") ? t.slice(0, -1) : t;
@@ -86,7 +96,10 @@ const PRICE_NUM_RE = new RegExp(
   "i",
 );
 // Sirf number ("20000", "20k", "₹20000"): 300 ya usse bada ho to max price maano
-const BARE_SRC = "(?:^|\\s)(?:rs\\.?|₹|inr)?\\s*(\\d[\\d,]*)\\s*(k|hazar|hazaar|thousand)?(?=\\s|$)";
+const BARE_RE = new RegExp(
+  "(?:^|\\s)(?:rs\\.?|₹|inr)?\\s*(\\d[\\d,]*)\\s*(k|hazar|hazaar|thousand)?(?=\\s|$)",
+  "gi",
+); // matchAll regex ki copy banata hai, isliye share karna safe hai
 const BARE_MIN_PRICE = 300;
 const toNum = (n, k) => Number(n.replace(/,/g, "")) * (k ? 1000 : 1);
 
@@ -95,6 +108,41 @@ const SORT_RULES = [
   [/\b(?:price\s*)?high(?:est)?\s*(?:to|-)\s*low(?:est)?\b|\bcostl(?:y|iest)\b|\bmeh?n?ga\b|\bmost\s*expensive\b|\bexpensive\b/i, "highToLow"],
   [/\bnew\s*arrivals?\b|\bnewest\b|\blatest\b/i, "newArrival"],
 ];
+
+const PRICE_NOISE = [
+  "price", "prices", "budget", "rupees", "rupee", "rupaye", "rs", "inr", "cost", "rate",
+  "under", "below", "above", "over", "than", "less", "more", "upto", "within",
+  "max", "maximum", "min", "minimum", "between", "tak", "kam", "andar", "niche",
+  "upar", "zyada", "jyada", "wala", "wali", "ka", "ki", "ke", "se", "or", "and", "of", "is",
+  "decoration", "decorations", "decor", "design", "designs", "theme", "themes",
+];
+const PRICE_NOISE_SET = new Set(PRICE_NOISE);
+
+// Design label ka regex ek baar banta hai (har keystroke par nahi)
+const designReCache = new Map();
+const designRe = (label) => {
+  if (!designReCache.has(label)) {
+    const squashed = normalize(label).replace(/ /g, "");
+    designReCache.set(
+      label,
+      squashed
+        ? new RegExp(`\\b${squashed.split("").join("[^a-z0-9]*")}s?\\b`, "i")
+        : null,
+    );
+  }
+  return designReCache.get(label);
+};
+
+// Lamba label pehle: "Ring + Flex" ko "Ring" se pehle match karo (sort ek baar)
+const sortedDesignCache = new WeakMap();
+const sortedDesigns = (opts) => {
+  let s = sortedDesignCache.get(opts);
+  if (!s) {
+    s = [...opts].sort((a, b) => b.label.length - a.label.length);
+    sortedDesignCache.set(opts, s);
+  }
+  return s;
+};
 
 export function parseSearchQuery(raw, designOptions = []) {
   let rest = ` ${String(raw || "")} `;
@@ -140,7 +188,7 @@ export function parseSearchQuery(raw, designOptions = []) {
   }
   // Sirf number ("20000", "20k"): bada number ho to max price
   if (maxPrice == null && minPrice == null) {
-    for (const mm of rest.matchAll(new RegExp(BARE_SRC, "gi"))) {
+    for (const mm of rest.matchAll(BARE_RE)) {
       const v = toNum(mm[1], mm[2]);
       if (v >= BARE_MIN_PRICE) {
         maxPrice = v;
@@ -158,21 +206,31 @@ export function parseSearchQuery(raw, designOptions = []) {
     }
   }
 
-  // Lamba label pehle: "Ring + Flex" ko "Ring" se pehle match karo.
   // Har character ke beech optional separator: label "UShape" ko "ushape",
   // "u shape" aur "u-shape" teeno match karte hain; "Ring + Flex" ko "ring flex" bhi.
-  [...designOptions]
-    .sort((a, b) => b.label.length - a.label.length)
-    .forEach((o) => {
-      const squashed = normalize(o.label).replace(/ /g, "");
-      if (!squashed) return;
-      const flexible = squashed.split("").join("[^a-z0-9]*");
-      const re = new RegExp(`\\b${flexible}s?\\b`, "i");
-      if ((m = rest.match(re))) {
-        designTypes.push(o.id);
-        cut(m, { type: "design", id: o.id });
-      }
-    });
+  sortedDesigns(designOptions).forEach((o) => {
+    const re = designRe(o.label);
+    if (!re) return;
+    if ((m = rest.match(re))) {
+      designTypes.push(o.id);
+      cut(m, { type: "design", id: o.id });
+    }
+  });
+
+  if (minPrice != null || maxPrice != null || sort) {
+    const toks = rest.split(/\s+/).filter(Boolean);
+    const last = toks.length - 1;
+    rest = toks
+      .filter((t, i) => {
+        const w = normalize(t);
+        if (!w) return false;
+        if (PRICE_NOISE_SET.has(w)) return false;
+        // aakhri word abhi type ho raha ho ("pr", "pri", "pric")
+        if (i === last && PRICE_NOISE.some((k) => k.startsWith(w))) return false;
+        return true;
+      })
+      .join(" ");
+  }
 
   const cleaned = rest.replace(/\s+/g, " ").trim();
   const onlyStop =
@@ -201,9 +259,21 @@ const termInHay = (hay, hayC, term) =>
     ? hay.split(" ").some((t) => t === term || t.replace(/(st|nd|rd|th)$/, "") === term)
     : hay.includes(term) || hayC.includes(term);
 
-const hayOf = (item) =>
-  normalize(`${item.label || item.name || ""} ${item.value || ""} ${item.catValue || ""}`);
+// Items stable hote hain (useMemo / module-level), isliye normalize ek baar per item
+const hayCache = new WeakMap();
+const hayOf = (item) => {
+  let h = hayCache.get(item);
+  if (h === undefined) {
+    h = normalize(
+      `${item.label || item.name || ""} ${item.value || ""} ${item.catValue || ""} ${item.keywords || ""}`,
+    );
+    hayCache.set(item, h);
+  }
+  return h;
+};
 
+// Kya ye search term kisi category ke naam / alias ka hissa hai?
+// ("kid" -> Kids Birthday, "housewarming" -> House Warming). Chhote words sirf poore word se match.
 export const catCovers = (c, term) => {
   const aliases = CATEGORY_ALIASES[c.catValue] || [];
   if (aliases.includes(term)) return true;
@@ -223,6 +293,7 @@ export const findCategoryForQuery = (q, categories) => {
   for (const c of categories) {
     const covered = tokens.filter((t) => catCovers(c, t));
     if (!covered.length) continue;
+    // Barabari par wo category jiske naam ka poora word match hua (car -> Car, Card nahi)
     const hayWords = hayOf(c).split(" ");
     const exactWords = covered.filter((t) => hayWords.includes(t)).length;
     if (

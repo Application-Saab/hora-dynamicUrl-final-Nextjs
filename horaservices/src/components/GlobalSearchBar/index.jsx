@@ -5,13 +5,14 @@ import useGlobalSearch from "@/utils/useGlobalSearch";
 export default function GlobalSearchBar({
   city,
   locality,
-  catValue = null, // category page par current category
-  onSubmitSearch, // optional: View More ka custom handler
+  catValue = null, 
+  service = null, 
+  onSubmitSearch, 
   smartFilters = false,
   showDesignType = smartFilters,
-  ...rest // sortOption, designTypes, onApplyFilters, onSearchChange, userId, initialQuery, showSort ...
+  ...rest 
 }) {
-  const s = useGlobalSearch({ city, locality, smartFilters, catValue });
+  const s = useGlobalSearch({ city, locality, smartFilters, catValue, service });
 
   return (
     <SearchSortBar
@@ -23,6 +24,7 @@ export default function GlobalSearchBar({
       loading={s.searchLoading}
       designPicker={s.designPicker}
       filterLabels={s.filterLabels}
+      primaryGroup={s.primaryGroup}
       onCategorySelect={s.openSearchCategory}
       onQueryChange={s.handleQueryChange}
       onViewMore={onSubmitSearch || s.handleSearchSubmit}

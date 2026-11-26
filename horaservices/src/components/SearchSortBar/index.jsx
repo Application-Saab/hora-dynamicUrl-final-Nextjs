@@ -212,12 +212,22 @@ function SearchDropdown({
   onViewMore, // View More dabane par category page par le jaata hai
   designPicker, // { labels, items } -> landing par design type ke liye category chuno
   filterLabels = [], // ["Under ₹2,000"] -> Products header mein dikhte hain
+  primaryGroup = "decoration", // "decoration" | "photography": is group ki categories pehle
   getProductHref,
   getCategoryHref,
 }) {
   const [showAllCategories, setShowAllCategories] = useState(false);
 
   const hasQuery = query.trim().length > 0;
+
+  const wantsPhoto = /\b(?:photo(?:graph(?:y|er|ers)|shoot|shoots|s)?|candid|cinematic|portraits?|poses?)\b/i.test(query);
+  const wantsDeco = /\b(?:decoration|decorations|decor|balloon)\b/i.test(query);
+  const effectiveGroup =
+    wantsPhoto && !wantsDeco
+      ? "photography"
+      : wantsDeco && !wantsPhoto
+        ? "decoration"
+        : primaryGroup;
 
   // Categories + themes: har term match hoke ek ranked list (zyada match = upar).
   // "under 2000" / "low to high" jaise filter words ranking se hata dete hain.
@@ -226,12 +236,19 @@ function SearchDropdown({
     const rankQuery = parseSearchQuery(query, []).rest;
     if (!rankQuery) return [];
     const list = searchCategoryList || [];
-    return rankItems(
+    const ranked = rankItems(
       rankQuery,
       list.filter((c) => c.kind !== "theme"),
       list.filter((c) => c.kind === "theme"),
     );
-  }, [searchCategoryList, query, hasQuery]);
+    // Jis page par ho uski categories pehle (rank order har group ke andar same rehta hai).
+    // User ne khud "photography" / "decoration" likha ho to wahi group pehle.
+    const groupOf = (c) => c.group || "decoration";
+    return [
+      ...ranked.filter((c) => groupOf(c) === effectiveGroup),
+      ...ranked.filter((c) => groupOf(c) !== effectiveGroup),
+    ];
+  }, [searchCategoryList, query, hasQuery, effectiveGroup]);
 
   // Products backend se already search + rank hoke aate hain (name filter nahi lagate)
   const matchingProducts = hasQuery ? products || [] : [];
@@ -247,10 +264,9 @@ function SearchDropdown({
   const visibleProducts = matchingProducts.slice(0, PRODUCT_LIMIT);
 
   const getProductThumb = (item) => {
-    if (categoryType === "photography") {
-      return item.featured_image
-        ? `${COMPRESSED_WEBP_IMG_URL}${item.featured_image.split(".")[0]}.webp`
-        : "";
+    if (categoryType === "photography" || item._group === "photography") {
+      const f = item.featured_image || item.featured_images?.[0]?.fileName;
+      return f ? `${COMPRESSED_WEBP_IMG_URL}${String(f).split(".")[0]}.webp` : "";
     }
 
     return item.featured_images?.[0]?.fileName
@@ -356,6 +372,11 @@ function SearchDropdown({
               </div>
               <div className="search-category-info">
                 <div className="search-category-name">{cat.label}</div>
+                {cat.group && cat.group !== effectiveGroup && (
+                  <div style={{ fontSize: 11, opacity: 0.6, textTransform: "capitalize" }}>
+                    {cat.group}
+                  </div>
+                )}
               </div>
               <ChevronRight size={18} className="search-row-chevron" />
             </a>
@@ -444,6 +465,7 @@ export default function SearchSortBar({
   onViewMore, // (query) => void  -- View More dabane par category page par navigate
   designPicker = null, // { labels, items } -- landing par category chuna ke liye
   filterLabels = [],
+  primaryGroup = "decoration",
 }) {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [query, setQuery] = useState(initialQuery);
@@ -465,10 +487,11 @@ export default function SearchSortBar({
   // ---- Typewriter placeholder words (searchCategoryList ke labels se) ----
   const typewriterWords = useMemo(() => {
     const words = (searchCategoryList || [])
+      .filter((c) => (c.group || "decoration") === primaryGroup)
       .map((c) => c.label?.trim())
       .filter(Boolean);
     return words.length ? words : [DEFAULT_PLACEHOLDER];
-  }, [searchCategoryList]);
+  }, [searchCategoryList, primaryGroup]);
 
   useEffect(() => {
     if (query.trim().length > 0 || isFocused) {
@@ -705,6 +728,7 @@ export default function SearchSortBar({
             onViewMore={handleViewMore}
             designPicker={designPicker}
             filterLabels={filterLabels}
+            primaryGroup={primaryGroup}
             getProductHref={getProductHref}
             getCategoryHref={getCategoryHref}
           />

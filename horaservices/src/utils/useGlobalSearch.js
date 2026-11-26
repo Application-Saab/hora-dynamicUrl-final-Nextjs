@@ -1,6 +1,7 @@
 import { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import { decCat, getServiceForCategory } from "@/utils/decorationCategories";
+import { photoCat } from "@/utils/photoCategories";
 import { smallCardCategories } from "@/utils/smallCardCategories";
 import { NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
@@ -9,6 +10,7 @@ import {
   BASE_URL,
   GET_DECORATION_CAT_ID,
   GET_DECORATION_CAT_ITEM,
+  GET_PHOTOGRAPHY_BY_TAG,
 } from "@/utils/apiconstants";
 import { designTypeOptions, sortOptions } from "@/components/SearchSortBar";
 import {
@@ -17,15 +19,16 @@ import {
   findCategoryForQuery,
   parseSearchQuery,
   catCovers,
+  queryGroup, // NEW: searchRelated.js se export (neeche patch dekho)
 } from "@/utils/searchRelated";
 
 /* ------------------------------------------------------------------ *
  * CONFIG
  * ------------------------------------------------------------------ */
 const DEFAULT_PARENT = "balloon-decoration";
+const PHOTOGRAPHY_PARENT = "photography";
 const WEDDING_PARENT = "wedding-decoration";
 
-// Ye categories /wedding-decoration/<catValue> ke andar aati hain (baaki balloon-decoration ke).
 const WEDDING_PARENT_CATS = new Set([
   "haldi-decoration",
   "mehendi-decoration",
@@ -37,7 +40,6 @@ const WEDDING_PARENT_CATS = new Set([
   "first-night-decoration",
 ]);
 
-// Jin categories mein sabse zyada products hote hain, unhe pehle search karo
 const SEARCH_PRIORITY = [
   "kids-birthday-decoration",
   "birthday-decoration",
@@ -46,27 +48,40 @@ const SEARCH_PRIORITY = [
   "welcome-baby-decoration",
   "anniversary-decoration",
 ];
-const MAX_SEARCH_CATS = 2; // landing: ek term ke liye max itni categories hit hongi
-const SEARCH_DEBOUNCE = 350; // ms
-const SEARCH_CACHE_LIMIT = 50; // max cached searches
-const LANDING_LIMIT = 6; // landing: per category per term
-const SCOPED_LIMIT = 10; // category page: dropdown mein 5 se zyada aaye taaki View More dikhe
+const PHOTO_PRIORITY = [
+  "birthday-photography",
+  "wedding-photography",
+  "anniversary-photography",
+  "engagement-photography",
+  "baby-shower-photography",
+  "new-born-baby-photography",
+  "pre-wedding",
+];
+const MAX_SEARCH_CATS = 2;
+const SEARCH_DEBOUNCE = 350;
+const SEARCH_CACHE_LIMIT = 50;
+const LANDING_LIMIT = 6;
+const SCOPED_LIMIT = 10;
 const PRICE_SORTS = ["newArrival", "lowToHigh", "highToLow"];
 
+const PHOTO_STRIP_RE =
+  /\b(?:photo|photos|photography|photographer|photographers|photoshoot|photoshoots|shoot|shoots)\b/gi;
+
 /* ------------------------------------------------------------------ *
- * MODULE-LEVEL DATA (sirf ek baar banta hai, sab pages share karte hain)
+ * SMALL HELPERS
  * ------------------------------------------------------------------ */
-const slugify = (val) =>
-  String(val || "").trim().toLowerCase().replace(/\s+/g, "-");
+const slugify = (val) => String(val || "").trim().toLowerCase().replace(/\s+/g, "-");
 
 const toTitle = (s) =>
-  String(s || "")
-    .trim()
-    .replace(/\s+/g, " ")
-    .replace(/\b\w/g, (m) => m.toUpperCase());
+  String(s || "").trim().replace(/\s+/g, " ").replace(/\b\w/g, (m) => m.toUpperCase());
 
-const labelOfDesign = (id) =>
-  designTypeOptions.find((o) => o.id === id)?.label || id;
+const photoSlug = (text) =>
+  String(text || "").replace(/[^a-zA-Z0-9]+/g, "-").replace(/(^-|-$)/g, "").toLowerCase();
+
+const labelOfDesign = (id) => designTypeOptions.find((o) => o.id === id)?.label || id;
+
+const isPhotoQuery = (text, onPhotoPage) =>
+  queryGroup(text, onPhotoPage ? "photography" : "decoration") === "photography";
 
 const fmtPrice = (n) => `₹${Number(n).toLocaleString("en-IN")}`;
 const priceLabel = (min, max) =>
@@ -76,7 +91,8 @@ const priceLabel = (min, max) =>
       ? `Under ${fmtPrice(max)}`
       : `Above ${fmtPrice(min)}`;
 
-// Query se nikle filters ke readable labels: ["Ring", "Under ₹2,000", "Price: Low To High"]
+const hasPriceOrSort = (p) => p.minPrice != null || p.maxPrice != null || !!p.sort;
+
 const filterLabelsOf = (parsed) => {
   const out = parsed.designTypes.map(labelOfDesign);
   if (parsed.minPrice != null || parsed.maxPrice != null) {
@@ -88,37 +104,64 @@ const filterLabelsOf = (parsed) => {
   return out;
 };
 
-// Filters ko standard text mein badlo: category page ka parser ise hamesha samajhta hai,
-// user ne chahe "3000 tak", "price 3000" ya "3k" kuch bhi likha ho.
-const SORT_TEXT = {
-  lowToHigh: "low to high",
-  highToLow: "high to low",
-  newArrival: "new arrival",
-};
+const SORT_TEXT = { lowToHigh: "low to high", highToLow: "high to low", newArrival: "new arrival" };
 const canonicalFilterText = (parsed) => {
   const { minPrice: min, maxPrice: max } = parsed;
   let price = "";
   if (min != null && max != null) price = `between ${min} and ${max}`;
   else if (max != null) price = `under ${max}`;
   else if (min != null) price = `above ${min}`;
-  return [
-    ...parsed.designTypes.map(labelOfDesign),
-    price,
-    SORT_TEXT[parsed.sort] || "",
-  ]
+  return [...parsed.designTypes.map(labelOfDesign), price, SORT_TEXT[parsed.sort] || ""]
     .filter(Boolean)
     .join(" ");
 };
 
-// Category kis service ke andar khulti hai: wedding wali fixed, baaki decCat ke `services` se
-// (festival categories /festivals-decoration par, current service mein ho to wahi).
+// ?search=... ke saath url
+const withSearch = (path, search) =>
+  `${path}${search ? `?search=${encodeURIComponent(search)}` : ""}`;
+
+// Sabse zyada baar aane wali key (View More par best category chunne ke liye)
+const mostCommon = (items, keyOf, fallback) => {
+  const counts = {};
+  items.forEach((i) => {
+    const k = keyOf(i);
+    if (k) counts[k] = (counts[k] || 0) + 1;
+  });
+  return Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0] || fallback;
+};
+
+// Same product ko dedupe karke, kitne terms mein mila (_hits) gino
+const mergeByHits = (lists) => {
+  const merged = new Map();
+  lists.flat().forEach((p) => {
+    const k = p._id || p.slug || p.name;
+    const prev = merged.get(k);
+    if (prev) prev._hits += 1;
+    else merged.set(k, { ...p, _hits: 1 });
+  });
+  return [...merged.values()].sort((a, b) => b._hits - a._hits);
+};
+
+/* ------------------------------------------------------------------ *
+ * RESULT CACHE (pages ke beech bhi bacha rehta hai)
+ * ------------------------------------------------------------------ */
+const resultCache = new Map();
+const cachePut = (key, value) => {
+  if (resultCache.size >= SEARCH_CACHE_LIMIT) {
+    resultCache.delete(resultCache.keys().next().value);
+  }
+  resultCache.set(key, value);
+};
+
+/* ------------------------------------------------------------------ *
+ * CATEGORY DATA (module level: ek hi baar banta hai)
+ * ------------------------------------------------------------------ */
 const parentFor = (cv, currentService) =>
   WEDDING_PARENT_CATS.has(cv)
     ? WEDDING_PARENT
     : getServiceForCategory(cv, currentService || DEFAULT_PARENT);
 
-// decCat me duplicate, trailing space, capital `Image` aur uppercase catValue
-// ho sakte hain -- sab yahan saaf ho jaate hain.
+// Duplicate / trailing space / capital `Image` / uppercase catValue saaf
 export const SEARCH_CATEGORIES = (() => {
   const seen = new Set();
   return decCat.reduce((acc, c) => {
@@ -134,17 +177,71 @@ export const SEARCH_CATEGORIES = (() => {
     return acc;
   }, []);
 })();
+const CAT_BY_VALUE = new Map(SEARCH_CATEGORIES.map((c) => [c.catValue, c]));
+
+export const PHOTO_CATEGORIES = (() => {
+  const seen = new Set();
+  return photoCat.reduce((acc, c) => {
+    const slug = String(c.slug || "").trim().toLowerCase();
+    const label = toTitle(String(c.name || "").replace(/-/g, " "));
+    const key = label.toLowerCase();
+    if (!slug || !label || seen.has(key)) return acc;
+    seen.add(key);
+    acc.push({ slug, label, image: c.image || undefined });
+    return acc;
+  }, []);
+})();
+const PHOTO_SLUGS = new Set(PHOTO_CATEGORIES.map((c) => c.slug));
+const PHOTO_LABEL = new Map(PHOTO_CATEGORIES.map((c) => [c.slug, c.label]));
+const PHOTO_MATCH = PHOTO_CATEGORIES.map((c) => ({ name: c.label, catValue: c.slug }));
+const PHOTO_MATCH_BY_SLUG = new Map(PHOTO_MATCH.map((c) => [c.catValue, c]));
+
+const PHOTO_API_NAME = {
+  "pre-wedding": "PreWeddingPhotography",
+  "haldi-mehndi": "HaldiMehendiPhotography",
+  wedding: "wedding-photography",
+};
+const photoApiName = (slug) => PHOTO_API_NAME[slug] || slug;
 
 const SEARCH_THEMES = [
   ...themeFilters.map((t) => ({ ...t, cat: "kids-birthday-decoration" })),
-  ...NamingCeremonyThemes.map((t) => ({
-    ...t,
-    cat: "naming-ceremony-decoration",
-  })),
+  ...NamingCeremonyThemes.map((t) => ({ ...t, cat: "naming-ceremony-decoration" })),
 ];
 
-// Promise cache: same category ki ID ek hi baar fetch hogi,
-// chahe 2 calls ek saath aayein. Fail hone par retry ho sakta hai.
+const PRICE_SEARCH_CATS = SEARCH_PRIORITY.slice(0, 4)
+  .map((cv) => CAT_BY_VALUE.get(cv))
+  .filter(Boolean);
+
+/* ------------------------------------------------------------------ *
+ * API LAYER
+ * ------------------------------------------------------------------ */
+// Photography: search/price params nahi hain => category ke saare products ek baar, phir local filter
+const photoProductPromises = new Map();
+const getPhotoProducts = (slug) => {
+  if (!photoProductPromises.has(slug)) {
+    const p = axiosApi
+      .get(`${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(photoApiName(slug))}`)
+      .then((r) => r.data?.data?._id || null)
+      .then((catId) =>
+        catId ? axiosApi.get(`${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}${catId}`) : null,
+      )
+      .then((r) =>
+        (r?.data?.data || []).map((item) => ({
+          ...item,
+          _group: "photography",
+          _catValue: slug,
+          _catLabel: PHOTO_LABEL.get(slug) || "",
+        })),
+      )
+      .catch(() => {
+        photoProductPromises.delete(slug);
+        return [];
+      });
+    photoProductPromises.set(slug, p);
+  }
+  return photoProductPromises.get(slug);
+};
+
 const catIdPromises = new Map();
 const getCatId = (c) => {
   if (!c.subCategory) return Promise.resolve(null);
@@ -162,7 +259,6 @@ const getCatId = (c) => {
   return catIdPromises.get(c.catValue);
 };
 
-// Naam se match wali pehle, phir priority list, baaki last. Sirf top `limit`.
 const pickSearchCategories = (term, limit = MAX_SEARCH_CATS) => {
   const t = term.toLowerCase();
   const score = (c) => {
@@ -170,18 +266,152 @@ const pickSearchCategories = (term, limit = MAX_SEARCH_CATS) => {
     const i = SEARCH_PRIORITY.indexOf(c.catValue);
     return i === -1 ? 100 : i + 1;
   };
-  return [...SEARCH_CATEGORIES]
-    .sort((a, b) => score(a) - score(b))
-    .slice(0, limit);
+  return [...SEARCH_CATEGORIES].sort((a, b) => score(a) - score(b)).slice(0, limit);
 };
 
-// Sirf price/sort likha ho (text nahi): in popular categories mein products dhundho
-const PRICE_SEARCH_CATS = SEARCH_PRIORITY.slice(0, 4)
-  .map((cv) => SEARCH_CATEGORIES.find((c) => c.catValue === cv))
-  .filter(Boolean);
+const pickPhotoSlugs = (terms) => {
+  if (!terms.length) {
+    return PHOTO_PRIORITY.filter((sl) => PHOTO_SLUGS.has(sl)).slice(0, 4);
+  }
+  const named = PHOTO_CATEGORIES.filter((c) =>
+    terms.some((t) => `${c.label} ${c.slug}`.toLowerCase().includes(t)),
+  ).map((c) => c.slug);
+  const namedSet = new Set(named);
+  return [...named, ...PHOTO_CATEGORIES.map((c) => c.slug).filter((sl) => !namedSet.has(sl))];
+};
 
-// Search results ka cache (pages ke beech bhi bacha rehta hai)
-const resultCache = new Map();
+/* ------------------------------------------------------------------ *
+ * PHOTOGRAPHY SEARCH (pure functions)
+ * ------------------------------------------------------------------ */
+const PRODUCT_SKIP_KEYS = new Set([
+  "_id", "__v", "createdAt", "updatedAt", "featured_image", "featured_images",
+  "images", "image", "url", "price", "discount", "discountedPrice", "discountDifference",
+]);
+
+// Har product ka text ek hi baar banta hai (WeakMap cache)
+const textCache = new WeakMap();
+const searchableText = (p) => {
+  const hit = textCache.get(p);
+  if (hit !== undefined) return hit;
+
+  const out = [p._catLabel || ""];
+  Object.entries(p).forEach(([k, v]) => {
+    if (PRODUCT_SKIP_KEYS.has(k) || (k.startsWith("_") && k !== "_catLabel")) return;
+    if (typeof v === "string" && v.length < 4000) out.push(v);
+    else if (Array.isArray(v)) {
+      v.forEach((x) => {
+        if (typeof x === "string") out.push(x);
+        else if (x && typeof x === "object") {
+          ["name", "title", "label", "value"].forEach((f) => {
+            if (typeof x[f] === "string") out.push(x[f]);
+          });
+        }
+      });
+    }
+  });
+  const text = out.join(" ").replace(/<[^>]+>/g, " ").toLowerCase();
+  textCache.set(p, text);
+  return text;
+};
+
+// Query -> photography plan: filters, category hit, aur product terms
+const planPhotoSearch = (value) => {
+  const pp = parseSearchQuery(value, []); // design types photography mein nahi hote
+  const cleanedRest = pp.rest.replace(PHOTO_STRIP_RE, " ").replace(/\s+/g, " ").trim();
+  const words = splitWords(cleanedRest);
+  const hit = cleanedRest ? findCategoryForQuery(cleanedRest, PHOTO_MATCH) : null;
+  const hitItem = hit ? PHOTO_MATCH_BY_SLUG.get(hit.catValue) || null : null;
+  const remaining = hitItem ? words.filter((w) => !catCovers(hitItem, w.term)) : words;
+  const terms = remaining.filter((w) => !w.generic).slice(0, 3).map((w) => w.term);
+  return { pp, hasPF: hasPriceOrSort(pp), hitItem, terms };
+};
+
+const runPhotoSearch = async ({ pp, hitItem, terms }) => {
+  const slugs = hitItem ? [hitItem.catValue] : pickPhotoSlugs(terms);
+  const lists = await Promise.all(slugs.map(getPhotoProducts));
+
+  const priceOf = (p) => Number(p.price) || 0;
+  const seen = new Set();
+  let items = lists
+    .flat()
+    .filter((p) => {
+      const k = p._id || p.slug || p.name;
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    })
+    .map((p) => {
+      const hay = searchableText(p);
+      return { ...p, _hits: terms.filter((t) => hay.includes(t)).length };
+    });
+
+  if (terms.length) {
+    const matched = items.filter((p) => p._hits > 0);
+    // Category naam diya par word kisi product mein nahi => us category ke saare products
+    items = matched.length || !hitItem ? matched : items;
+  }
+  if (pp.minPrice != null) items = items.filter((p) => priceOf(p) >= pp.minPrice);
+  if (pp.maxPrice != null) items = items.filter((p) => priceOf(p) <= pp.maxPrice);
+
+  const bySort = (x, y) =>
+    pp.sort === "lowToHigh"
+      ? priceOf(x) - priceOf(y)
+      : pp.sort === "highToLow"
+        ? priceOf(y) - priceOf(x)
+        : pp.sort === "newArrival"
+          ? new Date(y.createdAt || 0) - new Date(x.createdAt || 0)
+          : 0;
+
+  return items.sort((x, y) => y._hits - x._hits || bySort(x, y)).slice(0, SCOPED_LIMIT);
+};
+
+/* ------------------------------------------------------------------ *
+ * DECORATION SEARCH (pure function)
+ * ------------------------------------------------------------------ */
+const runDecoSearch = async ({
+  terms, scoped, currentCat, target, filtersOn, minPrice, maxPrice, sortBy, designApi, signal,
+}) => {
+  const catsFor = (term) => {
+    if (scoped) return [currentCat];
+    if (target) {
+      if (!term) return [target];
+      return [
+        target,
+        ...pickSearchCategories(term).filter((c) => c.catValue !== target.catValue),
+      ].slice(0, MAX_SEARCH_CATS);
+    }
+    return term ? pickSearchCategories(term) : PRICE_SEARCH_CATS;
+  };
+
+  const fetchCat = async (c, term) => {
+    const catId = await getCatId(c);
+    if (!catId || signal.aborted) return [];
+
+    const params = { limit: target ? SCOPED_LIMIT : LANDING_LIMIT, page: 1 };
+    if (term) params.search = term;
+    // Filters sirf target category par lagte hain
+    if (filtersOn && (!target || c.catValue === target.catValue)) {
+      if (minPrice != null) params.minPrice = minPrice;
+      if (maxPrice != null) params.maxPrice = maxPrice;
+      if (sortBy) params.sortBy = sortBy;
+      if (designApi.length) params.designType = designApi.join(",");
+    }
+
+    const res = await axiosApi.get(`${BASE_URL + GET_DECORATION_CAT_ITEM}v3/${catId}`, {
+      params,
+      signal,
+    });
+    return (res.data?.data || []).map((p) => ({ ...p, _catValue: c.catValue }));
+  };
+
+  const perTerm = await Promise.all(
+    terms.map(async (term) => {
+      const results = await Promise.allSettled(catsFor(term).map((c) => fetchCat(c, term)));
+      return results.flatMap((r) => (r.status === "fulfilled" ? r.value : []));
+    }),
+  );
+  return mergeByHits(perTerm);
+};
 
 /* ------------------------------------------------------------------ *
  * HOOK
@@ -189,18 +419,28 @@ const resultCache = new Map();
 export default function useGlobalSearch({
   city,
   locality,
-  smartFilters = false,
-  catValue = null, // category page par current category
+  // eslint-disable-next-line no-unused-vars
+  smartFilters = false, // purane callers ke liye accept hota hai, hook mein use nahi
+  catValue = null,
+  service = null,
 } = {}) {
   const router = useRouter();
 
-  // Current page ke path se parent slug (wedding page par bhi dusri categories sahi jaayein)
+  const isPhotoPage = useMemo(() => {
+    if (service) return service === "photography";
+    return String(router.asPath || "")
+      .split("?")[0]
+      .split("/")
+      .filter(Boolean)
+      .map((x) => x.toLowerCase())
+      .some((x) => x === PHOTOGRAPHY_PARENT || PHOTO_SLUGS.has(x));
+  }, [service, router.asPath]);
+
   const pathSlug = useMemo(
     () => getCategorySlugFromPath(router.asPath, city, locality),
     [router.asPath, city, locality],
   );
-  const baseSlug =
-    !pathSlug || pathSlug === WEDDING_PARENT ? DEFAULT_PARENT : pathSlug;
+  const baseSlug = !pathSlug || pathSlug === WEDDING_PARENT ? DEFAULT_PARENT : pathSlug;
 
   const prefix = `${city ? "/" + String(city).toLowerCase() : ""}${
     locality ? "/" + String(locality).toLowerCase() : ""
@@ -208,41 +448,35 @@ export default function useGlobalSearch({
 
   const parentOf = useCallback((cv) => parentFor(cv, baseSlug), [baseSlug]);
 
-  // Category page par current category (SEARCH_CATEGORIES se); nahi mili => landing jaisa behave
-  // Pehle prop se, nahi to URL se (/balloon-decoration/kids-birthday-decoration).
+  // Category page par current category (prop se, nahi to URL se)
   const currentCat = useMemo(() => {
-    const find = (v) => SEARCH_CATEGORIES.find((c) => c.catValue === v) || null;
-
     const explicit = catValue ? String(catValue).trim().toLowerCase() : "";
-    if (explicit && find(explicit)) return find(explicit);
+    if (explicit && CAT_BY_VALUE.has(explicit)) return CAT_BY_VALUE.get(explicit);
 
-    const segs = String(router.asPath || "")
+    const seg = String(router.asPath || "")
       .split("?")[0]
       .split("/")
       .filter(Boolean)
-      .map((s) => s.toLowerCase());
-    const seg = segs.find((s) => find(s));
-    return seg ? find(seg) : null;
+      .map((s) => s.toLowerCase())
+      .find((s) => CAT_BY_VALUE.has(s));
+    return seg ? CAT_BY_VALUE.get(seg) : null;
   }, [catValue, router.asPath]);
 
-  // scoped = kisi category ke page par ho: filters + isi category ke products.
-  // Landing (/balloon-decoration) par category nahi hoti, wahan picker aata hai.
   const scoped = !!currentCat;
 
-  // Category + Theme list (local data, turant match hoti hai)
   const searchCategoryList = useMemo(() => {
-    const localImages = smallCardCategories.reduce((m, c) => {
-      m[c.catValue] = c.image;
-      return m;
-    }, {});
+    const localImages = Object.fromEntries(
+      smallCardCategories.map((c) => [c.catValue, c.image]),
+    );
 
     const cats = SEARCH_CATEGORIES.map((c) => ({
       id: `cat-${c.catValue}`,
       kind: "category",
+      group: "decoration",
       catValue: c.catValue,
       label: c.name,
       image: c.image || localImages[c.catValue] || undefined,
-      href: `${prefix}/${parentFor(c.catValue, baseSlug)}/${c.catValue}`,
+      href: `${prefix}/${parentOf(c.catValue)}/${c.catValue}`,
     }));
 
     const themes = SEARCH_THEMES.map((t) => {
@@ -250,6 +484,7 @@ export default function useGlobalSearch({
       return {
         id: `theme-${t.cat}-${value}`,
         kind: "theme",
+        group: "decoration",
         value,
         cat: t.cat,
         label: `${String(t.label).trim()} Theme`,
@@ -258,16 +493,23 @@ export default function useGlobalSearch({
       };
     });
 
-    return [...cats, ...themes];
-  }, [prefix, baseSlug]);
+    const photos = PHOTO_CATEGORIES.map((c) => ({
+      id: `photo-${c.slug}`,
+      kind: "category",
+      group: "photography",
+      catValue: c.slug,
+      label: c.label,
+      keywords: "photoshoot photographer photo shoot",
+      image: c.image,
+      href: `${prefix}/${PHOTOGRAPHY_PARENT}/${c.slug}`,
+    }));
 
-  // Landing par design/price/sort likha ho to yahan aata hai (products nahi)
-  // { search: "ring under 2000", labels: ["Ring", "under 2000"], hitCat }
+    return isPhotoPage ? [...photos, ...cats, ...themes] : [...cats, ...photos, ...themes];
+  }, [prefix, baseSlug, parentOf, isPhotoPage]);
+
+  // Landing par design/price/sort likha ho to category puchhne ke liye
   const [pendingFilter, setPendingFilter] = useState(null);
-  // Dropdown ke Products header mein dikhane ke liye: ["Under ₹2,000"]
   const [filterLabels, setFilterLabels] = useState([]);
-
-  // Products: backend se live
   const [searchProducts, setSearchProducts] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const searchReq = useRef(0);
@@ -282,48 +524,78 @@ export default function useGlobalSearch({
     [],
   );
 
-  // Query se category pehchano: category page par current category, landing par query ke naam se.
   const resolveTarget = useCallback(
     (rest) => {
       if (scoped) return currentCat;
       const hit = rest ? findCategoryForQuery(rest, SEARCH_CATEGORIES) : null;
-      return hit ? SEARCH_CATEGORIES.find((c) => c.catValue === hit.catValue) || null : null;
+      return hit ? CAT_BY_VALUE.get(hit.catValue) || null : null;
     },
     [scoped, currentCat],
   );
 
   const handleQueryChange = useCallback(
     (value) => {
-      const parsed = parseSearchQuery(value, designTypeOptions);
       clearTimeout(searchTimer.current);
-      searchAbort.current?.abort(); // purani request network se cancel
+      searchAbort.current?.abort();
       const id = ++searchReq.current;
 
-      const hasFilter =
-        parsed.designTypes.length > 0 ||
-        parsed.minPrice != null ||
-        parsed.maxPrice != null ||
-        !!parsed.sort;
+      const finish = (items) => {
+        setSearchProducts(items);
+        setSearchLoading(false);
+      };
 
-      const target = resolveTarget(parsed.rest); // category jisme products dhundhne hain
+      // debounce + abort + stale-request check + cache write: dono modes ke liye ek jagah
+      const schedule = (key, work) => {
+        setSearchLoading(true);
+        searchTimer.current = setTimeout(async () => {
+          const controller = new AbortController();
+          searchAbort.current = controller;
+          const items = await work(controller.signal);
+          if (id !== searchReq.current) return;
+          cachePut(key, items);
+          finish(items);
+        }, SEARCH_DEBOUNCE);
+      };
+
+      /* ---------- PHOTOGRAPHY MODE ---------- */
+      if (isPhotoQuery(value, isPhotoPage)) {
+        const plan = planPhotoSearch(value);
+        const { pp, hasPF, hitItem, terms } = plan;
+        setPendingFilter(null);
+        setFilterLabels(hasPF ? filterLabelsOf(pp) : []);
+
+        // Sirf "photography" likha: products nahi, categories dikhte hain
+        if (!hasPF && !hitItem && !terms.length) return finish([]);
+
+        const key = [
+          "photo",
+          hitItem?.catValue || "*",
+          terms.join("|"),
+          `${pp.minPrice ?? ""}-${pp.maxPrice ?? ""}`,
+          pp.sort || "",
+        ].join("#");
+
+        const cached = resultCache.get(key);
+        if (cached) return finish(cached);
+
+        return schedule(key, () => runPhotoSearch(plan));
+      }
+
+      /* ---------- DECORATION MODE ---------- */
+      const parsed = parseSearchQuery(value, designTypeOptions);
+      const hasFilter = parsed.designTypes.length > 0 || hasPriceOrSort(parsed);
+      const target = resolveTarget(parsed.rest);
       const words = splitWords(parsed.rest);
-      // Category ke naam wale words ("kids", "birthday") product search term nahi bante
       const remaining = target ? words.filter((w) => !catCovers(target, w.term)) : words;
       const real = remaining.filter((w) => !w.generic);
-
       const labels = filterLabelsOf(parsed);
 
-      /* ---------- LANDING + design / price / sort + category nahi bataya => category puchho ---------- */
+      // Landing + filter + category nahi bataya => category puchho
       if (!scoped && hasFilter && !target) {
-        const search = [
-          canonicalFilterText(parsed),
-          cleanQuery(parsed.rest) || parsed.rest,
-        ]
-          .filter(Boolean)
-          .join(" ");
-
         setPendingFilter({
-          search,
+          search: [canonicalFilterText(parsed), cleanQuery(parsed.rest) || parsed.rest]
+            .filter(Boolean)
+            .join(" "),
           labels,
           hint:
             parsed.designTypes.length > 0
@@ -331,30 +603,16 @@ export default function useGlobalSearch({
               : "Choose the category where you want to see these products.",
         });
         setFilterLabels([]);
-        setSearchProducts([]);
-        setSearchLoading(false);
-        return;
+        return finish([]);
       }
       setPendingFilter(null);
       setFilterLabels(hasFilter ? labels : []);
 
-      // Search karna hai ya nahi
-      //  - category page: text ya filter ho
-      //  - landing + query mein category ka naam: hamesha (us category ke products)
-      //  - landing, category nahi: koi word bacha ho
       const shouldSearch = scoped
         ? real.length > 0 || hasFilter
-        : target
-          ? true
-          : remaining.length > 0 || hasFilter; // landing: price/sort akela bhi chalega
+        : target || remaining.length > 0 || hasFilter;
+      if (!shouldSearch) return finish([]);
 
-      if (!shouldSearch) {
-        setSearchProducts([]);
-        setSearchLoading(false);
-        return;
-      }
-
-      // Filters API params bante hain jab category pata ho, ya landing par price/sort likha ho
       const filtersOn = !!target || (!scoped && hasFilter);
       const designApi = filtersOn
         ? parsed.designTypes
@@ -365,12 +623,9 @@ export default function useGlobalSearch({
       const maxPrice = filtersOn ? parsed.maxPrice : null;
       const sortBy = filtersOn && PRICE_SORTS.includes(parsed.sort) ? parsed.sort : null;
 
-      // "decoration" jaise generic words ka product search nahi (sab match ho jaata hai).
-      // Category pata ho to bacha hua real word hi term; nahi to purana behaviour.
       const textTerms = (target ? real : real.length ? real : remaining)
         .slice(0, 3)
         .map((w) => w.term);
-      // Sirf category/filter ho (text nahi) to ek hi request, bina search term
       const terms = textTerms.length ? textTerms : [null];
 
       const key = [
@@ -382,105 +637,24 @@ export default function useGlobalSearch({
         designApi.join(","),
       ].join("#");
 
-      // Cache hit: API call nahi, turant result
-      if (resultCache.has(key)) {
-        setSearchProducts(resultCache.get(key));
-        setSearchLoading(false);
-        return;
-      }
+      const cached = resultCache.get(key);
+      if (cached) return finish(cached);
 
-      setSearchLoading(true);
-      searchTimer.current = setTimeout(async () => {
-        const controller = new AbortController();
-        searchAbort.current = controller;
-
-        const perTerm = await Promise.all(
-          terms.map(async (term) => {
-            let cats;
-            if (scoped) {
-              cats = [currentCat]; // category page: sirf isi category ke products
-            } else if (target) {
-              // Landing: query wali category pehle, phir term ke hisaab se baaki
-              cats = term
-                ? [
-                    target,
-                    ...pickSearchCategories(term, MAX_SEARCH_CATS).filter(
-                      (c) => c.catValue !== target.catValue,
-                    ),
-                  ].slice(0, MAX_SEARCH_CATS)
-                : [target];
-            } else if (term) {
-              cats = pickSearchCategories(term, MAX_SEARCH_CATS);
-            } else {
-              cats = PRICE_SEARCH_CATS; // price/sort only
-            }
-
-            const results = await Promise.allSettled(
-              cats.map(async (c) => {
-                const catId = await getCatId(c);
-                if (!catId || controller.signal.aborted) return [];
-
-                const params = {
-                  limit: target ? SCOPED_LIMIT : LANDING_LIMIT,
-                  page: 1,
-                };
-                if (term) params.search = term;
-                // Filters sirf target category par lagte hain
-                if (filtersOn && (!target || c.catValue === target.catValue)) {
-                  if (minPrice != null) params.minPrice = minPrice;
-                  if (maxPrice != null) params.maxPrice = maxPrice;
-                  if (sortBy) params.sortBy = sortBy;
-                  if (designApi.length) params.designType = designApi.join(",");
-                }
-
-                const res = await axiosApi.get(
-                  `${BASE_URL + GET_DECORATION_CAT_ITEM}v3/${catId}`,
-                  { params, signal: controller.signal },
-                );
-                return (res.data?.data || []).map((p) => ({
-                  ...p,
-                  _catValue: c.catValue,
-                }));
-              }),
-            );
-            return results.flatMap((r) =>
-              r.status === "fulfilled" ? r.value : [],
-            );
-          }),
-        );
-
-        if (id !== searchReq.current) return; // purani request ignore
-
-        // Sab terms ke results ek list mein: jo product zyada terms mein mila wo upar
-        const merged = new Map();
-        perTerm.flat().forEach((p) => {
-          const k = p._id || p.slug || p.name;
-          const prev = merged.get(k);
-          if (prev) prev._hits += 1;
-          else merged.set(k, { ...p, _hits: 1 });
-        });
-        const products = [...merged.values()].sort((a, b) => b._hits - a._hits);
-
-        if (resultCache.size >= SEARCH_CACHE_LIMIT) {
-          resultCache.delete(resultCache.keys().next().value);
-        }
-        resultCache.set(key, products);
-
-        setSearchProducts(products);
-        setSearchLoading(false);
-      }, SEARCH_DEBOUNCE);
+      schedule(key, (signal) =>
+        runDecoSearch({
+          terms, scoped, currentCat, target, filtersOn, minPrice, maxPrice, sortBy, designApi, signal,
+        }),
+      );
     },
-    [scoped, currentCat, resolveTarget],
+    [scoped, currentCat, resolveTarget, isPhotoPage],
   );
 
-  // Landing par category chunne ke liye list (href mein filters ?search= ke saath)
+  // Landing par category chunne ki list (href mein ?search= ke saath)
   const designPicker = useMemo(() => {
     if (!pendingFilter) return null;
-    const q = pendingFilter.search
-      ? `?search=${encodeURIComponent(pendingFilter.search)}`
-      : "";
+    const q = pendingFilter.search ? `?search=${encodeURIComponent(pendingFilter.search)}` : "";
     const items = searchCategoryList
-      .filter((c) => c.kind === "category")
+      .filter((c) => c.kind === "category" && c.group === "decoration")
       .map((c) => ({ ...c, href: `${c.href}${q}` }));
     return { labels: pendingFilter.labels, hint: pendingFilter.hint, items };
   }, [pendingFilter, searchCategoryList]);
@@ -490,10 +664,12 @@ export default function useGlobalSearch({
   const getProductHref = useCallback(
     (p) => {
       if (!p) return "#";
+      if (p._group === "photography") {
+        const ps = photoSlug(p.name);
+        return ps ? `/${PHOTOGRAPHY_PARENT}/product/${ps}` : "#";
+      }
       const slug = p.slug || p.product_slug || (p.name ? slugify(p.name) : "");
-      if (!slug) return "#";
-      // Direct product page: /<parent>/product/<slug>
-      return `/${parentOf(p._catValue)}/product/${slug}`;
+      return slug ? `/${parentOf(p._catValue)}/product/${slug}` : "#";
     },
     [parentOf],
   );
@@ -505,34 +681,37 @@ export default function useGlobalSearch({
     [router],
   );
 
-  // View More: category page par filters ke saath.
-  //  - Category page: isi page par (shallow) filters lag jaate hain.
-  //  - Landing + query mein category ka naam: us category page par.
-  //  - Landing, category nahi: best category page par plain text search.
+  // View More
   const handleSearchSubmit = useCallback(
     (q) => {
       const text = String(q || "").trim();
       if (!text) return;
 
+      // Photography: jis category ke dropdown mein sabse zyada products, uska page
+      if (isPhotoQuery(text, isPhotoPage)) {
+        const best = mostCommon(
+          searchProducts,
+          (pr) => pr._group === "photography" && pr._catValue,
+          null,
+        );
+        if (best) router.push(`${prefix}/${PHOTOGRAPHY_PARENT}/${best}`);
+        return;
+      }
+
       const p = parseSearchQuery(text, designTypeOptions);
       const target = resolveTarget(p.rest);
 
       if (target) {
-        // Category ke naam wale words text se hata do; baaki + filters ?search= mein
         const restWords = splitWords(p.rest)
           .filter((w) => !w.generic && !catCovers(target, w.term))
           .map((w) => w.term)
           .join(" ");
-        const search = [canonicalFilterText(p), restWords]
-          .filter(Boolean)
-          .join(" ");
+        const search = [canonicalFilterText(p), restWords].filter(Boolean).join(" ");
 
         const path = `${prefix}/${parentOf(target.catValue)}/${target.catValue}`;
-        const url = `${path}${search ? `?search=${encodeURIComponent(search)}` : ""}`;
+        const url = withSearch(path, search);
 
-        const samePage =
-          router.asPath.split("?")[0].toLowerCase() === path.toLowerCase();
-        if (samePage) {
+        if (router.asPath.split("?")[0].toLowerCase() === path.toLowerCase()) {
           router.push(url, undefined, { shallow: true, scroll: false });
         } else {
           router.push(url);
@@ -540,28 +719,14 @@ export default function useGlobalSearch({
         return;
       }
 
-      /* ---------- LANDING, category nahi mili (price / sort / plain text) ---------- */
-      // Dropdown ke products jis category mein sabse zyada hain, wahi page kholo
-      const counts = {};
-      searchProducts.forEach((pr) => {
-        if (pr._catValue) counts[pr._catValue] = (counts[pr._catValue] || 0) + 1;
-      });
-      const catV =
-        Object.keys(counts).sort((x, y) => counts[y] - counts[x])[0] ||
-        "birthday-decoration";
-
-      const restWords = cleanQuery(p.rest) || p.rest;
-      const search = [canonicalFilterText(p), restWords]
+      // Landing, category nahi mili: dropdown ke products jis category mein zyada hain
+      const catV = mostCommon(searchProducts, (pr) => pr._catValue, "birthday-decoration");
+      const search = [canonicalFilterText(p), cleanQuery(p.rest) || p.rest]
         .filter(Boolean)
         .join(" ");
-
-      router.push(
-        `${prefix}/${parentOf(catV)}/${catV}${
-          search ? `?search=${encodeURIComponent(search)}` : ""
-        }`,
-      );
+      router.push(withSearch(`${prefix}/${parentOf(catV)}/${catV}`, search));
     },
-    [router, prefix, parentOf, searchProducts, resolveTarget],
+    [router, prefix, parentOf, searchProducts, resolveTarget, isPhotoPage],
   );
 
   return {
@@ -570,6 +735,7 @@ export default function useGlobalSearch({
     searchLoading,
     designPicker,
     filterLabels,
+    primaryGroup: isPhotoPage ? "photography" : "decoration",
     handleQueryChange,
     handleSearchSubmit,
     getCategoryHref,
