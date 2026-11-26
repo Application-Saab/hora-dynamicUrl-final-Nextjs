@@ -128,6 +128,27 @@ function MyApp({ Component, pageProps }) {
     router.push("/");
   };
 
+  // Check if a JWT is expired locally
+  const isTokenExpired = (token, bufferSeconds = 60) => {
+    if (!token || typeof token !== "string") return true;
+    try {
+      const cleanToken = token.startsWith("Bearer ")
+        ? token.split(" ")[1]
+        : token;
+      const base64Url = cleanToken.split(".")[1];
+      if (!base64Url) return true;
+
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const payload = JSON.parse(atob(base64));
+
+      if (!payload.exp) return false;
+      const currentTime = Math.floor(Date.now() / 1000);
+      return payload.exp <= currentTime + bufferSeconds;
+    } catch (e) {
+      return true;
+    }
+  };
+
   const refreshAccessToken = async () => {
     const refreshToken = safeGetItem("refreshToken");
 
@@ -136,37 +157,67 @@ function MyApp({ Component, pageProps }) {
       return null;
     }
 
-    try {
-      const response = await fetchWithError(
-        `${BASE_URL}${REFRESH_ACCESS_TOKEN}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            refreshToken,
-          }),
-        },
-      );
+    // If refresh token itself is expired locally, logout immediately
+    if (isTokenExpired(refreshToken, 0)) {
+      logout();
+      return null;
+    }
 
-      if (!response.ok) {
+    try {
+      const response = await fetch(`${BASE_URL}${REFRESH_ACCESS_TOKEN}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          refreshToken,
+        }),
+      });
+
+      if (response.status === 401 || response.status === 403) {
         logout();
         return null;
       }
-      const data = await response.json();
-      safeSetItem("token", data.token);
 
-      return data.token;
+      if (!response.ok) {
+        console.warn(
+          `Token refresh skipped due to server status: ${response.status}`,
+        );
+        return null;
+      }
+
+      const data = await response.json();
+      if (data?.token) {
+        safeSetItem("token", data.token);
+        return data.token;
+      }
+
+      return null;
     } catch (error) {
-      logout();
+      console.warn(
+        "Network error during token refresh, keeping session:",
+        error,
+      );
       return null;
     }
   };
 
   useEffect(() => {
     const accessToken = safeGetItem("token");
+    const refreshToken = safeGetItem("refreshToken");
+
+    if (!accessToken && !refreshToken) return;
+
     const checkAuthentication = async () => {
+      if (accessToken && !isTokenExpired(accessToken, 300)) {
+        return;
+      }
+
+      if (!accessToken || isTokenExpired(accessToken, 300)) {
+        await refreshAccessToken();
+        return;
+      }
+
       try {
         const response = await fetch(`${BASE_URL}${CHECK_TOKEN_HEALTH}`, {
           method: "GET",
@@ -174,23 +225,16 @@ function MyApp({ Component, pageProps }) {
             Authorization: `${accessToken}`,
           },
         });
-        // Access token valid
-        if (response.ok) {
-          return;
-        }
 
-        // Access token expired
         if (response.status === 401) {
           await refreshAccessToken();
         }
       } catch (error) {
-        console.error("Authentication check failed", error);
+        console.warn("Server unreachable during auth check, keeping session");
       }
     };
 
-    if (accessToken) {
-      checkAuthentication();
-    }
+    checkAuthentication();
   }, []);
 
   const appContent = (
