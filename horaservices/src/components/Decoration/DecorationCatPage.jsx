@@ -1118,7 +1118,7 @@ const renderChip = (chip) => (
 
               {isPriceThemeActive || isSearchActive ? (
                 <>
-                  {/* {loading ? (
+                   {loading ? (
                     <FilterLoadingSkeleton />
                   ) : priceThemeFilteredData.length > 0 ? (
                     <ProductGrid
@@ -1142,7 +1142,7 @@ const renderChip = (chip) => (
                     <div className="noProductsWrapper">
                       <h2>No products found in this price range</h2>
                     </div>
-                  )} */}
+                  )} 
                 </>
               ) : loading ? (
                 <FilterLoadingSkeleton />
